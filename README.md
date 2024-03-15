@@ -1,9 +1,11 @@
-# 집단 지성 활용을 위한 지식 관리 시스템
-## Knowledge Management System
+# <div align="center">집단 지성 활용을 위한 지식 관리 시스템</div>
 
 
-### 기획안 5조 Team_KMS(미정)
-* 🐰장준혁 🐂김영광 🐲박세종 🐴윤지용
+## <div align="center">Knowledge Management System</div>
+
+
+### <div align="center">기획안 5조 Team_KMS(미정)</div>
+<div align="center">🐰장준혁 🐂김영광 🐲박세종 🐴윤지용</div>
 <br/>
 
 ***
