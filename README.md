@@ -5,7 +5,7 @@
 
 
 ### <div align="center">기획안 5조 Team_KMS(미정)</div>
-<div align="center">🐰장준혁 🐂김영광 🐲박세종 🐴윤지용</div>
+<div align="center">🐰장준혁 팀장 🐂김영광 팀원 🐲박세종 팀원 🐴윤지용 팀원</div>
 <br/>
 
 ***
