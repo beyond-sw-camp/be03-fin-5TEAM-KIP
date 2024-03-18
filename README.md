@@ -119,6 +119,11 @@
 
 # ⭐ERD 초안
 <p align="center">
-  <img src="https://github.com/beyond-sw-camp/be03-fin-5TEAM-KMS/assets/148752498/23d7692e-6a45-4340-9836-e28e3162c378">
+  <img src="https://github.com/beyond-sw-camp/be03-fin-5TEAM-KMS/assets/148752498/eafbf9d3-d3bf-4323-bf6d-6d3d1fb59b30">
+</p>
+
+# ⭐ WBS
+<p align="center">
+  <img src="https://github.com/beyond-sw-camp/be03-fin-5TEAM-KMS/assets/148752498/3c68b6b4-443a-48dc-9376-6104146d1a1f">
 </p>
 
