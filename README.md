@@ -4,7 +4,7 @@
 ## <div align="center">Knowledge Management System</div>
 
 
-### <div align="center">기획안 5조 Team_KMS(미정)</div>
+### <div align="center">5조 Team_KIP(knowledge Is Power)</div>
 <div align="center">🐰장준혁 팀장 🐂김영광 팀원 🐲박세종 팀원 🐴윤지용 팀원</div>
 <br/>
 
