@@ -9,8 +9,9 @@
 <br/>
 
 ***
-
-# ⭐프로젝트 개요
+<details>
+<summary><b>⭐프로젝트 개요</b></summary>
+<div markdown="1">
 
 ## 📌주제
 사내 지식관리시스템은 조직 내 정보를 효과적으로 관리하고 활용하여 경쟁력을 강화하는 데 필수적인 도구입니다. 시스템을 운영하지 않을 경우 정보 공유 및 접근성 저하, 중복 노력 및 비효율성 증가, 역량 격차 및 숙련도 저하, 노하우 유출 및 정보 유실, 의사 결정 및 문제 해결 어려움 등 다양한 문제점이 발생할 수 있습니다. 따라서 조직의 성공적인 성장과 발전을 위해 사내 지식관리시스템 도입을 적극적으로 고려하고, 시스템을 효과적으로 운영하기 위한 전략을 수립해야 합니다.
@@ -24,9 +25,14 @@
 6) 지속적인 학습 및 혁신 촉진: 사내 지식관리시스템을 통해 최신의 업계 동향, 기술 발전 및 베스트 프랙티스를 공유하여 조직 내 지속적인 학습 문화를 조성하고, 혁신을 촉진하는 것을 목표로 합니다.
 <br/>
 
+</div>
+</details>
+
 ***
 
-# ⭐기술 스택
+<details>
+<summary><b>⭐기술 스택</b></summary>
+<div markdown="1">
 
 ## 📌공통
 - 버전 관리 및 협업: <img src="https://img.shields.io/badge/GitHub-181717?style=flat-square&logo=GitHub&logoColor=white"/> <img src="https://img.shields.io/badge/Git-F05032?style=flat-square&logo=Git&logoColor=white"/> <img src="https://img.shields.io/badge/Jira-0052CC?style=flat-square&logo=Jira&logoColor=white"/>
@@ -52,9 +58,14 @@
 - 오케스트레이션: <img src="https://img.shields.io/badge/Kubernetes-326CE5?style=flat-square&logo=Kubernetes&logoColor=white"/>
 <br/>
 
+</div>
+</details>
+
 ***
 
-# ⭐요구사항 정의서
+<details>
+<summary><b>⭐요구사항 정의서</b></summary>
+<div markdown="1">
 
 ## 📌 목적
 - 핵심기술문서에 권한을 부여하여 공동으로 관리하는 서비스
@@ -92,9 +103,15 @@
 - 문서 수정 횟수를 제공 한다.
 <br/>
 
+</div>
+</details>
+
 ***
 
-# ⭐조직의 구성(예시)
+<details>
+<summary><b>⭐조직의 구성(예시)</b></summary>
+<div markdown="1">
+  
 ## 📌방산 조직 구성도
 <p align="center">
   <img src="https://github.com/beyond-sw-camp/be03-fin-5TEAM-KMS/assets/148752498/66bf55a1-e357-4f2c-8f24-f85c1e895be2">
@@ -110,6 +127,9 @@
   <img src="https://github.com/beyond-sw-camp/be03-fin-5TEAM-KMS/assets/148752498/d2a61076-9508-42b6-8c7a-95ee573c1254">
 </p>
 <br/>
+
+</div>
+</details>
 
 ***
 
