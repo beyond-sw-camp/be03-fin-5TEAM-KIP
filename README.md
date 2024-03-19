@@ -97,17 +97,17 @@
 # ⭐조직의 구성(예시)
 ## 📌방산 조직 구성도
 <p align="center">
-  <img src="https://github.com/beyond-sw-camp/be03-fin-5TEAM-KIP/assets/148752498/fea7b07f-4003-4051-a430-d85e8f23cdb1">
+  <img src="https://github.com/beyond-sw-camp/be03-fin-5TEAM-KMS/assets/148752498/66bf55a1-e357-4f2c-8f24-f85c1e895be2">
 </p>
 
 ## 📌ICT 조직 구성도
 <p align="center">
-  <img src="https://github.com/beyond-sw-camp/be03-fin-5TEAM-KIP/assets/148752498/89c42cfb-0a12-49b0-a4db-459864afaccb">
+  <img src="https://github.com/beyond-sw-camp/be03-fin-5TEAM-KMS/assets/148752498/64a40d88-6eba-4dfa-a8c9-6f595811ed93">
 </p>
 
 ## 📌전체 조직 구성도
 <p align="center">
-  <img src="https://github.com/beyond-sw-camp/be03-fin-5TEAM-KIP/assets/148752498/382a5abe-3dc9-4b02-a710-edbd3956ed32">
+  <img src="https://github.com/beyond-sw-camp/be03-fin-5TEAM-KMS/assets/148752498/d2a61076-9508-42b6-8c7a-95ee573c1254">
 </p>
 <br/>
 
@@ -115,11 +115,11 @@
 
 # ⭐ERD 초안
 <p align="center">
-  <img src="https://github.com/beyond-sw-camp/be03-fin-5TEAM-KIP/assets/148752498/eafbf9d3-d3bf-4323-bf6d-6d3d1fb59b30">
+  <img src="https://github.com/beyond-sw-camp/be03-fin-5TEAM-KMS/assets/148752498/523ca5c4-0262-4132-8519-94a829ca9294">
 </p>
 
 # ⭐ WBS
 <p align="center">
-  <img src="https://github.com/beyond-sw-camp/be03-fin-5TEAM-KIP/assets/148752498/3c68b6b4-443a-48dc-9376-6104146d1a1f">
+  <img src="https://github.com/beyond-sw-camp/be03-fin-5TEAM-KMS/assets/148752498/f8ea7965-a9c0-4747-9040-4179f0dedc50">
 </p>
 
