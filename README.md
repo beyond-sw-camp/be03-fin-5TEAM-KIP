@@ -29,7 +29,7 @@
 # ⭐기술 스택
 
 ## 📌공통
-- 버전 관리 및 협업: GitHub, Git, GitHub Project
+- 버전 관리 및 협업: <img src="https://img.shields.io/badge/GitHub-181717?style=flat-square&logo=GitHub&logoColor=white"/>, Git, Jira
 - 데이터베이스: MySQL, Redis
 - 운영 체제: Linux (CentOS)
 - 커뮤니케이션: Slack
