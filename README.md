@@ -39,10 +39,10 @@
 - 프로그래밍 언어: <img src="https://img.shields.io/badge/HTML-E34F26?style=flat-square&logo=HTML5&logoColor=white"/> <img src="https://img.shields.io/badge/CSS-1572B6?style=flat-square&logo=CSS5&logoColor=white"/> <img src="https://img.shields.io/badge/JavaScript-F7DF1E?style=flat-square&logo=JavaScript&logoColor=white"/> <img src="https://img.shields.io/badge/Vue.js-4FC08D?style=flat-square&logo=Vue.js&logoColor=white"/>
 
 ## 📌백엔드
-- 개발 환경: IntelliJ IDEA
-- 프로그래밍 언어: Java 17
-- 빌드 도구: Gradle
-- 프레임워크: Spring, Spring Boot
+- 개발 환경: <img src="https://img.shields.io/badge/IntelliJ IDEA-000000?style=flat-square&logo=IntelliJ IDEA&logoColor=white"/>
+- 프로그래밍 언어: JAVA17
+- 빌드 도구: <img src="https://img.shields.io/badge/Gradle-02303A?style=flat-square&logo=Gradle&logoColor=white"/>
+- 프레임워크: <img src="https://img.shields.io/badge/Spring-6DB33F?style=flat-square&logo=Spring&logoColor=white"/> <img src="https://img.shields.io/badge/Spring Boot-6DB33F?style=flat-square&logo=Spring Boot&logoColor=white"/>
 - 보안: Spring Security, JSON Web Tokens (JWT)
 
 ## 📌데브옵스
