@@ -31,8 +31,8 @@
 ## 📌공통
 - 버전 관리 및 협업: <img src="https://img.shields.io/badge/GitHub-181717?style=flat-square&logo=GitHub&logoColor=white"/> <img src="https://img.shields.io/badge/Git-F05032?style=flat-square&logo=Git&logoColor=white"/> <img src="https://img.shields.io/badge/Jira-0052CC?style=flat-square&logo=Jira&logoColor=white"/>
 - 데이터베이스: <img src="https://img.shields.io/badge/MySQL-4479A1?style=flat-square&logo=MySQL&logoColor=white"/> <img src="https://img.shields.io/badge/Redis-DC382D?style=flat-square&logo=Redis&logoColor=white"/>
-- 운영 체제: Linux (CentOS)
-- 커뮤니케이션: Slack
+- 운영 체제: <img src="https://img.shields.io/badge/Linux-FCC624?style=flat-square&logo=Linux&logoColor=white"/>
+- 커뮤니케이션: <img src="https://img.shields.io/badge/Slack-4A154B?style=flat-square&logo=Slack&logoColor=white"/>
 
 ## 📌프론트엔드
 - 개발 환경: Visual Studio Code
@@ -81,14 +81,11 @@
 - 팀 저장소는 여러 개의 문서를 가질 수 있으며 각 문서별로 타 부서 사용자에 대한 접근 권한을 설정할 수 있다. 
 - 수정한 모든 기록은 로그로 남으며 팀저장소의 팀장이 언제든지 이전 버전으로 되돌릴 수 있다. 
 - 각각의 팀 저장소내 문서는 다른 팀의 승인이 있을 경우 타 팀의 저장소로 이력과 함께 옮겨질 수 있다.
-- 각각의 팀 저장소는 자체 에디터로 작성된 문서 이외에 첨부파일(이미지, 문서, PDF ...) 기능을 제공한다.
-- 각각의 문서들은 팀장이 북마크 기능을 통해 상단에 위치 시킬 수 있다. 
+- 각각의 팀 저장소는 작성된 문서 이외에 첨부파일(이미지, 문서, PDF ...) 기능을 제공한다.
+- 각각의 문서들은 팀장이 위치를 변경 할 수 있다. 
 - 각각의 문서들은 회사내 모든 사람들이 볼 수 있는 권한을 설정 할 수 있다. 
-- 각각의 문서들은 팀원들에게 공개되기 전에 임시저장기능을 제공하며 최종 발행을 통해 권한이 있는 사람들에게 배포된다.
 
 ## 📌 통계 관리 
-- 사장은 모든 팀 저장소내의 작성된 문서 갯수와 팀 래포지토리 목록을 한 페이지에서 조회 할 수 있다.
-- 직원별로 회사내 지식문서 작성에 기여한 기여도를 대쉬보드를 통해 그래프와 숫자로 조회 할 수 있다. 
 - 이 데이터를 기반으로 매월 보상을 통해 직원들의 노하우를 문서화 하는 일을 촉진할 수 있도록 관련 기능을 제공한다.
 <br/>
 
