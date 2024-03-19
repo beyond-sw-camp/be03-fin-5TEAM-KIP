@@ -115,7 +115,7 @@
 
 # ⭐ERD 초안
 <p align="center">
-  <img src="https://github.com/beyond-sw-camp/be03-fin-5TEAM-KMS/assets/148752498/523ca5c4-0262-4132-8519-94a829ca9294">
+  <img src="https://github.com/beyond-sw-camp/be03-fin-5TEAM-KMS/assets/148752498/dc02823b-8291-45a6-a7d3-556d36cc1f7a">
 </p>
 
 # ⭐ WBS
@@ -123,3 +123,7 @@
   <img src="https://github.com/beyond-sw-camp/be03-fin-5TEAM-KMS/assets/148752498/f8ea7965-a9c0-4747-9040-4179f0dedc50">
 </p>
 
+# ⭐ 메인화면설계
+<p align="center">
+  <img src="https://github.com/beyond-sw-camp/be03-fin-5TEAM-KMS/assets/148752498/49954f97-abcb-4eb4-beca-eb027e270990">
+</p>
