@@ -40,7 +40,7 @@
 
 ## 📌백엔드
 - 개발 환경: <img src="https://img.shields.io/badge/IntelliJ IDEA-000000?style=flat-square&logo=IntelliJ IDEA&logoColor=white"/>
-- 프로그래밍 언어: JAVA17
+- 프로그래밍 언어: <img src="https://img.shields.io/badge/Java17-007396?style=flat&logo=OpenJDK&logoColor=white"/>
 - 빌드 도구: <img src="https://img.shields.io/badge/Gradle-02303A?style=flat-square&logo=Gradle&logoColor=white"/>
 - 프레임워크: <img src="https://img.shields.io/badge/Spring-6DB33F?style=flat-square&logo=Spring&logoColor=white"/> <img src="https://img.shields.io/badge/Spring Boot-6DB33F?style=flat-square&logo=Spring Boot&logoColor=white"/>
 - 보안: <img src="https://img.shields.io/badge/Spring Security-6DB33F?style=flat-square&logo=Spring Security&logoColor=white"/>, <img src="https://img.shields.io/badge/JSON Web Tokens-000000?style=flat-square&logo=JSON Web Tokens&logoColor=white"/>
