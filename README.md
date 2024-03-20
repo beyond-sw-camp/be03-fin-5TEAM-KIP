@@ -128,12 +128,10 @@
 <p align="center">
   <img src="https://github.com/beyond-sw-camp/be03-fin-5TEAM-KMS/assets/148752498/d2a61076-9508-42b6-8c7a-95ee573c1254">
 </p>
-<br/>
 
 </div>
 </details>
 
-***
 
 ### ⭐ERD 초안
 <p align="center">
