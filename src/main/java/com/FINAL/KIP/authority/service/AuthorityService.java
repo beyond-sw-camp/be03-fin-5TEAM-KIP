@@ -145,4 +145,10 @@ public class AuthorityService {
         return accessibleUsers;
     }
 
+    public List<AuthorityGroupResDto> getAuthorityGroups() {
+        return authorityGroupRepo.findAll().stream()
+                .map(AuthorityGroupResDto::new)
+                .collect(Collectors.toList());
+    }
+
 }

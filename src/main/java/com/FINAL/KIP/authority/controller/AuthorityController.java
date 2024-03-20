@@ -32,17 +32,43 @@ public class AuthorityController {
                 authorityService.createAuthorityGroup(dto)
         );
     }
-
-
-
-
-    @PostMapping("create/groups")
+    @PostMapping("list")
     public ResponseEntity<List<AuthorityGroupResDto>> createAuthorityGroups(
             @RequestBody List<CreateAuthorityGroupReqDto> dtos) {
         return ResponseEntity.ok(
                 authorityService.createAuthorityGroups(dtos));
     }
 
+
+    // Read
+
+    @GetMapping
+    public ResponseEntity<List<AuthorityGroupResDto>> getAuthorityGroups(){
+        return ResponseEntity.ok(
+                authorityService.getAuthorityGroups()
+        );
+    }
+
+    @GetMapping("childgroups/{groupId}")
+    public ResponseEntity<List<AuthorityGroupResDto>> getAuthorityGroupChilds(
+            @PathVariable Long groupId) {
+        return ResponseEntity.ok(
+                authorityService.getAuthorityGroupsById(groupId)
+        );
+    }
+
+    @GetMapping("hierarchy/{groupId}")
+    public ResponseEntity<GetAuthorityGroupHierarchyResDto> getAuthorityGroupHierarchy(
+            @PathVariable Long groupId) {
+        return ResponseEntity.ok(
+                authorityService.getAuthorityGroupHierarchy(groupId)
+        );
+    }
+
+
+// 그릅내 유저 추가하는 컨트롤러
+
+//    Create
     @PostMapping("addusers")
     public ResponseEntity<List<GroupUsersRoleResDto>> addUsersToGroup(
             @RequestBody addUsersToGroupReqDto dto){
@@ -51,7 +77,7 @@ public class AuthorityController {
         );
     }
 
-    @PostMapping("addusers/groups")
+    @PostMapping("addusers/list")
     public ResponseEntity<List<List<GroupUsersRoleResDto>>> addUsersToGroup(
             @RequestBody List<addUsersToGroupReqDto> dtos){
         return ResponseEntity.ok(
@@ -59,28 +85,14 @@ public class AuthorityController {
         );
     }
 
-    // Read
-    @GetMapping("childgroups/{authorityGroupId}")
-    public ResponseEntity<List<AuthorityGroupResDto>> getAuthorityGroupChilds(
-            @PathVariable Long authorityGroupId) {
-        return ResponseEntity.ok(
-                authorityService.getAuthorityGroupsById(authorityGroupId)
-        );
-    }
 
-    @GetMapping("hierarchy/{authorityGroupId}")
-    public ResponseEntity<GetAuthorityGroupHierarchyResDto> getAuthorityGroupHierarchy(
-            @PathVariable Long authorityGroupId) {
-        return ResponseEntity.ok(
-                authorityService.getAuthorityGroupHierarchy(authorityGroupId)
-        );
-    }
 
-    @GetMapping("getusers/{authorityGroupId}")
+//    Read
+    @GetMapping("{groupId}/user")
     public ResponseEntity<List<GroupUsersRoleResDto>> getAuthorityGroupUsers(
-            @PathVariable Long authorityGroupId) {
+            @PathVariable Long groupId) {
         return ResponseEntity.ok(
-                authorityService.getAuthorityGroupUsers(authorityGroupId)
+                authorityService.getAuthorityGroupUsers(groupId)
         );
     }
 
