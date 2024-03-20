@@ -142,7 +142,7 @@
 
 ### ⭐ WBS
 <p align="center">
-  <img src="https://github.com/beyond-sw-camp/be03-fin-5TEAM-KMS/assets/148752498/7f718f67-b739-4ccc-9d83-20b562c13052">
+  <img src="https://github.com/beyond-sw-camp/be03-fin-5TEAM-KMS/assets/148752498/304f6da8-bba4-4d01-bcd0-efcfad04488a">
 </p>
 
 ### ⭐ 메인화면설계
