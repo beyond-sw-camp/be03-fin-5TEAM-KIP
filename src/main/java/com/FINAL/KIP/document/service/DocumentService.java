@@ -5,7 +5,6 @@ import com.FINAL.KIP.authority.domain.UserIdAndGroupRole;
 import com.FINAL.KIP.authority.service.AuthorityService;
 import com.FINAL.KIP.document.domain.Document;
 import com.FINAL.KIP.document.dto.req.CreateDocumentReqDto;
-import com.FINAL.KIP.document.dto.req.GetIsAccessibleDocReqDto;
 import com.FINAL.KIP.document.dto.res.DocumentResDto;
 import com.FINAL.KIP.document.dto.res.GetDocumentResDto;
 import com.FINAL.KIP.document.repository.DocumentRepository;
@@ -53,10 +52,10 @@ public class DocumentService {
 //    Read
 
 
-    public GetDocumentResDto GetIsAccessibleDoc(GetIsAccessibleDocReqDto dto){
+    public GetDocumentResDto GetIsAccessibleDoc(Long docId, Long userId){
         boolean isAccessible = false;
-        Document tryToOpenDocument = getDocumentById(dto.getDocumnetId());
-        User tryUser = userService.getUserById(dto.getUserId());
+        Document tryToOpenDocument = getDocumentById(docId);
+        User tryUser = userService.getUserById(userId);
 
         Long AuthorityGroupId = tryToOpenDocument.getAuthorityGroup().getId();
 
@@ -68,7 +67,7 @@ public class DocumentService {
                     " / 권한정보: " + obj.getGroupRole());
         }
         isAccessible = accessibleUsers.stream()
-                .anyMatch(userId -> userId.getUserId().equals(tryUser.getId()));
+                .anyMatch(reqUserId -> reqUserId.getUserId().equals(tryUser.getId()));
 
         return new GetDocumentResDto(tryToOpenDocument, isAccessible);
     }
