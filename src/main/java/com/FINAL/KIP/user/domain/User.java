@@ -33,6 +33,9 @@ public class User extends BaseEntity {
 
     private LocalDateTime employedDay;
 
+    @Column(nullable = false)
+    private String employeeId;
+
     @Setter
     private String delYn = "N";
     public User(){}
@@ -40,13 +43,14 @@ public class User extends BaseEntity {
     @Builder
     public User(String name, String email, String password,
                 String phoneNumber, String profileUrl,
-                LocalDateTime employedDay) {
+                LocalDateTime employedDay, String employeeId) {
         this.name = name;
         this.email = email;
         this.password = password;
         this.phoneNumber = phoneNumber;
         this.profileUrl = profileUrl;
         this.employedDay = employedDay;
+        this.employeeId = employeeId;
     }
 
 }

@@ -14,7 +14,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@RequestMapping("authority")
+@RequestMapping("group")
 public class AuthorityController {
 
     private final AuthorityService authorityService;
@@ -24,15 +24,17 @@ public class AuthorityController {
         this.authorityService = authorityService;
     }
 
-
     // Create
-    @PostMapping("create")
+    @PostMapping
     public ResponseEntity<AuthorityGroupResDto> createAuthorityGroup(
             @RequestBody CreateAuthorityGroupReqDto dto) {
         return ResponseEntity.ok(
                 authorityService.createAuthorityGroup(dto)
         );
     }
+
+
+
 
     @PostMapping("create/groups")
     public ResponseEntity<List<AuthorityGroupResDto>> createAuthorityGroups(

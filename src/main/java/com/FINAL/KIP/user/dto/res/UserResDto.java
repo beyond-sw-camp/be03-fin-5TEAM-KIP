@@ -13,6 +13,8 @@ public class UserResDto {
     private final String password;
     private final String profileUrl;
     private final LocalDateTime employedDay;
+    private String employeeId;
+
 
     public UserResDto(User user){
         this.name = user.getName();
@@ -21,5 +23,6 @@ public class UserResDto {
         this.password = user.getPassword();
         this.profileUrl = user.getProfileUrl();
         this.employedDay = user.getEmployedDay();
+        this.employeeId = user.getEmployeeId();
     }
 }

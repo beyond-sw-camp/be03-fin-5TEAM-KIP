@@ -22,18 +22,18 @@ public class UserController {
 
 
 //    Create
-    @PostMapping("create")
+    @PostMapping
     public ResponseEntity<UserResDto> createUser(@RequestBody CreateUserReqDto dto) {
         return ResponseEntity.ok(userService.createUser(dto));
     }
 
-    @PostMapping("create/users")
+    @PostMapping("list")
     public ResponseEntity<List<UserResDto>> createUsers(@RequestBody List<CreateUserReqDto> dtos){
         return ResponseEntity.ok(userService.createUsers(dtos));
     }
 
 //    Read
-    @GetMapping("all")
+    @GetMapping
     public ResponseEntity<List<UserResDto>> getAllUsers() {
         return ResponseEntity.ok(userService.getAllUsers());
     }

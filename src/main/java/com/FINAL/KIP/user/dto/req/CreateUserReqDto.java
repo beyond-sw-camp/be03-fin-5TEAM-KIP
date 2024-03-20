@@ -14,6 +14,7 @@ public class CreateUserReqDto {
     private String password;
     private String profileUrl;
     private LocalDateTime employedDay;
+    private String employeeId;
 
     public User makeUserReqDtoToUser(CreateUserReqDto this) {
         return User.builder()
@@ -23,6 +24,7 @@ public class CreateUserReqDto {
                 .password(this.password)
                 .profileUrl(this.profileUrl)
                 .employedDay(this.employedDay)
+                .employeeId(this.employeeId)
                 .build();
     }
 }
