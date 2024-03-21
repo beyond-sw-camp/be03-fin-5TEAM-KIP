@@ -5,6 +5,7 @@ import com.FINAL.KIP.group.dto.req.CreateGroupReqDto;
 import com.FINAL.KIP.group.dto.req.addUsersToGroupReqDto;
 import com.FINAL.KIP.group.dto.res.GroupResDto;
 import com.FINAL.KIP.group.dto.res.GetGroupHierarchyResDto;
+import com.FINAL.KIP.group.dto.res.GroupUsersResDto;
 import com.FINAL.KIP.group.dto.res.GroupUsersRoleResDto;
 import com.FINAL.KIP.group.service.GroupService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -65,7 +66,6 @@ public class GroupController {
         );
     }
 
-
 // 그릅내 유저 추가하는 컨트롤러
 
 //    Create
@@ -86,15 +86,13 @@ public class GroupController {
     }
 
 
-
 //    Read
     @GetMapping("{groupId}/user")
-    public ResponseEntity<List<GroupUsersRoleResDto>> getGroupUsers(
+    public ResponseEntity<GroupUsersResDto> getGroupUsers(
             @PathVariable Long groupId) {
         return ResponseEntity.ok(
                 groupService.getGroupUsers(groupId)
         );
     }
-
 }
 

@@ -12,7 +12,7 @@ public class CreateUserReqDto {
     private String email;
     private String phoneNumber;
     private String password;
-    private String profileUrl;
+    private String profileImageUrl;
     private LocalDateTime employedDay;
     private String employeeId;
 
@@ -22,7 +22,7 @@ public class CreateUserReqDto {
                 .email(this.email)
                 .phoneNumber(this.phoneNumber)
                 .password(this.password)
-                .profileUrl(this.profileUrl)
+                .profileImageUrl(this.profileImageUrl)
                 .employedDay(this.employedDay)
                 .employeeId(this.employeeId)
                 .build();

@@ -10,7 +10,6 @@ import lombok.Setter;
 public class CreateDocumentReqDto {
 
     private String title;
-    private Boolean isPublish;
     private String kmsDocType;
     private Long upLinkId;
     private Long downLinkId;
@@ -20,7 +19,6 @@ public class CreateDocumentReqDto {
         return Document.builder()
                 .title(this.title)
                 .kmsDocType(KmsDocType.valueOf(this.kmsDocType))
-                .isPublish(this.isPublish)
                 .build();
     }
 }
