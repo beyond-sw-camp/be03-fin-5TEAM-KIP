@@ -1,17 +1,17 @@
 package com.FINAL.KIP.controller;
 
-
-import com.FINAL.KIP.entity.AttachmentEntity;
+import com.FINAL.KIP.domain.AttachmentEntity;
 import com.FINAL.KIP.service.AttachmentService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
+import java.util.Optional;
 
 @RestController
 @RequestMapping("/attachments")
 public class AttachmentController {
+
     private final AttachmentService attachmentService;
 
     @Autowired
@@ -19,16 +19,20 @@ public class AttachmentController {
         this.attachmentService = attachmentService;
     }
 
-    @GetMapping
-    public List<AttachmentEntity> getAllAttachments() {
-        return attachmentService.findAllAttachments();
-    }
+    @GetMapping("/{attachmentId}")
+    public ResponseEntity<AttachmentEntity> getAttachmentById(@PathVariable("attachmentId") String attachmentId) {
+        if (!attachmentId.startsWith("attachment-")) {
+            return ResponseEntity.badRequest().build();
+        }
+        Long id;
+        try {
+            id = Long.parseLong(attachmentId.substring("attachment-".length()));
+        } catch (NumberFormatException e) {
+            return ResponseEntity.badRequest().build();
+        }
 
-    @GetMapping("/{id}")
-    public ResponseEntity<AttachmentEntity> getAttachmentById(@PathVariable Long id) {
-        return attachmentService.findAttachmentById(id)
-                .map(ResponseEntity::ok)
-                .orElseGet(() -> ResponseEntity.notFound().build());
+        Optional<AttachmentEntity> attachment = attachmentService.findAttachmentById(id);
+        return attachment.map(ResponseEntity::ok).orElseGet(() -> ResponseEntity.notFound().build());
     }
 
     @PostMapping
@@ -36,8 +40,18 @@ public class AttachmentController {
         return attachmentService.saveOrUpdateAttachment(attachment);
     }
 
-    @DeleteMapping("/{id}")
-    public ResponseEntity<?> deleteAttachment(@PathVariable Long id) {
+    @DeleteMapping("/{attachmentId}")
+    public ResponseEntity<?> deleteAttachment(@PathVariable("attachmentId") String attachmentId) {
+        if (!attachmentId.startsWith("attachment-")) {
+            return ResponseEntity.badRequest().build();
+        }
+        Long id;
+        try {
+            id = Long.parseLong(attachmentId.substring("attachment-".length()));
+        } catch (NumberFormatException e) {
+            return ResponseEntity.badRequest().build();
+        }
+
         attachmentService.deleteAttachment(id);
         return ResponseEntity.ok().build();
     }
