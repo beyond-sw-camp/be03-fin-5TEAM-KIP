@@ -1,4 +1,4 @@
-package com.FINAL.KIP.authority.domain;
+package com.FINAL.KIP.group.domain;
 
 
 import com.FINAL.KIP.common.domain.BaseEntity;
@@ -10,12 +10,12 @@ import lombok.Setter;
 
 @Getter
 @Entity
-@IdClass(AuthorityGroupUserId.class)
-public class AuthorityGroupUser extends BaseEntity {
+@IdClass(GroupUserId.class)
+public class GroupUser extends BaseEntity {
 
     @ManyToOne
     @JoinColumn(nullable = false)
-    @Id private AuthorityGroup authorityGroup;
+    @Id private Group group;
 
     @ManyToOne
     @JoinColumn(nullable = false)
@@ -29,12 +29,12 @@ public class AuthorityGroupUser extends BaseEntity {
     @Setter
     private String delYn = "N";
 
-    public AuthorityGroupUser(){}
+    public GroupUser(){}
 
     @Builder
-    public AuthorityGroupUser(AuthorityGroup authorityGroup,
-                              User user, String groupRole) {
-        this.authorityGroup = authorityGroup;
+    public GroupUser(Group group,
+                     User user, String groupRole) {
+        this.group = group;
         this.user = user;
         this.groupRole = groupRole == null ? null : GroupRole.valueOf(groupRole);
     }

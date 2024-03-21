@@ -1,4 +1,4 @@
-package com.FINAL.KIP.authority.domain;
+package com.FINAL.KIP.group.domain;
 
 public enum GroupType {
     DEPARTMENT,

@@ -1,4 +1,4 @@
-package com.FINAL.KIP.authority.domain;
+package com.FINAL.KIP.group.domain;
 
 import com.FINAL.KIP.common.domain.BaseEntity;
 import com.FINAL.KIP.document.domain.Document;
@@ -13,7 +13,8 @@ import java.util.List;
 
 @Getter
 @Entity
-public class AuthorityGroup extends BaseEntity {
+@Table(name = "\"group\"") // group이 mariaDb예약어라 설정해줌.
+public class Group extends BaseEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -29,24 +30,24 @@ public class AuthorityGroup extends BaseEntity {
     @Setter
     @ManyToOne
     @JoinColumn
-    private AuthorityGroup superGroup;
+    private Group superGroup;
 
     @Setter
     private String delYn = "N";
-    public AuthorityGroup() {}
+    public Group() {}
 
     @OneToMany(mappedBy = "superGroup", cascade = CascadeType.PERSIST)
-    private final List<AuthorityGroup> childGroups = new ArrayList<>();
-    public void setAuthorityGroups(List<AuthorityGroup> authorityGroups) {
+    private final List<Group> childGroups = new ArrayList<>();
+    public void setGroups(List<Group> groups) {
         this.childGroups.clear();
-        if (authorityGroups != null) this.childGroups.addAll(authorityGroups);
+        if (groups != null) this.childGroups.addAll(groups);
     }
 
-    @OneToMany(mappedBy = "authorityGroup", cascade = CascadeType.PERSIST)
+    @OneToMany(mappedBy = "group", cascade = CascadeType.PERSIST)
     private final List<Document> documents = new ArrayList<>();
 
     @Builder
-    public AuthorityGroup(String groupName, GroupType groupType) {
+    public Group(String groupName, GroupType groupType) {
         this.groupName = groupName;
         this.groupType = groupType;
     }

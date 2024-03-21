@@ -1,4 +1,4 @@
-package com.FINAL.KIP.authority.domain;
+package com.FINAL.KIP.group.domain;
 
 import lombok.Getter;
 import lombok.Setter;

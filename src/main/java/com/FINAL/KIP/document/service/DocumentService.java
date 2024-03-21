@@ -1,8 +1,8 @@
 package com.FINAL.KIP.document.service;
 
-import com.FINAL.KIP.authority.domain.AuthorityGroup;
-import com.FINAL.KIP.authority.domain.UserIdAndGroupRole;
-import com.FINAL.KIP.authority.service.AuthorityService;
+import com.FINAL.KIP.group.domain.Group;
+import com.FINAL.KIP.group.domain.UserIdAndGroupRole;
+import com.FINAL.KIP.group.service.GroupService;
 import com.FINAL.KIP.document.domain.Document;
 import com.FINAL.KIP.document.dto.req.CreateDocumentReqDto;
 import com.FINAL.KIP.document.dto.res.DocumentResDto;
@@ -19,16 +19,16 @@ import java.util.List;
 public class DocumentService {
 
     private final DocumentRepository documentRepo;
-    private final AuthorityService authorityService;
+    private final GroupService groupService;
     private final UserService userService;
 
 
     @Autowired
     public DocumentService(DocumentRepository documentRepo,
-                           AuthorityService authorityService,
+                           GroupService groupService,
                            UserService userService) {
         this.documentRepo = documentRepo;
-        this.authorityService = authorityService;
+        this.groupService = groupService;
         this.userService = userService;
     }
 
@@ -43,10 +43,10 @@ public class DocumentService {
             Document downLinkDoc = getDocumentById(dto.getDownLinkId());
             newDocument.setDownLink(downLinkDoc);
         }
-        AuthorityGroup authorityGroup = authorityService.getAuthorityGroupById(
-                dto.getAuthorityGroupId()
+        Group group = groupService.getGroupById(
+                dto.getGroupId()
         );
-        newDocument.setAuthorityGroup(authorityGroup);
+        newDocument.setGroup(group);
         return new DocumentResDto(documentRepo.save(newDocument));
     }
 //    Read
@@ -57,9 +57,9 @@ public class DocumentService {
         Document tryToOpenDocument = getDocumentById(docId);
         User tryUser = userService.getUserById(userId);
 
-        Long AuthorityGroupId = tryToOpenDocument.getAuthorityGroup().getId();
+        Long GroupId = tryToOpenDocument.getGroup().getId();
 
-        List<UserIdAndGroupRole> accessibleUsers = authorityService.getAccessibleUsers(AuthorityGroupId);
+        List<UserIdAndGroupRole> accessibleUsers = groupService.getAccessibleUsers(GroupId);
         for(UserIdAndGroupRole obj : accessibleUsers) {
             System.out.println(
                     "맴버 아이디: " + obj.getUserId() + " " +

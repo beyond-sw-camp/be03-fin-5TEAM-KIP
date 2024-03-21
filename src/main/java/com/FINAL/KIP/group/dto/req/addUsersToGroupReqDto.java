@@ -1,6 +1,6 @@
-package com.FINAL.KIP.authority.dto.req;
+package com.FINAL.KIP.group.dto.req;
 
-import com.FINAL.KIP.authority.domain.UserIdAndGroupRole;
+import com.FINAL.KIP.group.domain.UserIdAndGroupRole;
 import lombok.Getter;
 import lombok.Setter;
 

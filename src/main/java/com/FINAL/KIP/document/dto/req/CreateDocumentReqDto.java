@@ -14,7 +14,7 @@ public class CreateDocumentReqDto {
     private String kmsDocType;
     private Long upLinkId;
     private Long downLinkId;
-    private Long authorityGroupId;
+    private Long groupId;
 
     public Document makeDocDtoToDocument (CreateDocumentReqDto this){
         return Document.builder()

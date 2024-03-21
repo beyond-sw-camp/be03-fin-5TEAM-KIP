@@ -1,4 +1,4 @@
-package com.FINAL.KIP.authority.domain;
+package com.FINAL.KIP.group.domain;
 
 import com.FINAL.KIP.user.domain.User;
 import lombok.EqualsAndHashCode;
@@ -10,9 +10,9 @@ import java.io.Serializable;
 @Getter
 @Setter
 @EqualsAndHashCode
-public class AuthorityGroupUserId implements Serializable {
+public class GroupUserId implements Serializable {
 
-    private AuthorityGroup authorityGroup;
+    private Group group;
     private User user;
 
 }

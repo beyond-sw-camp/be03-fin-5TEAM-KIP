@@ -1,6 +1,6 @@
 package com.FINAL.KIP.document.domain;
 
-import com.FINAL.KIP.authority.domain.AuthorityGroup;
+import com.FINAL.KIP.group.domain.Group;
 import com.FINAL.KIP.common.domain.BaseEntity;
 import jakarta.persistence.*;
 import lombok.Builder;
@@ -34,7 +34,7 @@ public class Document extends BaseEntity {
 
     @ManyToOne
     @JoinColumn(nullable = false)
-    private AuthorityGroup authorityGroup;
+    private Group group;
 
     private String delYn = "N";
     public Document () {}
