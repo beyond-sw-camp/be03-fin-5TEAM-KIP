@@ -133,9 +133,9 @@
 </details>
 
 
-### ⭐ERD 초안
+### ⭐ERD
 <p align="center">
-  <img src="https://github.com/beyond-sw-camp/be03-fin-5TEAM-KMS/assets/148752498/dc02823b-8291-45a6-a7d3-556d36cc1f7a">
+  <img src="https://github.com/beyond-sw-camp/be03-fin-5TEAM-KMS/assets/148752498/e1e3c7f3-953c-47ef-a6da-e48c8a3c195d">
 </p>
 
 ### ⭐ WBS
@@ -144,6 +144,12 @@
 </p>
 
 ### ⭐ 메인화면설계
+- [메인화면 피그마 링크](https://www.figma.com/file/7uzpyZLpNiRnG6SaqKPq0G/KIP_FrontPage?type=design&node-id=0%3A1&mode=design&t=bmqXufLzF1sSbCEr-1)
 <p align="center">
   <img src="https://github.com/beyond-sw-camp/be03-fin-5TEAM-KMS/assets/148752498/49954f97-abcb-4eb4-beca-eb027e270990">
+</p>
+
+### ⭐ 시스템 아키텍처 초안
+<p align="center">
+  <img src="https://github.com/beyond-sw-camp/be03-fin-5TEAM-KMS/assets/148752498/6e87f2e3-c470-4951-80ae-8f9b14adb5b3">
 </p>
