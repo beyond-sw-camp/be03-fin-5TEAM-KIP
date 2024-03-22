@@ -145,7 +145,7 @@
 
 ### ⭐ERD
 <p align="center">
-  <img src="https://github.com/beyond-sw-camp/be03-fin-5TEAM-KMS/assets/148752498/e1e3c7f3-953c-47ef-a6da-e48c8a3c195d">
+  <img src="https://github.com/beyond-sw-camp/be03-fin-5TEAM-KMS/assets/148752498/4277cd97-75ed-490e-8bc2-76dec83a9bb2">
 </p>
 
 ### ⭐ WBS
