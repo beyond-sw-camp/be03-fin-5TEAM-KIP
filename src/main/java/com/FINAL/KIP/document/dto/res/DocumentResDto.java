@@ -8,7 +8,6 @@ import lombok.Getter;
 public class DocumentResDto {
 
     private final String title;
-    private final String isPublish;
     private final KmsDocType kmsDocType;
     private Long upLinkId;
     private String upDocTitle;
@@ -19,7 +18,6 @@ public class DocumentResDto {
 
     public DocumentResDto(Document document) {
         this.title = document.getTitle();
-        this.isPublish = document.getIsPublish() ? "Yes" : "No";
         this.kmsDocType = document.getKmsDocType();
 
         if (document.getUpLink() != null) {

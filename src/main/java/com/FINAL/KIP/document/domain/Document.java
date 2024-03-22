@@ -22,8 +22,6 @@ public class Document extends BaseEntity {
     @Enumerated(value = EnumType.STRING)
     private KmsDocType kmsDocType;
 
-    private Boolean isPublish;
-
     @OneToOne
     @JoinColumn
     private Document upLink;
@@ -40,9 +38,8 @@ public class Document extends BaseEntity {
     public Document () {}
 
     @Builder
-    public Document(String title, KmsDocType kmsDocType, Boolean isPublish) {
+    public Document(String title, KmsDocType kmsDocType) {
         this.title = title;
         this.kmsDocType = kmsDocType;
-        this.isPublish = isPublish;
     }
 }

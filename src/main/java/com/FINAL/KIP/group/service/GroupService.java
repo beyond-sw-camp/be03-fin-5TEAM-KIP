@@ -7,6 +7,7 @@ import com.FINAL.KIP.group.dto.req.CreateGroupReqDto;
 import com.FINAL.KIP.group.dto.req.addUsersToGroupReqDto;
 import com.FINAL.KIP.group.dto.res.GroupResDto;
 import com.FINAL.KIP.group.dto.res.GetGroupHierarchyResDto;
+import com.FINAL.KIP.group.dto.res.GroupUsersResDto;
 import com.FINAL.KIP.group.dto.res.GroupUsersRoleResDto;
 import com.FINAL.KIP.group.repository.GroupRepository;
 import com.FINAL.KIP.group.repository.GroupUserRepository;
@@ -68,11 +69,10 @@ public class GroupService {
         return new GetGroupHierarchyResDto(getGroupById(groupId));
     }
 
-    public List<GroupUsersRoleResDto> getGroupUsers(Long groupId) {
+    public GroupUsersResDto getGroupUsers(Long groupId) {
         Group group = getGroupById(groupId);
-        return getByGroup(group).stream()
-                .map(GroupUsersRoleResDto::new)
-                .collect(Collectors.toList());
+        List<GroupUser> groupUsers = getByGroup(group);
+        return new GroupUsersResDto(groupUsers);
     }
 
     public List<GroupResDto> getGroupsById(Long groupId) {

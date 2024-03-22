@@ -29,7 +29,7 @@ public class User extends BaseEntity {
     @Column(nullable = false)
     private String password;
 
-    private String profileUrl;
+    private String profileImageUrl;
 
     private LocalDateTime employedDay;
 
@@ -42,13 +42,13 @@ public class User extends BaseEntity {
 
     @Builder
     public User(String name, String email, String password,
-                String phoneNumber, String profileUrl,
+                String phoneNumber, String profileImageUrl,
                 LocalDateTime employedDay, String employeeId) {
         this.name = name;
         this.email = email;
         this.password = password;
         this.phoneNumber = phoneNumber;
-        this.profileUrl = profileUrl;
+        this.profileImageUrl = profileImageUrl;
         this.employedDay = employedDay;
         this.employeeId = employeeId;
     }
