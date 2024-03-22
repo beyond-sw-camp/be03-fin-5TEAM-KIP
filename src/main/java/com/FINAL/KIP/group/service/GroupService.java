@@ -1,12 +1,14 @@
 package com.FINAL.KIP.group.service;
 
+import com.FINAL.KIP.document.domain.KmsDocType;
+import com.FINAL.KIP.document.service.DocForGroupService;
 import com.FINAL.KIP.group.domain.Group;
 import com.FINAL.KIP.group.domain.GroupUser;
 import com.FINAL.KIP.group.domain.UserIdAndGroupRole;
 import com.FINAL.KIP.group.dto.req.CreateGroupReqDto;
 import com.FINAL.KIP.group.dto.req.addUsersToGroupReqDto;
-import com.FINAL.KIP.group.dto.res.GroupResDto;
 import com.FINAL.KIP.group.dto.res.GetGroupHierarchyResDto;
+import com.FINAL.KIP.group.dto.res.GroupResDto;
 import com.FINAL.KIP.group.dto.res.GroupUsersResDto;
 import com.FINAL.KIP.group.dto.res.GroupUsersRoleResDto;
 import com.FINAL.KIP.group.repository.GroupRepository;
@@ -28,19 +30,24 @@ public class GroupService {
     private final UserService userService;
     private final GroupRepository groupRepo;
     private final GroupUserRepository groupUserRepo;
+    private final DocForGroupService docForGroupService;
 
     @Autowired
-    public GroupService(GroupRepository groupRepo, UserService userService, GroupUserRepository groupUserRepo) {
+    public GroupService(GroupRepository groupRepo, UserService userService,
+                        GroupUserRepository groupUserRepo, DocForGroupService docForGroupService) {
         this.userService = userService;
         this.groupRepo = groupRepo;
         this.groupUserRepo = groupUserRepo;
+        this.docForGroupService = docForGroupService;
     }
 
 
     //    Create
     public GroupResDto createGroup(CreateGroupReqDto dto) {
         Group newGroup = createNewGroup(dto);
-        return new GroupResDto(groupRepo.save(newGroup));
+        Group savedNewGroup = groupRepo.save(newGroup);
+        docForGroupService.createEmptyDocWhenGroupCreated(savedNewGroup, KmsDocType.SECTION);
+        return new GroupResDto(savedNewGroup);
     }
 
     public List<GroupResDto> createGroups(List<CreateGroupReqDto> dtos) {
@@ -83,9 +90,9 @@ public class GroupService {
 
     //    함수 공통화
     public Group getGroupById(Long supperGroupId) {
-        return groupRepo.findById(supperGroupId).orElseThrow(EntityNotFoundException::new);
+        return groupRepo.findById(supperGroupId)
+                .orElseThrow(() -> new EntityNotFoundException("그룹 아이디로 검색할 수 있는 그룹이 없습니다. " + supperGroupId));
     }
-
 
     public Group createNewGroup(CreateGroupReqDto dto) {
         Group newGroup = dto.makeAuthorityReqDtoToGroup();
@@ -140,6 +147,39 @@ public class GroupService {
                 userIdAndGroupRole.setUserId(groupUser.getUser().getId());
                 userIdAndGroupRole.setGroupRole(groupUser.getGroupRole().name());
                 accessibleUsers.add(userIdAndGroupRole);
+            }
+        }
+        return accessibleUsers;
+    }
+
+
+
+    public List<UserIdAndGroupRole> getAccessibleUse2rs(Long groupId) {
+        List<UserIdAndGroupRole> accessibleUsers = new ArrayList<>();
+        List<Long> groupIdList = new ArrayList<>();
+
+        Group group = getGroupById(groupId);
+        while (group != null) {
+            groupIdList.add(group.getId());
+            group = group.getSuperGroup();
+        }
+
+        for(Long superGroupId : groupIdList) {
+            System.out.println("상위 그룹 아이디" + superGroupId);
+        }
+
+        for(Long superGroupId : groupIdList) {
+            Group superGroup = getGroupById(superGroupId);
+            if(superGroup != null) {
+                List<GroupUser> superGroupUsers = getByGroup(superGroup);
+                for (GroupUser groupUser : superGroupUsers) {
+                    UserIdAndGroupRole userIdAndGroupRole = new UserIdAndGroupRole();
+                    if (groupUser.getUser() != null) {
+                        userIdAndGroupRole.setUserId(groupUser.getUser().getId());
+                        userIdAndGroupRole.setGroupRole(groupUser.getGroupRole().name());
+                        accessibleUsers.add(userIdAndGroupRole);
+                    }
+                }
             }
         }
         return accessibleUsers;

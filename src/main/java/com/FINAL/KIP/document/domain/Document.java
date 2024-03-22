@@ -38,8 +38,9 @@ public class Document extends BaseEntity {
     public Document () {}
 
     @Builder
-    public Document(String title, KmsDocType kmsDocType) {
+    public Document(String title, KmsDocType kmsDocType, Group group) {
         this.title = title;
         this.kmsDocType = kmsDocType;
+        this.group = group;
     }
 }
