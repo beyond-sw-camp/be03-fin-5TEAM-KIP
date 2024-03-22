@@ -1,19 +1,20 @@
 package com.FINAL.KIP.document.service;
 
-import com.FINAL.KIP.group.domain.Group;
-import com.FINAL.KIP.group.domain.UserIdAndGroupRole;
-import com.FINAL.KIP.group.service.GroupService;
 import com.FINAL.KIP.document.domain.Document;
 import com.FINAL.KIP.document.dto.req.CreateDocumentReqDto;
 import com.FINAL.KIP.document.dto.res.DocumentResDto;
 import com.FINAL.KIP.document.dto.res.GetDocumentResDto;
 import com.FINAL.KIP.document.repository.DocumentRepository;
+import com.FINAL.KIP.group.domain.Group;
+import com.FINAL.KIP.group.domain.UserIdAndGroupRole;
+import com.FINAL.KIP.group.service.GroupService;
 import com.FINAL.KIP.user.domain.User;
 import com.FINAL.KIP.user.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Optional;
 
 @Service
 public class DocumentService {
@@ -34,24 +35,29 @@ public class DocumentService {
 
 //    Create
     public DocumentResDto createDocument(CreateDocumentReqDto dto) {
-        Document newDocument = dto.makeDocDtoToDocument();
-        if(dto.getUpLinkId() != null) {
-            Document upLinkDoc = getDocumentById(dto.getUpLinkId());
-            newDocument.setUpLink(upLinkDoc);
-        }
-        if(dto.getDownLinkId() != null) {
-            Document downLinkDoc = getDocumentById(dto.getDownLinkId());
-            newDocument.setDownLink(downLinkDoc);
-        }
-        Group group = groupService.getGroupById(
-                dto.getGroupId()
-        );
+        Document newDocument = createNewDocumentFromDto(dto);
+
+        Group group = groupService.getGroupById(dto.getGroupId());
         newDocument.setGroup(group);
+
         return new DocumentResDto(documentRepo.save(newDocument));
     }
+
+    private Document createNewDocumentFromDto(CreateDocumentReqDto dto) {
+        Document newDocument = dto.makeDocDtoToDocument();
+
+        Optional.ofNullable(dto.getUpLinkId())
+                .ifPresent(upLinkId -> newDocument
+                        .setUpLink(getDocumentById(upLinkId)));
+
+        Optional.ofNullable(dto.getDownLinkId())
+                .ifPresent(downLinkId -> newDocument
+                        .setDownLink(getDocumentById(downLinkId)));
+
+        return newDocument;
+    }
+
 //    Read
-
-
     public GetDocumentResDto GetIsAccessibleDoc(Long docId, Long userId){
         boolean isAccessible = false;
         Document tryToOpenDocument = getDocumentById(docId);
