@@ -129,6 +129,16 @@
   <img src="https://github.com/beyond-sw-camp/be03-fin-5TEAM-KMS/assets/148752498/d2a61076-9508-42b6-8c7a-95ee573c1254">
 </p>
 
+#### 📌 직무의 구성
+- 한화시스템의 임원은 방산부문과 ICT부문의 국장을 관리한다. 
+- 한화시스템의 직무구성은 크게 방산부문과 ICT부문으로 2개로 나누며 각각을 관리하는 국장이 있다.
+- 방산부문은 6개의 부서(하드웨어, 소프트웨어, 기계, 품질, IPS, 경영지원)으로 나뉘며 각각의 부장이 있다.
+- 방산부문의 하드웨어부서는 2개의 팀영역(아날로그, 디지털)이 있으며 각각의 팀에는 팀장이 있다.
+- 방산부문의 소프트웨어부서는 4개의 팀영역(시스템, 미들웨어, 어플리케이션, 특화분야)이 있으며 각각의 팀에는 팀장이 있다.
+- 각각의 팀들은 유동적으로 여러팀을 가질 수 있으며(아날로그 1팀, 2팀 등... ) 각 팀의 최대인원은 12명 이하로 제한한다.
+- ICT부문은 9개의 부서(ICT 서비스, IDC 인프라, 컨설팅, R&D, 아키텍트, 정보보호, 마케팅, 영업, 경영지원)으로 나뉘며 각각의 부장이 있다.
+- 방산부문, ICT부문의 각각의 부장들은 12명 이하로 구성된 팀을 수시로 만들 수 있으며 부장은 부서내 팀장을 통해 팀원들을 관리한다.
+
 </div>
 </details>
 
@@ -143,8 +153,9 @@
   <img src="https://github.com/beyond-sw-camp/be03-fin-5TEAM-KMS/assets/148752498/ec97bdd6-bb15-4848-9eb3-b79215799404">
 </p>
 
-### ⭐ 메인화면설계
-- [메인화면 피그마 링크](https://www.figma.com/file/7uzpyZLpNiRnG6SaqKPq0G/KIP_FrontPage?type=design&node-id=0%3A1&mode=design&t=bmqXufLzF1sSbCEr-1)
+### ⭐ 화면설계서
+- [KIP 화면설계 피그마 링크](https://www.figma.com/file/7uzpyZLpNiRnG6SaqKPq0G/KIP_FrontPage?type=design&node-id=0%3A1&mode=design&t=bmqXufLzF1sSbCEr-1)
+- 메인화면
 <p align="center">
   <img src="https://github.com/beyond-sw-camp/be03-fin-5TEAM-KMS/assets/148752498/49954f97-abcb-4eb4-beca-eb027e270990">
 </p>
