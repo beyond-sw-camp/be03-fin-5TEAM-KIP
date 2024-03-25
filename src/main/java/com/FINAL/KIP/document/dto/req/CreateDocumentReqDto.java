@@ -10,15 +10,13 @@ import lombok.Setter;
 public class CreateDocumentReqDto {
 
     private String title;
-    private String kmsDocType;
     private Long upLinkId;
-    private Long downLinkId;
     private Long groupId;
 
     public Document makeDocDtoToDocument (CreateDocumentReqDto this){
         return Document.builder()
                 .title(this.title)
-                .kmsDocType(KmsDocType.valueOf(this.kmsDocType))
+                .kmsDocType(KmsDocType.CONTENT)
                 .build();
     }
 }

@@ -12,9 +12,10 @@ import com.FINAL.KIP.user.domain.User;
 import com.FINAL.KIP.user.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
-import java.util.Optional;
+import java.util.NoSuchElementException;
 
 @Service
 public class DocumentService {
@@ -34,27 +35,26 @@ public class DocumentService {
     }
 
 //    Create
+    @Transactional
     public DocumentResDto createDocument(CreateDocumentReqDto dto) {
-        Document newDocument = createNewDocumentFromDto(dto);
+        Document upDocumnet = getDocumentById(dto.getUpLinkId());
+
+        Document newDocument = dto.makeDocDtoToDocument();
+        newDocument.setUpLink(upDocumnet);
+
+        Document downDocumnet = upDocumnet.getDownLink();
+        newDocument.setDownLink(downDocumnet);
 
         Group group = groupService.getGroupById(dto.getGroupId());
         newDocument.setGroup(group);
 
-        return new DocumentResDto(documentRepo.save(newDocument));
-    }
+        Document savedDocumnet = documentRepo.save(newDocument);
+        upDocumnet.setDownLink(savedDocumnet);
 
-    private Document createNewDocumentFromDto(CreateDocumentReqDto dto) {
-        Document newDocument = dto.makeDocDtoToDocument();
+        if(downDocumnet != null)
+            downDocumnet.setUpLink(savedDocumnet);
+        return new DocumentResDto(savedDocumnet);
 
-        Optional.ofNullable(dto.getUpLinkId())
-                .ifPresent(upLinkId -> newDocument
-                        .setUpLink(getDocumentById(upLinkId)));
-
-        Optional.ofNullable(dto.getDownLinkId())
-                .ifPresent(downLinkId -> newDocument
-                        .setDownLink(getDocumentById(downLinkId)));
-
-        return newDocument;
     }
 
 //    Read
@@ -80,6 +80,7 @@ public class DocumentService {
 
 //    중복함수
     public Document getDocumentById (Long documentId){
-        return documentRepo.findById(documentId).orElse(null);
+        return documentRepo.findById(documentId)
+                .orElseThrow(()-> new NoSuchElementException("찾으시려는 문서 ID와 일치하는 문서가 없습니다."));
     }
 }

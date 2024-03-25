@@ -27,11 +27,11 @@ public class Document extends BaseEntity {
     @Enumerated(value = EnumType.STRING)
     private KmsDocType kmsDocType;
 
-    @OneToOne
+    @ManyToOne // OneToOne은 유니크 걸림
     @JoinColumn
     private Document upLink;
 
-    @OneToOne
+    @ManyToOne
     @JoinColumn
     private Document downLink;
 
