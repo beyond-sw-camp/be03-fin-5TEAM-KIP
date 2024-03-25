@@ -16,6 +16,7 @@ import com.FINAL.KIP.user.service.UserService;
 import jakarta.persistence.EntityNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -39,14 +40,15 @@ public class GroupService {
 
 
     //    Create
+    @Transactional
     public GroupResDto createGroup(CreateGroupReqDto dto) {
         Group newGroup = createNewGroup(dto);
         Group savedNewGroup = groupRepo.save(newGroup);
         savedNewGroup.getDocuments().get(0).setTitle(newGroup.getGroupName() + " 그룹에 오신것을 환영합니다.");
-        Group titleUpdatedGroup = groupRepo.save(savedNewGroup);
-        return new GroupResDto(titleUpdatedGroup);
+        return new GroupResDto(savedNewGroup);
     }
 
+    @Transactional
     public List<GroupResDto> createGroups(List<CreateGroupReqDto> dtos) {
         return dtos.stream()
                 .map(this::createGroup)
