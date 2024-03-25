@@ -95,11 +95,9 @@ public class GroupService {
 
     public Group createNewGroup(CreateGroupReqDto dto) {
         Group newGroup = dto.makeAuthorityReqDtoToGroup();
-
         Optional.ofNullable(dto.getSupperGroupId())
                 .map(this::getGroupById)
                 .ifPresent(newGroup::setSuperGroup);
-
         return newGroup;
     }
 
@@ -132,21 +130,19 @@ public class GroupService {
             group = group.getSuperGroup();
         }
 
-        for(Long superGroupId : groupIdList) {
+        for (Long superGroupId : groupIdList) // 추후 삭제
             System.out.println("상위 그룹 아이디" + superGroupId);
-        }
 
-        for(Long superGroupId : groupIdList) {
+
+        for (Long superGroupId : groupIdList) {
             Group superGroup = getGroupById(superGroupId);
-            if(superGroup != null) {
-                List<GroupUser> superGroupUsers = getByGroup(superGroup);
-                for (GroupUser groupUser : superGroupUsers) {
-                    UserIdAndGroupRole userIdAndGroupRole = new UserIdAndGroupRole();
-                    if (groupUser.getUser() != null) {
-                        userIdAndGroupRole.setUserId(groupUser.getUser().getId());
-                        userIdAndGroupRole.setGroupRole(groupUser.getGroupRole().name());
-                        accessibleUsers.add(userIdAndGroupRole);
-                    }
+            List<GroupUser> superGroupUsers = getByGroup(superGroup);
+            for (GroupUser groupUser : superGroupUsers) {
+                UserIdAndGroupRole userIdAndGroupRole = new UserIdAndGroupRole();
+                if (groupUser.getUser() != null) {
+                    userIdAndGroupRole.setUserId(groupUser.getUser().getId());
+                    userIdAndGroupRole.setGroupRole(groupUser.getGroupRole().name());
+                    accessibleUsers.add(userIdAndGroupRole);
                 }
             }
         }
