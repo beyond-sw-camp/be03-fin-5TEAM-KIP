@@ -1,12 +1,13 @@
 package com.FINAL.KIP.document.domain;
 
-import com.FINAL.KIP.group.domain.Group;
 import com.FINAL.KIP.common.domain.BaseEntity;
+import com.FINAL.KIP.group.domain.Group;
 import jakarta.persistence.*;
-import java.util.UUID;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
+
+import java.util.UUID;
 
 @Getter
 @Setter
@@ -47,6 +48,7 @@ public class Document extends BaseEntity {
         this.kmsDocType = kmsDocType;
         this.group = group;
     }
+
     @PrePersist
     public void prePersist(){
         this.uuid = UUID.randomUUID();

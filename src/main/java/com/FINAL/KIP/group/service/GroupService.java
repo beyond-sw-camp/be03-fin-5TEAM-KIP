@@ -1,7 +1,5 @@
 package com.FINAL.KIP.group.service;
 
-import com.FINAL.KIP.document.domain.KmsDocType;
-import com.FINAL.KIP.document.service.DocForGroupService;
 import com.FINAL.KIP.group.domain.Group;
 import com.FINAL.KIP.group.domain.GroupUser;
 import com.FINAL.KIP.group.domain.UserIdAndGroupRole;
@@ -30,15 +28,13 @@ public class GroupService {
     private final UserService userService;
     private final GroupRepository groupRepo;
     private final GroupUserRepository groupUserRepo;
-    private final DocForGroupService docForGroupService;
 
     @Autowired
     public GroupService(GroupRepository groupRepo, UserService userService,
-                        GroupUserRepository groupUserRepo, DocForGroupService docForGroupService) {
+                        GroupUserRepository groupUserRepo) {
         this.userService = userService;
         this.groupRepo = groupRepo;
         this.groupUserRepo = groupUserRepo;
-        this.docForGroupService = docForGroupService;
     }
 
 
@@ -46,8 +42,9 @@ public class GroupService {
     public GroupResDto createGroup(CreateGroupReqDto dto) {
         Group newGroup = createNewGroup(dto);
         Group savedNewGroup = groupRepo.save(newGroup);
-        docForGroupService.createEmptyDocWhenGroupCreated(savedNewGroup, KmsDocType.SECTION);
-        return new GroupResDto(savedNewGroup);
+        savedNewGroup.getDocuments().get(0).setTitle(newGroup.getGroupName() + " 그룹에 오신것을 환영합니다.");
+        Group titleUpdatedGroup = groupRepo.save(savedNewGroup);
+        return new GroupResDto(titleUpdatedGroup);
     }
 
     public List<GroupResDto> createGroups(List<CreateGroupReqDto> dtos) {
