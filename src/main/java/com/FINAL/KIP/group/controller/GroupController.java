@@ -33,6 +33,7 @@ public class GroupController {
                 groupService.createGroup(dto)
         );
     }
+
     @PostMapping("list")
     public ResponseEntity<List<GroupResDto>> createGroups(
             @RequestBody List<CreateGroupReqDto> dtos) {

@@ -5,8 +5,8 @@ import com.FINAL.KIP.group.domain.GroupUser;
 import com.FINAL.KIP.group.domain.UserIdAndGroupRole;
 import com.FINAL.KIP.group.dto.req.CreateGroupReqDto;
 import com.FINAL.KIP.group.dto.req.addUsersToGroupReqDto;
-import com.FINAL.KIP.group.dto.res.GroupResDto;
 import com.FINAL.KIP.group.dto.res.GetGroupHierarchyResDto;
+import com.FINAL.KIP.group.dto.res.GroupResDto;
 import com.FINAL.KIP.group.dto.res.GroupUsersResDto;
 import com.FINAL.KIP.group.dto.res.GroupUsersRoleResDto;
 import com.FINAL.KIP.group.repository.GroupRepository;
@@ -16,6 +16,7 @@ import com.FINAL.KIP.user.service.UserService;
 import jakarta.persistence.EntityNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -30,7 +31,8 @@ public class GroupService {
     private final GroupUserRepository groupUserRepo;
 
     @Autowired
-    public GroupService(GroupRepository groupRepo, UserService userService, GroupUserRepository groupUserRepo) {
+    public GroupService(GroupRepository groupRepo, UserService userService,
+                        GroupUserRepository groupUserRepo) {
         this.userService = userService;
         this.groupRepo = groupRepo;
         this.groupUserRepo = groupUserRepo;
@@ -38,11 +40,15 @@ public class GroupService {
 
 
     //    Create
+    @Transactional
     public GroupResDto createGroup(CreateGroupReqDto dto) {
         Group newGroup = createNewGroup(dto);
-        return new GroupResDto(groupRepo.save(newGroup));
+        Group savedNewGroup = groupRepo.save(newGroup);
+        savedNewGroup.getDocuments().get(0).setTitle(newGroup.getGroupName() + " 그룹에 오신것을 환영합니다.");
+        return new GroupResDto(savedNewGroup);
     }
 
+    @Transactional
     public List<GroupResDto> createGroups(List<CreateGroupReqDto> dtos) {
         return dtos.stream()
                 .map(this::createGroup)
@@ -83,17 +89,15 @@ public class GroupService {
 
     //    함수 공통화
     public Group getGroupById(Long supperGroupId) {
-        return groupRepo.findById(supperGroupId).orElseThrow(EntityNotFoundException::new);
+        return groupRepo.findById(supperGroupId)
+                .orElseThrow(() -> new EntityNotFoundException("그룹 아이디로 검색할 수 있는 그룹이 없습니다. " + supperGroupId));
     }
-
 
     public Group createNewGroup(CreateGroupReqDto dto) {
         Group newGroup = dto.makeAuthorityReqDtoToGroup();
-
         Optional.ofNullable(dto.getSupperGroupId())
                 .map(this::getGroupById)
                 .ifPresent(newGroup::setSuperGroup);
-
         return newGroup;
     }
 
@@ -116,30 +120,30 @@ public class GroupService {
         return groupUserRepo.findByGroup(group);
     }
 
-
     public List<UserIdAndGroupRole> getAccessibleUsers(Long groupId) {
         List<UserIdAndGroupRole> accessibleUsers = new ArrayList<>();
         List<Long> groupIdList = new ArrayList<>();
 
         Group group = getGroupById(groupId);
-
-        do {
+        while (group != null) {
             groupIdList.add(group.getId());
             group = group.getSuperGroup();
-        } while (group.getSuperGroup() != null);
-        groupIdList.add(group.getId());
+        }
 
-        for(Long superGroupId : groupIdList)
+        for (Long superGroupId : groupIdList) // 추후 삭제
             System.out.println("상위 그룹 아이디" + superGroupId);
 
-        for(Long superGroupId : groupIdList) {
+
+        for (Long superGroupId : groupIdList) {
             Group superGroup = getGroupById(superGroupId);
             List<GroupUser> superGroupUsers = getByGroup(superGroup);
             for (GroupUser groupUser : superGroupUsers) {
                 UserIdAndGroupRole userIdAndGroupRole = new UserIdAndGroupRole();
-                userIdAndGroupRole.setUserId(groupUser.getUser().getId());
-                userIdAndGroupRole.setGroupRole(groupUser.getGroupRole().name());
-                accessibleUsers.add(userIdAndGroupRole);
+                if (groupUser.getUser() != null) {
+                    userIdAndGroupRole.setUserId(groupUser.getUser().getId());
+                    userIdAndGroupRole.setGroupRole(groupUser.getGroupRole().name());
+                    accessibleUsers.add(userIdAndGroupRole);
+                }
             }
         }
         return accessibleUsers;

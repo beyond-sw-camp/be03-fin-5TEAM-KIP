@@ -2,6 +2,7 @@ package com.FINAL.KIP.group.domain;
 
 import com.FINAL.KIP.common.domain.BaseEntity;
 import com.FINAL.KIP.document.domain.Document;
+import com.FINAL.KIP.document.domain.KmsDocType;
 import jakarta.persistence.*;
 import lombok.Builder;
 import lombok.Getter;
@@ -51,4 +52,16 @@ public class Group extends BaseEntity {
         this.groupName = groupName;
         this.groupType = groupType;
     }
+
+    @PrePersist
+    public void prePersist() {
+        documents.add(
+                Document.builder()
+                        .title("empty")
+                        .kmsDocType(KmsDocType.SECTION)
+                        .group(this)
+                        .build()
+        );
+    }
+
 }
