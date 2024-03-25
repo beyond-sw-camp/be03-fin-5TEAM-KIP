@@ -50,10 +50,6 @@ public class DocumentService {
                 .ifPresent(upLinkId -> newDocument
                         .setUpLink(getDocumentById(upLinkId)));
 
-        Optional.ofNullable(dto.getDownLinkId())
-                .ifPresent(downLinkId -> newDocument
-                        .setDownLink(getDocumentById(downLinkId)));
-
         return newDocument;
     }
 
