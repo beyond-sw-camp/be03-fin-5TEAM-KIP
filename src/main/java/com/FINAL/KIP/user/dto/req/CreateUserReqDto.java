@@ -1,6 +1,7 @@
 package com.FINAL.KIP.user.dto.req;
 
 
+import com.FINAL.KIP.user.domain.Role;
 import com.FINAL.KIP.user.domain.User;
 import lombok.Setter;
 
@@ -25,6 +26,7 @@ public class CreateUserReqDto {
                 .profileImageUrl(this.profileImageUrl)
                 .employedDay(this.employedDay)
                 .employeeId(this.employeeId)
+                .role(Role.USER)
                 .build();
     }
 }

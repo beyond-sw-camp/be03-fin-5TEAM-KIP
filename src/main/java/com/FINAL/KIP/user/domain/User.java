@@ -36,6 +36,10 @@ public class User extends BaseEntity {
     @Column(nullable = false)
     private String employeeId;
 
+    @Column(nullable = false)
+    @Enumerated(EnumType.STRING)
+    private Role role;
+
     @Setter
     private String delYn = "N";
     public User(){}
@@ -43,7 +47,7 @@ public class User extends BaseEntity {
     @Builder
     public User(String name, String email, String password,
                 String phoneNumber, String profileImageUrl,
-                LocalDateTime employedDay, String employeeId) {
+                LocalDateTime employedDay, String employeeId, Role role) {
         this.name = name;
         this.email = email;
         this.password = password;
@@ -51,6 +55,7 @@ public class User extends BaseEntity {
         this.profileImageUrl = profileImageUrl;
         this.employedDay = employedDay;
         this.employeeId = employeeId;
+        this.role = role;
     }
 
 }
