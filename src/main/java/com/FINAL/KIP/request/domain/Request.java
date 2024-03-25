@@ -5,10 +5,12 @@ import com.FINAL.KIP.document.domain.Document;
 import com.FINAL.KIP.group.domain.Group;
 import com.FINAL.KIP.user.domain.User;
 import jakarta.persistence.CascadeType;
+import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import java.time.LocalDateTime;
 import lombok.AllArgsConstructor;
@@ -33,12 +35,15 @@ public class Request extends BaseEntity {
 	private String isOk = "P";
 
 	@ManyToOne
+	@JoinColumn(nullable = false)
 	private Document documentId;
 
 	@ManyToOne
+	@JoinColumn(nullable = false)
 	private User requesterId;
 
 	@ManyToOne
+	@JoinColumn(nullable = false)
 	private Group groupId;
 
 }
