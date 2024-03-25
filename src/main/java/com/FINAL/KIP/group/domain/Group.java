@@ -3,6 +3,7 @@ package com.FINAL.KIP.group.domain;
 import com.FINAL.KIP.common.domain.BaseEntity;
 import com.FINAL.KIP.document.domain.Document;
 import com.FINAL.KIP.document.domain.KmsDocType;
+import com.FINAL.KIP.request.domain.Request;
 import jakarta.persistence.*;
 import lombok.Builder;
 import lombok.Getter;
@@ -46,6 +47,9 @@ public class Group extends BaseEntity {
 
     @OneToMany(mappedBy = "group", cascade = CascadeType.PERSIST)
     private final List<Document> documents = new ArrayList<>();
+
+    @OneToMany(mappedBy = "groupId", cascade = CascadeType.ALL)
+    private final List<Request> requests = new ArrayList<>();
 
     @Builder
     public Group(String groupName, GroupType groupType) {
