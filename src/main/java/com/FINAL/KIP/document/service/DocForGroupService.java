@@ -21,7 +21,7 @@ public class DocForGroupService {
     public void createEmptyDocWhenGroupCreated(Group group, KmsDocType docType) {
         documentRepo.save(
                 Document.builder()
-                        .title("환영합니다.")
+                        .title(group.getGroupName() + " 그룹에 오신것을 환영합니다.")
                         .kmsDocType(docType)
                         .group(group)
                         .build()

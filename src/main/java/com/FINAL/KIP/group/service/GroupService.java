@@ -123,38 +123,7 @@ public class GroupService {
         return groupUserRepo.findByGroup(group);
     }
 
-
     public List<UserIdAndGroupRole> getAccessibleUsers(Long groupId) {
-        List<UserIdAndGroupRole> accessibleUsers = new ArrayList<>();
-        List<Long> groupIdList = new ArrayList<>();
-
-        Group group = getGroupById(groupId);
-
-        do {
-            groupIdList.add(group.getId());
-            group = group.getSuperGroup();
-        } while (group.getSuperGroup() != null);
-        groupIdList.add(group.getId());
-
-        for(Long superGroupId : groupIdList)
-            System.out.println("상위 그룹 아이디" + superGroupId);
-
-        for(Long superGroupId : groupIdList) {
-            Group superGroup = getGroupById(superGroupId);
-            List<GroupUser> superGroupUsers = getByGroup(superGroup);
-            for (GroupUser groupUser : superGroupUsers) {
-                UserIdAndGroupRole userIdAndGroupRole = new UserIdAndGroupRole();
-                userIdAndGroupRole.setUserId(groupUser.getUser().getId());
-                userIdAndGroupRole.setGroupRole(groupUser.getGroupRole().name());
-                accessibleUsers.add(userIdAndGroupRole);
-            }
-        }
-        return accessibleUsers;
-    }
-
-
-
-    public List<UserIdAndGroupRole> getAccessibleUse2rs(Long groupId) {
         List<UserIdAndGroupRole> accessibleUsers = new ArrayList<>();
         List<Long> groupIdList = new ArrayList<>();
 
