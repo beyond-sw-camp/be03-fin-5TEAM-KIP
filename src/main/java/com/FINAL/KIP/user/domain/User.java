@@ -1,7 +1,11 @@
 package com.FINAL.KIP.user.domain;
 
 import com.FINAL.KIP.common.domain.BaseEntity;
+import com.FINAL.KIP.document.domain.Document;
+import com.FINAL.KIP.request.domain.Request;
 import jakarta.persistence.*;
+import java.util.ArrayList;
+import java.util.List;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
@@ -38,6 +42,10 @@ public class User extends BaseEntity {
 
     @Setter
     private String delYn = "N";
+
+    @OneToMany(mappedBy = "requesterId", cascade = CascadeType.ALL)
+    private final List<Request> requests = new ArrayList<>();
+
     public User(){}
 
     @Builder
