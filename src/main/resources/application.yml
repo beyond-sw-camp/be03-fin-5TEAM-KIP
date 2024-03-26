@@ -20,4 +20,4 @@ spring:
 
 jwt:
   expiration: 30 #30분
-  secretKey: kipsecret
+  secretKey: kipsecret장준혁김영광박세종윤지용

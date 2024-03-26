@@ -50,17 +50,13 @@ public class UserController {
 
     @PostMapping("login") //login은 토큰 사용으로 Map형식으로 받아주어야함 // Map<String, Object>
     public ResponseEntity<CommonResponse> userLogin(@Valid @RequestBody LoginReqDto loginReqDto){
-        System.out.println("login1");
         User user = userService.login(loginReqDto);
-        System.out.println("login2");
 //        토큰 생성
         String jwtToken = jwtTokenProvider.createToken(user.getEmployeeId(), user.getRole().toString());
-        System.out.println("login3");
         Map<String, Object> user_info = new HashMap<>();
         user_info.put("id", user.getId());
-//        user_info.put("employeeId", user.getEmployeeId());
+        user_info.put("employeeId", user.getEmployeeId());
         user_info.put("token", jwtToken);
-        System.out.println("login4");
         return new ResponseEntity<>(new CommonResponse(HttpStatus.OK, "user successfully login", user_info), HttpStatus.OK);
     }
 }

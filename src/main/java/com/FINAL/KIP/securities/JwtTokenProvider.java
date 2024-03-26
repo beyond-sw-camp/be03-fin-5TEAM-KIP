@@ -3,10 +3,17 @@ package com.FINAL.KIP.securities;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
+import io.jsonwebtoken.security.Keys;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.security.crypto.factory.PasswordEncoderFactories;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
 
+import javax.security.auth.kerberos.EncryptionKey;
+import java.nio.charset.StandardCharsets;
+import java.security.Key;
+import java.util.Base64;
 import java.util.Date;
 
 @Component
@@ -26,11 +33,14 @@ public class JwtTokenProvider { //토큰생성 과정
         claims.put("role", role);
         Date now = new Date();
 
+        // signWith 진행시 secret값을 base64 or 바이트로 변환하여야 적용 가능.
+        Key key = Keys.hmacShaKeyFor(secretKey.getBytes(StandardCharsets.UTF_8));
+
         String token = Jwts.builder()
                 .setClaims(claims)
                 .setIssuedAt(now)
                 .setExpiration(new Date(now.getTime() + expiration*60*1000L))   // 30분 설정 // 30분 60초 1000밀리초
-                .signWith(SignatureAlgorithm.HS256, "kipsecret") //SHA256암호화 사용
+                .signWith(key, SignatureAlgorithm.HS256) //SHA256암호화 사용
                 .compact();
         return token;
     }
