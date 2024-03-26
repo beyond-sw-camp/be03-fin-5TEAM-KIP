@@ -38,14 +38,14 @@ public class Request extends BaseEntity {
 
 	@ManyToOne
 	@JoinColumn(nullable = false)
-	private Document documentId;
+	private Document document;
 
 	@ManyToOne
 	@JoinColumn(nullable = false)
-	private User requesterId;
+	private User requester;
 
 	@ManyToOne
 	@JoinColumn(nullable = false)
-	private Group groupId;
+	private Group group;
 
 }

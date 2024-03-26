@@ -44,7 +44,7 @@ public class Document extends BaseEntity {
 
     private String delYn = "N";
 
-    @OneToMany(mappedBy = "documentId", cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "document", cascade = CascadeType.ALL)
     private final List<Request> requests = new ArrayList<>();
     public Document () {}
 

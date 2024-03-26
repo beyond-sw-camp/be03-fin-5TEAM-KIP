@@ -43,7 +43,7 @@ public class User extends BaseEntity {
     @Setter
     private String delYn = "N";
 
-    @OneToMany(mappedBy = "requesterId", cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "requester", cascade = CascadeType.ALL)
     private final List<Request> requests = new ArrayList<>();
 
     public User(){}
