@@ -4,6 +4,7 @@ import com.FINAL.KIP.document.domain.Document;
 import com.FINAL.KIP.document.dto.req.CreateDocumentReqDto;
 import com.FINAL.KIP.document.dto.res.DocumentResDto;
 import com.FINAL.KIP.document.dto.res.GetDocumentResDto;
+import com.FINAL.KIP.document.dto.res.PublicDocResDto;
 import com.FINAL.KIP.document.repository.DocumentRepository;
 import com.FINAL.KIP.group.domain.Group;
 import com.FINAL.KIP.group.domain.UserIdAndGroupRole;
@@ -36,31 +37,44 @@ public class DocumentService {
         this.userService = userService;
     }
 
-//    Create
+    //    Create
     @Transactional
     public DocumentResDto createDocument(CreateDocumentReqDto dto) {
-        Document upDocument = getDocumentById(dto.getUpLinkId());
+        if (dto.getGroupId() == null) {
+            System.out.println("hi");
+            return new DocumentResDto(
+                    documentRepo.save(
+                            dto.makeDocDtoToDocument()));
+        } else {
+            Document upDocument = getDocumentById(dto.getUpLinkId());
 
-        Document newDocument = dto.makeDocDtoToDocument();
-        newDocument.setUpLink(upDocument);
+            Document newDocument = dto.makeDocDtoToDocument();
+            newDocument.setUpLink(upDocument);
 
-        Document downDocument = upDocument.getDownLink();
-        newDocument.setDownLink(downDocument);
+            Document downDocument = upDocument.getDownLink();
+            newDocument.setDownLink(downDocument);
 
-        Group group = groupService.getGroupById(dto.getGroupId());
-        newDocument.setGroup(group);
+            Group group = groupService.getGroupById(dto.getGroupId());
+            newDocument.setGroup(group);
 
-        Document savedDocument = documentRepo.save(newDocument);
-        upDocument.setDownLink(savedDocument);
+            Document savedDocument = documentRepo.save(newDocument);
+            upDocument.setDownLink(savedDocument);
 
-        if(downDocument != null)
-            downDocument.setUpLink(savedDocument);
-        return new DocumentResDto(savedDocument);
-
+            if (downDocument != null)
+                downDocument.setUpLink(savedDocument);
+            return new DocumentResDto(savedDocument);
+        }
     }
 
-//    Read
-    public GetDocumentResDto GetIsAccessibleDoc(Long docId, Long userId){
+    //    Read
+    public List<PublicDocResDto> getPublicDocuments() {
+        return documentRepo.findAll().stream()
+                .filter(document -> document.getGroup() == null)
+                .map(PublicDocResDto::new)
+                .collect(Collectors.toList());
+    }
+
+    public GetDocumentResDto GetIsAccessibleDoc(Long docId, Long userId) {
         boolean isAccessible = false;
         Document tryToOpenDocument = getDocumentById(docId);
         User tryUser = userService.getUserById(userId);
@@ -68,17 +82,18 @@ public class DocumentService {
         Long GroupId = tryToOpenDocument.getGroup().getId();
 
         List<UserIdAndGroupRole> accessibleUsers = groupService.getAccessibleUsers(GroupId);
-        for(UserIdAndGroupRole obj : accessibleUsers) {
+        for (UserIdAndGroupRole obj : accessibleUsers) {
             System.out.println(
                     "맴버 아이디: " + obj.getUserId() + " " +
-                    userService.getUserById(obj.getUserId()).getName() +
-                    " / 권한정보: " + obj.getGroupRole());
+                            userService.getUserById(obj.getUserId()).getName() +
+                            " / 권한정보: " + obj.getGroupRole());
         }
         isAccessible = accessibleUsers.stream()
                 .anyMatch(reqUserId -> reqUserId.getUserId().equals(tryUser.getId()));
 
         return new GetDocumentResDto(tryToOpenDocument, isAccessible);
     }
+
 
     public List<GetDocumentResDto> getLinkedDocumentsByGroup(Long groupId) {
         List<Document> linkedDocuments = new ArrayList<>();
@@ -97,13 +112,13 @@ public class DocumentService {
                 .collect(Collectors.toList());
     }
 
-
 //    중복함수
 
-    public Document getDocumentById (Long documentId){
+    public Document getDocumentById(Long documentId) {
         return documentRepo.findById(documentId)
-                .orElseThrow(()-> new NoSuchElementException("찾으시려는 문서 ID와 일치하는 문서가 없습니다."));
+                .orElseThrow(() -> new NoSuchElementException("찾으시려는 문서 ID와 일치하는 문서가 없습니다."));
     }
+
     private Document getTopDocument(Group targetGroup) {
         return targetGroup.getDocuments().stream()
                 .filter(document -> document.getUpLink() == null)
