@@ -1,0 +1,4 @@
+secret-key: kipsecret장준혁김영광박세종윤지용
+expiration-minutes: 30	# 30분
+refresh-expiration-hours: 24	# 리프레시 토큰 유효시간 : 24시간
+issuer: KIP

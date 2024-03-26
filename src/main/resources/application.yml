@@ -17,7 +17,3 @@ spring:
     hibernate:
       ddl-auto: create-drop
     show-sql: true
-
-jwt:
-  expiration: 30 #30분
-  secretKey: kipsecret장준혁김영광박세종윤지용
