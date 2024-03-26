@@ -13,8 +13,8 @@ public class DocumentResDto {
     private String upDocTitle;
     private Long downLinkId;
     private String downDocTitle;
-    private final Long groupId;
-    private final String groupName;
+    private Long groupId;
+    private String groupName;
 
     public DocumentResDto(Document document) {
         this.title = document.getTitle();
@@ -29,8 +29,9 @@ public class DocumentResDto {
             this.downLinkId = document.getDownLink().getId();
             this.downDocTitle = document.getDownLink().getTitle();
         }
-
-        this.groupId = document.getGroup().getId();
-        this.groupName = document.getGroup().getGroupName();
+        if (document.getGroup() != null) {
+            this.groupId = document.getGroup().getId();
+            this.groupName = document.getGroup().getGroupName();
+        }
     }
 }

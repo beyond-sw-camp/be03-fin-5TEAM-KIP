@@ -19,7 +19,7 @@ public InitialDataLoader(UserRepository userRepository, PasswordEncoder password
 
     @Override
     public void run(String... args) throws Exception {
-        if (userRepository.findByEmployeeId("admin@test.com").isEmpty()) {
+        if (userRepository.findByEmployeeId("KK").isEmpty()) {
             User adminMember = User.builder()
                     .name("admin")
                     .email("admin@test.com")
