@@ -7,6 +7,6 @@ public class RequestCreateReqDto {
 
 	private String docId;
 	private Long userId;
-	private int expiration;
+	private int days;
 
 }

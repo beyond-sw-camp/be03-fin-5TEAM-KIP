@@ -34,6 +34,8 @@ public class Request extends BaseEntity {
 	@Builder.Default
 	private String isOk = "P";
 
+	private int days;
+
 	@ManyToOne
 	@JoinColumn(nullable = false)
 	private Document documentId;

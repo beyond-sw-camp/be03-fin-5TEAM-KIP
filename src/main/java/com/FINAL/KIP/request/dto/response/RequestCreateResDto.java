@@ -9,6 +9,6 @@ import lombok.Setter;
 public class RequestCreateResDto {
 
 	String docTitle;
-	LocalDateTime requestTime;
+	int days;
 
 }
