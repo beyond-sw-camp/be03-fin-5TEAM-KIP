@@ -17,19 +17,22 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Component;
+import org.springframework.web.filter.OncePerRequestFilter;
 
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
 @Component
-public class JwtAuthFilter extends GenericFilter {
+public class JwtAuthFilter extends OncePerRequestFilter {
 
     @Value("${jwt.secretKey}")
     private String secretKey;
 
     @Override
-    public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain) throws IOException, ServletException {
+    protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response,
+                                    FilterChain filterChain) throws ServletException, IOException {
+
         try { // 예외 처리 //member create후 토큰이 null이면 if문 지나친다.
             String bearerToken = ((HttpServletRequest) request).getHeader("Authorization");
 
@@ -44,7 +47,7 @@ public class JwtAuthFilter extends GenericFilter {
 //            추출된 토큰(암호화된 email, role)을 검증 후 Authentication객체 생성
 //            Body를 꺼내는 과정 자체가 검증이다. secret값이 맞지 않으면 에러가 난다. //예외처리 던저주어야한다,.
 //                토큰 검증 및 claims 추출 // parser 자체가 검증이다.
-                Claims claims = Jwts.parser().setSigningKey(secretKey).parseClaimsJws(token).getBody();
+                Claims claims = Jwts.parser().setSigningKey(secretKey.getBytes()).parseClaimsJws(token).getBody();
 //                Authentication 객체를 생성하기 위한 UserDetails 생성
                 List<GrantedAuthority> authorities = new ArrayList<>();
 //              ROLE_권한 이 패턴으로 스프링에서 기본적으로 권한체크
@@ -55,7 +58,7 @@ public class JwtAuthFilter extends GenericFilter {
                 SecurityContextHolder.getContext().setAuthentication(authentication);
             }
 //            filterchain에서 그 다음 filtering으로 넘어가도록 하는 메서드
-            chain.doFilter(request, response);
+            filterChain.doFilter(request, response);
         }catch (Exception e){
             HttpServletResponse httpServletResponse = (HttpServletResponse) response;
             httpServletResponse.setStatus(HttpStatus.UNAUTHORIZED.value());
