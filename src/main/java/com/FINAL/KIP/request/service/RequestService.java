@@ -48,13 +48,16 @@ public class RequestService {
 		Document document = findDocumentByUuid(requestCreateReqDto.getDocId());
 		User user = findUserById(requestCreateReqDto.getUserId());
 
+		if (requestRepository.existsRequestByRequesterAndDocumentAndIsOk(user, document, "P")) {
+			throw new IllegalArgumentException("이미 해당 문서에 접근 권한요청을 했습니다.");
+		}
 		if (duplicateAuthority(user, document)) {
 			throw new IllegalArgumentException("이미 해당 문서의 접근권한을 가지고 있습니다");
 		}
 		Request request = Request.builder()
-			.requesterId(user)
-			.documentId(document)
-			.groupId(document.getGroup())
+			.requester(user)
+			.document(document)
+			.group(document.getGroup())
 			.days(requestCreateReqDto.getDays())
 			.build();
 		requestRepository.save(request);
@@ -89,6 +92,7 @@ public class RequestService {
 
 		return authorityCheck;
 	}
+
 
 	private GroupUser findGroupUser(Group group, User user) {
 		return groupUserRepository.findByGroupAndUser(group, user).orElse(null);

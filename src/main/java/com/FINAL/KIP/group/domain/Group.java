@@ -48,7 +48,7 @@ public class Group extends BaseEntity {
     @OneToMany(mappedBy = "group", cascade = CascadeType.PERSIST)
     private final List<Document> documents = new ArrayList<>();
 
-    @OneToMany(mappedBy = "groupId", cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "group", cascade = CascadeType.ALL)
     private final List<Request> requests = new ArrayList<>();
 
     @Builder
