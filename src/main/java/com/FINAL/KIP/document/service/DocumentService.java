@@ -39,23 +39,23 @@ public class DocumentService {
 //    Create
     @Transactional
     public DocumentResDto createDocument(CreateDocumentReqDto dto) {
-        Document upDocumnet = getDocumentById(dto.getUpLinkId());
+        Document upDocument = getDocumentById(dto.getUpLinkId());
 
         Document newDocument = dto.makeDocDtoToDocument();
-        newDocument.setUpLink(upDocumnet);
+        newDocument.setUpLink(upDocument);
 
-        Document downDocumnet = upDocumnet.getDownLink();
-        newDocument.setDownLink(downDocumnet);
+        Document downDocument = upDocument.getDownLink();
+        newDocument.setDownLink(downDocument);
 
         Group group = groupService.getGroupById(dto.getGroupId());
         newDocument.setGroup(group);
 
-        Document savedDocumnet = documentRepo.save(newDocument);
-        upDocumnet.setDownLink(savedDocumnet);
+        Document savedDocument = documentRepo.save(newDocument);
+        upDocument.setDownLink(savedDocument);
 
-        if(downDocumnet != null)
-            downDocumnet.setUpLink(savedDocumnet);
-        return new DocumentResDto(savedDocumnet);
+        if(downDocument != null)
+            downDocument.setUpLink(savedDocument);
+        return new DocumentResDto(savedDocument);
 
     }
 
@@ -83,10 +83,10 @@ public class DocumentService {
     public List<GetDocumentResDto> getLinkedDocumentsByGroup(Long groupId) {
         List<Document> linkedDocuments = new ArrayList<>();
         Group targetGroup = groupService.getGroupById(groupId);
-        Document topDocumnet = getTopDocumnet(targetGroup);
+        Document topDocument = getTopDocument(targetGroup);
 
-        linkedDocuments.add(topDocumnet);
-        Document currentDocument = topDocumnet;
+        linkedDocuments.add(topDocument);
+        Document currentDocument = topDocument;
         while (currentDocument.getDownLink() != null) {
             currentDocument = currentDocument.getDownLink();
             linkedDocuments.add(currentDocument);
@@ -104,7 +104,7 @@ public class DocumentService {
         return documentRepo.findById(documentId)
                 .orElseThrow(()-> new NoSuchElementException("찾으시려는 문서 ID와 일치하는 문서가 없습니다."));
     }
-    private Document getTopDocumnet(Group targetGroup) {
+    private Document getTopDocument(Group targetGroup) {
         return targetGroup.getDocuments().stream()
                 .filter(document -> document.getUpLink() == null)
                 .findFirst()
