@@ -90,7 +90,8 @@ public class GroupService {
     //    함수 공통화
     public Group getGroupById(Long supperGroupId) {
         return groupRepo.findById(supperGroupId)
-                .orElseThrow(() -> new EntityNotFoundException("그룹 아이디로 검색할 수 있는 그룹이 없습니다. " + supperGroupId));
+                .orElseThrow(() -> new EntityNotFoundException(
+                        "그룹 아이디로 검색할 수 있는 그룹이 없습니다. " + supperGroupId));
     }
 
     public Group createNewGroup(CreateGroupReqDto dto) {

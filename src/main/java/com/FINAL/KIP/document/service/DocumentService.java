@@ -14,8 +14,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.NoSuchElementException;
+import java.util.stream.Collectors;
 
 @Service
 public class DocumentService {
@@ -78,9 +80,34 @@ public class DocumentService {
         return new GetDocumentResDto(tryToOpenDocument, isAccessible);
     }
 
+    public List<GetDocumentResDto> getLinkedDocumentsByGroup(Long groupId) {
+        List<Document> linkedDocuments = new ArrayList<>();
+        Group targetGroup = groupService.getGroupById(groupId);
+        Document topDocumnet = getTopDocumnet(targetGroup);
+
+        linkedDocuments.add(topDocumnet);
+        Document currentDocument = topDocumnet;
+        while (currentDocument.getDownLink() != null) {
+            currentDocument = currentDocument.getDownLink();
+            linkedDocuments.add(currentDocument);
+        }
+
+        return linkedDocuments.stream()
+                .map(document -> new GetDocumentResDto(document, true))
+                .collect(Collectors.toList());
+    }
+
+
 //    중복함수
+
     public Document getDocumentById (Long documentId){
         return documentRepo.findById(documentId)
                 .orElseThrow(()-> new NoSuchElementException("찾으시려는 문서 ID와 일치하는 문서가 없습니다."));
+    }
+    private Document getTopDocumnet(Group targetGroup) {
+        return targetGroup.getDocuments().stream()
+                .filter(document -> document.getUpLink() == null)
+                .findFirst()
+                .orElseThrow(() -> new NoSuchElementException(" 최상단 문서가 없습니다."));
     }
 }
