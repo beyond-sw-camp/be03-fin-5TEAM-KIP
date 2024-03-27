@@ -3,11 +3,13 @@ package com.FINAL.KIP.user.dto.req;
 
 import com.FINAL.KIP.user.domain.Role;
 import com.FINAL.KIP.user.domain.User;
+import lombok.Getter;
 import lombok.Setter;
 
 import java.time.LocalDateTime;
 
 @Setter
+@Getter
 public class CreateUserReqDto {
     private String name;
     private String email;

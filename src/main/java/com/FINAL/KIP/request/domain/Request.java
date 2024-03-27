@@ -48,4 +48,7 @@ public class Request extends BaseEntity {
 	@JoinColumn(nullable = false)
 	private Group group;
 
+	public void refuseRequest() {
+		this.isOk = "N";
+	}
 }
