@@ -1,6 +1,7 @@
 package com.FINAL.KIP.document.service;
 
 import com.FINAL.KIP.document.domain.Document;
+import com.FINAL.KIP.document.domain.KmsDocType;
 import com.FINAL.KIP.document.dto.req.CreateDocumentReqDto;
 import com.FINAL.KIP.document.dto.req.moveDocInGroupReqDto;
 import com.FINAL.KIP.document.dto.res.DocumentResDto;
@@ -96,7 +97,6 @@ public class DocumentService {
         return new GetDocumentResDto(tryToOpenDocument, isAccessible);
     }
 
-
     public List<GetDocumentResDto> getLinkedDocumentsByGroupId(Long groupId) {
         List<Document> linkedDocuments = new ArrayList<>();
         Group targetGroup = groupService.getGroupById(groupId);
@@ -114,37 +114,7 @@ public class DocumentService {
                 .collect(Collectors.toList());
     }
 
-    //    Delete
-    @Transactional
-    public void deleteDocument(Long documentId) {
-        Document tagetDocument = getDocumentById(documentId);
-        if (tagetDocument.getGroup() == null)
-            documentRepo.delete(tagetDocument);
-        else if (tagetDocument.getUpLink() == null)
-            throw new IllegalArgumentException("그룹의 최상단 문서는 삭제할 수 없습니다.");
-        else {
-            documentRepo.delete(tagetDocument);
-            Document upLinkedDoc = tagetDocument.getUpLink();
-            Document downLinkedDoc = tagetDocument.getDownLink();
-            upLinkedDoc.setDownLink(downLinkedDoc);
-            if (downLinkedDoc != null)
-                downLinkedDoc.setUpLink(upLinkedDoc);
-        }
-    }
-
-    //    공통함수
-    public Document getDocumentById(Long documentId) {
-        return documentRepo.findById(documentId)
-                .orElseThrow(() -> new NoSuchElementException("찾으시려는 문서 ID와 일치하는 문서가 없습니다."));
-    }
-
-    private Document getTopDocument(Group targetGroup) {
-        return targetGroup.getDocuments().stream()
-                .filter(document -> document.getUpLink() == null)
-                .findFirst()
-                .orElseThrow(() -> new NoSuchElementException(" 최상단 문서가 없습니다."));
-    }
-
+    //    Update
     @Transactional
     public List<GetDocumentResDto> moveDocumentInGroup(moveDocInGroupReqDto dto) {
 
@@ -174,5 +144,48 @@ public class DocumentService {
 
         // 정렬된 문서리스트 리턴
         return getLinkedDocumentsByGroupId(startDocument.getGroup().getId());
+    }
+
+    @Transactional
+    public DocumentResDto updateDocumentType(Long documentId) {
+        Document targetDocument = getDocumentById(documentId);
+        KmsDocType targetDocType = targetDocument.getKmsDocType();
+
+        if (targetDocType.equals(KmsDocType.CONTENT))
+            targetDocument.setKmsDocType(KmsDocType.SECTION);
+        else
+            targetDocument.setKmsDocType(KmsDocType.CONTENT);
+        return new DocumentResDto(targetDocument);
+    }
+
+    //    Delete
+    @Transactional
+    public void deleteDocument(Long documentId) {
+        Document tagetDocument = getDocumentById(documentId);
+        if (tagetDocument.getGroup() == null)
+            documentRepo.delete(tagetDocument);
+        else if (tagetDocument.getUpLink() == null)
+            throw new IllegalArgumentException("그룹의 최상단 문서는 삭제할 수 없습니다.");
+        else {
+            documentRepo.delete(tagetDocument);
+            Document upLinkedDoc = tagetDocument.getUpLink();
+            Document downLinkedDoc = tagetDocument.getDownLink();
+            upLinkedDoc.setDownLink(downLinkedDoc);
+            if (downLinkedDoc != null)
+                downLinkedDoc.setUpLink(upLinkedDoc);
+        }
+    }
+    //    공통함수
+
+    public Document getDocumentById(Long documentId) {
+        return documentRepo.findById(documentId)
+                .orElseThrow(() -> new NoSuchElementException("찾으시려는 문서 ID와 일치하는 문서가 없습니다."));
+    }
+
+    private Document getTopDocument(Group targetGroup) {
+        return targetGroup.getDocuments().stream()
+                .filter(document -> document.getUpLink() == null)
+                .findFirst()
+                .orElseThrow(() -> new NoSuchElementException(" 최상단 문서가 없습니다."));
     }
 }

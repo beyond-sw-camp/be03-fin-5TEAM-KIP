@@ -49,12 +49,15 @@ public class DocumentController {
 
 
 //  Update
-
     @PatchMapping("move")
     public ResponseEntity<List<GetDocumentResDto>> moveDocumentInGroup(@RequestBody moveDocInGroupReqDto dto){
         return ResponseEntity.ok(documentService.moveDocumentInGroup(dto));
     }
 
+    @PatchMapping("{DocumentId}/type")
+    public ResponseEntity<DocumentResDto> updateDocumentType(@PathVariable Long DocumentId){
+        return ResponseEntity.ok(documentService.updateDocumentType(DocumentId));
+    }
 
 
 //    Delete
