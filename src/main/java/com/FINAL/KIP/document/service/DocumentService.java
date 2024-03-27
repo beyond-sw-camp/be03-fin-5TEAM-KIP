@@ -112,8 +112,25 @@ public class DocumentService {
                 .collect(Collectors.toList());
     }
 
-//    중복함수
+    //    Delete
+    @Transactional
+    public void deleteDocument(Long documentId) {
+        Document tagetDocument = getDocumentById(documentId);
+        if (tagetDocument.getGroup() == null)
+            documentRepo.delete(tagetDocument);
+        else if (tagetDocument.getUpLink() == null)
+            throw new IllegalArgumentException("그룹의 최상단 문서는 삭제할 수 없습니다.");
+        else {
+            documentRepo.delete(tagetDocument);
+            Document upLinkedDoc = tagetDocument.getUpLink();
+            Document downLinkedDoc = tagetDocument.getDownLink();
+            upLinkedDoc.setDownLink(downLinkedDoc);
+            if (downLinkedDoc != null)
+                downLinkedDoc.setUpLink(upLinkedDoc);
+        }
+    }
 
+    //    공통함수
     public Document getDocumentById(Long documentId) {
         return documentRepo.findById(documentId)
                 .orElseThrow(() -> new NoSuchElementException("찾으시려는 문서 ID와 일치하는 문서가 없습니다."));
@@ -125,4 +142,6 @@ public class DocumentService {
                 .findFirst()
                 .orElseThrow(() -> new NoSuchElementException(" 최상단 문서가 없습니다."));
     }
+
+
 }
