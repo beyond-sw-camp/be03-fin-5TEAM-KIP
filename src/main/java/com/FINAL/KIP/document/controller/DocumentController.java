@@ -2,6 +2,7 @@ package com.FINAL.KIP.document.controller;
 
 
 import com.FINAL.KIP.document.dto.req.CreateDocumentReqDto;
+import com.FINAL.KIP.document.dto.req.moveDocInGroupReqDto;
 import com.FINAL.KIP.document.dto.res.DocumentResDto;
 import com.FINAL.KIP.document.dto.res.GetDocumentResDto;
 import com.FINAL.KIP.document.dto.res.PublicDocResDto;
@@ -42,9 +43,22 @@ public class DocumentController {
     }
 
     @GetMapping("{groupId}/linked")
-    public ResponseEntity<List<GetDocumentResDto>> getLinkedDocumentsByGroup(@PathVariable Long groupId) {
-        return ResponseEntity.ok(documentService.getLinkedDocumentsByGroup(groupId));
+    public ResponseEntity<List<GetDocumentResDto>> getLinkedDocumentsByGroupId(@PathVariable Long groupId) {
+        return ResponseEntity.ok(documentService.getLinkedDocumentsByGroupId(groupId));
     }
+
+
+//  Update
+    @PatchMapping("move")
+    public ResponseEntity<List<GetDocumentResDto>> moveDocumentInGroup(@RequestBody moveDocInGroupReqDto dto){
+        return ResponseEntity.ok(documentService.moveDocumentInGroup(dto));
+    }
+
+    @PatchMapping("{DocumentId}/type")
+    public ResponseEntity<DocumentResDto> updateDocumentType(@PathVariable Long DocumentId){
+        return ResponseEntity.ok(documentService.updateDocumentType(DocumentId));
+    }
+
 
 //    Delete
     @DeleteMapping("{DocumentId}")
