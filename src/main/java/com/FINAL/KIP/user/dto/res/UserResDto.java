@@ -1,11 +1,13 @@
 package com.FINAL.KIP.user.dto.res;
 
 import com.FINAL.KIP.user.domain.User;
+import lombok.Data;
 import lombok.Getter;
+import lombok.Setter;
 
 import java.time.LocalDateTime;
 
-@Getter
+@Data
 public class UserResDto {
     private final Long userId;
     private final String name;

@@ -2,11 +2,13 @@ package com.FINAL.KIP.user.dto.res;
 
 import com.FINAL.KIP.group.domain.GroupRole;
 import com.FINAL.KIP.group.domain.GroupUser;
+import lombok.Data;
 import lombok.Getter;
+import lombok.Setter;
 
 import java.time.LocalDateTime;
 
-@Getter
+@Data
 public class UserAndGroupRoleResDto {
 
     private final Long userId;

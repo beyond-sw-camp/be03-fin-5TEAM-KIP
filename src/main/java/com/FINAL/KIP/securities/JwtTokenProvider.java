@@ -23,7 +23,6 @@ import java.util.Base64;
 import java.util.Date;
 import java.util.Map;
 
-@Slf4j
 @PropertySource("classpath:jwt.yml")
 @Service
 public class JwtTokenProvider { //토큰생성 과정
@@ -33,7 +32,7 @@ public class JwtTokenProvider { //토큰생성 과정
     private final Long refreshExpirationHours;
     private final String issuer;
     private final UserRefreshTokenRepository userRefreshTokenRepository;
-    private final long reissueLimit;
+    private final Long reissueLimit;
     private final ObjectMapper objectMapper = new ObjectMapper();
 
     public JwtTokenProvider(@Value("${secret-key}") String secretKey,
@@ -77,7 +76,7 @@ public class JwtTokenProvider { //토큰생성 과정
                 .ifPresentOrElse(
                         UserRefreshToken::increaseReissueCount,
                         () -> {
-                            throw new ExpiredJwtException(null, null, "Refresh token expried.");
+                            throw new ExpiredJwtException(null, null, "Refresh token expired.");
                         }
                 );
         return createAccessToken(subject);

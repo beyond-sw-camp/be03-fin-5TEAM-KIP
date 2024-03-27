@@ -17,3 +17,8 @@ spring:
     hibernate:
       ddl-auto: create-drop
     show-sql: true
+
+#  data:
+#    redis:
+#      host: localhost # 로컬에서 테스트 할 때는 localhost로 사용
+#      port: 6379
