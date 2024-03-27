@@ -51,4 +51,8 @@ public class Request extends BaseEntity {
 	public void refuseRequest() {
 		this.isOk = "N";
 	}
+	public void agreeRequest() {
+		this.isOk = "Y";
+		this.dueDate = LocalDateTime.now().plusDays(days);
+	}
 }

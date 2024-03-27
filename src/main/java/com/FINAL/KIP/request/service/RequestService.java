@@ -9,6 +9,7 @@ import com.FINAL.KIP.group.domain.GroupUserId;
 import com.FINAL.KIP.group.repository.GroupUserRepository;
 import com.FINAL.KIP.request.domain.Request;
 import com.FINAL.KIP.request.dto.request.RequestCreateReqDto;
+import com.FINAL.KIP.request.dto.response.RequestAgreeResDto;
 import com.FINAL.KIP.request.dto.response.RequestCreateResDto;
 import com.FINAL.KIP.request.dto.response.RequestRefuseResDto;
 import com.FINAL.KIP.request.repository.RequestRepository;
@@ -128,11 +129,37 @@ public class RequestService {
 
 	private Request findById(Long requestId) {
 		return requestRepository.findById(requestId)
-			.orElseThrow(() -> new IllegalArgumentException("해당 문서가 존재하지 않습니다."));
+			.orElseThrow(() -> new IllegalArgumentException("해당 요청이 존재하지 않습니다."));
 	}
 
 	private User findByEmployeeId(String employeeId) {
 		return userRepository.findByEmployeeId(employeeId)
 			.orElseThrow(() -> new IllegalArgumentException("사번이 잘못되었습니다."));
+	}
+
+	@Transactional
+	public ResponseEntity<RequestAgreeResDto> agreeRequest(Long requestId) {
+		Request req = findById(requestId);
+
+		String employeeId = SecurityContextHolder.getContext().getAuthentication().getName();
+		User user = findByEmployeeId(employeeId);
+		Group group = req.getGroup();
+
+		GroupUser groupUser = findGroupUser(group, user);
+		if(groupUser == null) {
+			throw new IllegalArgumentException("해당 그룹 요청에 접근 권한이 존재하지 않습니다.");
+		}
+		if (groupUser.getGroupRole() != GroupRole.SUPER) {
+			throw new IllegalArgumentException("그룹의 관리자만 요청을 관리할 수 있습니다.");
+		}
+
+		req.agreeRequest();
+
+		RequestAgreeResDto requestAgreeResDto = new RequestAgreeResDto();
+		requestAgreeResDto.setName(req.getRequester().getName());
+		requestAgreeResDto.setDueDate(req.getDueDate());
+		requestAgreeResDto.setTitle(req.getDocument().getTitle());
+
+		return ResponseEntity.ok(requestAgreeResDto);
 	}
 }
