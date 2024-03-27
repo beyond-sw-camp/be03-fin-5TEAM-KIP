@@ -44,11 +44,15 @@ public class UserService {
     }
 
     public List<UserResDto> createUsers(List<CreateUserReqDto> dtos) {
+        for (CreateUserReqDto createUserReqDto : dtos) {
+            createUserReqDto.setPassword(
+                passwordEncoder.encode(createUserReqDto.makeUserReqDtoToUser().getPassword()));
+        }
         return dtos.stream()
-                .map(CreateUserReqDto::makeUserReqDtoToUser)
-                .map(userRepo::save)
-                .map(UserResDto::new)
-                .collect(Collectors.toList());
+            .map(CreateUserReqDto::makeUserReqDtoToUser)
+            .map(userRepo::save)
+            .map(UserResDto::new)
+            .collect(Collectors.toList());
     }
 
 //    Read
