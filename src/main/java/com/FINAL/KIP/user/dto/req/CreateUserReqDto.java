@@ -3,11 +3,7 @@ package com.FINAL.KIP.user.dto.req;
 
 import com.FINAL.KIP.user.domain.Role;
 import com.FINAL.KIP.user.domain.User;
-<<<<<<< HEAD
-import lombok.Data;
-=======
 import lombok.Getter;
->>>>>>> 1025e5ac53c8f1e4bd26b1e8e0727b4fcaf44995
 import lombok.Setter;
 
 import java.time.LocalDateTime;
