@@ -42,8 +42,6 @@ public class Document extends BaseEntity {
     @JoinColumn
     private Group group;
 
-    private String delYn = "N";
-
     @OneToMany(mappedBy = "document", cascade = CascadeType.ALL)
     private final List<Request> requests = new ArrayList<>();
     public Document () {}

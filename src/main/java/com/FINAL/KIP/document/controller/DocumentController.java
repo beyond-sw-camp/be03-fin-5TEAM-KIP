@@ -45,4 +45,12 @@ public class DocumentController {
     public ResponseEntity<List<GetDocumentResDto>> getLinkedDocumentsByGroup(@PathVariable Long groupId) {
         return ResponseEntity.ok(documentService.getLinkedDocumentsByGroup(groupId));
     }
+
+//    Delete
+    @DeleteMapping("{DocumentId}")
+    public ResponseEntity<Void> deletedDocument(@PathVariable Long DocumentId) {
+        documentService.deleteDocument(DocumentId);
+        return ResponseEntity.noContent().build();
+    }
+
 }
