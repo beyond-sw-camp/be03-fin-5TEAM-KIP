@@ -38,7 +38,7 @@ public class SecurityConfig implements WebMvcConfigurer {
         httpSecurity.csrf(csrf -> csrf.disable())
                 .cors(cors -> cors.configurationSource(request -> {
                     CorsConfiguration corsConfiguration = new CorsConfiguration();
-//                    corsConfiguration.setAllowedOrigins(List.of("https://www.logeat.shop", "https://server.logeat.shop"));
+                    corsConfiguration.setAllowedOrigins(List.of("http://localhost:8080"));
                     corsConfiguration.setAllowedMethods(List.of("GET","POST", "PUT","PATCH", "DELETE", "OPTIONS"));
                     corsConfiguration.setAllowedHeaders(List.of("*"));
                     corsConfiguration.addExposedHeader("New-Access-Token");
@@ -46,7 +46,7 @@ public class SecurityConfig implements WebMvcConfigurer {
                 }));
         httpSecurity.httpBasic(basic -> basic.disable())
                 .authorizeHttpRequests(req -> req
-                        .requestMatchers("/user/login", "/user").permitAll()
+                        .requestMatchers("/user/login").permitAll()
                         .anyRequest().authenticated())
                 .sessionManagement(session -> session
                         .sessionCreationPolicy(SessionCreationPolicy.STATELESS))

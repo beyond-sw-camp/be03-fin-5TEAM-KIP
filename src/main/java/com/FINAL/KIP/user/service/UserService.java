@@ -11,6 +11,7 @@ import com.FINAL.KIP.user.dto.res.UserResDto;
 import com.FINAL.KIP.user.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -36,6 +37,7 @@ public class UserService {
     }
 
 //    Create
+    @PreAuthorize("hasAuthority('ADMIN') or hasAuthority('USER')")
     public UserResDto createUser(CreateUserReqDto dto) {
         dto.setPassword(passwordEncoder.encode(dto.makeUserReqDtoToUser().getPassword())); // 비밀번호 암호화
         User user = dto.makeUserReqDtoToUser();
@@ -43,6 +45,7 @@ public class UserService {
         return new UserResDto(savedUser);
     }
 
+    @PreAuthorize("hasAuthority('ADMIN') or hasAuthority('USER')")
     public List<UserResDto> createUsers(List<CreateUserReqDto> dtos) {
         for (CreateUserReqDto createUserReqDto : dtos) {
             createUserReqDto.setPassword(
@@ -56,13 +59,15 @@ public class UserService {
     }
 
 //    Read
+    @PreAuthorize("hasAuthority('ADMIN')")
     public List<UserResDto> getAllUsers() {
         List<User> users = userRepo.findAll();
         return users.stream()
                 .map(UserResDto::new)
                 .collect(Collectors.toList());
     }
-//    함수공통화
+
+    @PreAuthorize("hasAuthority('ADMIN') or hasAuthority('USER')")
     public User getUserById(Long id) {
         return userRepo.findById(id).orElse(null);
     }
