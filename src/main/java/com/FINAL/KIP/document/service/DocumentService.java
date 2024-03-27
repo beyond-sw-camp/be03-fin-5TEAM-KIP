@@ -4,6 +4,7 @@ import com.FINAL.KIP.document.domain.Document;
 import com.FINAL.KIP.document.domain.KmsDocType;
 import com.FINAL.KIP.document.dto.req.CreateDocumentReqDto;
 import com.FINAL.KIP.document.dto.req.moveDocInGroupReqDto;
+import com.FINAL.KIP.document.dto.req.updateDocGroupReqDto;
 import com.FINAL.KIP.document.dto.res.DocumentResDto;
 import com.FINAL.KIP.document.dto.res.GetDocumentResDto;
 import com.FINAL.KIP.document.dto.res.PublicDocResDto;
@@ -155,6 +156,22 @@ public class DocumentService {
             targetDocument.setKmsDocType(KmsDocType.SECTION);
         else
             targetDocument.setKmsDocType(KmsDocType.CONTENT);
+        return new DocumentResDto(targetDocument);
+    }
+
+    @Transactional
+    public DocumentResDto updateDocumentGroup (updateDocGroupReqDto dto){
+
+        Document targetDocument = getDocumentById(dto.getTargetDocumentId());
+        Group targetGroup = null;
+
+        if (dto.getTargetGroupId() != null) { // 전체공개가 아닌 경우
+            targetGroup = groupService.getGroupById(dto.getTargetGroupId());
+
+            Document topDocumentInTargetGroup = getTopDocument(targetGroup);
+        }
+
+        targetDocument.setGroup(targetGroup);
         return new DocumentResDto(targetDocument);
     }
 

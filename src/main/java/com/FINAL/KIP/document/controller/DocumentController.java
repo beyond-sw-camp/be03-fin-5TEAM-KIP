@@ -3,6 +3,7 @@ package com.FINAL.KIP.document.controller;
 
 import com.FINAL.KIP.document.dto.req.CreateDocumentReqDto;
 import com.FINAL.KIP.document.dto.req.moveDocInGroupReqDto;
+import com.FINAL.KIP.document.dto.req.updateDocGroupReqDto;
 import com.FINAL.KIP.document.dto.res.DocumentResDto;
 import com.FINAL.KIP.document.dto.res.GetDocumentResDto;
 import com.FINAL.KIP.document.dto.res.PublicDocResDto;
@@ -57,6 +58,12 @@ public class DocumentController {
     @PatchMapping("{DocumentId}/type")
     public ResponseEntity<DocumentResDto> updateDocumentType(@PathVariable Long DocumentId){
         return ResponseEntity.ok(documentService.updateDocumentType(DocumentId));
+    }
+
+    @PatchMapping("group")
+    public ResponseEntity<DocumentResDto> updateDocumentGroup(@RequestBody updateDocGroupReqDto dto){
+        return ResponseEntity.ok(documentService.updateDocumentGroup(dto));
+
     }
 
 
