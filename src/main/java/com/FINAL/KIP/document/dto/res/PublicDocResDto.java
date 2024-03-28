@@ -7,12 +7,14 @@ import lombok.Getter;
 @Getter
 public class PublicDocResDto {
 
+    private final Long documentId;
     private final String discription = "전체공개";
     private final String title;
     private final KmsDocType kmsDocType;
 
 
     public PublicDocResDto(Document document) {
+        this.documentId = document.getId();
         this.title = document.getTitle();
         this.kmsDocType = document.getKmsDocType();
     }

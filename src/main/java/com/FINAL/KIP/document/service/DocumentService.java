@@ -4,6 +4,8 @@ import com.FINAL.KIP.document.domain.Document;
 import com.FINAL.KIP.document.domain.KmsDocType;
 import com.FINAL.KIP.document.dto.req.CreateDocumentReqDto;
 import com.FINAL.KIP.document.dto.req.moveDocInGroupReqDto;
+import com.FINAL.KIP.document.dto.req.updateDocGroupIdReqDto;
+import com.FINAL.KIP.document.dto.req.updateDocTitleReqDto;
 import com.FINAL.KIP.document.dto.res.DocumentResDto;
 import com.FINAL.KIP.document.dto.res.GetDocumentResDto;
 import com.FINAL.KIP.document.dto.res.PublicDocResDto;
@@ -44,7 +46,6 @@ public class DocumentService {
     @Transactional
     public DocumentResDto createDocument(CreateDocumentReqDto dto) {
         if (dto.getGroupId() == null) {
-            System.out.println("hi");
             return new DocumentResDto(
                     documentRepo.save(
                             dto.makeDocDtoToDocument()));
@@ -68,6 +69,7 @@ public class DocumentService {
             return new DocumentResDto(savedDocument);
         }
     }
+
 
     //    Read
     public List<PublicDocResDto> getPublicDocuments() {
@@ -114,9 +116,16 @@ public class DocumentService {
                 .collect(Collectors.toList());
     }
 
+
     //    Update
+    public DocumentResDto updateDocumentTitle(updateDocTitleReqDto dto) {
+        Document targetDocument = getDocumentById(dto.getTargetDocumentId());
+        targetDocument.setTitle(dto.getNewTitle());
+        return new DocumentResDto(documentRepo.save(targetDocument));
+    }
+
     @Transactional
-    public List<GetDocumentResDto> moveDocumentInGroup(moveDocInGroupReqDto dto) {
+    public List<GetDocumentResDto> moveDocumentInGroup(moveDocInGroupReqDto dto) throws IllegalArgumentException {
 
         if (Objects.equals(dto.getStartDocId(), dto.getEndDocId()))
             throw new IllegalArgumentException("이동하려는 아이디가 서로 같습니다.");
@@ -158,9 +167,58 @@ public class DocumentService {
         return new DocumentResDto(targetDocument);
     }
 
-    //    Delete
     @Transactional
-    public void deleteDocument(Long documentId) {
+    public DocumentResDto updateDocumentPublic(Long documentId) throws IllegalArgumentException {
+        Document targetDocumnet = getDocumentById(documentId);
+
+        if (targetDocumnet.getUpLink() == null && targetDocumnet.getGroup() != null)
+            throw new IllegalArgumentException("최상단 문서는 전체공개가 불가능합니다.");
+
+        if (targetDocumnet.getUpLink() == null)
+            throw new IllegalArgumentException("이미 전체공개 문서입니다.");
+
+        Document upDocument = targetDocumnet.getUpLink();
+        Document downDocument = targetDocumnet.getDownLink();
+
+        if (downDocument != null) // Target의 위, 아래 문서 연결
+            downDocument.setUpLink(upDocument);
+        upDocument.setDownLink(downDocument);
+
+        targetDocumnet.setGroup(null); // 전체공개
+        targetDocumnet.setUpLink(null);
+        targetDocumnet.setDownLink(null);
+
+        return new DocumentResDto(targetDocumnet);
+    }
+
+    @Transactional
+    public DocumentResDto updatePublicDocumentGroupId (updateDocGroupIdReqDto dto){
+
+        Document targetDocument = getDocumentById(dto.getTargetDocumentId());
+        if (targetDocument.getGroup() != null)
+            throw new IllegalArgumentException("전체공개 문서가 아닙니다.");
+
+        Group targetGroup = groupService.getGroupById(dto.getTargetGroupId());
+        Document topDocInTargetGroup = getTopDocument(targetGroup);
+        Document downDocumnet = topDocInTargetGroup.getDownLink();
+
+        // step 1
+        targetDocument.setUpLink(topDocInTargetGroup);
+        targetDocument.setDownLink(downDocumnet);
+
+        // step 2
+        targetDocument.setGroup(targetGroup);
+        topDocInTargetGroup.setDownLink(targetDocument);
+        if (downDocumnet != null)
+            downDocumnet.setUpLink(targetDocument);
+
+        return new DocumentResDto(targetDocument);
+    }
+
+    //    Delete
+
+    @Transactional
+    public void deleteDocument(Long documentId) throws IllegalArgumentException {
         Document tagetDocument = getDocumentById(documentId);
         if (tagetDocument.getGroup() == null)
             documentRepo.delete(tagetDocument);
@@ -175,14 +233,15 @@ public class DocumentService {
                 downLinkedDoc.setUpLink(upLinkedDoc);
         }
     }
+
     //    공통함수
 
-    public Document getDocumentById(Long documentId) {
+    public Document getDocumentById(Long documentId) throws NoSuchElementException {
         return documentRepo.findById(documentId)
                 .orElseThrow(() -> new NoSuchElementException("찾으시려는 문서 ID와 일치하는 문서가 없습니다."));
     }
 
-    private Document getTopDocument(Group targetGroup) {
+    private Document getTopDocument(Group targetGroup) throws NoSuchElementException {
         return targetGroup.getDocuments().stream()
                 .filter(document -> document.getUpLink() == null)
                 .findFirst()
