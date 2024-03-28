@@ -74,8 +74,8 @@ public class GroupService {
 
     //    Read
     @PreAuthorize("hasAuthority('ADMIN') or hasAuthority('USER')")
-    public GroupDetailResDto getGroupInfoById(Long groupId) {
-        return new GroupDetailResDto(getGroupById(groupId));
+    public GroupResDto getGroupInfoById(Long groupId) {
+        return new GroupResDto(getGroupById(groupId));
     }
 
     @PreAuthorize("hasAuthority('ADMIN') or hasAuthority('USER')")
@@ -96,8 +96,8 @@ public class GroupService {
                 .map(GroupResDto::new)
                 .collect(Collectors.toList());
     }
-//    Update
 
+    // Update
     @PreAuthorize("hasAuthority('ADMIN') or hasAuthority('USER')")
     public GroupResDto updateGroupInfo(UpdateGroupReqDto dto) {
         Group group = getGroupById(dto.getGroupId());
@@ -106,8 +106,19 @@ public class GroupService {
         group.setSuperGroup(getGroupById(dto.getSupperGroupId()));
         return new GroupResDto(groupRepo.save(group));
     }
-    //    함수 공통화
 
+    // Delete
+    @PreAuthorize("hasAuthority('ADMIN') or hasAuthority('USER')")
+    public void deleteGroup(Long groupId) {
+        Group targetGroup = getGroupById(groupId);
+        if (!targetGroup.getChildGroups().isEmpty())
+            throw new IllegalStateException("그룹에 하위 그룹이 존재하여 삭제할 수 없습니다.");
+        if (targetGroup.getDocuments().size() > 1)
+            throw new IllegalStateException("그룹에 최상단문서 1개만 남기고 모두 지워야 삭제 가능합니다.");
+        groupRepo.delete(targetGroup);
+    }
+
+    //    함수 공통화
     @PreAuthorize("hasAuthority('ADMIN') or hasAuthority('USER')")
     public Group getGroupById(Long supperGroupId) {
         return groupRepo.findById(supperGroupId)

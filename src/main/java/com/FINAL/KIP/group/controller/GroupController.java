@@ -41,9 +41,8 @@ public class GroupController {
 
 
     // Read
-
     @GetMapping("{groupId}")
-    public ResponseEntity<GroupDetailResDto> getGroupInfoById(
+    public ResponseEntity<GroupResDto> getGroupInfoById(
             @PathVariable Long groupId) {
         return ResponseEntity.ok(
                 groupService.getGroupInfoById(groupId)
@@ -80,6 +79,14 @@ public class GroupController {
         return ResponseEntity.ok(
                 groupService.updateGroupInfo(dto)
         );
+    }
+
+
+//    Delete
+    @DeleteMapping("{groupId}")
+    public ResponseEntity<Void> deleteGroup (@PathVariable Long groupId) {
+        groupService.deleteGroup(groupId);
+        return ResponseEntity.noContent().build();
     }
 
 
