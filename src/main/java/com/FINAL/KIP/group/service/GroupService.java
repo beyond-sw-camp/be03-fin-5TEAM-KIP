@@ -4,11 +4,9 @@ import com.FINAL.KIP.group.domain.Group;
 import com.FINAL.KIP.group.domain.GroupUser;
 import com.FINAL.KIP.group.domain.UserIdAndGroupRole;
 import com.FINAL.KIP.group.dto.req.CreateGroupReqDto;
+import com.FINAL.KIP.group.dto.req.UpdateGroupReqDto;
 import com.FINAL.KIP.group.dto.req.addUsersToGroupReqDto;
-import com.FINAL.KIP.group.dto.res.GetGroupHierarchyResDto;
-import com.FINAL.KIP.group.dto.res.GroupResDto;
-import com.FINAL.KIP.group.dto.res.GroupUsersResDto;
-import com.FINAL.KIP.group.dto.res.GroupUsersRoleResDto;
+import com.FINAL.KIP.group.dto.res.*;
 import com.FINAL.KIP.group.repository.GroupRepository;
 import com.FINAL.KIP.group.repository.GroupUserRepository;
 import com.FINAL.KIP.user.domain.User;
@@ -49,8 +47,8 @@ public class GroupService {
         return new GroupResDto(savedNewGroup);
     }
 
-    @PreAuthorize("hasAuthority('ADMIN')")
     @Transactional
+    @PreAuthorize("hasAuthority('ADMIN')")
     public List<GroupResDto> createGroups(List<CreateGroupReqDto> dtos) {
         return dtos.stream()
                 .map(this::createGroup)
@@ -76,6 +74,11 @@ public class GroupService {
 
     //    Read
     @PreAuthorize("hasAuthority('ADMIN') or hasAuthority('USER')")
+    public GroupResDto getGroupInfoById(Long groupId) {
+        return new GroupResDto(getGroupById(groupId));
+    }
+
+    @PreAuthorize("hasAuthority('ADMIN') or hasAuthority('USER')")
     public GetGroupHierarchyResDto getGroupHierarchy(Long groupId) {
         return new GetGroupHierarchyResDto(getGroupById(groupId));
     }
@@ -92,6 +95,27 @@ public class GroupService {
         return getGroupById(groupId).getChildGroups().stream()
                 .map(GroupResDto::new)
                 .collect(Collectors.toList());
+    }
+
+    // Update
+    @PreAuthorize("hasAuthority('ADMIN') or hasAuthority('USER')")
+    public GroupResDto updateGroupInfo(UpdateGroupReqDto dto) {
+        Group group = getGroupById(dto.getGroupId());
+        group.setGroupName(dto.getGroupName());
+        group.setGroupType(dto.getGroupType());
+        group.setSuperGroup(getGroupById(dto.getSupperGroupId()));
+        return new GroupResDto(groupRepo.save(group));
+    }
+
+    // Delete
+    @PreAuthorize("hasAuthority('ADMIN') or hasAuthority('USER')")
+    public void deleteGroup(Long groupId) {
+        Group targetGroup = getGroupById(groupId);
+        if (!targetGroup.getChildGroups().isEmpty())
+            throw new IllegalStateException("그룹에 하위 그룹이 존재하여 삭제할 수 없습니다.");
+        if (targetGroup.getDocuments().size() > 1)
+            throw new IllegalStateException("그룹에 최상단문서 1개만 남기고 모두 지워야 삭제 가능합니다.");
+        groupRepo.delete(targetGroup);
     }
 
     //    함수 공통화
@@ -131,6 +155,7 @@ public class GroupService {
     public List<GroupUser> getByGroup(Group group) {
         return groupUserRepo.findByGroup(group);
     }
+
     @PreAuthorize("hasAuthority('ADMIN') or hasAuthority('USER')")
     public List<UserIdAndGroupRole> getAccessibleUsers(Long groupId) {
         List<UserIdAndGroupRole> accessibleUsers = new ArrayList<>();
@@ -153,5 +178,4 @@ public class GroupService {
                 .map(GroupResDto::new)
                 .collect(Collectors.toList());
     }
-
 }

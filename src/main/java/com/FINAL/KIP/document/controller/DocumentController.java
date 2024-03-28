@@ -51,7 +51,6 @@ public class DocumentController {
 
 
 //  Update
-
     @PatchMapping("title")
     public ResponseEntity<DocumentResDto> updateDocumentTitle(@RequestBody updateDocTitleReqDto dto){
         return ResponseEntity.ok(documentService.updateDocumentTitle(dto));
