@@ -5,6 +5,7 @@ import com.FINAL.KIP.document.domain.KmsDocType;
 import com.FINAL.KIP.document.dto.req.CreateDocumentReqDto;
 import com.FINAL.KIP.document.dto.req.moveDocInGroupReqDto;
 import com.FINAL.KIP.document.dto.req.updateDocGroupIdReqDto;
+import com.FINAL.KIP.document.dto.req.updateDocTitleReqDto;
 import com.FINAL.KIP.document.dto.res.DocumentResDto;
 import com.FINAL.KIP.document.dto.res.GetDocumentResDto;
 import com.FINAL.KIP.document.dto.res.PublicDocResDto;
@@ -117,6 +118,12 @@ public class DocumentService {
 
 
     //    Update
+    public DocumentResDto updateDocumentTitle(updateDocTitleReqDto dto) {
+        Document targetDocument = getDocumentById(dto.getTargetDocumentId());
+        targetDocument.setTitle(dto.getNewTitle());
+        return new DocumentResDto(documentRepo.save(targetDocument));
+    }
+
     @Transactional
     public List<GetDocumentResDto> moveDocumentInGroup(moveDocInGroupReqDto dto) throws IllegalArgumentException {
 
@@ -208,8 +215,8 @@ public class DocumentService {
         return new DocumentResDto(targetDocument);
     }
 
-
     //    Delete
+
     @Transactional
     public void deleteDocument(Long documentId) throws IllegalArgumentException {
         Document tagetDocument = getDocumentById(documentId);
@@ -227,8 +234,8 @@ public class DocumentService {
         }
     }
 
-
     //    공통함수
+
     public Document getDocumentById(Long documentId) throws NoSuchElementException {
         return documentRepo.findById(documentId)
                 .orElseThrow(() -> new NoSuchElementException("찾으시려는 문서 ID와 일치하는 문서가 없습니다."));
