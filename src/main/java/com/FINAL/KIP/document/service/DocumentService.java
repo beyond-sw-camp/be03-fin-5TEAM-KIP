@@ -4,7 +4,7 @@ import com.FINAL.KIP.document.domain.Document;
 import com.FINAL.KIP.document.domain.KmsDocType;
 import com.FINAL.KIP.document.dto.req.CreateDocumentReqDto;
 import com.FINAL.KIP.document.dto.req.moveDocInGroupReqDto;
-import com.FINAL.KIP.document.dto.req.updateDocGroupReqDto;
+import com.FINAL.KIP.document.dto.req.updateDocGroupIdReqDto;
 import com.FINAL.KIP.document.dto.res.DocumentResDto;
 import com.FINAL.KIP.document.dto.res.GetDocumentResDto;
 import com.FINAL.KIP.document.dto.res.PublicDocResDto;
@@ -164,8 +164,11 @@ public class DocumentService {
     public DocumentResDto updateDocumentPublic(Long documentId) throws IllegalArgumentException {
         Document targetDocumnet = getDocumentById(documentId);
 
-        if (targetDocumnet.getUpLink() == null)
+        if (targetDocumnet.getUpLink() == null && targetDocumnet.getGroup() != null)
             throw new IllegalArgumentException("최상단 문서는 전체공개가 불가능합니다.");
+
+        if (targetDocumnet.getUpLink() == null)
+            throw new IllegalArgumentException("이미 전체공개 문서입니다.");
 
         Document upDocument = targetDocumnet.getUpLink();
         Document downDocument = targetDocumnet.getDownLink();
@@ -181,19 +184,27 @@ public class DocumentService {
         return new DocumentResDto(targetDocumnet);
     }
 
-    @Transactional // 전체 공개에서 그룹으로 오는 거 만드는 중
-    public DocumentResDto updateDocumentGroup (updateDocGroupReqDto dto){
+    @Transactional
+    public DocumentResDto updatePublicDocumentGroupId (updateDocGroupIdReqDto dto){
 
         Document targetDocument = getDocumentById(dto.getTargetDocumentId());
-        Group targetGroup = null;
+        if (targetDocument.getGroup() != null)
+            throw new IllegalArgumentException("전체공개 문서가 아닙니다.");
 
-        if (dto.getTargetGroupId() != null) { // 전체공개가 아닌 경우
-            targetGroup = groupService.getGroupById(dto.getTargetGroupId());
+        Group targetGroup = groupService.getGroupById(dto.getTargetGroupId());
+        Document topDocInTargetGroup = getTopDocument(targetGroup);
+        Document downDocumnet = topDocInTargetGroup.getDownLink();
 
-            Document topDocumentInTargetGroup = getTopDocument(targetGroup);
-        }
+        // step 1
+        targetDocument.setUpLink(topDocInTargetGroup);
+        targetDocument.setDownLink(downDocumnet);
 
+        // step 2
         targetDocument.setGroup(targetGroup);
+        topDocInTargetGroup.setDownLink(targetDocument);
+        if (downDocumnet != null)
+            downDocumnet.setUpLink(targetDocument);
+
         return new DocumentResDto(targetDocument);
     }
 

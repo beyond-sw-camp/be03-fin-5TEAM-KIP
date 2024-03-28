@@ -5,8 +5,7 @@ import lombok.Setter;
 
 @Getter
 @Setter
-public class updateDocGroupReqDto {
+public class updateDocGroupIdReqDto {
     private Long targetDocumentId;
     private Long targetGroupId;
 }
-    

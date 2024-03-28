@@ -3,7 +3,7 @@ package com.FINAL.KIP.document.controller;
 
 import com.FINAL.KIP.document.dto.req.CreateDocumentReqDto;
 import com.FINAL.KIP.document.dto.req.moveDocInGroupReqDto;
-import com.FINAL.KIP.document.dto.req.updateDocGroupReqDto;
+import com.FINAL.KIP.document.dto.req.updateDocGroupIdReqDto;
 import com.FINAL.KIP.document.dto.res.DocumentResDto;
 import com.FINAL.KIP.document.dto.res.GetDocumentResDto;
 import com.FINAL.KIP.document.dto.res.PublicDocResDto;
@@ -65,9 +65,9 @@ public class DocumentController {
         return ResponseEntity.ok(documentService.updateDocumentPublic(DocumentId));
     }
 
-    @PatchMapping("group") // 전체공개에서 그룹으로 부여하는거 만드는 중 
-    public ResponseEntity<DocumentResDto> updateDocumentGroup(@RequestBody updateDocGroupReqDto dto){
-        return ResponseEntity.ok(documentService.updateDocumentGroup(dto));
+    @PatchMapping("group")
+    public ResponseEntity<DocumentResDto> updatePublicDocumentGroupId(@RequestBody updateDocGroupIdReqDto dto){
+        return ResponseEntity.ok(documentService.updatePublicDocumentGroupId(dto));
 
     }
 
