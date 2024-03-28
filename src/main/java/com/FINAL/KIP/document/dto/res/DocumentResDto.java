@@ -7,6 +7,7 @@ import lombok.Getter;
 @Getter
 public class DocumentResDto {
 
+    private final Long documentId;
     private final String title;
     private final KmsDocType kmsDocType;
     private Long upLinkId;
@@ -17,6 +18,7 @@ public class DocumentResDto {
     private String groupName;
 
     public DocumentResDto(Document document) {
+        this.documentId = document.getId();
         this.title = document.getTitle();
         this.kmsDocType = document.getKmsDocType();
 

@@ -45,7 +45,6 @@ public class DocumentService {
     @Transactional
     public DocumentResDto createDocument(CreateDocumentReqDto dto) {
         if (dto.getGroupId() == null) {
-            System.out.println("hi");
             return new DocumentResDto(
                     documentRepo.save(
                             dto.makeDocDtoToDocument()));
@@ -69,6 +68,7 @@ public class DocumentService {
             return new DocumentResDto(savedDocument);
         }
     }
+
 
     //    Read
     public List<PublicDocResDto> getPublicDocuments() {
@@ -115,9 +115,10 @@ public class DocumentService {
                 .collect(Collectors.toList());
     }
 
+
     //    Update
     @Transactional
-    public List<GetDocumentResDto> moveDocumentInGroup(moveDocInGroupReqDto dto) {
+    public List<GetDocumentResDto> moveDocumentInGroup(moveDocInGroupReqDto dto) throws IllegalArgumentException {
 
         if (Objects.equals(dto.getStartDocId(), dto.getEndDocId()))
             throw new IllegalArgumentException("이동하려는 아이디가 서로 같습니다.");
@@ -160,6 +161,27 @@ public class DocumentService {
     }
 
     @Transactional
+    public DocumentResDto updateDocumentPublic(Long documentId) throws IllegalArgumentException {
+        Document targetDocumnet = getDocumentById(documentId);
+
+        if (targetDocumnet.getUpLink() == null)
+            throw new IllegalArgumentException("최상단 문서는 전체공개가 불가능합니다.");
+
+        Document upDocument = targetDocumnet.getUpLink();
+        Document downDocument = targetDocumnet.getDownLink();
+
+        if (downDocument != null) // Target의 위, 아래 문서 연결
+            downDocument.setUpLink(upDocument);
+        upDocument.setDownLink(downDocument);
+
+        targetDocumnet.setGroup(null); // 전체공개
+        targetDocumnet.setUpLink(null);
+        targetDocumnet.setDownLink(null);
+
+        return new DocumentResDto(targetDocumnet);
+    }
+
+    @Transactional // 전체 공개에서 그룹으로 오는 거 만드는 중
     public DocumentResDto updateDocumentGroup (updateDocGroupReqDto dto){
 
         Document targetDocument = getDocumentById(dto.getTargetDocumentId());
@@ -175,9 +197,10 @@ public class DocumentService {
         return new DocumentResDto(targetDocument);
     }
 
+
     //    Delete
     @Transactional
-    public void deleteDocument(Long documentId) {
+    public void deleteDocument(Long documentId) throws IllegalArgumentException {
         Document tagetDocument = getDocumentById(documentId);
         if (tagetDocument.getGroup() == null)
             documentRepo.delete(tagetDocument);
@@ -192,14 +215,15 @@ public class DocumentService {
                 downLinkedDoc.setUpLink(upLinkedDoc);
         }
     }
-    //    공통함수
 
-    public Document getDocumentById(Long documentId) {
+
+    //    공통함수
+    public Document getDocumentById(Long documentId) throws NoSuchElementException {
         return documentRepo.findById(documentId)
                 .orElseThrow(() -> new NoSuchElementException("찾으시려는 문서 ID와 일치하는 문서가 없습니다."));
     }
 
-    private Document getTopDocument(Group targetGroup) {
+    private Document getTopDocument(Group targetGroup) throws NoSuchElementException {
         return targetGroup.getDocuments().stream()
                 .filter(document -> document.getUpLink() == null)
                 .findFirst()

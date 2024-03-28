@@ -9,3 +9,4 @@ public class updateDocGroupReqDto {
     private Long targetDocumentId;
     private Long targetGroupId;
 }
+    

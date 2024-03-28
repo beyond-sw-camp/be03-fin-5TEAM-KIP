@@ -60,7 +60,12 @@ public class DocumentController {
         return ResponseEntity.ok(documentService.updateDocumentType(DocumentId));
     }
 
-    @PatchMapping("group")
+    @PatchMapping("{DocumentId}/public")
+    public ResponseEntity<DocumentResDto> updateDocumentPublic(@PathVariable Long DocumentId){
+        return ResponseEntity.ok(documentService.updateDocumentPublic(DocumentId));
+    }
+
+    @PatchMapping("group") // 전체공개에서 그룹으로 부여하는거 만드는 중 
     public ResponseEntity<DocumentResDto> updateDocumentGroup(@RequestBody updateDocGroupReqDto dto){
         return ResponseEntity.ok(documentService.updateDocumentGroup(dto));
 
