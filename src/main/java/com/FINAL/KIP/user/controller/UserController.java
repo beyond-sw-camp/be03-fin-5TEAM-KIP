@@ -45,9 +45,19 @@ public class UserController {
     }
 
     @PostMapping("login") //login은 토큰 사용으로 Map형식으로 받아주어야함 // Map<String, Object>
-    public ResponseEntity<CommonResponse> userLogin(@RequestBody LoginReqDto loginReqDto){
+    public ResponseEntity<CommonResponse> userLogin(@RequestBody LoginReqDto loginReqDto) {
         CommonResponse commonResponse = userService.login(loginReqDto);
         return new ResponseEntity<>(commonResponse, HttpStatus.OK);
+    }
+
+    @GetMapping("mypage")
+    public ResponseEntity<CommonResponse> myPage() {
+        CommonResponse commonResponse = userService.mypage();
+        return new ResponseEntity<>(commonResponse, HttpStatus.OK);
+    }
+
+
+
 
 //        User user = userService.login(loginReqDto);
 ////        토큰 생성
@@ -57,5 +67,5 @@ public class UserController {
 //        user_info.put("employeeId", user.getEmployeeId());
 //        user_info.put("token", jwtToken);
 //        return new ResponseEntity<>(new CommonResponse(HttpStatus.OK, "user successfully login", user_info), HttpStatus.OK);
-    }
+//    }
 }

@@ -9,9 +9,12 @@ import com.FINAL.KIP.user.dto.req.CreateUserReqDto;
 import com.FINAL.KIP.user.dto.req.LoginReqDto;
 import com.FINAL.KIP.user.dto.res.UserResDto;
 import com.FINAL.KIP.user.repository.UserRepository;
+import jakarta.persistence.EntityNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -79,7 +82,7 @@ public class UserService {
                 .orElseThrow(() -> new IllegalArgumentException("사원번호 또는 비밀번호가 일치하지 않습니다."));
 
         String accessToken = jwtTokenProvider.createAccessToken(
-                String.format("%s:%s", user.getId(), user.getRole()));
+                String.format("%s:%s", user.getEmployeeId(), user.getRole()));
 
         String refreshToken = jwtTokenProvider.createRefreshToken();
         userRefreshTokenRepository.findById(user.getId())
@@ -91,5 +94,15 @@ public class UserService {
         result.put("access_token", accessToken);
         result.put("refresh_token", refreshToken);
         return new CommonResponse(HttpStatus.OK, "JWT token is created!", result);
+    }
+
+    @PreAuthorize("hasAuthority('ADMIN') or hasAuthority('USER')")
+    public CommonResponse mypage(){
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        String employeeId = authentication.getName();
+        User userInfo = userRepo.findByEmployeeId(employeeId)
+                .orElseThrow(() -> new EntityNotFoundException("사원번호를 찾을 수 없습니다. " + employeeId));
+        return new CommonResponse(HttpStatus.OK, "User info loaded successfully!", userInfo);
+
     }
 }
