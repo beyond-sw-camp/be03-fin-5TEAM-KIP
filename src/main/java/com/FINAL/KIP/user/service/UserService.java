@@ -7,6 +7,7 @@ import com.FINAL.KIP.securities.refresh.UserRefreshTokenRepository;
 import com.FINAL.KIP.user.domain.User;
 import com.FINAL.KIP.user.dto.req.CreateUserReqDto;
 import com.FINAL.KIP.user.dto.req.LoginReqDto;
+import com.FINAL.KIP.user.dto.req.UserInfoUpdateReqDto;
 import com.FINAL.KIP.user.dto.res.UserResDto;
 import com.FINAL.KIP.user.repository.UserRepository;
 import jakarta.persistence.EntityNotFoundException;
@@ -17,6 +18,7 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.HashMap;
 import java.util.List;
@@ -91,6 +93,7 @@ public class UserService {
                         () -> userRefreshTokenRepository.save(new UserRefreshToken(user, refreshToken))
                 );
         Map<String, String> result = new HashMap<>();
+        result.put("user_name", user.getName());
         result.put("access_token", accessToken);
         result.put("refresh_token", refreshToken);
         return new CommonResponse(HttpStatus.OK, "JWT token is created!", result);
@@ -103,6 +106,26 @@ public class UserService {
         User userInfo = userRepo.findByEmployeeId(employeeId)
                 .orElseThrow(() -> new EntityNotFoundException("사원번호를 찾을 수 없습니다. " + employeeId));
         return new CommonResponse(HttpStatus.OK, "User info loaded successfully!", userInfo);
+    }
 
+    @Transactional
+    @PreAuthorize("hasAuthority('ADMIN') or hasAuthority('USER')")
+    public void update(UserInfoUpdateReqDto userInfoUpdateReqDto){
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        String employeeId = authentication.getName();
+        User userInfo = userRepo.findByEmployeeId(employeeId)
+                .orElseThrow(() -> new EntityNotFoundException("사원번호를 찾을 수 없습니다. " + employeeId));
+        userInfo.updateUserInfo(userInfoUpdateReqDto.getName(), userInfoUpdateReqDto.getEmail(),
+                userInfoUpdateReqDto.getPhoneNumber());
+    }
+
+    @Transactional
+    @PreAuthorize("hasAuthority('ADMIN')")
+    public void delete(String employeeId){
+//        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+//        String employeeId = authentication.getName();
+        User userInfo = userRepo.findByEmployeeId(employeeId)
+                .orElseThrow(() -> new EntityNotFoundException("사원번호를 찾을 수 없습니다. " + employeeId));
+        userRepo.delete(userInfo);
     }
 }
