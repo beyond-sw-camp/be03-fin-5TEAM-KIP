@@ -2,6 +2,7 @@ package com.FINAL.KIP.group.controller;
 
 
 import com.FINAL.KIP.group.dto.req.CreateGroupReqDto;
+import com.FINAL.KIP.group.dto.req.UpdateGroupReqDto;
 import com.FINAL.KIP.group.dto.req.addUsersToGroupReqDto;
 import com.FINAL.KIP.group.dto.res.GroupResDto;
 import com.FINAL.KIP.group.dto.res.GetGroupHierarchyResDto;
@@ -43,9 +44,8 @@ public class GroupController {
 
 
     // Read
-
     @GetMapping
-    public ResponseEntity<List<GroupResDto>> getGroups(){
+    public ResponseEntity<List<GroupResDto>> getGroups() {
         return ResponseEntity.ok(
                 groupService.getGroups()
         );
@@ -67,12 +67,22 @@ public class GroupController {
         );
     }
 
+
+//    Update
+    @PatchMapping
+    public ResponseEntity<GroupResDto> updateGroupInfo (@RequestBody UpdateGroupReqDto dto){
+        return ResponseEntity.ok(
+                groupService.updateGroupInfo(dto)
+        );
+    }
+
+
 // 그릅내 유저 추가하는 컨트롤러
 
-//    Create
+    //    Create
     @PostMapping("addusers")
     public ResponseEntity<List<GroupUsersRoleResDto>> addUsersToGroup(
-            @RequestBody addUsersToGroupReqDto dto){
+            @RequestBody addUsersToGroupReqDto dto) {
         return ResponseEntity.ok(
                 groupService.addUsersToGroup(dto)
         );
@@ -80,14 +90,14 @@ public class GroupController {
 
     @PostMapping("addusers/list")
     public ResponseEntity<List<List<GroupUsersRoleResDto>>> addUsersToGroup(
-            @RequestBody List<addUsersToGroupReqDto> dtos){
+            @RequestBody List<addUsersToGroupReqDto> dtos) {
         return ResponseEntity.ok(
                 groupService.addUsersToGroupList(dtos)
         );
     }
 
 
-//    Read
+    //    Read
     @GetMapping("{groupId}/user")
     public ResponseEntity<GroupUsersResDto> getGroupUsers(
             @PathVariable Long groupId) {

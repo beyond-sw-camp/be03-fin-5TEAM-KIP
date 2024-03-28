@@ -22,9 +22,11 @@ public class Group extends BaseEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @Setter
     @Column(nullable = false)
     private String groupName;
 
+    @Setter
     @Enumerated(value = EnumType.STRING)
     @Column(nullable = false)
     private GroupType groupType;
@@ -34,8 +36,6 @@ public class Group extends BaseEntity {
     @JoinColumn
     private Group superGroup;
 
-    @Setter
-    private String delYn = "N";
     public Group() {}
 
     @OneToMany(mappedBy = "superGroup", cascade = CascadeType.PERSIST)

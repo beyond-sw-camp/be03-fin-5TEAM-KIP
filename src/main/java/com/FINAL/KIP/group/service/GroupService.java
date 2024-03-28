@@ -4,6 +4,7 @@ import com.FINAL.KIP.group.domain.Group;
 import com.FINAL.KIP.group.domain.GroupUser;
 import com.FINAL.KIP.group.domain.UserIdAndGroupRole;
 import com.FINAL.KIP.group.dto.req.CreateGroupReqDto;
+import com.FINAL.KIP.group.dto.req.UpdateGroupReqDto;
 import com.FINAL.KIP.group.dto.req.addUsersToGroupReqDto;
 import com.FINAL.KIP.group.dto.res.GetGroupHierarchyResDto;
 import com.FINAL.KIP.group.dto.res.GroupResDto;
@@ -49,8 +50,8 @@ public class GroupService {
         return new GroupResDto(savedNewGroup);
     }
 
-    @PreAuthorize("hasAuthority('ADMIN')")
     @Transactional
+    @PreAuthorize("hasAuthority('ADMIN')")
     public List<GroupResDto> createGroups(List<CreateGroupReqDto> dtos) {
         return dtos.stream()
                 .map(this::createGroup)
@@ -94,6 +95,16 @@ public class GroupService {
                 .collect(Collectors.toList());
     }
 
+//    Update
+    @PreAuthorize("hasAuthority('ADMIN') or hasAuthority('USER')")
+    public GroupResDto updateGroupInfo(UpdateGroupReqDto dto) {
+        Group group = getGroupById(dto.getGroupId());
+        group.setGroupName(dto.getGroupName());
+        group.setGroupType(dto.getGroupType());
+        group.setSuperGroup(getGroupById(dto.getSupperGroupId()));
+        return new GroupResDto(groupRepo.save(group));
+    }
+
     //    함수 공통화
     @PreAuthorize("hasAuthority('ADMIN') or hasAuthority('USER')")
     public Group getGroupById(Long supperGroupId) {
@@ -131,6 +142,7 @@ public class GroupService {
     public List<GroupUser> getByGroup(Group group) {
         return groupUserRepo.findByGroup(group);
     }
+
     @PreAuthorize("hasAuthority('ADMIN') or hasAuthority('USER')")
     public List<UserIdAndGroupRole> getAccessibleUsers(Long groupId) {
         List<UserIdAndGroupRole> accessibleUsers = new ArrayList<>();
@@ -153,5 +165,4 @@ public class GroupService {
                 .map(GroupResDto::new)
                 .collect(Collectors.toList());
     }
-
 }
