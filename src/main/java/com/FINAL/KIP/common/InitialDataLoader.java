@@ -21,7 +21,7 @@ public InitialDataLoader(UserRepository userRepository, PasswordEncoder password
     public void run(String... args) throws Exception {
         if (userRepository.findByEmployeeId("KK").isEmpty()) {
             User adminMember = User.builder()
-                    .name("admin")
+                    .name("admin1")
                     .email("admin@test.com")
                     .password(passwordEncoder.encode("1234"))
                     .phoneNumber("01012345678")

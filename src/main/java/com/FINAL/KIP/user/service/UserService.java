@@ -118,4 +118,14 @@ public class UserService {
         userInfo.updateUserInfo(userInfoUpdateReqDto.getName(), userInfoUpdateReqDto.getEmail(),
                 userInfoUpdateReqDto.getPhoneNumber());
     }
+
+    @Transactional
+    @PreAuthorize("hasAuthority('ADMIN')")
+    public void delete(String employeeId){
+//        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+//        String employeeId = authentication.getName();
+        User userInfo = userRepo.findByEmployeeId(employeeId)
+                .orElseThrow(() -> new EntityNotFoundException("사원번호를 찾을 수 없습니다. " + employeeId));
+        userRepo.delete(userInfo);
+    }
 }

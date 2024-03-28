@@ -46,24 +46,33 @@ public class UserController {
         return ResponseEntity.ok(userService.getAllUsers());
     }
 
+    // 로그인
     @PostMapping("login") //login은 토큰 사용으로 Map형식으로 받아주어야함 // Map<String, Object>
     public ResponseEntity<CommonResponse> userLogin(@RequestBody LoginReqDto loginReqDto) {
         CommonResponse commonResponse = userService.login(loginReqDto);
         return new ResponseEntity<>(commonResponse, HttpStatus.OK);
     }
 
+    // 사용자 마이페이지
     @GetMapping("mypage")
     public ResponseEntity<CommonResponse> myPage() {
         CommonResponse commonResponse = userService.mypage();
         return new ResponseEntity<>(commonResponse, HttpStatus.OK);
     }
 
+    // 사용자 정보 업데이트
     @PatchMapping
     public ResponseEntity<CommonResponse> userUpdate(@RequestBody UserInfoUpdateReqDto userInfoUpdateReqDto){
         userService.update(userInfoUpdateReqDto);
         return new ResponseEntity<>(new CommonResponse(HttpStatus.OK, "User updated successfully", userInfoUpdateReqDto.getName()), HttpStatus.OK);
     }
 
+    // 사용자 회원 삭제
+    @DeleteMapping("{employeeId}")
+    public ResponseEntity<CommonResponse> userDelete(@PathVariable(value = "employeeId") String employeeId){
+        userService.delete(employeeId);
+        return new ResponseEntity<>(new CommonResponse(HttpStatus.OK, "User deleted successfully", employeeId), HttpStatus.OK);
+    }
 
 
 //        User user = userService.login(loginReqDto);
