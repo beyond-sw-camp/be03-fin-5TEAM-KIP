@@ -1,6 +1,8 @@
 package com.FINAL.KIP.user.service;
 
 import com.FINAL.KIP.common.CommonResponse;
+import com.FINAL.KIP.common.aspect.JustAdmin;
+import com.FINAL.KIP.common.aspect.UserAdmin;
 import com.FINAL.KIP.securities.JwtTokenProvider;
 import com.FINAL.KIP.securities.refresh.UserRefreshToken;
 import com.FINAL.KIP.securities.refresh.UserRefreshTokenRepository;
@@ -13,7 +15,6 @@ import com.FINAL.KIP.user.repository.UserRepository;
 import jakarta.persistence.EntityNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
-import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -42,7 +43,7 @@ public class UserService {
     }
 
 //    Create
-    @PreAuthorize("hasAuthority('ADMIN') or hasAuthority('USER')")
+    @UserAdmin
     public UserResDto createUser(CreateUserReqDto dto) {
         dto.setPassword(passwordEncoder.encode(dto.makeUserReqDtoToUser().getPassword())); // 비밀번호 암호화
         User user = dto.makeUserReqDtoToUser();
@@ -50,7 +51,7 @@ public class UserService {
         return new UserResDto(savedUser);
     }
 
-    @PreAuthorize("hasAuthority('ADMIN') or hasAuthority('USER')")
+    @UserAdmin
     public List<UserResDto> createUsers(List<CreateUserReqDto> dtos) {
         for (CreateUserReqDto createUserReqDto : dtos) {
             createUserReqDto.setPassword(
@@ -64,7 +65,7 @@ public class UserService {
     }
 
 //    Read
-    @PreAuthorize("hasAuthority('ADMIN')")
+    @JustAdmin
     public List<UserResDto> getAllUsers() {
         List<User> users = userRepo.findAll();
         return users.stream()
@@ -72,7 +73,7 @@ public class UserService {
                 .collect(Collectors.toList());
     }
 
-    @PreAuthorize("hasAuthority('ADMIN') or hasAuthority('USER')")
+    @UserAdmin
     public User getUserById(Long id) {
         return userRepo.findById(id).orElse(null);
     }
@@ -99,7 +100,7 @@ public class UserService {
         return new CommonResponse(HttpStatus.OK, "JWT token is created!", result);
     }
 
-    @PreAuthorize("hasAuthority('ADMIN') or hasAuthority('USER')")
+    @UserAdmin
     public CommonResponse mypage(){
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         String employeeId = authentication.getName();
@@ -109,7 +110,7 @@ public class UserService {
     }
 
     @Transactional
-    @PreAuthorize("hasAuthority('ADMIN') or hasAuthority('USER')")
+    @UserAdmin
     public void update(UserInfoUpdateReqDto userInfoUpdateReqDto){
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         String employeeId = authentication.getName();
@@ -120,7 +121,7 @@ public class UserService {
     }
 
     @Transactional
-    @PreAuthorize("hasAuthority('ADMIN')")
+    @UserAdmin
     public void delete(String employeeId){
 //        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
 //        String employeeId = authentication.getName();
