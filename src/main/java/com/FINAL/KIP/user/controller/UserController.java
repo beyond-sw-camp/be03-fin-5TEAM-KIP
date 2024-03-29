@@ -1,6 +1,7 @@
 package com.FINAL.KIP.user.controller;
 
 import com.FINAL.KIP.common.CommonResponse;
+import com.FINAL.KIP.common.firebase.service.FCMService;
 import com.FINAL.KIP.securities.JwtTokenProvider;
 import com.FINAL.KIP.user.domain.User;
 import com.FINAL.KIP.user.dto.req.CreateUserReqDto;
@@ -23,15 +24,17 @@ public class UserController {
 
     private final UserService userService;
     private final JwtTokenProvider jwtTokenProvider;
+    private final FCMService fcmService;
 
     @Autowired
-    public UserController(UserService userService, JwtTokenProvider jwtTokenProvider) {
+    public UserController(UserService userService, JwtTokenProvider jwtTokenProvider,
+        FCMService fcmService) {
         this.userService = userService;
         this.jwtTokenProvider = jwtTokenProvider;
+        this.fcmService = fcmService;
     }
 
-
-//    Create
+    //    Create
     @PostMapping
     public ResponseEntity<UserResDto> createUser(@RequestBody CreateUserReqDto dto) {
         return ResponseEntity.ok(userService.createUser(dto));
@@ -51,6 +54,8 @@ public class UserController {
     @PostMapping("login") //login은 토큰 사용으로 Map형식으로 받아주어야함 // Map<String, Object>
     public ResponseEntity<CommonResponse> userLogin(@Valid @RequestBody LoginReqDto loginReqDto){
         User user = userService.login(loginReqDto);
+        if(loginReqDto.getToken()!=null)
+            fcmService.saveToken(loginReqDto);
 //        토큰 생성
         String jwtToken = jwtTokenProvider.createToken(user.getEmployeeId(), user.getRole().toString());
         Map<String, Object> user_info = new HashMap<>();
