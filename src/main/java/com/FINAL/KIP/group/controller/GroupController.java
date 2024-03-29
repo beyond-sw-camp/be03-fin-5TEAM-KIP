@@ -4,7 +4,10 @@ package com.FINAL.KIP.group.controller;
 import com.FINAL.KIP.group.dto.req.CreateGroupReqDto;
 import com.FINAL.KIP.group.dto.req.UpdateGroupReqDto;
 import com.FINAL.KIP.group.dto.req.addUsersToGroupReqDto;
-import com.FINAL.KIP.group.dto.res.*;
+import com.FINAL.KIP.group.dto.res.GetGroupHierarchyResDto;
+import com.FINAL.KIP.group.dto.res.GroupResDto;
+import com.FINAL.KIP.group.dto.res.GroupUsersResDto;
+import com.FINAL.KIP.group.dto.res.GroupUsersRoleResDto;
 import com.FINAL.KIP.group.service.GroupService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -22,6 +25,7 @@ public class GroupController {
     public GroupController(GroupService groupService) {
         this.groupService = groupService;
     }
+
 
     // Create
     @PostMapping
@@ -73,24 +77,26 @@ public class GroupController {
     }
 
 
-//    Update
+    //  Update
     @PatchMapping
-    public ResponseEntity<GroupResDto> updateGroupInfo (@RequestBody UpdateGroupReqDto dto){
+    public ResponseEntity<GroupResDto> updateGroupInfo (
+            @RequestBody UpdateGroupReqDto dto){
         return ResponseEntity.ok(
                 groupService.updateGroupInfo(dto)
         );
     }
 
 
-//    Delete
+    //  Delete
     @DeleteMapping("{groupId}")
-    public ResponseEntity<Void> deleteGroup (@PathVariable Long groupId) {
+    public ResponseEntity<Void> deleteGroup (
+            @PathVariable Long groupId) {
         groupService.deleteGroup(groupId);
         return ResponseEntity.noContent().build();
     }
 
 
-// 그릅내 유저 추가하는 컨트롤러
+                            /* GroupUser */
 
     //    Create
     @PostMapping("addusers")
@@ -111,11 +117,18 @@ public class GroupController {
 
 
     //    Read
-    @GetMapping("{groupId}/user")
+    @GetMapping("{groupId}/users")
     public ResponseEntity<GroupUsersResDto> getGroupUsers(
             @PathVariable Long groupId) {
         return ResponseEntity.ok(
                 groupService.getGroupUsers(groupId)
+        );
+    }
+
+    @GetMapping("mygroups")
+    public ResponseEntity<List<GroupResDto>> getMyGroups(){
+        return ResponseEntity.ok(
+                groupService.getMyGroups()
         );
     }
 }

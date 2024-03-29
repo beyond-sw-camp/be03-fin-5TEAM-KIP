@@ -20,6 +20,7 @@ import jakarta.persistence.EntityNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -40,7 +41,8 @@ public class GroupService {
         this.groupUserRepo = groupUserRepo;
     }
 
-    //    Create
+
+    //  Create
     @Transactional
     @JustAdmin
     public GroupResDto createGroup(CreateGroupReqDto dto) {
@@ -49,7 +51,6 @@ public class GroupService {
         savedNewGroup.getDocuments().get(0).setTitle(newGroup.getGroupName() + " 그룹에 오신것을 환영합니다.");
         return new GroupResDto(savedNewGroup);
     }
-
 
     @Transactional
     @JustAdmin
@@ -76,7 +77,7 @@ public class GroupService {
     }
 
 
-    //    Read
+    //  Read
     @JustAdmin
     public GroupResDto getGroupInfoById(Long groupId) {
         Group group = getGroupById(groupId);
@@ -101,7 +102,18 @@ public class GroupService {
                 .map(GroupResDto::new)
                 .collect(Collectors.toList());
     }
-    // Update
+
+    @UserAdmin
+    public List<GroupResDto> getMyGroups() {
+        User loginedUser = userService.getUserFromAuthentication();
+        List<GroupUser> userGroups = groupUserRepo.findByUser(loginedUser);
+        return userGroups.stream()
+                .map(GroupUser::getGroup)
+                .map(GroupResDto::new)
+                .collect(Collectors.toList());
+    }
+
+    //  Update
 
     @JustAdmin
     public GroupResDto updateGroupInfo(UpdateGroupReqDto dto) {
@@ -111,7 +123,8 @@ public class GroupService {
         group.setSuperGroup(getGroupById(dto.getSupperGroupId()));
         return new GroupResDto(groupRepo.save(group));
     }
-    // Delete
+
+    //  Delete
 
     @JustAdmin
     public void deleteGroup(Long groupId) {
@@ -122,7 +135,8 @@ public class GroupService {
             throw new IllegalStateException("그룹에 최상단문서 1개만 남기고 모두 지워야 삭제 가능합니다.");
         groupRepo.delete(targetGroup);
     }
-    //    함수 공통화
+
+    //  공통함수
 
     @UserAdmin
     public Group getGroupById(Long supperGroupId) {
