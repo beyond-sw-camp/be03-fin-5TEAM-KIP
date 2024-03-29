@@ -7,6 +7,10 @@ import com.FINAL.KIP.group.domain.GroupRole;
 import com.FINAL.KIP.group.domain.GroupUser;
 import com.FINAL.KIP.group.domain.GroupUserId;
 import com.FINAL.KIP.group.repository.GroupUserRepository;
+import com.FINAL.KIP.note.dto.request.NoteAgreeReqDto;
+import com.FINAL.KIP.note.dto.request.NoteCreateReqDto;
+import com.FINAL.KIP.note.dto.request.NoteRefuseReqDto;
+import com.FINAL.KIP.note.service.NoteService;
 import com.FINAL.KIP.request.domain.Request;
 import com.FINAL.KIP.request.dto.request.RequestCreateReqDto;
 import com.FINAL.KIP.request.dto.response.RequestAgreeResDto;
@@ -33,17 +37,19 @@ public class RequestService {
 	private final RequestRepository requestRepository;
 	private final DocumentRepository documentRepository;
 	private final UserRepository userRepository;
+	private final NoteService noteService;
 
 	@Autowired
 	public RequestService(GroupUserRepository groupUserRepository,
 		RequestRepository requestRepository,
-		DocumentRepository documentRepository, UserRepository userRepository) {
+		DocumentRepository documentRepository, UserRepository userRepository,
+		NoteService noteService) {
 		this.groupUserRepository = groupUserRepository;
 		this.requestRepository = requestRepository;
 		this.documentRepository = documentRepository;
 		this.userRepository = userRepository;
+		this.noteService = noteService;
 	}
-
 
 	@Transactional
 	public ResponseEntity<RequestCreateResDto> createRequest(
@@ -65,6 +71,8 @@ public class RequestService {
 			.days(requestCreateReqDto.getDays())
 			.build();
 		requestRepository.save(request);
+		NoteCreateReqDto noteCreateReqDto = new NoteCreateReqDto(document, document.getGroup(), user);
+		noteService.createNewRequestNote(noteCreateReqDto);
 
 		RequestCreateResDto requestCreateResDto = new RequestCreateResDto();
 		requestCreateResDto.setDocTitle(document.getTitle());
@@ -106,6 +114,9 @@ public class RequestService {
 	@Transactional
 	public ResponseEntity<RequestRefuseResDto> refuseRequest(Long requestId) {
 		Request req = findById(requestId);
+		if (!req.getIsOk().equals("P")) {
+			throw new IllegalArgumentException("대기 상태의 요청만 수락 또는 거절이 가능합니다.");
+		}
 		String employeeId = SecurityContextHolder.getContext().getAuthentication().getName();
 		User user = findByEmployeeId(employeeId);
 
@@ -120,6 +131,8 @@ public class RequestService {
 		}
 
 		req.refuseRequest();
+		noteService.createRefuseRequestNote(
+			new NoteRefuseReqDto(req.getRequester(), req.getDocument(), user));
 
 		RequestRefuseResDto requestRefuseResDto = new RequestRefuseResDto();
 		requestRefuseResDto.setTitle(req.getDocument().getTitle());
@@ -141,6 +154,10 @@ public class RequestService {
 	public ResponseEntity<RequestAgreeResDto> agreeRequest(Long requestId) {
 		Request req = findById(requestId);
 
+		if (!req.getIsOk().equals("P")) {
+			throw new IllegalArgumentException("대기 상태의 요청만 수락 또는 거절이 가능합니다.");
+		}
+
 		String employeeId = SecurityContextHolder.getContext().getAuthentication().getName();
 		User user = findByEmployeeId(employeeId);
 		Group group = req.getGroup();
@@ -154,6 +171,8 @@ public class RequestService {
 		}
 
 		req.agreeRequest();
+		noteService.createAgreeRequestNote(
+			new NoteAgreeReqDto(req.getRequester(), req.getDocument(), user));
 
 		RequestAgreeResDto requestAgreeResDto = new RequestAgreeResDto();
 		requestAgreeResDto.setName(req.getRequester().getName());

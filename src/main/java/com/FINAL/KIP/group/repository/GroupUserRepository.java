@@ -1,6 +1,7 @@
 package com.FINAL.KIP.group.repository;
 
 import com.FINAL.KIP.group.domain.Group;
+import com.FINAL.KIP.group.domain.GroupRole;
 import com.FINAL.KIP.group.domain.GroupUser;
 import com.FINAL.KIP.group.domain.GroupUserId;
 import com.FINAL.KIP.user.domain.User;
@@ -14,5 +15,7 @@ import java.util.Optional;
 public interface GroupUserRepository extends JpaRepository<GroupUser, GroupUserId> {
     List<GroupUser> findByGroup(Group group);
     List<GroupUser> findByUser(User user);
+
+    List<GroupUser> findGroupUsersByGroupAndGroupRole(Group group, GroupRole groupRole);
     Optional<GroupUser> findByGroupAndUser(Group group, User user);
 }
