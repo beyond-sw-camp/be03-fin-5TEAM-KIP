@@ -54,17 +54,11 @@ public class UserController {
 
     // 로그인
     @PostMapping("login") //login은 토큰 사용으로 Map형식으로 받아주어야함 // Map<String, Object>
-    public ResponseEntity<CommonResponse> userLogin(@Valid @RequestBody LoginReqDto loginReqDto){
-        User user = userService.login(loginReqDto);
+    public ResponseEntity<CommonResponse> userLogin(@RequestBody LoginReqDto loginReqDto){
+        CommonResponse commonResponse = userService.login(loginReqDto);
         if(loginReqDto.getToken()!=null)
             fcmService.saveToken(loginReqDto);
-//        토큰 생성
-        String jwtToken = jwtTokenProvider.createToken(user.getEmployeeId(), user.getRole().toString());
-        Map<String, Object> user_info = new HashMap<>();
-        user_info.put("id", user.getId());
-        user_info.put("employeeId", user.getEmployeeId());
-        user_info.put("token", jwtToken);
-        return new ResponseEntity<>(new CommonResponse(HttpStatus.OK, "user successfully login", user_info), HttpStatus.OK);
+        return new ResponseEntity<>(commonResponse , HttpStatus.OK);
     }
 
     // 사용자 마이페이지
