@@ -3,7 +3,6 @@ package com.FINAL.KIP.user.controller;
 import com.FINAL.KIP.common.CommonResponse;
 import com.FINAL.KIP.common.firebase.service.FCMService;
 import com.FINAL.KIP.securities.JwtTokenProvider;
-import com.FINAL.KIP.user.domain.User;
 import com.FINAL.KIP.user.dto.req.CreateUserReqDto;
 import com.FINAL.KIP.user.dto.req.LoginReqDto;
 import com.FINAL.KIP.user.dto.req.UserInfoUpdateReqDto;
@@ -12,12 +11,9 @@ import com.FINAL.KIP.user.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 @RestController
 @RequestMapping("user")

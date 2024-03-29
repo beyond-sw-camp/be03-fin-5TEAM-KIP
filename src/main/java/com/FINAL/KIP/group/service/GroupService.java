@@ -4,6 +4,7 @@ import com.FINAL.KIP.common.aspect.JustAdmin;
 import com.FINAL.KIP.common.aspect.UserAdmin;
 import com.FINAL.KIP.group.domain.Group;
 import com.FINAL.KIP.group.domain.GroupUser;
+import com.FINAL.KIP.group.domain.GroupUserId;
 import com.FINAL.KIP.group.domain.UserIdAndGroupRole;
 import com.FINAL.KIP.group.dto.req.CreateGroupReqDto;
 import com.FINAL.KIP.group.dto.req.UpdateGroupReqDto;
@@ -113,8 +114,8 @@ public class GroupService {
                 .collect(Collectors.toList());
     }
 
-    //  Update
 
+    //  Update
     @JustAdmin
     public GroupResDto updateGroupInfo(UpdateGroupReqDto dto) {
         Group group = getGroupById(dto.getGroupId());
@@ -124,8 +125,8 @@ public class GroupService {
         return new GroupResDto(groupRepo.save(group));
     }
 
-    //  Delete
 
+    //  Delete
     @JustAdmin
     public void deleteGroup(Long groupId) {
         Group targetGroup = getGroupById(groupId);
@@ -134,6 +135,14 @@ public class GroupService {
         if (targetGroup.getDocuments().size() > 1)
             throw new IllegalStateException("그룹에 최상단문서 1개만 남기고 모두 지워야 삭제 가능합니다.");
         groupRepo.delete(targetGroup);
+    }
+
+
+    @JustAdmin
+    public GroupUsersResDto removeUserFromGroup(Long groupId, Long userId) {
+        GroupUser groupUser = getGroupUserByGroupUserId(groupId, userId);
+        groupUserRepo.delete(groupUser);
+        return getGroupUsers(groupId);
     }
 
     //  공통함수
@@ -196,5 +205,16 @@ public class GroupService {
         return groupRepo.findAll().stream()
                 .map(GroupResDto::new)
                 .collect(Collectors.toList());
+    }
+
+    @JustAdmin
+    public GroupUser getGroupUserByGroupUserId(Long groupId, Long userId) {
+        GroupUserId groupUserId = GroupUserId.builder()
+                .group(getGroupById(groupId))
+                .user(userService.getUserById(userId))
+                .build();
+        return groupUserRepo.findById(groupUserId)
+                .orElseThrow(() -> new EntityNotFoundException(
+                        "그룹 유저 아이디로 검색할 수 있는 그룹 유저가 없습니다. groupId: " + groupId + ", userId: " + userId));
     }
 }

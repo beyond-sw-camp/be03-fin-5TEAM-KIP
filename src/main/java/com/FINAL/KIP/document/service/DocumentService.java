@@ -216,7 +216,6 @@ public class DocumentService {
     }
 
     //    Delete
-
     @Transactional
     public void deleteDocument(Long documentId) throws IllegalArgumentException {
         Document tagetDocument = getDocumentById(documentId);
@@ -235,7 +234,6 @@ public class DocumentService {
     }
 
     //    공통함수
-
     public Document getDocumentById(Long documentId) throws NoSuchElementException {
         return documentRepo.findById(documentId)
                 .orElseThrow(() -> new NoSuchElementException("찾으시려는 문서 ID와 일치하는 문서가 없습니다."));

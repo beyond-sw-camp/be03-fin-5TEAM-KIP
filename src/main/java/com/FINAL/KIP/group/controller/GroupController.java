@@ -98,7 +98,7 @@ public class GroupController {
 
                             /* GroupUser */
 
-    //    Create
+    //  Create
     @PostMapping("addusers")
     public ResponseEntity<List<GroupUsersRoleResDto>> addUsersToGroup(
             @RequestBody addUsersToGroupReqDto dto) {
@@ -116,7 +116,7 @@ public class GroupController {
     }
 
 
-    //    Read
+    //  Read
     @GetMapping("{groupId}/users")
     public ResponseEntity<GroupUsersResDto> getGroupUsers(
             @PathVariable Long groupId) {
@@ -130,6 +130,13 @@ public class GroupController {
         return ResponseEntity.ok(
                 groupService.getMyGroups()
         );
+    }
+
+    //  Delete
+    @DeleteMapping("{groupId}/{userId}/delete")
+    public ResponseEntity<GroupUsersResDto> removeUserFromGroup(
+            @PathVariable Long groupId, @PathVariable Long userId) {
+        return ResponseEntity.ok(groupService.removeUserFromGroup(groupId, userId));
     }
 }
 

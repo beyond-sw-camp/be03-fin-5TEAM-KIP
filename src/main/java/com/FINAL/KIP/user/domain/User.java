@@ -1,17 +1,17 @@
 package com.FINAL.KIP.user.domain;
 
 import com.FINAL.KIP.common.domain.BaseEntity;
-import com.FINAL.KIP.document.domain.Document;
+import com.FINAL.KIP.group.domain.GroupUser;
 import com.FINAL.KIP.note.domain.Note;
 import com.FINAL.KIP.request.domain.Request;
 import jakarta.persistence.*;
-import java.util.ArrayList;
-import java.util.List;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 
 
 @Getter
@@ -49,10 +49,13 @@ public class User extends BaseEntity {
     private String delYn = "N";
 
     @OneToMany(mappedBy = "requester", cascade = CascadeType.ALL)
-    private List<Request> requests = new ArrayList<>();
+    private final List<Request> requests = new ArrayList<>();
 
     @OneToMany(mappedBy = "receiver", cascade = CascadeType.ALL)
-    private List<Note> notes = new ArrayList<>();
+    private final List<Note> notes = new ArrayList<>();
+
+    @OneToMany(mappedBy = "user", cascade = CascadeType.REMOVE)
+    private final List<GroupUser> groupUsers = new ArrayList<>();
 
     public User() {
 
