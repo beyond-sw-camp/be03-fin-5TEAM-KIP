@@ -102,31 +102,34 @@ public class UserService {
 
     @UserAdmin
     public CommonResponse mypage(){
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        String employeeId = authentication.getName();
-        User userInfo = userRepo.findByEmployeeId(employeeId)
-                .orElseThrow(() -> new EntityNotFoundException("사원번호를 찾을 수 없습니다. " + employeeId));
+        User userInfo = getUserFromAuthentication();
         return new CommonResponse(HttpStatus.OK, "User info loaded successfully!", userInfo);
     }
 
     @Transactional
     @UserAdmin
     public void update(UserInfoUpdateReqDto userInfoUpdateReqDto){
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        String employeeId = authentication.getName();
-        User userInfo = userRepo.findByEmployeeId(employeeId)
-                .orElseThrow(() -> new EntityNotFoundException("사원번호를 찾을 수 없습니다. " + employeeId));
+        User userInfo = getUserFromAuthentication();
         userInfo.updateUserInfo(userInfoUpdateReqDto.getName(), userInfoUpdateReqDto.getEmail(),
                 userInfoUpdateReqDto.getPhoneNumber());
     }
-
     @Transactional
     @UserAdmin
     public void delete(String employeeId){
-//        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-//        String employeeId = authentication.getName();
-        User userInfo = userRepo.findByEmployeeId(employeeId)
-                .orElseThrow(() -> new EntityNotFoundException("사원번호를 찾을 수 없습니다. " + employeeId));
+        User userInfo = getUserByEmployeeId(employeeId);
         userRepo.delete(userInfo);
+    }
+
+    //  함수 공통화
+    @UserAdmin
+    public User getUserFromAuthentication() {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        return getUserByEmployeeId(authentication.getName());
+    }
+
+    @UserAdmin
+    public User getUserByEmployeeId(String employeeId) {
+        return userRepo.findByEmployeeId(employeeId)
+                .orElseThrow(() -> new EntityNotFoundException("사원번호를 찾을 수 없습니다. " + employeeId));
     }
 }
