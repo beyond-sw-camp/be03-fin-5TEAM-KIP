@@ -11,12 +11,15 @@ public class GroupResDto {
     private final String groupName;
     private final String groupType;
     private final Long superGroupId;
+    private final String superGroupName;
+
 
     public GroupResDto(Group group){
         this.groupId = group.getId();
         this.groupName = group.getGroupName();
         this.groupType = group.getGroupType().name();
         this.superGroupId = group.getSuperGroup() != null ? group.getSuperGroup().getId() : null;
+        this.superGroupName = group.getSuperGroup() != null ? group.getSuperGroup().getGroupName() : null;
     }
 
 }

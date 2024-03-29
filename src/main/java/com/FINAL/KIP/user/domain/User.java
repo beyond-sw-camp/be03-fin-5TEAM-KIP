@@ -38,7 +38,7 @@ public class User extends BaseEntity {
 
     private LocalDateTime employedDay;
 
-    @Column(nullable = false)
+    @Column(unique = true, nullable = false)
     private String employeeId;
 
     @Column(nullable = false)
@@ -70,6 +70,13 @@ public class User extends BaseEntity {
         this.employedDay = employedDay;
         this.employeeId = employeeId;
         this.role = role;
+    }
+
+    public void updateUserInfo(String name, String email, String phoneNumber) {
+        this.name = name;
+        this.email = email;
+        this.phoneNumber = phoneNumber;
+
     }
 
 }
