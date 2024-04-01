@@ -2,6 +2,7 @@ package com.FINAL.KIP.document.domain;
 
 import com.FINAL.KIP.common.domain.BaseEntity;
 import com.FINAL.KIP.group.domain.Group;
+import com.FINAL.KIP.hashtag.domain.DocHashTag;
 import com.FINAL.KIP.request.domain.Request;
 import jakarta.persistence.*;
 import lombok.Builder;
@@ -44,6 +45,13 @@ public class Document extends BaseEntity {
 
     @OneToMany(mappedBy = "document", cascade = CascadeType.ALL)
     private final List<Request> requests = new ArrayList<>();
+
+    @OneToMany(mappedBy = "document", cascade = CascadeType.ALL)
+    private final List<DocHashTag> docHashTags = new ArrayList<>();
+    public void addAllDocHashTags(List<DocHashTag> docHashTags) {
+        this.docHashTags.addAll(docHashTags);
+    }
+
     public Document () {}
 
     @Builder

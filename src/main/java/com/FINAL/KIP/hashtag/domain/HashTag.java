@@ -1,12 +1,13 @@
 package com.FINAL.KIP.hashtag.domain;
 
+import com.FINAL.KIP.common.domain.BaseEntity;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
 
 @Getter
 @Entity
-public class HashTag {
+public class HashTag extends BaseEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
