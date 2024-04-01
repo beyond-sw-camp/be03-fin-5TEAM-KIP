@@ -6,6 +6,7 @@ import com.FINAL.KIP.group.domain.Group;
 import com.FINAL.KIP.group.domain.GroupRole;
 import com.FINAL.KIP.group.domain.GroupUser;
 import com.FINAL.KIP.group.domain.GroupUserId;
+import com.FINAL.KIP.group.repository.GroupRepository;
 import com.FINAL.KIP.group.repository.GroupUserRepository;
 import com.FINAL.KIP.note.dto.request.NoteAgreeReqDto;
 import com.FINAL.KIP.note.dto.request.NoteCreateReqDto;
@@ -16,11 +17,15 @@ import com.FINAL.KIP.request.dto.request.RequestCreateReqDto;
 import com.FINAL.KIP.request.dto.response.RequestAgreeResDto;
 import com.FINAL.KIP.request.dto.response.RequestCreateResDto;
 import com.FINAL.KIP.request.dto.response.RequestDeleteResDto;
+import com.FINAL.KIP.request.dto.response.RequestReadResDto;
 import com.FINAL.KIP.request.dto.response.RequestRefuseResDto;
 import com.FINAL.KIP.request.repository.RequestRepository;
 import com.FINAL.KIP.user.domain.User;
 import com.FINAL.KIP.user.repository.UserRepository;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.UUID;
+import java.util.stream.Collectors;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -35,17 +40,20 @@ public class RequestService {
 	private final RequestRepository requestRepository;
 	private final DocumentRepository documentRepository;
 	private final UserRepository userRepository;
+	private final GroupRepository groupRepository;
 	private final NoteService noteService;
 
 	@Autowired
 	public RequestService(GroupUserRepository groupUserRepository,
 		RequestRepository requestRepository,
 		DocumentRepository documentRepository, UserRepository userRepository,
+		GroupRepository groupRepository,
 		NoteService noteService) {
 		this.groupUserRepository = groupUserRepository;
 		this.requestRepository = requestRepository;
 		this.documentRepository = documentRepository;
 		this.userRepository = userRepository;
+		this.groupRepository = groupRepository;
 		this.noteService = noteService;
 	}
 
@@ -211,5 +219,34 @@ public class RequestService {
 		req.deleteRequest();
 		RequestDeleteResDto requestDeleteResDto = new RequestDeleteResDto("삭제 완료되었습니다.");
 		return ResponseEntity.ok(requestDeleteResDto);
+	}
+
+	public ResponseEntity<List<RequestReadResDto>> readRequest(Long groupId) {
+
+		String employeeId = SecurityContextHolder.getContext().getAuthentication().getName();
+		User user = findByEmployeeId(employeeId);
+		Group group = findGroupById(groupId);
+		GroupUser groupByUser = findGroupByUser(group, user);
+		if (groupByUser.getGroupRole() != GroupRole.SUPER) {
+			throw new IllegalArgumentException("해당 그룹의 관리자가 아닙니다.");
+		}
+
+		List<RequestReadResDto> list = new ArrayList<>();
+		for (Request request : group.getRequests()) {
+			if(request.getDelYn().equals("Y"))
+				list.add(new RequestReadResDto(request.getRequester().getName(),
+					request.getDocument().getTitle(), request.getIsOk()));
+		}
+		return new ResponseEntity<>(list, HttpStatus.OK);
+	}
+
+	public GroupUser findGroupByUser(Group group,User user) {
+		return groupUserRepository.findByGroupAndUser(group, user)
+			.orElseThrow(() -> new IllegalArgumentException("그룹에 속해있지 않습니다."));
+	}
+
+	public Group findGroupById(long groupId) {
+		return groupRepository.findById(groupId)
+			.orElseThrow(() -> new IllegalArgumentException("해당 그룹이 존재하지 않습니다."));
 	}
 }
