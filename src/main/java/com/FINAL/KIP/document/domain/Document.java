@@ -30,6 +30,10 @@ public class Document extends BaseEntity {
 
     @Enumerated(value = EnumType.STRING)
     private KmsDocType kmsDocType;
+  
+    @Column(nullable = false)
+    @Builder.Default
+    private int bookCount = 0; // 문서 북마크 갯수 체크
 
     @ManyToOne // OneToOne은 유니크 걸림
     @JoinColumn
@@ -45,7 +49,7 @@ public class Document extends BaseEntity {
 
     @OneToMany(mappedBy = "document", cascade = CascadeType.ALL)
     private final List<Request> requests = new ArrayList<>();
-
+  
     @OneToMany(mappedBy = "document", cascade = CascadeType.ALL)
     private final List<DocHashTag> docHashTags = new ArrayList<>();
     public void addAllDocHashTags(List<DocHashTag> docHashTags) {
@@ -64,5 +68,13 @@ public class Document extends BaseEntity {
     @PrePersist
     public void prePersist(){
         this.uuid = UUID.randomUUID();
+    }
+
+    public void addBookCount(){
+        this.bookCount+=1;
+    }
+
+    public void reduceLikeCount(){
+        this.bookCount-=1;
     }
 }
