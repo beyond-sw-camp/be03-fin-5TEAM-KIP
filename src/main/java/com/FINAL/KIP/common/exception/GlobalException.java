@@ -1,11 +1,12 @@
 package com.FINAL.KIP.common.exception;
 
 import jakarta.persistence.EntityNotFoundException;
-import java.util.NoSuchElementException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
+
+import java.util.NoSuchElementException;
 
 @RestControllerAdvice
 public class GlobalException {
@@ -43,11 +44,12 @@ public class GlobalException {
                 .body(HttpStatus.INTERNAL_SERVER_ERROR.toString() + " : " + e.toString());
     }
 
+    @ExceptionHandler(SecurityException.class)
+    public ResponseEntity<?> SecurityExceptionHandle(SecurityException e) {
 
-
-
-
-
-
+        /* body -> Response 엔티티적용해서 반환 */
+        return ResponseEntity.status(HttpStatus.FORBIDDEN)
+                .body(HttpStatus.FORBIDDEN.toString() + " : " + e.toString());
+    }
 
 }

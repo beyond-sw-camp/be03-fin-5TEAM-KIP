@@ -6,19 +6,26 @@ import com.FINAL.KIP.group.domain.Group;
 import com.FINAL.KIP.group.domain.GroupRole;
 import com.FINAL.KIP.group.domain.GroupUser;
 import com.FINAL.KIP.group.domain.GroupUserId;
+import com.FINAL.KIP.group.repository.GroupRepository;
 import com.FINAL.KIP.group.repository.GroupUserRepository;
+import com.FINAL.KIP.note.dto.request.NoteAgreeReqDto;
+import com.FINAL.KIP.note.dto.request.NoteCreateReqDto;
+import com.FINAL.KIP.note.dto.request.NoteRefuseReqDto;
+import com.FINAL.KIP.note.service.NoteService;
 import com.FINAL.KIP.request.domain.Request;
 import com.FINAL.KIP.request.dto.request.RequestCreateReqDto;
 import com.FINAL.KIP.request.dto.response.RequestAgreeResDto;
 import com.FINAL.KIP.request.dto.response.RequestCreateResDto;
+import com.FINAL.KIP.request.dto.response.RequestDeleteResDto;
+import com.FINAL.KIP.request.dto.response.RequestReadResDto;
 import com.FINAL.KIP.request.dto.response.RequestRefuseResDto;
 import com.FINAL.KIP.request.repository.RequestRepository;
 import com.FINAL.KIP.user.domain.User;
-import com.FINAL.KIP.user.domain.UserDocAuthorityId;
 import com.FINAL.KIP.user.repository.UserRepository;
-import java.time.LocalDateTime;
-import java.util.Optional;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.UUID;
+import java.util.stream.Collectors;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -33,24 +40,30 @@ public class RequestService {
 	private final RequestRepository requestRepository;
 	private final DocumentRepository documentRepository;
 	private final UserRepository userRepository;
+	private final GroupRepository groupRepository;
+	private final NoteService noteService;
 
 	@Autowired
 	public RequestService(GroupUserRepository groupUserRepository,
 		RequestRepository requestRepository,
-		DocumentRepository documentRepository, UserRepository userRepository) {
+		DocumentRepository documentRepository, UserRepository userRepository,
+		GroupRepository groupRepository,
+		NoteService noteService) {
 		this.groupUserRepository = groupUserRepository;
 		this.requestRepository = requestRepository;
 		this.documentRepository = documentRepository;
 		this.userRepository = userRepository;
+		this.groupRepository = groupRepository;
+		this.noteService = noteService;
 	}
-
 
 	@Transactional
 	public ResponseEntity<RequestCreateResDto> createRequest(
 		RequestCreateReqDto requestCreateReqDto) throws IllegalArgumentException {
 
 		Document document = findDocumentByUuid(requestCreateReqDto.getDocId());
-		User user = findUserById(requestCreateReqDto.getUserId());
+		String userEmployeeId = SecurityContextHolder.getContext().getAuthentication().getName();
+		User user = findByEmployeeId(userEmployeeId);
 
 		if (requestRepository.existsRequestByRequesterAndDocumentAndIsOk(user, document, "P")) {
 			throw new IllegalArgumentException("이미 해당 문서에 접근 권한요청을 했습니다.");
@@ -65,6 +78,8 @@ public class RequestService {
 			.days(requestCreateReqDto.getDays())
 			.build();
 		requestRepository.save(request);
+		NoteCreateReqDto noteCreateReqDto = new NoteCreateReqDto(document, document.getGroup(), user);
+		noteService.createNewRequestNote(noteCreateReqDto);
 
 		RequestCreateResDto requestCreateResDto = new RequestCreateResDto();
 		requestCreateResDto.setDocTitle(document.getTitle());
@@ -106,6 +121,9 @@ public class RequestService {
 	@Transactional
 	public ResponseEntity<RequestRefuseResDto> refuseRequest(Long requestId) {
 		Request req = findById(requestId);
+		if (!req.getIsOk().equals("P")) {
+			throw new IllegalArgumentException("대기 상태의 요청만 수락 또는 거절이 가능합니다.");
+		}
 		String employeeId = SecurityContextHolder.getContext().getAuthentication().getName();
 		User user = findByEmployeeId(employeeId);
 
@@ -120,6 +138,8 @@ public class RequestService {
 		}
 
 		req.refuseRequest();
+		noteService.createRefuseRequestNote(
+			new NoteRefuseReqDto(req.getRequester(), req.getDocument(), user));
 
 		RequestRefuseResDto requestRefuseResDto = new RequestRefuseResDto();
 		requestRefuseResDto.setTitle(req.getDocument().getTitle());
@@ -141,6 +161,10 @@ public class RequestService {
 	public ResponseEntity<RequestAgreeResDto> agreeRequest(Long requestId) {
 		Request req = findById(requestId);
 
+		if (!req.getIsOk().equals("P")) {
+			throw new IllegalArgumentException("대기 상태의 요청만 수락 또는 거절이 가능합니다.");
+		}
+
 		String employeeId = SecurityContextHolder.getContext().getAuthentication().getName();
 		User user = findByEmployeeId(employeeId);
 		Group group = req.getGroup();
@@ -154,6 +178,8 @@ public class RequestService {
 		}
 
 		req.agreeRequest();
+		noteService.createAgreeRequestNote(
+			new NoteAgreeReqDto(req.getRequester(), req.getDocument(), user));
 
 		RequestAgreeResDto requestAgreeResDto = new RequestAgreeResDto();
 		requestAgreeResDto.setName(req.getRequester().getName());
@@ -161,5 +187,66 @@ public class RequestService {
 		requestAgreeResDto.setTitle(req.getDocument().getTitle());
 
 		return ResponseEntity.ok(requestAgreeResDto);
+	}
+
+	@Transactional
+	public ResponseEntity<RequestDeleteResDto> deleteRequest(Long requestId) {
+		Request req = findById(requestId);
+		if (req.getDelYn().equals("Y")) {
+			throw new IllegalArgumentException("이미 삭제된 요청입니다.");
+		}
+
+		String employeeId = SecurityContextHolder.getContext().getAuthentication().getName();
+		User user = findByEmployeeId(employeeId);
+		Group group = req.getGroup();
+
+		GroupUser groupUser = findGroupUser(group, user);
+		if(groupUser == null) {
+			throw new IllegalArgumentException("해당 그룹 요청에 접근 권한이 존재하지 않습니다.");
+		}
+		if (groupUser.getGroupRole() != GroupRole.SUPER) {
+			throw new IllegalArgumentException("그룹의 관리자만 요청을 관리할 수 있습니다.");
+		}
+
+		if (req.getIsOk().equals("P")) {
+			req.deleteRequest();
+			req.refuseRequest();
+			noteService.createRefuseRequestNote(
+				new NoteRefuseReqDto(req.getRequester(), req.getDocument(), user));
+			RequestDeleteResDto requestDeleteResDto = new RequestDeleteResDto("삭제 완료되었습니다.");
+			return ResponseEntity.ok(requestDeleteResDto);
+		}
+		req.deleteRequest();
+		RequestDeleteResDto requestDeleteResDto = new RequestDeleteResDto("삭제 완료되었습니다.");
+		return ResponseEntity.ok(requestDeleteResDto);
+	}
+
+	public ResponseEntity<List<RequestReadResDto>> readRequest(Long groupId) {
+
+		String employeeId = SecurityContextHolder.getContext().getAuthentication().getName();
+		User user = findByEmployeeId(employeeId);
+		Group group = findGroupById(groupId);
+		GroupUser groupByUser = findGroupByUser(group, user);
+		if (groupByUser.getGroupRole() != GroupRole.SUPER) {
+			throw new IllegalArgumentException("해당 그룹의 관리자가 아닙니다.");
+		}
+
+		List<RequestReadResDto> list = new ArrayList<>();
+		for (Request request : group.getRequests()) {
+			if(request.getDelYn().equals("Y"))
+				list.add(new RequestReadResDto(request.getRequester().getName(),
+					request.getDocument().getTitle(), request.getIsOk()));
+		}
+		return new ResponseEntity<>(list, HttpStatus.OK);
+	}
+
+	public GroupUser findGroupByUser(Group group,User user) {
+		return groupUserRepository.findByGroupAndUser(group, user)
+			.orElseThrow(() -> new IllegalArgumentException("그룹에 속해있지 않습니다."));
+	}
+
+	public Group findGroupById(long groupId) {
+		return groupRepository.findById(groupId)
+			.orElseThrow(() -> new IllegalArgumentException("해당 그룹이 존재하지 않습니다."));
 	}
 }

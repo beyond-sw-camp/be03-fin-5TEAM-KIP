@@ -1,19 +1,23 @@
 package com.FINAL.KIP.group.service;
 
+import com.FINAL.KIP.common.aspect.JustAdmin;
+import com.FINAL.KIP.common.aspect.UserAdmin;
 import com.FINAL.KIP.group.domain.Group;
 import com.FINAL.KIP.group.domain.GroupUser;
 import com.FINAL.KIP.group.domain.UserIdAndGroupRole;
 import com.FINAL.KIP.group.dto.req.CreateGroupReqDto;
 import com.FINAL.KIP.group.dto.req.UpdateGroupReqDto;
 import com.FINAL.KIP.group.dto.req.addUsersToGroupReqDto;
-import com.FINAL.KIP.group.dto.res.*;
+import com.FINAL.KIP.group.dto.res.GetGroupHierarchyResDto;
+import com.FINAL.KIP.group.dto.res.GroupResDto;
+import com.FINAL.KIP.group.dto.res.GroupUsersResDto;
+import com.FINAL.KIP.group.dto.res.GroupUsersRoleResDto;
 import com.FINAL.KIP.group.repository.GroupRepository;
 import com.FINAL.KIP.group.repository.GroupUserRepository;
 import com.FINAL.KIP.user.domain.User;
 import com.FINAL.KIP.user.service.UserService;
 import jakarta.persistence.EntityNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -37,9 +41,10 @@ public class GroupService {
         this.groupUserRepo = groupUserRepo;
     }
 
-    //    Create
+
+    //  Create
     @Transactional
-    @PreAuthorize("hasAuthority('ADMIN')")
+    @JustAdmin
     public GroupResDto createGroup(CreateGroupReqDto dto) {
         Group newGroup = createNewGroup(dto);
         Group savedNewGroup = groupRepo.save(newGroup);
@@ -48,14 +53,14 @@ public class GroupService {
     }
 
     @Transactional
-    @PreAuthorize("hasAuthority('ADMIN')")
+    @JustAdmin
     public List<GroupResDto> createGroups(List<CreateGroupReqDto> dtos) {
         return dtos.stream()
                 .map(this::createGroup)
                 .collect(Collectors.toList());
     }
 
-    @PreAuthorize("hasAuthority('ADMIN')")
+    @JustAdmin
     public List<GroupUsersRoleResDto> addUsersToGroup(addUsersToGroupReqDto dto) {
         List<GroupUser> addedUsers = getGroupUsers(dto);
         return addedUsers.stream()
@@ -63,7 +68,7 @@ public class GroupService {
                 .collect(Collectors.toList());
     }
 
-    @PreAuthorize("hasAuthority('ADMIN')")
+    @JustAdmin
     public List<List<GroupUsersRoleResDto>> addUsersToGroupList(List<addUsersToGroupReqDto> dtos) {
         List<List<GroupUsersRoleResDto>> addResult = new ArrayList<>();
         for (addUsersToGroupReqDto dto : dtos)
@@ -72,33 +77,45 @@ public class GroupService {
     }
 
 
-    //    Read
-    @PreAuthorize("hasAuthority('ADMIN') or hasAuthority('USER')")
+    //  Read
+    @JustAdmin
     public GroupResDto getGroupInfoById(Long groupId) {
-        return new GroupResDto(getGroupById(groupId));
+        Group group = getGroupById(groupId);
+        return new GroupResDto(group);
     }
 
-    @PreAuthorize("hasAuthority('ADMIN') or hasAuthority('USER')")
+    @UserAdmin
     public GetGroupHierarchyResDto getGroupHierarchy(Long groupId) {
         return new GetGroupHierarchyResDto(getGroupById(groupId));
     }
 
-    @PreAuthorize("hasAuthority('ADMIN') or hasAuthority('USER')")
+    @UserAdmin
     public GroupUsersResDto getGroupUsers(Long groupId) {
         Group group = getGroupById(groupId);
         List<GroupUser> groupUsers = getByGroup(group);
         return new GroupUsersResDto(groupUsers);
     }
 
-    @PreAuthorize("hasAuthority('ADMIN') or hasAuthority('USER')")
+    @UserAdmin
     public List<GroupResDto> getGroupsById(Long groupId) {
         return getGroupById(groupId).getChildGroups().stream()
                 .map(GroupResDto::new)
                 .collect(Collectors.toList());
     }
 
-    // Update
-    @PreAuthorize("hasAuthority('ADMIN') or hasAuthority('USER')")
+    @UserAdmin
+    public List<GroupResDto> getMyGroups() {
+        User loginedUser = userService.getUserFromAuthentication();
+        List<GroupUser> userGroups = groupUserRepo.findByUser(loginedUser);
+        return userGroups.stream()
+                .map(GroupUser::getGroup)
+                .map(GroupResDto::new)
+                .collect(Collectors.toList());
+    }
+
+    //  Update
+
+    @JustAdmin
     public GroupResDto updateGroupInfo(UpdateGroupReqDto dto) {
         Group group = getGroupById(dto.getGroupId());
         group.setGroupName(dto.getGroupName());
@@ -107,8 +124,9 @@ public class GroupService {
         return new GroupResDto(groupRepo.save(group));
     }
 
-    // Delete
-    @PreAuthorize("hasAuthority('ADMIN') or hasAuthority('USER')")
+    //  Delete
+
+    @JustAdmin
     public void deleteGroup(Long groupId) {
         Group targetGroup = getGroupById(groupId);
         if (!targetGroup.getChildGroups().isEmpty())
@@ -118,15 +136,16 @@ public class GroupService {
         groupRepo.delete(targetGroup);
     }
 
-    //    함수 공통화
-    @PreAuthorize("hasAuthority('ADMIN') or hasAuthority('USER')")
+    //  공통함수
+
+    @UserAdmin
     public Group getGroupById(Long supperGroupId) {
         return groupRepo.findById(supperGroupId)
                 .orElseThrow(() -> new EntityNotFoundException(
                         "그룹 아이디로 검색할 수 있는 그룹이 없습니다. " + supperGroupId));
     }
 
-    @PreAuthorize("hasAuthority('ADMIN')")
+    @JustAdmin
     public Group createNewGroup(CreateGroupReqDto dto) {
         Group newGroup = dto.makeAuthorityReqDtoToGroup();
         Optional.ofNullable(dto.getSupperGroupId())
@@ -135,7 +154,7 @@ public class GroupService {
         return newGroup;
     }
 
-    @PreAuthorize("hasAuthority('ADMIN') or hasAuthority('USER')")
+    @UserAdmin
     public List<GroupUser> getGroupUsers(addUsersToGroupReqDto dto) {
         List<GroupUser> addedUsers = new ArrayList<>();
         Group group = getGroupById(dto.getGroupId());
@@ -151,12 +170,12 @@ public class GroupService {
         return addedUsers;
     }
 
-    @PreAuthorize("hasAuthority('ADMIN') or hasAuthority('USER')")
+    @UserAdmin
     public List<GroupUser> getByGroup(Group group) {
         return groupUserRepo.findByGroup(group);
     }
 
-    @PreAuthorize("hasAuthority('ADMIN') or hasAuthority('USER')")
+    @UserAdmin
     public List<UserIdAndGroupRole> getAccessibleUsers(Long groupId) {
         List<UserIdAndGroupRole> accessibleUsers = new ArrayList<>();
         Group myTeamGroup = getGroupById(groupId);
@@ -172,7 +191,7 @@ public class GroupService {
         return accessibleUsers;
     }
 
-    @PreAuthorize("hasAuthority('ADMIN') or hasAuthority('USER')")
+    @UserAdmin
     public List<GroupResDto> getGroups() {
         return groupRepo.findAll().stream()
                 .map(GroupResDto::new)

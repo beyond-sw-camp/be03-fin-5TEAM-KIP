@@ -1,18 +1,15 @@
-package com.FINAL.KIP.request.domain;
+package com.FINAL.KIP.note.domain;
 
 import com.FINAL.KIP.common.domain.BaseEntity;
 import com.FINAL.KIP.document.domain.Document;
-import com.FINAL.KIP.group.domain.Group;
 import com.FINAL.KIP.user.domain.User;
-import jakarta.persistence.CascadeType;
-import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
-import java.time.LocalDateTime;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -20,45 +17,31 @@ import lombok.NoArgsConstructor;
 
 @Entity
 @Getter
+@NoArgsConstructor
 @AllArgsConstructor
 @Builder
-@NoArgsConstructor
-public class Request extends BaseEntity {
+public class Note extends BaseEntity {
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long id;
 
-	private LocalDateTime dueDate;
-
 	@Builder.Default
-	private String isOk = "P";
+	private String isRead = "N";
 
-	@Builder.Default
-	private String delYn = "N";
+	private String message;
 
-	private int days;
+	@ManyToOne(fetch = FetchType.LAZY)
+	@JoinColumn(nullable = false)
+	private User writer;
 
-	@ManyToOne
+	@ManyToOne(fetch = FetchType.LAZY)
+	@JoinColumn(nullable = false)
+	private User receiver;
+
+	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(nullable = false)
 	private Document document;
 
-	@ManyToOne
-	@JoinColumn(nullable = false)
-	private User requester;
 
-	@ManyToOne
-	@JoinColumn(nullable = false)
-	private Group group;
-
-	public void refuseRequest() {
-		this.isOk = "N";
-	}
-	public void agreeRequest() {
-		this.isOk = "Y";
-		this.dueDate = LocalDateTime.now().plusDays(days);
-	}
-	public void deleteRequest() {
-		this.delYn = "Y";
-	}
 }

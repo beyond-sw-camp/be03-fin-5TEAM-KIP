@@ -1,6 +1,7 @@
 package com.FINAL.KIP.user.controller;
 
 import com.FINAL.KIP.common.CommonResponse;
+import com.FINAL.KIP.common.firebase.service.FCMService;
 import com.FINAL.KIP.securities.JwtTokenProvider;
 import com.FINAL.KIP.user.domain.User;
 import com.FINAL.KIP.user.dto.req.CreateUserReqDto;
@@ -23,13 +24,18 @@ import java.util.Map;
 public class UserController {
 
     private final UserService userService;
+    private final JwtTokenProvider jwtTokenProvider;
+    private final FCMService fcmService;
 
     @Autowired
-    public UserController(UserService userService) {
+    public UserController(UserService userService, JwtTokenProvider jwtTokenProvider,
+        FCMService fcmService) {
         this.userService = userService;
+        this.jwtTokenProvider = jwtTokenProvider;
+        this.fcmService = fcmService;
     }
 
-//    Create
+    //    Create
     @PostMapping
     public ResponseEntity<UserResDto> createUser(@RequestBody CreateUserReqDto dto) {
         return ResponseEntity.ok(userService.createUser(dto));
@@ -48,9 +54,11 @@ public class UserController {
 
     // 로그인
     @PostMapping("login") //login은 토큰 사용으로 Map형식으로 받아주어야함 // Map<String, Object>
-    public ResponseEntity<CommonResponse> userLogin(@RequestBody LoginReqDto loginReqDto) {
+    public ResponseEntity<CommonResponse> userLogin(@RequestBody LoginReqDto loginReqDto){
         CommonResponse commonResponse = userService.login(loginReqDto);
-        return new ResponseEntity<>(commonResponse, HttpStatus.OK);
+        if(loginReqDto.getToken()!=null)
+            fcmService.saveToken(loginReqDto);
+        return new ResponseEntity<>(commonResponse , HttpStatus.OK);
     }
 
     // 사용자 마이페이지

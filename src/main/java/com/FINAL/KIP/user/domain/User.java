@@ -2,6 +2,7 @@ package com.FINAL.KIP.user.domain;
 
 import com.FINAL.KIP.common.domain.BaseEntity;
 import com.FINAL.KIP.document.domain.Document;
+import com.FINAL.KIP.note.domain.Note;
 import com.FINAL.KIP.request.domain.Request;
 import jakarta.persistence.*;
 import java.util.ArrayList;
@@ -48,9 +49,14 @@ public class User extends BaseEntity {
     private String delYn = "N";
 
     @OneToMany(mappedBy = "requester", cascade = CascadeType.ALL)
-    private final List<Request> requests = new ArrayList<>();
+    private List<Request> requests = new ArrayList<>();
 
-    public User(){}
+    @OneToMany(mappedBy = "receiver", cascade = CascadeType.ALL)
+    private List<Note> notes = new ArrayList<>();
+
+    public User() {
+
+    }
 
     @Builder
     public User(String name, String email, String password,
