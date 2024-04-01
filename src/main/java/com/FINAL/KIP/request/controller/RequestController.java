@@ -3,10 +3,12 @@ package com.FINAL.KIP.request.controller;
 import com.FINAL.KIP.request.dto.request.RequestCreateReqDto;
 import com.FINAL.KIP.request.dto.response.RequestAgreeResDto;
 import com.FINAL.KIP.request.dto.response.RequestCreateResDto;
+import com.FINAL.KIP.request.dto.response.RequestDeleteResDto;
 import com.FINAL.KIP.request.dto.response.RequestRefuseResDto;
 import com.FINAL.KIP.request.service.RequestService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -36,6 +38,11 @@ public class RequestController {
 	@GetMapping("/doc/request/agree/{request_id}")
 	public ResponseEntity<RequestAgreeResDto> agreeRequest(@PathVariable Long request_id) {
 		return requestService.agreeRequest(request_id);
+	}
+
+	@DeleteMapping("/doc/request/{request_id}")
+	public ResponseEntity<RequestDeleteResDto> deleteRequst(@PathVariable Long request_id) {
+		return requestService.deleteRequest(request_id);
 	}
 
 }

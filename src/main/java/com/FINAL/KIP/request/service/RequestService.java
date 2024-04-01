@@ -15,13 +15,11 @@ import com.FINAL.KIP.request.domain.Request;
 import com.FINAL.KIP.request.dto.request.RequestCreateReqDto;
 import com.FINAL.KIP.request.dto.response.RequestAgreeResDto;
 import com.FINAL.KIP.request.dto.response.RequestCreateResDto;
+import com.FINAL.KIP.request.dto.response.RequestDeleteResDto;
 import com.FINAL.KIP.request.dto.response.RequestRefuseResDto;
 import com.FINAL.KIP.request.repository.RequestRepository;
 import com.FINAL.KIP.user.domain.User;
-import com.FINAL.KIP.user.domain.UserDocAuthorityId;
 import com.FINAL.KIP.user.repository.UserRepository;
-import java.time.LocalDateTime;
-import java.util.Optional;
 import java.util.UUID;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -181,5 +179,37 @@ public class RequestService {
 		requestAgreeResDto.setTitle(req.getDocument().getTitle());
 
 		return ResponseEntity.ok(requestAgreeResDto);
+	}
+
+	@Transactional
+	public ResponseEntity<RequestDeleteResDto> deleteRequest(Long requestId) {
+		Request req = findById(requestId);
+		if (req.getDelYn().equals("Y")) {
+			throw new IllegalArgumentException("이미 삭제된 요청입니다.");
+		}
+
+		String employeeId = SecurityContextHolder.getContext().getAuthentication().getName();
+		User user = findByEmployeeId(employeeId);
+		Group group = req.getGroup();
+
+		GroupUser groupUser = findGroupUser(group, user);
+		if(groupUser == null) {
+			throw new IllegalArgumentException("해당 그룹 요청에 접근 권한이 존재하지 않습니다.");
+		}
+		if (groupUser.getGroupRole() != GroupRole.SUPER) {
+			throw new IllegalArgumentException("그룹의 관리자만 요청을 관리할 수 있습니다.");
+		}
+
+		if (req.getIsOk().equals("P")) {
+			req.deleteRequest();
+			req.refuseRequest();
+			noteService.createRefuseRequestNote(
+				new NoteRefuseReqDto(req.getRequester(), req.getDocument(), user));
+			RequestDeleteResDto requestDeleteResDto = new RequestDeleteResDto("삭제 완료되었습니다.");
+			return ResponseEntity.ok(requestDeleteResDto);
+		}
+		req.deleteRequest();
+		RequestDeleteResDto requestDeleteResDto = new RequestDeleteResDto("삭제 완료되었습니다.");
+		return ResponseEntity.ok(requestDeleteResDto);
 	}
 }
