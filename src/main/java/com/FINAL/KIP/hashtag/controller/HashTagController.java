@@ -32,4 +32,11 @@ public class HashTagController {
         return ResponseEntity.ok(hashTagService.getAllHashTags());
     }
 
+    // Delete
+    @DeleteMapping("{HashTagId}/delete")
+    public ResponseEntity<Void> deleteHashTag(@PathVariable Long HashTagId) {
+        hashTagService.deleteHashTag(HashTagId);
+        return ResponseEntity.noContent().build();
+    }
+
 }

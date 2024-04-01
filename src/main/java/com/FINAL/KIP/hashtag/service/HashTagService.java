@@ -1,5 +1,6 @@
 package com.FINAL.KIP.hashtag.service;
 
+import com.FINAL.KIP.common.aspect.JustAdmin;
 import com.FINAL.KIP.common.aspect.UserAdmin;
 import com.FINAL.KIP.hashtag.domain.HashTag;
 import com.FINAL.KIP.hashtag.dto.req.CreateHashTagReqDto;
@@ -22,6 +23,8 @@ public class HashTagService {
         this.hashTagRepo = hashTagRepo;
     }
 
+
+    // Create
     @UserAdmin
     public List<HashTagResDto> createHashTags(List<CreateHashTagReqDto> dtos) {
         List<HashTag> hashTags = new ArrayList<>();
@@ -39,10 +42,17 @@ public class HashTagService {
                 .collect(Collectors.toList());  // 중복제거 후 저장된 값만 반환
     }
 
+    //  Read
     @UserAdmin
     public List<HashTagResDto> getAllHashTags() {
         return hashTagRepo.findAll().stream()
                 .map(HashTagResDto::new)
                 .collect(Collectors.toList());
+    }
+
+    //  Delete
+    @JustAdmin
+    public void deleteHashTag(Long hashTagId) {
+        hashTagRepo.deleteById(hashTagId);
     }
 }
