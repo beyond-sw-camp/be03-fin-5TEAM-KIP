@@ -56,7 +56,8 @@ public class RequestService {
 		RequestCreateReqDto requestCreateReqDto) throws IllegalArgumentException {
 
 		Document document = findDocumentByUuid(requestCreateReqDto.getDocId());
-		User user = findUserById(requestCreateReqDto.getUserId());
+		String userEmployeeId = SecurityContextHolder.getContext().getAuthentication().getName();
+		User user = findByEmployeeId(userEmployeeId);
 
 		if (requestRepository.existsRequestByRequesterAndDocumentAndIsOk(user, document, "P")) {
 			throw new IllegalArgumentException("이미 해당 문서에 접근 권한요청을 했습니다.");
