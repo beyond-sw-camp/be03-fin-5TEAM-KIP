@@ -20,7 +20,7 @@ public class CreateUserReqDto {
     private LocalDateTime employedDay;
     private String employeeId;
 
-    public User makeUserReqDtoToUser(CreateUserReqDto this) {
+    public User makeUserReqDtoToUser() {
         return User.builder()
                 .name(this.name)
                 .email(this.email)

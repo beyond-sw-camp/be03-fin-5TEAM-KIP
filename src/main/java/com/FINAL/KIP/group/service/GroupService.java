@@ -152,7 +152,6 @@ public class GroupService {
     }
 
     //  공통함수
-
     @UserAdmin
     public Group getGroupById(Long supperGroupId) {
         return groupRepo.findById(supperGroupId)
