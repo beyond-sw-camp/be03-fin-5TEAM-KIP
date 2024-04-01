@@ -2,9 +2,7 @@ package com.FINAL.KIP.group.service;
 
 import com.FINAL.KIP.common.aspect.JustAdmin;
 import com.FINAL.KIP.common.aspect.UserAdmin;
-import com.FINAL.KIP.group.domain.Group;
-import com.FINAL.KIP.group.domain.GroupUser;
-import com.FINAL.KIP.group.domain.UserIdAndGroupRole;
+import com.FINAL.KIP.group.domain.*;
 import com.FINAL.KIP.group.dto.req.CreateGroupReqDto;
 import com.FINAL.KIP.group.dto.req.UpdateGroupReqDto;
 import com.FINAL.KIP.group.dto.req.addUsersToGroupReqDto;
@@ -20,6 +18,7 @@ import jakarta.persistence.EntityNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -40,7 +39,8 @@ public class GroupService {
         this.groupUserRepo = groupUserRepo;
     }
 
-    //    Create
+
+    //  Create
     @Transactional
     @JustAdmin
     public GroupResDto createGroup(CreateGroupReqDto dto) {
@@ -49,7 +49,6 @@ public class GroupService {
         savedNewGroup.getDocuments().get(0).setTitle(newGroup.getGroupName() + " 그룹에 오신것을 환영합니다.");
         return new GroupResDto(savedNewGroup);
     }
-
 
     @Transactional
     @JustAdmin
@@ -76,7 +75,7 @@ public class GroupService {
     }
 
 
-    //    Read
+    //  Read
     @JustAdmin
     public GroupResDto getGroupInfoById(Long groupId) {
         Group group = getGroupById(groupId);
@@ -101,8 +100,19 @@ public class GroupService {
                 .map(GroupResDto::new)
                 .collect(Collectors.toList());
     }
-    // Update
 
+    @UserAdmin
+    public List<GroupResDto> getMyGroups() {
+        User loginedUser = userService.getUserFromAuthentication();
+        List<GroupUser> userGroups = groupUserRepo.findByUser(loginedUser);
+        return userGroups.stream()
+                .map(GroupUser::getGroup)
+                .map(GroupResDto::new)
+                .collect(Collectors.toList());
+    }
+
+
+    //  Update
     @JustAdmin
     public GroupResDto updateGroupInfo(UpdateGroupReqDto dto) {
         Group group = getGroupById(dto.getGroupId());
@@ -111,8 +121,18 @@ public class GroupService {
         group.setSuperGroup(getGroupById(dto.getSupperGroupId()));
         return new GroupResDto(groupRepo.save(group));
     }
-    // Delete
 
+    @JustAdmin
+    public GroupUsersRoleResDto updateUserRoleInGroup(Long groupId, Long userId) {
+        GroupUser groupUser = getGroupUserByGroupUserId(groupId, userId);
+        if (groupUser.getGroupRole().equals(GroupRole.SUPER))
+            groupUser.setGroupRole(GroupRole.NORMAL);
+        else
+            groupUser.setGroupRole(GroupRole.SUPER);
+        return new GroupUsersRoleResDto(groupUserRepo.save(groupUser));
+    }
+
+    //  Delete
     @JustAdmin
     public void deleteGroup(Long groupId) {
         Group targetGroup = getGroupById(groupId);
@@ -122,8 +142,16 @@ public class GroupService {
             throw new IllegalStateException("그룹에 최상단문서 1개만 남기고 모두 지워야 삭제 가능합니다.");
         groupRepo.delete(targetGroup);
     }
-    //    함수 공통화
 
+
+    @JustAdmin
+    public GroupUsersResDto removeUserFromGroup(Long groupId, Long userId) {
+        GroupUser groupUser = getGroupUserByGroupUserId(groupId, userId);
+        groupUserRepo.delete(groupUser);
+        return getGroupUsers(groupId);
+    }
+
+    //  공통함수
     @UserAdmin
     public Group getGroupById(Long supperGroupId) {
         return groupRepo.findById(supperGroupId)
@@ -182,5 +210,16 @@ public class GroupService {
         return groupRepo.findAll().stream()
                 .map(GroupResDto::new)
                 .collect(Collectors.toList());
+    }
+
+    @JustAdmin
+    public GroupUser getGroupUserByGroupUserId(Long groupId, Long userId) {
+        GroupUserId groupUserId = GroupUserId.builder()
+                .group(getGroupById(groupId))
+                .user(userService.getUserById(userId))
+                .build();
+        return groupUserRepo.findById(groupUserId)
+                .orElseThrow(() -> new EntityNotFoundException(
+                        "그룹 유저 아이디로 검색할 수 있는 그룹 유저가 없습니다. groupId: " + groupId + ", userId: " + userId));
     }
 }

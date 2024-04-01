@@ -15,4 +15,6 @@ public class LoginReqDto {
     @Size(min = 4, message = "minimum length is 4")
     private String password;
 
+    private String token;
+
 }

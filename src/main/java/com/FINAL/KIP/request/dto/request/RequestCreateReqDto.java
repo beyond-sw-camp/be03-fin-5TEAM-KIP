@@ -6,7 +6,6 @@ import lombok.Getter;
 public class RequestCreateReqDto {
 
 	private String docId;
-	private Long userId;
 	private int days;
 
 }
