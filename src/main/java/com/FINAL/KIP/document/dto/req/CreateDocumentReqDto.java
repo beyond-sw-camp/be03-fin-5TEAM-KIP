@@ -13,7 +13,7 @@ public class CreateDocumentReqDto {
     private Long upLinkId;
     private Long groupId;
 
-    public Document makeDocDtoToDocument (CreateDocumentReqDto this){
+    public Document makeDocDtoToDocument (){
         return Document.builder()
                 .title(this.title)
                 .kmsDocType(KmsDocType.CONTENT)

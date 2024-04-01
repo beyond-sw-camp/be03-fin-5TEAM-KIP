@@ -14,7 +14,7 @@ public class CreateGroupReqDto {
     @Getter
     private Long supperGroupId;
 
-    public Group makeAuthorityReqDtoToGroup(CreateGroupReqDto this){
+    public Group makeAuthorityReqDtoToGroup(){
         return Group.builder()
                 .groupName(this.groupName)
                 .groupType(GroupType.valueOf(this.groupType))
