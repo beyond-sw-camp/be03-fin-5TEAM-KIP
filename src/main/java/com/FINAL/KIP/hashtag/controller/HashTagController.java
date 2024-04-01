@@ -38,5 +38,4 @@ public class HashTagController {
         hashTagService.deleteHashTag(HashTagId);
         return ResponseEntity.noContent().build();
     }
-
 }

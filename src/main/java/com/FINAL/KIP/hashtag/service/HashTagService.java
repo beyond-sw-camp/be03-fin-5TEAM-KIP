@@ -5,22 +5,27 @@ import com.FINAL.KIP.common.aspect.UserAdmin;
 import com.FINAL.KIP.hashtag.domain.HashTag;
 import com.FINAL.KIP.hashtag.dto.req.CreateHashTagReqDto;
 import com.FINAL.KIP.hashtag.dto.res.HashTagResDto;
+import com.FINAL.KIP.hashtag.repository.DocHashTagRepository;
 import com.FINAL.KIP.hashtag.repository.HashTagRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.NoSuchElementException;
 import java.util.stream.Collectors;
 
 @Service
 public class HashTagService {
 
     public final HashTagRepository hashTagRepo;
+    public final DocHashTagRepository docHashTagRepo;
 
     @Autowired
-    public HashTagService(HashTagRepository hashTagRepo) {
+    public HashTagService(HashTagRepository hashTagRepo,
+                          DocHashTagRepository docHashTagRepo) {
         this.hashTagRepo = hashTagRepo;
+        this.docHashTagRepo = docHashTagRepo;
     }
 
 
@@ -55,4 +60,12 @@ public class HashTagService {
     public void deleteHashTag(Long hashTagId) {
         hashTagRepo.deleteById(hashTagId);
     }
+
+    //  함수공통화
+    public HashTag getHashTagByTagName(String tagName) {
+        return hashTagRepo.findByTagName(tagName).orElseThrow(
+                ()-> new NoSuchElementException(tagName + "해당 태그 이름 존재하지 않습니다."));
+    }
+
+
 }

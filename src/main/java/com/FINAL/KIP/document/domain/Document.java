@@ -2,6 +2,7 @@ package com.FINAL.KIP.document.domain;
 
 import com.FINAL.KIP.common.domain.BaseEntity;
 import com.FINAL.KIP.group.domain.Group;
+import com.FINAL.KIP.hashtag.domain.DocHashTag;
 import com.FINAL.KIP.request.domain.Request;
 import jakarta.persistence.*;
 import lombok.Builder;
@@ -29,6 +30,10 @@ public class Document extends BaseEntity {
 
     @Enumerated(value = EnumType.STRING)
     private KmsDocType kmsDocType;
+  
+    @Column(nullable = false)
+    @Builder.Default
+    private int bookCount = 0; // 문서 북마크 갯수 체크
 
     @ManyToOne // OneToOne은 유니크 걸림
     @JoinColumn
@@ -44,10 +49,12 @@ public class Document extends BaseEntity {
 
     @OneToMany(mappedBy = "document", cascade = CascadeType.ALL)
     private final List<Request> requests = new ArrayList<>();
-
-    @Column(nullable = false)
-    @Builder.Default
-    private int bookCount = 0; // 문서 북마크 갯수 체크
+  
+    @OneToMany(mappedBy = "document", cascade = CascadeType.ALL)
+    private final List<DocHashTag> docHashTags = new ArrayList<>();
+    public void addAllDocHashTags(List<DocHashTag> docHashTags) {
+        this.docHashTags.addAll(docHashTags);
+    }
 
     public Document () {}
 
