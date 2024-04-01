@@ -1,6 +1,7 @@
 package com.FINAL.KIP.group.controller;
 
 
+import com.FINAL.KIP.group.domain.GroupUser;
 import com.FINAL.KIP.group.dto.req.CreateGroupReqDto;
 import com.FINAL.KIP.group.dto.req.UpdateGroupReqDto;
 import com.FINAL.KIP.group.dto.req.addUsersToGroupReqDto;
@@ -130,6 +131,14 @@ public class GroupController {
         return ResponseEntity.ok(
                 groupService.getMyGroups()
         );
+    }
+
+
+    // Update
+    @PatchMapping("{groupId}/{userId}/role")
+    public ResponseEntity<GroupUsersRoleResDto> updateUserRoleInGroup(
+            @PathVariable Long groupId, @PathVariable Long userId) {
+        return ResponseEntity.ok(groupService.updateUserRoleInGroup(groupId, userId));
     }
 
     //  Delete

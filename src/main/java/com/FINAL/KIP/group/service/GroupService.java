@@ -2,10 +2,7 @@ package com.FINAL.KIP.group.service;
 
 import com.FINAL.KIP.common.aspect.JustAdmin;
 import com.FINAL.KIP.common.aspect.UserAdmin;
-import com.FINAL.KIP.group.domain.Group;
-import com.FINAL.KIP.group.domain.GroupUser;
-import com.FINAL.KIP.group.domain.GroupUserId;
-import com.FINAL.KIP.group.domain.UserIdAndGroupRole;
+import com.FINAL.KIP.group.domain.*;
 import com.FINAL.KIP.group.dto.req.CreateGroupReqDto;
 import com.FINAL.KIP.group.dto.req.UpdateGroupReqDto;
 import com.FINAL.KIP.group.dto.req.addUsersToGroupReqDto;
@@ -125,6 +122,15 @@ public class GroupService {
         return new GroupResDto(groupRepo.save(group));
     }
 
+    @JustAdmin
+    public GroupUsersRoleResDto updateUserRoleInGroup(Long groupId, Long userId) {
+        GroupUser groupUser = getGroupUserByGroupUserId(groupId, userId);
+        if (groupUser.getGroupRole().equals(GroupRole.SUPER))
+            groupUser.setGroupRole(GroupRole.NORMAL);
+        else
+            groupUser.setGroupRole(GroupRole.SUPER);
+        return new GroupUsersRoleResDto(groupUserRepo.save(groupUser));
+    }
 
     //  Delete
     @JustAdmin
