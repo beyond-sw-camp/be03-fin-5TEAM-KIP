@@ -18,6 +18,11 @@ spring:
       ddl-auto: create-drop
     show-sql: true
 
+upload:
+  dir: /path/to/your/upload/directory
+
+
+
 #  data:
 #    redis:
 #      host: localhost # 로컬에서 테스트 할 때는 localhost로 사용
