@@ -72,4 +72,15 @@ public class BookService {
         }
         return bookResDto;
     }
+
+    public BookResDto docBookCount(Long documentId){
+        Document document = documentRepository.findById(documentId).orElseThrow(() -> new EntityNotFoundException("없는 문서입니다."));
+        BookResDto bookResDto;
+        bookResDto = BookResDto.builder()
+                .httpStatus(HttpStatus.OK)
+                .message("BookMarkCount")
+                .result(document.getBookCount())
+                .build();
+        return bookResDto;
+    }
 }
