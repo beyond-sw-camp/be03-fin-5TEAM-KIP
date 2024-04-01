@@ -1,5 +1,6 @@
 package com.FINAL.KIP.user.service;
 
+import com.FINAL.KIP.bookmark.repository.BookRepository;
 import com.FINAL.KIP.common.CommonResponse;
 import com.FINAL.KIP.common.aspect.JustAdmin;
 import com.FINAL.KIP.common.aspect.UserAdmin;
@@ -33,13 +34,15 @@ public class UserService {
     private final PasswordEncoder passwordEncoder; //비밀번호 암호화
     private final JwtTokenProvider jwtTokenProvider;
     private final UserRefreshTokenRepository userRefreshTokenRepository;
+    private final BookRepository bookRepository;
 
     @Autowired
-    public UserService(UserRepository userRepo, PasswordEncoder passwordEncoder, JwtTokenProvider jwtTokenProvider, UserRefreshTokenRepository userRefreshTokenRepository) {
+    public UserService(UserRepository userRepo, PasswordEncoder passwordEncoder, JwtTokenProvider jwtTokenProvider, UserRefreshTokenRepository userRefreshTokenRepository, BookRepository bookRepository) {
         this.userRepo = userRepo;
         this.passwordEncoder = passwordEncoder;
         this.jwtTokenProvider = jwtTokenProvider;
         this.userRefreshTokenRepository = userRefreshTokenRepository;
+        this.bookRepository = bookRepository;
     }
 
 //    Create
@@ -131,5 +134,14 @@ public class UserService {
     public User getUserByEmployeeId(String employeeId) {
         return userRepo.findByEmployeeId(employeeId)
                 .orElseThrow(() -> new EntityNotFoundException("사원번호를 찾을 수 없습니다. " + employeeId));
+    }
+
+    // 사용자 북마크 목록 조회
+    public CommonResponse userBookList(){
+        User userInfo = getUserFromAuthentication();
+        String a = userInfo.getEmployeeId();
+        System.out.println(a);
+        return new CommonResponse(HttpStatus.OK, "User Book List loaded successfully!", userInfo);
+
     }
 }

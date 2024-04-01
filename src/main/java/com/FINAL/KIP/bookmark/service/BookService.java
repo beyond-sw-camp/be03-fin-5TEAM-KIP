@@ -4,7 +4,6 @@ import com.FINAL.KIP.bookmark.domain.Book;
 import com.FINAL.KIP.bookmark.dto.BookResDto;
 import com.FINAL.KIP.bookmark.repository.BookRepository;
 import com.FINAL.KIP.document.domain.Document;
-//import com.FINAL.KIP.document.repository.DocBookReportRepository;
 import com.FINAL.KIP.document.repository.DocumentRepository;
 import com.FINAL.KIP.user.domain.User;
 import com.FINAL.KIP.user.repository.UserRepository;
@@ -19,12 +18,12 @@ import java.util.List;
 @Service
 public class BookService {
     private final DocumentRepository documentRepository;
-    private final UserRepository userRepository;
+    private final UserRepository userRepo;
     private final BookRepository bookRepository;
 
-    public BookService(DocumentRepository documentRepository, UserRepository userRepository, BookRepository bookRepository) {
+    public BookService(DocumentRepository documentRepository, UserRepository userRepo, BookRepository bookRepository) {
         this.documentRepository = documentRepository;
-        this.userRepository = userRepository;
+        this.userRepo = userRepo;
         this.bookRepository = bookRepository;
     }
 
@@ -35,7 +34,7 @@ public class BookService {
         String name = SecurityContextHolder.getContext().getAuthentication().getName();
         String[] split = name.split(":");
         String employeeId = split[0];
-        User user = userRepository.findByEmployeeId(employeeId).orElseThrow(() -> new EntityNotFoundException("user not found"));
+        User user = userRepo.findByEmployeeId(employeeId).orElseThrow(() -> new EntityNotFoundException("user not found"));
 
         List<Book> bookList = bookRepository.findBooksByEmployeeIdAndDocumentId(employeeId, documentId);
         BookResDto bookResDto;
@@ -83,4 +82,5 @@ public class BookService {
                 .build();
         return bookResDto;
     }
+
 }
