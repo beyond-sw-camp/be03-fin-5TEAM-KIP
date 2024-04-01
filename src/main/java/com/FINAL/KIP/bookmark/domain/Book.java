@@ -7,8 +7,11 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.OnDelete;
 import org.hibernate.annotations.OnDeleteAction;
+
+import java.time.LocalDateTime;
 
 @Entity
 @Table(name = "bookmarks")
@@ -30,5 +33,9 @@ public class Book {
     @JoinColumn(name = "user_id", nullable = false)
     private User user;
 
+    @Column(nullable = false)
     private String employeeId;
+
+    @CreationTimestamp
+    private LocalDateTime bookCreatedTime;
 }

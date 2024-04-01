@@ -3,9 +3,8 @@ package com.FINAL.KIP.bookmark.service;
 import com.FINAL.KIP.bookmark.domain.Book;
 import com.FINAL.KIP.bookmark.dto.BookResDto;
 import com.FINAL.KIP.bookmark.repository.BookRepository;
-import com.FINAL.KIP.document.domain.DocBookReport;
 import com.FINAL.KIP.document.domain.Document;
-import com.FINAL.KIP.document.repository.DocBookReportRepository;
+//import com.FINAL.KIP.document.repository.DocBookReportRepository;
 import com.FINAL.KIP.document.repository.DocumentRepository;
 import com.FINAL.KIP.user.domain.User;
 import com.FINAL.KIP.user.repository.UserRepository;
@@ -22,13 +21,11 @@ public class BookService {
     private final DocumentRepository documentRepository;
     private final UserRepository userRepository;
     private final BookRepository bookRepository;
-    private final DocBookReportRepository docBookReportRepository;
 
-    public BookService(DocumentRepository documentRepository, UserRepository userRepository, BookRepository bookRepository, DocBookReportRepository docBookReportRepository) {
+    public BookService(DocumentRepository documentRepository, UserRepository userRepository, BookRepository bookRepository) {
         this.documentRepository = documentRepository;
         this.userRepository = userRepository;
         this.bookRepository = bookRepository;
-        this.docBookReportRepository = docBookReportRepository;
     }
 
     @Transactional
@@ -57,8 +54,8 @@ public class BookService {
                     .build();
             document.addBookCount();
 
-            DocBookReport docBookReport = new DocBookReport(book.getDocument(), book.getEmployeeId());
-            docBookReportRepository.save(docBookReport);
+//            DocBookReport docBookReport = new DocBookReport(book.getDocument(), book.getEmployeeId());
+//            docBookReportRepository.save(docBookReport);
 
         } else {
             Book book = bookList.get(0);
@@ -70,8 +67,8 @@ public class BookService {
                     .build();
             document.reduceLikeCount();
 
-            DocBookReport findDocBookReport = docBookReportRepository.findByDocumentIdAndEmployeeId(book.getDocument().getId(), book.getEmployeeId());
-            docBookReportRepository.delete(findDocBookReport);
+//            DocBookReport findDocBookReport = docBookReportRepository.findByDocumentIdAndEmployeeId(book.getDocument().getId(), book.getEmployeeId());
+//            docBookReportRepository.delete(findDocBookReport);
         }
         return bookResDto;
     }
