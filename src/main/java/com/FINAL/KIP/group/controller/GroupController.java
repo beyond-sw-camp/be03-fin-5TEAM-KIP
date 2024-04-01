@@ -1,6 +1,7 @@
 package com.FINAL.KIP.group.controller;
 
 
+import com.FINAL.KIP.group.domain.GroupUser;
 import com.FINAL.KIP.group.dto.req.CreateGroupReqDto;
 import com.FINAL.KIP.group.dto.req.UpdateGroupReqDto;
 import com.FINAL.KIP.group.dto.req.addUsersToGroupReqDto;
@@ -98,7 +99,7 @@ public class GroupController {
 
                             /* GroupUser */
 
-    //    Create
+    //  Create
     @PostMapping("addusers")
     public ResponseEntity<List<GroupUsersRoleResDto>> addUsersToGroup(
             @RequestBody addUsersToGroupReqDto dto) {
@@ -116,7 +117,7 @@ public class GroupController {
     }
 
 
-    //    Read
+    //  Read
     @GetMapping("{groupId}/users")
     public ResponseEntity<GroupUsersResDto> getGroupUsers(
             @PathVariable Long groupId) {
@@ -130,6 +131,21 @@ public class GroupController {
         return ResponseEntity.ok(
                 groupService.getMyGroups()
         );
+    }
+
+
+    // Update
+    @PatchMapping("{groupId}/{userId}/role")
+    public ResponseEntity<GroupUsersRoleResDto> updateUserRoleInGroup(
+            @PathVariable Long groupId, @PathVariable Long userId) {
+        return ResponseEntity.ok(groupService.updateUserRoleInGroup(groupId, userId));
+    }
+
+    //  Delete
+    @DeleteMapping("{groupId}/{userId}/delete")
+    public ResponseEntity<GroupUsersResDto> removeUserFromGroup(
+            @PathVariable Long groupId, @PathVariable Long userId) {
+        return ResponseEntity.ok(groupService.removeUserFromGroup(groupId, userId));
     }
 }
 

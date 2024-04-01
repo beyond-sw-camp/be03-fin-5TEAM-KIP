@@ -13,6 +13,8 @@ import com.FINAL.KIP.document.repository.DocumentRepository;
 import com.FINAL.KIP.group.domain.Group;
 import com.FINAL.KIP.group.domain.UserIdAndGroupRole;
 import com.FINAL.KIP.group.service.GroupService;
+import com.FINAL.KIP.hashtag.domain.DocHashTag;
+import com.FINAL.KIP.hashtag.service.HashTagService;
 import com.FINAL.KIP.user.domain.User;
 import com.FINAL.KIP.user.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -31,43 +33,52 @@ public class DocumentService {
     private final DocumentRepository documentRepo;
     private final GroupService groupService;
     private final UserService userService;
+    private final HashTagService hashTagService;
 
 
     @Autowired
     public DocumentService(DocumentRepository documentRepo,
                            GroupService groupService,
-                           UserService userService) {
+                           UserService userService,
+                           HashTagService hashTagService) {
         this.documentRepo = documentRepo;
         this.groupService = groupService;
         this.userService = userService;
+        this.hashTagService = hashTagService;
     }
 
     //    Create
     @Transactional
     public DocumentResDto createDocument(CreateDocumentReqDto dto) {
-        if (dto.getGroupId() == null) {
-            return new DocumentResDto(
-                    documentRepo.save(
-                            dto.makeDocDtoToDocument()));
-        } else {
-            Document upDocument = getDocumentById(dto.getUpLinkId());
+        Document newDocument = dto.makeDocDtoToDocument();
 
-            Document newDocument = dto.makeDocDtoToDocument();
+        if (dto.getGroupId() != null) { // 전체공개문서와, 그룹 소속문서 연결.
+            Group group = groupService.getGroupById(dto.getGroupId());
+            newDocument.setGroup(group);
+
+            Document upDocument = getDocumentById(dto.getUpLinkId());
             newDocument.setUpLink(upDocument);
 
             Document downDocument = upDocument.getDownLink();
             newDocument.setDownLink(downDocument);
 
-            Group group = groupService.getGroupById(dto.getGroupId());
-            newDocument.setGroup(group);
-
-            Document savedDocument = documentRepo.save(newDocument);
-            upDocument.setDownLink(savedDocument);
-
+            upDocument.setDownLink(newDocument);
             if (downDocument != null)
-                downDocument.setUpLink(savedDocument);
-            return new DocumentResDto(savedDocument);
+                downDocument.setUpLink(newDocument);
         }
+
+        Document savedDocument = documentRepo.save(newDocument);
+
+        if (dto.getHashTags() != null && !dto.getHashTags().isEmpty()) {
+            hashTagService.createHashTags(dto.getHashTags());  // 중복빼고 저장.
+            List<DocHashTag> docHashTags = dto.getHashTags().stream()
+                    .map(req -> hashTagService.getHashTagByTagName(req.getTagName()))
+                    .map(hashTag -> new DocHashTag(savedDocument, hashTag))
+                    .toList(); // 태그 이름으로 다시 아이디 추출하여 Doc과 연결
+            savedDocument.addAllDocHashTags(docHashTags);
+        }
+        return new DocumentResDto(
+                documentRepo.save(savedDocument));
     }
 
 
@@ -192,7 +203,7 @@ public class DocumentService {
     }
 
     @Transactional
-    public DocumentResDto updatePublicDocumentGroupId (updateDocGroupIdReqDto dto){
+    public DocumentResDto updatePublicDocumentGroupId(updateDocGroupIdReqDto dto) {
 
         Document targetDocument = getDocumentById(dto.getTargetDocumentId());
         if (targetDocument.getGroup() != null)
@@ -216,7 +227,6 @@ public class DocumentService {
     }
 
     //    Delete
-
     @Transactional
     public void deleteDocument(Long documentId) throws IllegalArgumentException {
         Document tagetDocument = getDocumentById(documentId);
@@ -235,7 +245,6 @@ public class DocumentService {
     }
 
     //    공통함수
-
     public Document getDocumentById(Long documentId) throws NoSuchElementException {
         return documentRepo.findById(documentId)
                 .orElseThrow(() -> new NoSuchElementException("찾으시려는 문서 ID와 일치하는 문서가 없습니다."));
