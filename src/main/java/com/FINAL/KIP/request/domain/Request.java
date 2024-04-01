@@ -34,6 +34,9 @@ public class Request extends BaseEntity {
 	@Builder.Default
 	private String isOk = "P";
 
+	@Builder.Default
+	private String delYn = "N";
+
 	private int days;
 
 	@ManyToOne
@@ -54,5 +57,8 @@ public class Request extends BaseEntity {
 	public void agreeRequest() {
 		this.isOk = "Y";
 		this.dueDate = LocalDateTime.now().plusDays(days);
+	}
+	public void deleteRequest() {
+		this.delYn = "Y";
 	}
 }
