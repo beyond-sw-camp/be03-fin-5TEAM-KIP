@@ -44,6 +44,11 @@ public class Document extends BaseEntity {
 
     @OneToMany(mappedBy = "document", cascade = CascadeType.ALL)
     private final List<Request> requests = new ArrayList<>();
+
+    @Column(nullable = false)
+    @Builder.Default
+    private int bookCount = 0; // 문서 북마크 갯수 체크
+
     public Document () {}
 
     @Builder
@@ -56,5 +61,13 @@ public class Document extends BaseEntity {
     @PrePersist
     public void prePersist(){
         this.uuid = UUID.randomUUID();
+    }
+
+    public void addBookCount(){
+        this.bookCount+=1;
+    }
+
+    public void reduceLikeCount(){
+        this.bookCount-=1;
     }
 }
