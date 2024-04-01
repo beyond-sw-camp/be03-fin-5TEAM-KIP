@@ -36,6 +36,7 @@ public class Book {
     @Column(nullable = false)
     private String employeeId;
 
+    @Column(nullable = false)
     @CreationTimestamp
     private LocalDateTime bookCreatedTime;
 }
