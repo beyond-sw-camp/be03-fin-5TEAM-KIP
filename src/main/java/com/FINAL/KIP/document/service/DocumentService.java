@@ -50,11 +50,16 @@ public class DocumentService {
     public DocumentResDto createDocument(CreateDocumentReqDto dto) {
         Document newDocument = dto.makeDocDtoToDocument();
 
-        if (dto.getGroupId() != null) { // 전체공개문서와, 그룹 소속문서 연결.
+        if (dto.getGroupId() != null) { // 비공개 문서 생성시.
             Group group = groupService.getGroupById(dto.getGroupId());
-            newDocument.setGroup(group);
-
             Document upDocument = getDocumentById(dto.getUpLinkId());
+
+            if (group.getDocuments().stream()
+                    .filter(doc -> doc.getId().equals(upDocument.getId()))
+                    .findAny().isEmpty()) // 서로 다른 그룹끼리 문서 연결 요청이 들어 오는 것 방지
+                throw new IllegalArgumentException("만들려는 문서의 ID 가 해당 그룹에 속해있지 않습니다.");
+
+            newDocument.setGroup(group);
             newDocument.setUpLink(upDocument);
 
             Document downDocument = upDocument.getDownLink();
