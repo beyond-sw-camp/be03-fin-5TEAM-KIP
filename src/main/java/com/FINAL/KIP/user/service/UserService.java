@@ -115,7 +115,7 @@ public class UserService {
         Map<String , String> result = new HashMap<>();
         result.put("user_id", String.valueOf(userRefreshToken.getId()));
         result.put("user_name", user.getName());
-        return new CommonResponse(HttpStatus.OK, "User Logout SUCCESS!", id);
+        return new CommonResponse(HttpStatus.OK, "User Logout SUCCESS!", result);
     }
 
     @UserAdmin
