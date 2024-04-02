@@ -44,6 +44,7 @@ public class BookService {
                     .document(document)
                     .user(user)
                     .employeeId(employeeId)
+                    .title(document.getTitle())
                     .build();
             bookRepository.save(book);
             bookResDto = BookResDto.builder()

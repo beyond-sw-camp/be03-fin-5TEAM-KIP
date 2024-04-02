@@ -139,9 +139,12 @@ public class UserService {
     // 사용자 북마크 목록 조회
     public CommonResponse userBookList(){
         User userInfo = getUserFromAuthentication();
-        String a = userInfo.getEmployeeId();
-        System.out.println(a);
-        return new CommonResponse(HttpStatus.OK, "User Book List loaded successfully!", userInfo);
+        String employeeId = userInfo.getEmployeeId();
+
+        List<Object[]> bookList = bookRepository.findDocumentIdAndTitleByEmployeeId(employeeId);
+        System.out.println(bookList);
+        return new CommonResponse(HttpStatus.OK, "User Book List loaded successfully!", bookList);
+
 
     }
 }
