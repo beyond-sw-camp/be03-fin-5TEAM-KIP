@@ -7,11 +7,9 @@ import com.FINAL.KIP.document.dto.req.moveDocInGroupReqDto;
 import com.FINAL.KIP.document.dto.req.updateDocGroupIdReqDto;
 import com.FINAL.KIP.document.dto.req.updateDocTitleReqDto;
 import com.FINAL.KIP.document.dto.res.DocumentResDto;
-import com.FINAL.KIP.document.dto.res.GetDocumentResDto;
-import com.FINAL.KIP.document.dto.res.PublicDocResDto;
+import com.FINAL.KIP.document.dto.res.LinkedDocumentResDto;
 import com.FINAL.KIP.document.repository.DocumentRepository;
 import com.FINAL.KIP.group.domain.Group;
-import com.FINAL.KIP.group.domain.UserIdAndGroupRole;
 import com.FINAL.KIP.group.service.GroupService;
 import com.FINAL.KIP.hashtag.domain.DocHashTag;
 import com.FINAL.KIP.hashtag.service.HashTagService;
@@ -77,40 +75,34 @@ public class DocumentService {
                     .toList(); // 태그 이름으로 다시 아이디 추출하여 Doc과 연결
             savedDocument.addAllDocHashTags(docHashTags);
         }
-        return new DocumentResDto(
-                documentRepo.save(savedDocument));
-    }
+        return new DocumentResDto(documentRepo.save(savedDocument), true);}
 
 
     //    Read
-    public List<PublicDocResDto> getPublicDocuments() {
+    public List<DocumentResDto> getPublicDocuments() {
         return documentRepo.findAll().stream()
                 .filter(document -> document.getGroup() == null)
-                .map(PublicDocResDto::new)
+                .map(doc -> new DocumentResDto(doc, true))
                 .collect(Collectors.toList());
     }
 
-    public GetDocumentResDto GetIsAccessibleDoc(Long docId, Long userId) {
-        boolean isAccessible = false;
-        Document tryToOpenDocument = getDocumentById(docId);
-        User tryUser = userService.getUserById(userId);
+    public DocumentResDto getIsAccessibleDoc(Long documentId) {
+        Document tryDocument = getDocumentById(documentId);
+        User tryUser = userService.getUserFromAuthentication();
+        Long docGroupId = tryDocument.getGroup().getId();
 
-        Long GroupId = tryToOpenDocument.getGroup().getId();
+        List<User> accessibleUsers = groupService.getAccessibleUsers(docGroupId);
+        accessibleUsers.add(userService.getUserById(1L)); // 관리자 추가
 
-        List<UserIdAndGroupRole> accessibleUsers = groupService.getAccessibleUsers(GroupId);
-        for (UserIdAndGroupRole obj : accessibleUsers) {
-            System.out.println(
-                    "맴버 아이디: " + obj.getUserId() + " " +
-                            userService.getUserById(obj.getUserId()).getName() +
-                            " / 권한정보: " + obj.getGroupRole());
-        }
-        isAccessible = accessibleUsers.stream()
-                .anyMatch(reqUserId -> reqUserId.getUserId().equals(tryUser.getId()));
+        /* 추후 파일별 접근 가능한 맴버 추가 로직 삽입 */
 
-        return new GetDocumentResDto(tryToOpenDocument, isAccessible);
+        boolean isAccessible = accessibleUsers.stream() // 접근 가능 유저 체크
+                .anyMatch(user -> user.equals(tryUser));
+
+        return new DocumentResDto(tryDocument, isAccessible);
     }
 
-    public List<GetDocumentResDto> getLinkedDocumentsByGroupId(Long groupId) {
+    public List<LinkedDocumentResDto> getLinkedDocumentsByGroupId(Long groupId) {
         List<Document> linkedDocuments = new ArrayList<>();
         Group targetGroup = groupService.getGroupById(groupId);
         Document topDocument = getTopDocument(targetGroup);
@@ -123,7 +115,7 @@ public class DocumentService {
         }
 
         return linkedDocuments.stream()
-                .map(document -> new GetDocumentResDto(document, true))
+                .map(LinkedDocumentResDto::new)
                 .collect(Collectors.toList());
     }
 
@@ -132,11 +124,11 @@ public class DocumentService {
     public DocumentResDto updateDocumentTitle(updateDocTitleReqDto dto) {
         Document targetDocument = getDocumentById(dto.getTargetDocumentId());
         targetDocument.setTitle(dto.getNewTitle());
-        return new DocumentResDto(documentRepo.save(targetDocument));
+        return new DocumentResDto(documentRepo.save(targetDocument),true);
     }
 
     @Transactional
-    public List<GetDocumentResDto> moveDocumentInGroup(moveDocInGroupReqDto dto) throws IllegalArgumentException {
+    public List<LinkedDocumentResDto> moveDocumentInGroup(moveDocInGroupReqDto dto) throws IllegalArgumentException {
 
         if (Objects.equals(dto.getStartDocId(), dto.getEndDocId()))
             throw new IllegalArgumentException("이동하려는 아이디가 서로 같습니다.");
@@ -175,7 +167,7 @@ public class DocumentService {
             targetDocument.setKmsDocType(KmsDocType.SECTION);
         else
             targetDocument.setKmsDocType(KmsDocType.CONTENT);
-        return new DocumentResDto(targetDocument);
+        return new DocumentResDto(targetDocument,true);
     }
 
     @Transactional
@@ -199,7 +191,7 @@ public class DocumentService {
         targetDocumnet.setUpLink(null);
         targetDocumnet.setDownLink(null);
 
-        return new DocumentResDto(targetDocumnet);
+        return new DocumentResDto(targetDocumnet, true);
     }
 
     @Transactional
@@ -223,7 +215,7 @@ public class DocumentService {
         if (downDocumnet != null)
             downDocumnet.setUpLink(targetDocument);
 
-        return new DocumentResDto(targetDocument);
+        return new DocumentResDto(targetDocument, true);
     }
 
     //    Delete

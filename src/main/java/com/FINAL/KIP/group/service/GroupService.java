@@ -90,7 +90,7 @@ public class GroupService {
     @UserAdmin
     public GroupUsersResDto getGroupUsers(Long groupId) {
         Group group = getGroupById(groupId);
-        List<GroupUser> groupUsers = getByGroup(group);
+        List<GroupUser> groupUsers = getGroupUserByGroup(group);
         return new GroupUsersResDto(groupUsers);
     }
 
@@ -185,24 +185,16 @@ public class GroupService {
     }
 
     @UserAdmin
-    public List<GroupUser> getByGroup(Group group) {
+    public List<GroupUser> getGroupUserByGroup(Group group) {
         return groupUserRepo.findByGroup(group);
     }
 
     @UserAdmin
-    public List<UserIdAndGroupRole> getAccessibleUsers(Long groupId) {
-        List<UserIdAndGroupRole> accessibleUsers = new ArrayList<>();
-        Group myTeamGroup = getGroupById(groupId);
-        List<GroupUser> groupUsers = getByGroup(myTeamGroup);
-        for (GroupUser groupUser : groupUsers) {
-            UserIdAndGroupRole userIdAndGroupRole = new UserIdAndGroupRole();
-            if (groupUser.getUser() != null) {
-                userIdAndGroupRole.setUserId(groupUser.getUser().getId());
-                userIdAndGroupRole.setGroupRole(groupUser.getGroupRole().name());
-                accessibleUsers.add(userIdAndGroupRole);
-            }
-        }
-        return accessibleUsers;
+    public List<User> getAccessibleUsers(Long groupId) {
+        Group myGroup = getGroupById(groupId);
+        return getGroupUserByGroup(myGroup).stream()
+                .map(GroupUser::getUser)
+                .collect(Collectors.toList());
     }
 
     @UserAdmin

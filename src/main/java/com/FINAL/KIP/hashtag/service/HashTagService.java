@@ -2,6 +2,8 @@ package com.FINAL.KIP.hashtag.service;
 
 import com.FINAL.KIP.common.aspect.JustAdmin;
 import com.FINAL.KIP.common.aspect.UserAdmin;
+import com.FINAL.KIP.document.domain.Document;
+import com.FINAL.KIP.hashtag.domain.DocHashTag;
 import com.FINAL.KIP.hashtag.domain.HashTag;
 import com.FINAL.KIP.hashtag.dto.req.CreateHashTagReqDto;
 import com.FINAL.KIP.hashtag.dto.res.HashTagResDto;
@@ -53,6 +55,13 @@ public class HashTagService {
         return hashTagRepo.findAll().stream()
                 .map(HashTagResDto::new)
                 .collect(Collectors.toList());
+    }
+
+    @UserAdmin
+    public List<HashTag> getHashTagsInDoc (Document document) {
+        return docHashTagRepo.findByDocument(document).stream()
+                .map(DocHashTag::getHashTag)
+                .toList();
     }
 
     //  Delete
