@@ -15,21 +15,9 @@ spring:
     database-platform: org.hibernate.dialect.MariaDBDialect
     generate-ddl: true
     hibernate:
-<<<<<<< HEAD
-      ddl-auto: update
+      ddl-auto: create
     show-sql: true
 
-<<<<<<< HEAD
-upload:
-  dir: /path/to/your/upload/directory
-
-
-
-#  data:
-#    redis:
-#      host: localhost # 로컬에서 테스트 할 때는 localhost로 사용
-#      port: 6379
-=======
   data:
     redis:
       host: localhost
@@ -40,14 +28,3 @@ jwt:
   secretKey: kipsecret장준혁김영광박세종윤지용
 fcm:
   certification : kip-fcm-firebase-adminsdk-gm80d-6a9b5bbd58.json
->>>>>>> 1d405145f33767e4975b9cabd5784bc7650e082c
-=======
-<<<<<<< HEAD
-      ddl-auto: update
-    #      ddl-auto: create
-=======
-#      ddl-auto: update
-      ddl-auto: create
->>>>>>> 55fc123a603ddd2f610c85b19f32eb438fe8e694
-    show-sql: true
->>>>>>> 3abc8732625fc1188c9bde96043e502e9f642c8a
