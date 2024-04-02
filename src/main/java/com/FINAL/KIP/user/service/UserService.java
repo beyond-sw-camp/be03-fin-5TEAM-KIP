@@ -142,7 +142,6 @@ public class UserService {
         String employeeId = userInfo.getEmployeeId();
 
         List<Object[]> bookList = bookRepository.findDocumentIdAndTitleByEmployeeId(employeeId);
-        System.out.println(bookList);
         return new CommonResponse(HttpStatus.OK, "User Book List loaded successfully!", bookList);
 
 
