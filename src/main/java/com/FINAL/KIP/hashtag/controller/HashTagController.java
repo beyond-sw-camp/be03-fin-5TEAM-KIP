@@ -1,7 +1,8 @@
 package com.FINAL.KIP.hashtag.controller;
 
 import com.FINAL.KIP.document.dto.res.JustDocTitleResDto;
-import com.FINAL.KIP.hashtag.dto.req.CreateHashTagReqDto;
+import com.FINAL.KIP.hashtag.dto.req.HashTagReqDto;
+import com.FINAL.KIP.hashtag.dto.req.UpdateHashTagsReqDto;
 import com.FINAL.KIP.hashtag.dto.res.HashTagResDto;
 import com.FINAL.KIP.hashtag.service.HashTagService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,7 +24,7 @@ public class HashTagController {
 
     //  Create
     @PostMapping
-    public ResponseEntity<List<HashTagResDto>> createHashTags(@RequestBody List<CreateHashTagReqDto> dtos) {
+    public ResponseEntity<List<HashTagResDto>> createHashTags(@RequestBody List<HashTagReqDto> dtos) {
         return ResponseEntity.ok(hashTagService.createHashTags(dtos));
     }
 
@@ -38,6 +39,11 @@ public class HashTagController {
         return ResponseEntity.ok(hashTagService.getDocumentsByHashTag(HashTagId));
     }
 
+    // Update
+    @PatchMapping
+    public ResponseEntity<List<HashTagResDto>> updateHashTags(@RequestBody UpdateHashTagsReqDto dto){
+        return ResponseEntity.ok(hashTagService.updateHashTags(dto));
+    }
 
     // Delete
     @DeleteMapping("{HashTagId}/delete")

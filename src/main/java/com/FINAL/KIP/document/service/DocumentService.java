@@ -11,7 +11,6 @@ import com.FINAL.KIP.document.dto.res.JustDocTitleResDto;
 import com.FINAL.KIP.document.repository.DocumentRepository;
 import com.FINAL.KIP.group.domain.Group;
 import com.FINAL.KIP.group.service.GroupService;
-import com.FINAL.KIP.hashtag.domain.DocHashTag;
 import com.FINAL.KIP.hashtag.service.HashTagService;
 import com.FINAL.KIP.user.domain.User;
 import com.FINAL.KIP.user.service.UserService;
@@ -70,19 +69,12 @@ public class DocumentService {
             if (downDocument != null)
                 downDocument.setUpLink(newDocument);
         }
-
         Document savedDocument = documentRepo.save(newDocument);
-
-        if (dto.getHashTags() != null && !dto.getHashTags().isEmpty()) {
-            hashTagService.createHashTags(dto.getHashTags());  // 중복빼고 저장.
-            List<DocHashTag> docHashTags = dto.getHashTags().stream()
-                    .map(req -> hashTagService.getHashTagByTagName(req.getTagName()))
-                    .map(hashTag -> new DocHashTag(savedDocument, hashTag))
-                    .toList(); // 태그 이름으로 다시 아이디 추출하여 Doc과 연결
-            savedDocument.addAllDocHashTags(docHashTags);
-        }
-        return new DocumentResDto(documentRepo.save(savedDocument), true);}
-
+        // 해시서비스로 공통화 시킴
+        if (dto.getHashTags() != null && !dto.getHashTags().isEmpty())
+            hashTagService.generateDocHashTags(dto.getHashTags(), savedDocument);
+        return new DocumentResDto(documentRepo.save(savedDocument), true);
+    }
 
     //    Read
     public List<DocumentResDto> getPublicDocuments() {
