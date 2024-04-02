@@ -78,6 +78,12 @@ public class UserController {
         return new ResponseEntity<>(new CommonResponse(HttpStatus.OK, "User deleted successfully", employeeId), HttpStatus.OK);
     }
 
+    @GetMapping("/book/list")
+    public ResponseEntity<CommonResponse> userBookList(){
+        CommonResponse commonResponse = userService.userBookList();
+        return new ResponseEntity<>(commonResponse , HttpStatus.OK);
+    }
+
 
 //        User user = userService.login(loginReqDto);
 ////        토큰 생성
