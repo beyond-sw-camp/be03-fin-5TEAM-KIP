@@ -7,7 +7,7 @@ import com.FINAL.KIP.document.dto.req.moveDocInGroupReqDto;
 import com.FINAL.KIP.document.dto.req.updateDocGroupIdReqDto;
 import com.FINAL.KIP.document.dto.req.updateDocTitleReqDto;
 import com.FINAL.KIP.document.dto.res.DocumentResDto;
-import com.FINAL.KIP.document.dto.res.LinkedDocumentResDto;
+import com.FINAL.KIP.document.dto.res.JustDocTitleResDto;
 import com.FINAL.KIP.document.repository.DocumentRepository;
 import com.FINAL.KIP.group.domain.Group;
 import com.FINAL.KIP.group.service.GroupService;
@@ -57,7 +57,8 @@ public class DocumentService {
             if (group.getDocuments().stream()
                     .filter(doc -> doc.getId().equals(upDocument.getId()))
                     .findAny().isEmpty()) // 서로 다른 그룹끼리 문서 연결 요청이 들어 오는 것 방지
-                throw new IllegalArgumentException("만들려는 문서의 ID 가 해당 그룹에 속해있지 않습니다.");
+                throw new IllegalArgumentException(
+                        "만들려는 문서의 ID 가 해당 그룹에 속해있지 않습니다.");
 
             newDocument.setGroup(group);
             newDocument.setUpLink(upDocument);
@@ -107,7 +108,7 @@ public class DocumentService {
         return new DocumentResDto(tryDocument, isAccessible);
     }
 
-    public List<LinkedDocumentResDto> getLinkedDocumentsByGroupId(Long groupId) {
+    public List<JustDocTitleResDto> getLinkedDocumentsByGroupId(Long groupId) {
         List<Document> linkedDocuments = new ArrayList<>();
         Group targetGroup = groupService.getGroupById(groupId);
         Document topDocument = getTopDocument(targetGroup);
@@ -120,7 +121,7 @@ public class DocumentService {
         }
 
         return linkedDocuments.stream()
-                .map(LinkedDocumentResDto::new)
+                .map(JustDocTitleResDto::new)
                 .collect(Collectors.toList());
     }
 
@@ -133,7 +134,7 @@ public class DocumentService {
     }
 
     @Transactional
-    public List<LinkedDocumentResDto> moveDocumentInGroup(moveDocInGroupReqDto dto) throws IllegalArgumentException {
+    public List<JustDocTitleResDto> moveDocumentInGroup(moveDocInGroupReqDto dto) throws IllegalArgumentException {
 
         if (Objects.equals(dto.getStartDocId(), dto.getEndDocId()))
             throw new IllegalArgumentException("이동하려는 아이디가 서로 같습니다.");
