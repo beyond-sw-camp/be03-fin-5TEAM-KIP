@@ -29,6 +29,9 @@ public class Book {
     @JoinColumn(name = "documentId", nullable = false)
     private Document document;
 
+    @Column(nullable = false)
+    private String title;
+
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id", nullable = false)
     private User user;
