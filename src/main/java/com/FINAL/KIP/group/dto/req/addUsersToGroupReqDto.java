@@ -13,5 +13,4 @@ public class addUsersToGroupReqDto {
     private Long groupId;
     private List<UserIdAndGroupRole> groupUsers;
 
-
 }

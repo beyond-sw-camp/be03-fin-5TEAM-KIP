@@ -30,9 +30,9 @@ public class GroupUser extends BaseEntity {
 
     @Builder
     public GroupUser(Group group,
-                     User user, String groupRole) {
+                     User user, GroupRole groupRole) {
         this.group = group;
         this.user = user;
-        this.groupRole = groupRole == null ? null : GroupRole.valueOf(groupRole);
+        this.groupRole = groupRole;
     }
 }

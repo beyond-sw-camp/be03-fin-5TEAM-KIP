@@ -6,8 +6,7 @@ import com.FINAL.KIP.document.dto.req.moveDocInGroupReqDto;
 import com.FINAL.KIP.document.dto.req.updateDocGroupIdReqDto;
 import com.FINAL.KIP.document.dto.req.updateDocTitleReqDto;
 import com.FINAL.KIP.document.dto.res.DocumentResDto;
-import com.FINAL.KIP.document.dto.res.GetDocumentResDto;
-import com.FINAL.KIP.document.dto.res.PublicDocResDto;
+import com.FINAL.KIP.document.dto.res.JustDocTitleResDto;
 import com.FINAL.KIP.document.service.DocumentService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -34,18 +33,17 @@ public class DocumentController {
 
 //    Read
     @GetMapping
-    public ResponseEntity<List<PublicDocResDto>> getPublicDocuments(){
+    public ResponseEntity<List<DocumentResDto>> getPublicDocuments(){
         return ResponseEntity.ok(documentService.getPublicDocuments());
     }
 
-    @GetMapping("{docId}/{userId}")
-    public ResponseEntity<GetDocumentResDto> getDocument(@PathVariable Long docId,
-                                                         @PathVariable Long userId) {
-        return ResponseEntity.ok(documentService.GetIsAccessibleDoc(docId, userId));
+    @GetMapping("{documentId}")
+    public ResponseEntity<DocumentResDto> getDocumentById(@PathVariable Long documentId) {
+        return ResponseEntity.ok(documentService.getIsAccessibleDoc(documentId));
     }
 
     @GetMapping("{groupId}/linked")
-    public ResponseEntity<List<GetDocumentResDto>> getLinkedDocumentsByGroupId(@PathVariable Long groupId) {
+    public ResponseEntity<List<JustDocTitleResDto>> getLinkedDocumentsByGroupId(@PathVariable Long groupId) {
         return ResponseEntity.ok(documentService.getLinkedDocumentsByGroupId(groupId));
     }
 
@@ -57,7 +55,7 @@ public class DocumentController {
     }
 
     @PatchMapping("move") // 그룹내 문서 이동
-    public ResponseEntity<List<GetDocumentResDto>> moveDocumentInGroup(@RequestBody moveDocInGroupReqDto dto){
+    public ResponseEntity<List<JustDocTitleResDto>> moveDocumentInGroup(@RequestBody moveDocInGroupReqDto dto){
         return ResponseEntity.ok(documentService.moveDocumentInGroup(dto));
     }
 

@@ -2,7 +2,7 @@ package com.FINAL.KIP.document.dto.req;
 
 import com.FINAL.KIP.document.domain.Document;
 import com.FINAL.KIP.document.domain.KmsDocType;
-import com.FINAL.KIP.hashtag.dto.req.CreateHashTagReqDto;
+import com.FINAL.KIP.hashtag.dto.req.HashTagReqDto;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -15,7 +15,7 @@ public class CreateDocumentReqDto {
     private String title;
     private Long upLinkId;
     private Long groupId;
-    private List<CreateHashTagReqDto> hashTags;
+    private List<HashTagReqDto> hashTags;
 
     public Document makeDocDtoToDocument(){
         return Document.builder()

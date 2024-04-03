@@ -7,7 +7,7 @@ import lombok.Setter;
 
 @Getter
 @Setter
-public class CreateHashTagReqDto {
+public class HashTagReqDto {
     private String tagName;
 
     public HashTag makeHashTagFromTagReqDto(){
