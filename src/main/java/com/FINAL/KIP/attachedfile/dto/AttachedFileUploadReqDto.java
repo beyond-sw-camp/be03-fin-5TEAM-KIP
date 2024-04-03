@@ -4,14 +4,14 @@ import lombok.Data;
 import org.springframework.web.multipart.MultipartFile;
 
 /**
- * 파일 업로드 요청 시 사용하는 DTO입니다.
- * 사용자로부터 MultipartFile 타입의 파일을 받아 처리합니다.
+ * 파일 업로드 요청 시 클라이언트로부터 받는 데이터를 담는 DTO입니다.
  */
-@Data
+@Data // Lombok을 사용하여 getter와 setter를 자동으로 생성합니다.
 public class AttachedFileUploadReqDto {
-    private MultipartFile file;
+    private MultipartFile file; // 업로드할 파일 데이터
 
     public AttachedFileUploadReqDto(MultipartFile file) {
         this.file = file;
     }
 }
+
