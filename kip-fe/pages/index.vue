@@ -1,14 +1,9 @@
-<script lang="ts" setup>
+<script setup lang="ts">
 
 </script>
 
 <template>
-  <div>
-    Page: Welcome To KIP (knowledge is Power)
-  </div>
-  <NuxtLink to="/test">
-    <UButton>Go To Test</UButton>
-  </NuxtLink>
+<div> Welcometo KIP Service </div>
 </template>
 
 <style scoped>

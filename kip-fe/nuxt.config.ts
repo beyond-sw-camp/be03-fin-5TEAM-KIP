@@ -1,8 +1,26 @@
+import vuetify, { transformAssetUrls } from 'vite-plugin-vuetify'
 // https://nuxt.com/docs/api/configuration/nuxt-config
 export default defineNuxtConfig({
     devtools: {enabled: true}, // https://devtools.nuxt.com/
-    modules: ['@nuxt/ui'], // Nuxt 불러오는 설정
-    ui: {
-        global: true, // 컴포넌트 전역적으로 사용
+
+    build: {
+        transpile: ['vuetify'],
     },
+
+    modules: [
+        (_options, nuxt) => {
+            nuxt.hooks.hook('vite:extendConfig', (config) => {
+                // @ts-expect-error
+                config.plugins.push(vuetify({autoImport: true}))
+            })
+        } // Nuxt 전용 뷰티파이 불러오는 설정
+    ],
+    vite: {
+        vue: {
+            template: {
+                transformAssetUrls,
+            },
+        }
+    }
+
 })
