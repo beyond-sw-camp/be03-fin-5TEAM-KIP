@@ -15,7 +15,7 @@ import java.io.IOException;
 import java.util.List;
 
 @RestController
-@RequestMapping("/files") // 여기를 "/api/files"에서 "/files"로 변경
+@RequestMapping("/files")
 public class AttachedFileController {
 
     private final AttachedFileService attachedFileService;
@@ -50,9 +50,9 @@ public class AttachedFileController {
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deleteFile(@PathVariable Long id) throws IOException {
-        attachedFileService.deleteFile(id);
-        return ResponseEntity.noContent().build();
+    public ResponseEntity<String> deleteFile(@PathVariable Long id) {
+        String message = attachedFileService.deleteFile(id);
+        return ResponseEntity.ok(message); // 메시지와 함께 응답 반환
     }
 
     @PutMapping("/{id}")

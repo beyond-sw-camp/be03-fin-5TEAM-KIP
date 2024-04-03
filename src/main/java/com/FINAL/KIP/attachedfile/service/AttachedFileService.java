@@ -46,23 +46,18 @@ public class AttachedFileService {
         Files.createDirectories(filePath.getParent());
         Files.write(filePath, file.getBytes(), StandardOpenOption.CREATE);
 
-        AttachedFile savedFile = new AttachedFile();
-        savedFile.setFileName(originalFileName);
-        savedFile.setFileType(fileType);
-        savedFile.setFileSize(fileSize);
-        savedFile.setFileUrl(filePath.toString());
-        savedFile.setTempFileId(tempFileId);
-        savedFile.setIsTemp(true);
+        AttachedFile savedFile = AttachedFile.builder()
+                .fileName(originalFileName)
+                .fileType(fileType)
+                .fileSize(fileSize)
+                .fileUrl(filePath.toString())
+                .tempFileId(tempFileId)
+                .isTemp(true)
+                .build();
 
         attachedFileRepository.save(savedFile);
 
-//        return new TempFileUploadResDto(savedFile.getId(), savedFile.getTempFileId());
-
-        return TempFileUploadResDto.builder()
-                .tempFileId(savedFile.getTempFileId())
-                .id(savedFile.getId())
-                .build();
-
+        return new TempFileUploadResDto(savedFile.getId(), savedFile.getTempFileId());
     }
 
     public AttachedFileResDto linkTempFileToDocument(DocumentFileLinkReqDto linkReqDto) {
@@ -73,7 +68,6 @@ public class AttachedFileService {
 
         file.setDocument(document);
         file.setIsTemp(false);
-
         AttachedFile updatedFile = attachedFileRepository.save(file);
 
         return new AttachedFileResDto(updatedFile.getId(), updatedFile.getFileName(), updatedFile.getFileType(), updatedFile.getFileSize(), updatedFile.getFileUrl());
@@ -91,13 +85,14 @@ public class AttachedFileService {
         Files.createDirectories(filePath.getParent());
         Files.write(filePath, file.getBytes(), StandardOpenOption.CREATE);
 
-        AttachedFile savedFile = new AttachedFile();
-        savedFile.setFileName(originalFileName);
-        savedFile.setFileType(fileType);
-        savedFile.setFileSize(fileSize);
-        savedFile.setFileUrl(filePath.toString());
-        savedFile.setDocument(document);
-        savedFile.setIsTemp(false);
+        AttachedFile savedFile = AttachedFile.builder()
+                .fileName(originalFileName)
+                .fileType(fileType)
+                .fileSize(fileSize)
+                .fileUrl(filePath.toString())
+                .document(document)
+                .isTemp(false)
+                .build();
 
         attachedFileRepository.save(savedFile);
 
@@ -117,13 +112,18 @@ public class AttachedFileService {
         }
     }
 
-    public void deleteFile(Long id) throws IOException {
+    public String deleteFile(Long id) {
         AttachedFile file = attachedFileRepository.findById(id)
                 .orElseThrow(() -> new IllegalArgumentException("File not found with id: " + id));
 
         Path path = Paths.get(file.getFileUrl());
-        Files.deleteIfExists(path);
+        try {
+            Files.deleteIfExists(path);
+        } catch (IOException e) {
+            throw new RuntimeException("Error occurred while deleting the file");
+        }
         attachedFileRepository.deleteById(id);
+        return "파일이 삭제되었습니다."; // 성공 메시지 반환
     }
 
     public AttachedFileResDto updateFile(Long id, MultipartFile newFile) throws IOException {
