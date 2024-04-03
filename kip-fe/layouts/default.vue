@@ -30,6 +30,7 @@ const drawer = ref(true);
                 image="https://avatars.githubusercontent.com/u/123573918?v=4"
                 size="55"
                 v-bind="props"
+                class="cursor-pointer"
             />
           </template>
           <v-list>
@@ -68,8 +69,11 @@ const drawer = ref(true);
     </v-navigation-drawer>
 
     <!--  메인 페이지  -->
-    <v-main class="d-flex align-center justify-center">
+    <v-main>
+      <div class="pa-5">
       <NuxtPage/>
+      </div>
+
     </v-main>
 
   </v-layout>
