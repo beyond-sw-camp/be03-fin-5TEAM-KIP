@@ -6,6 +6,9 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
 
+import java.util.ArrayList;
+import java.util.List;
+
 @Getter
 @Entity
 @Table(name = "comment")
@@ -32,6 +35,9 @@ public class Comment extends BaseEntity {
     private String delYn="N"; // comment 삭제 유무
 
     public Comment() {}
+
+    @OneToMany(mappedBy = "superComment", cascade = CascadeType.PERSIST)
+    private final List<Comment> childComments = new ArrayList<>();
 
     @Builder
     public Comment(String comment, String userName, Long documentId) {

@@ -1,6 +1,7 @@
 package com.FINAL.KIP.comment.service;
 
 import com.FINAL.KIP.comment.domain.Comment;
+import com.FINAL.KIP.comment.dto.CommentListResDto;
 import com.FINAL.KIP.comment.dto.CommentResDto;
 import com.FINAL.KIP.comment.dto.CreateCommentReqDto;
 import com.FINAL.KIP.comment.repository.CommentRepository;
@@ -13,7 +14,9 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 public class CommentService {
@@ -40,19 +43,22 @@ public class CommentService {
         Comment newComment = createNewComment(createCommentReqDto, document.getId(), user.getName());
         Comment savedNewComment = commentRepository.save(newComment);
         return new CommentResDto(savedNewComment);
-
-//        Comment comment = Comment.CreateComment(createCommentReqDto.getComment(), createCommentReqDto.getSuperCommentId(), user.getName(), document.getId());
-//        commentRepository.save(comment);
-//
-//        return new CommentResDto(HttpStatus.OK, "User Comment Create successfully!", comment.getComment());
     }
 
-//    댓글 조회
-//    public CommentResDto docCommentList(Long documentId){
-//        return new CommentResDto(HttpStatus.OK, "User Comment Create successfully!", documentId);
-//    }
+//    댓글 조회(Hierarchy)
+// superCommentId가 null인 모든 댓글을 조회하여 CommentListResDto로 매핑하여 반환합니다.
+    public List<CommentListResDto> docCommentList(Long documentId) {
+        getDocCommentById(documentId);
+        List<Comment> superComments = commentRepository.findBySuperCommentIsNull();
 
-    //  공통함수
+        return superComments.stream()
+                .map(CommentListResDto::new)
+                .collect(Collectors.toList());
+}
+
+//공통함수
+
+//    docCommentCreate 필요한 값 주입
     public Comment createNewComment(CreateCommentReqDto createCommentReqDto, Long id, String name) {
         Comment newComment = createCommentReqDto.makeAuthorityReqDtoToComment(id, name);
         Optional.ofNullable(createCommentReqDto.getSuperCommentId())
@@ -61,9 +67,18 @@ public class CommentService {
         return newComment;
     }
 
+//    createNewComment에서 상위 댓글 유무 확인
     public Comment getCommentById(Long superCommentId) {
         return commentRepository.findById(superCommentId)
                 .orElseThrow(() -> new EntityNotFoundException(
                         "상위 댓글이 없습니다. " + superCommentId));
     }
+
+    public Comment getDocCommentById(Long documentId) {
+        return commentRepository.findById(documentId)
+                .orElseThrow(() -> new EntityNotFoundException(
+                        "없는 문서입니다. " + documentId));
+    }
+
+
 }
