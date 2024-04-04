@@ -3,6 +3,7 @@ package com.FINAL.KIP.comment.controller;
 import com.FINAL.KIP.comment.dto.CommentListResDto;
 import com.FINAL.KIP.comment.dto.CommentResDto;
 import com.FINAL.KIP.comment.dto.CreateCommentReqDto;
+import com.FINAL.KIP.comment.dto.UpdateCommentReqDto;
 import com.FINAL.KIP.comment.service.CommentService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -27,12 +28,18 @@ public class CommentController {
         return ResponseEntity.ok(commentService.docCommentCreate(DocumentId, createCommentReqDto));
     }
 
-//    댓글 조회
+//    댓글 조회(Hierarchy)
 //    DocumentId에 해당하는 부모댓글과 그 자식댓글들을 조회하여 반환
     @GetMapping("/{DocumentId}/comment")
     public ResponseEntity<List<CommentListResDto>> docCommentList(@PathVariable Long DocumentId) {
         List<CommentListResDto> comments = commentService.docCommentList(DocumentId);
         return ResponseEntity.ok(comments);
+    }
+
+//    댓글 수정
+    @PatchMapping("/{DocumentId}/comment")
+    public ResponseEntity<CommentResDto> docCommentUpdate(@PathVariable Long DocumentId, @RequestBody UpdateCommentReqDto updateCommentReqDto) {
+        return ResponseEntity.ok(commentService.docCommentUpdate(DocumentId, updateCommentReqDto));
     }
 
 }
