@@ -7,6 +7,7 @@ import com.FINAL.KIP.attachedfile.service.AttachedFileService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.Resource;
 import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
@@ -26,44 +27,81 @@ public class AttachedFileController {
     }
 
     @PostMapping("/temp-upload")
-    public ResponseEntity<TempFileUploadResDto> uploadTempFile(@RequestParam("file") MultipartFile file) throws IOException {
-        TempFileUploadResDto tempFileResDto = attachedFileService.uploadTempFile(file);
-        return ResponseEntity.ok(tempFileResDto);
+    public ResponseEntity<?> uploadTempFile(@RequestParam("file") MultipartFile file) {
+        try {
+            TempFileUploadResDto response = attachedFileService.uploadTempFile(file);
+            return ResponseEntity.ok().body(response);
+        } catch (IOException e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body("파일 업로드 중 오류가 발생했습니다: " + e.getMessage());
+        }
     }
 
     @PostMapping("/link-to-document")
-    public ResponseEntity<AttachedFileResDto> linkFileToDocument(@RequestBody DocumentFileLinkReqDto linkReqDto) {
-        AttachedFileResDto fileDto = attachedFileService.linkTempFileToDocument(linkReqDto);
-        return ResponseEntity.ok(fileDto);
+    public ResponseEntity<?> linkTempFileToDocument(@RequestBody DocumentFileLinkReqDto linkReqDto) {
+        try {
+            AttachedFileResDto response = attachedFileService.linkTempFileToDocument(linkReqDto);
+            return ResponseEntity.ok(response);
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
+        }
     }
 
     @PostMapping("/upload/{docId}")
-    public ResponseEntity<AttachedFileResDto> uploadFile(@PathVariable Long docId, @RequestParam("file") MultipartFile file) throws IOException {
-        AttachedFileResDto fileDto = attachedFileService.uploadFile(file, docId);
-        return ResponseEntity.ok(fileDto);
+    public ResponseEntity<?> uploadFile(@PathVariable Long docId, @RequestParam("file") MultipartFile file) {
+        try {
+            AttachedFileResDto response = attachedFileService.uploadFile(file, docId);
+            return ResponseEntity.ok(response);
+        } catch (IOException e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body("파일 업로드 중 오류가 발생했습니다: " + e.getMessage());
+        }
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<Resource> getFile(@PathVariable Long id) throws IOException {
-        Resource file = attachedFileService.getFile(id);
-        return ResponseEntity.ok().header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + file.getFilename() + "\"").body(file);
+    public ResponseEntity<?> getFile(@PathVariable Long id) {
+        try {
+            Resource file = attachedFileService.getFile(id);
+            return ResponseEntity.ok().header(HttpHeaders.CONTENT_DISPOSITION,
+                    "attachment; filename=\"" + file.getFilename() + "\"").body(file);
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.badRequest().body("조회할 파일이 존재하지 않습니다.");
+        } catch (IOException e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body("파일 조회 중 오류가 발생했습니다: " + e.getMessage());
+        }
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<String> deleteFile(@PathVariable Long id) {
-        String message = attachedFileService.deleteFile(id);
-        return ResponseEntity.ok(message); // 메시지와 함께 응답 반환
+    public ResponseEntity<?> deleteFile(@PathVariable Long id) {
+        try {
+            String message = attachedFileService.deleteFile(id);
+            return ResponseEntity.ok().body(message);
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.badRequest().body("삭제할 파일이 존재하지 않습니다.");
+        }
     }
 
-    @PutMapping("/{id}")
-    public ResponseEntity<AttachedFileResDto> updateFile(@PathVariable Long id, @RequestParam("file") MultipartFile newFile) throws IOException {
-        AttachedFileResDto fileDto = attachedFileService.updateFile(id, newFile);
-        return ResponseEntity.ok(fileDto);
+    @PatchMapping("/{id}")
+    public ResponseEntity<?> updateFile(@PathVariable Long id, @RequestParam("file") MultipartFile newFile) {
+        try {
+            AttachedFileResDto response = attachedFileService.updateFile(id, newFile);
+            return ResponseEntity.ok(response);
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.badRequest().body("수정할 파일이 존재하지 않습니다.");
+        } catch (IOException e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body("파일 업데이트 중 오류가 발생했습니다: " + e.getMessage());
+        }
     }
 
     @GetMapping("/list")
-    public ResponseEntity<List<AttachedFileResDto>> getAllFiles() {
-        List<AttachedFileResDto> files = attachedFileService.getAllFiles();
-        return ResponseEntity.ok(files);
+    public ResponseEntity<?> getAllFiles() {
+        try {
+            List<AttachedFileResDto> files = attachedFileService.getAllFiles();
+            return ResponseEntity.ok(files);
+        } catch (RuntimeException e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("조회할 파일이 존재하지 않습니다.");
+        }
     }
 }

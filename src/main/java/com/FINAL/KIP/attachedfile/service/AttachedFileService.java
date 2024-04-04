@@ -46,18 +46,17 @@ public class AttachedFileService {
         Files.createDirectories(filePath.getParent());
         Files.write(filePath, file.getBytes(), StandardOpenOption.CREATE);
 
-        AttachedFile savedFile = AttachedFile.builder()
-                .fileName(originalFileName)
-                .fileType(fileType)
-                .fileSize(fileSize)
-                .fileUrl(filePath.toString())
-                .tempFileId(tempFileId)
-                .isTemp(true)
-                .build();
+        AttachedFile savedFile = new AttachedFile();
+        savedFile.setFileName(originalFileName);
+        savedFile.setFileType(fileType);
+        savedFile.setFileSize(fileSize);
+        savedFile.setFileUrl(filePath.toString());
+        savedFile.setTempFileId(tempFileId);
+        savedFile.setIsTemp(true);
 
         attachedFileRepository.save(savedFile);
 
-        return new TempFileUploadResDto(savedFile.getId(), savedFile.getTempFileId());
+        return new TempFileUploadResDto(savedFile.getId(), savedFile.getTempFileId(), "파일이 성공적으로 업로드 되었습니다.");
     }
 
     public AttachedFileResDto linkTempFileToDocument(DocumentFileLinkReqDto linkReqDto) {
@@ -68,9 +67,10 @@ public class AttachedFileService {
 
         file.setDocument(document);
         file.setIsTemp(false);
+
         AttachedFile updatedFile = attachedFileRepository.save(file);
 
-        return new AttachedFileResDto(updatedFile.getId(), updatedFile.getFileName(), updatedFile.getFileType(), updatedFile.getFileSize(), updatedFile.getFileUrl());
+        return new AttachedFileResDto(updatedFile.getId(), updatedFile.getFileName(), updatedFile.getFileType(), updatedFile.getFileSize(), updatedFile.getFileUrl(), "파일이 문서에 성공적으로 연결되었습니다.");
     }
 
     public AttachedFileResDto uploadFile(MultipartFile file, Long docId) throws IOException {
@@ -85,50 +85,49 @@ public class AttachedFileService {
         Files.createDirectories(filePath.getParent());
         Files.write(filePath, file.getBytes(), StandardOpenOption.CREATE);
 
-        AttachedFile savedFile = AttachedFile.builder()
-                .fileName(originalFileName)
-                .fileType(fileType)
-                .fileSize(fileSize)
-                .fileUrl(filePath.toString())
-                .document(document)
-                .isTemp(false)
-                .build();
+        AttachedFile savedFile = new AttachedFile();
+        savedFile.setFileName(originalFileName);
+        savedFile.setFileType(fileType);
+        savedFile.setFileSize(fileSize);
+        savedFile.setFileUrl(filePath.toString());
+        savedFile.setDocument(document);
+        savedFile.setIsTemp(false);
 
         attachedFileRepository.save(savedFile);
 
-        return new AttachedFileResDto(savedFile.getId(), savedFile.getFileName(), savedFile.getFileType(), savedFile.getFileSize(), savedFile.getFileUrl());
+        return new AttachedFileResDto(savedFile.getId(), savedFile.getFileName(), savedFile.getFileType(), savedFile.getFileSize(), savedFile.getFileUrl(), "파일이 성공적으로 업로드되어 문서에 연결되었습니다.");
     }
 
     public Resource getFile(Long id) throws IOException {
         AttachedFile file = attachedFileRepository.findById(id)
-                .orElseThrow(() -> new IllegalArgumentException("File not found with id: " + id));
+                .orElseThrow(() -> new IllegalArgumentException("조회할 파일이 존재하지 않습니다."));
 
         Path filePath = Paths.get(file.getFileUrl());
         Resource resource = new UrlResource(filePath.toUri());
-        if(resource.exists() || resource.isReadable()) {
+        if (resource.exists() || resource.isReadable()) {
             return resource;
         } else {
-            throw new IllegalArgumentException("Could not read the file");
+            throw new IllegalArgumentException("파일을 읽을 수 없습니다.");
         }
     }
 
     public String deleteFile(Long id) {
         AttachedFile file = attachedFileRepository.findById(id)
-                .orElseThrow(() -> new IllegalArgumentException("File not found with id: " + id));
+                .orElseThrow(() -> new IllegalArgumentException("삭제할 파일이 존재하지 않습니다."));
 
-        Path path = Paths.get(file.getFileUrl());
         try {
+            Path path = Paths.get(file.getFileUrl());
             Files.deleteIfExists(path);
+            attachedFileRepository.deleteById(id);
+            return "파일이 성공적으로 삭제되었습니다.";
         } catch (IOException e) {
-            throw new RuntimeException("Error occurred while deleting the file");
+            throw new RuntimeException("파일 삭제 중 오류가 발생했습니다.");
         }
-        attachedFileRepository.deleteById(id);
-        return "파일이 삭제되었습니다."; // 성공 메시지 반환
     }
 
     public AttachedFileResDto updateFile(Long id, MultipartFile newFile) throws IOException {
         AttachedFile existingFile = attachedFileRepository.findById(id)
-                .orElseThrow(() -> new IllegalArgumentException("File not found with id: " + id));
+                .orElseThrow(() -> new IllegalArgumentException("수정할 파일이 존재하지 않습니다."));
 
         Path oldFilePath = Paths.get(existingFile.getFileUrl());
         Files.deleteIfExists(oldFilePath);
@@ -148,12 +147,17 @@ public class AttachedFileService {
 
         attachedFileRepository.save(existingFile);
 
-        return new AttachedFileResDto(existingFile.getId(), existingFile.getFileName(), existingFile.getFileType(), existingFile.getFileSize(), existingFile.getFileUrl());
+        return new AttachedFileResDto(existingFile.getId(), existingFile.getFileName(), existingFile.getFileType(), existingFile.getFileSize(), existingFile.getFileUrl(), "파일이 성공적으로 업데이트되었습니다.");
     }
 
     public List<AttachedFileResDto> getAllFiles() {
-        return attachedFileRepository.findAll().stream()
-                .map(file -> new AttachedFileResDto(file.getId(), file.getFileName(), file.getFileType(), file.getFileSize(), file.getFileUrl()))
+        List<AttachedFile> files = attachedFileRepository.findAll();
+        if (files.isEmpty()) {
+            throw new RuntimeException("조회할 파일이 존재하지 않습니다.");
+        }
+
+        return files.stream()
+                .map(file -> new AttachedFileResDto(file.getId(), file.getFileName(), file.getFileType(), file.getFileSize(), file.getFileUrl(), "모든 파일이 성공적으로 조회되었습니다."))
                 .collect(Collectors.toList());
     }
 }

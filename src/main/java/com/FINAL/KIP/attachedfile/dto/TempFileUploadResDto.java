@@ -7,13 +7,14 @@ import lombok.NoArgsConstructor;
 @Data
 @NoArgsConstructor
 public class TempFileUploadResDto {
-    private Long id; // 파일의 고유 ID
-    private String tempFileId; // 임시 파일의 고유 ID
-
+    private Long id;
+    private String tempFileId;
+    private String message; // 성공 메시지 필드 추가
 
     @Builder
-    public TempFileUploadResDto(Long id, String tempFileId) {
+    public TempFileUploadResDto(Long id, String tempFileId, String message) {
         this.id = id;
         this.tempFileId = tempFileId;
+        this.message = message;
     }
 }
