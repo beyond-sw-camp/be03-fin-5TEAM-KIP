@@ -103,6 +103,9 @@ public class UserController {
     // 프로필 이미지 업로드
     @PostMapping("/profile/upload")
     public ResponseEntity<?> uploadProfileImage(@RequestParam("file") MultipartFile file) {
+        if (file.isEmpty()) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(Map.of("error", "프로필 이미지 업로드에 오류가 발생하였습니다: 이미지가 존재하지 않습니다."));
+        }
         try {
             ProfileImageResDto profileImageResDto = userService.uploadProfileImage(file);
             return ResponseEntity.ok(Map.of("message", "프로필 이미지가 성공적으로 업로드 되었습니다.", "profileImageUrl", profileImageResDto.getProfileImageUrl()));
@@ -136,6 +139,9 @@ public class UserController {
     // 프로필 이미지 업데이트
     @PatchMapping("/profile/updateImage")
     public ResponseEntity<?> updateProfileImage(@RequestParam("file") MultipartFile file) {
+        if (file.isEmpty()) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(Map.of("error", "프로필 이미지 변경에 오류가 발생하였습니다: 이미지가 존재하지 않습니다."));
+        }
         try {
             ProfileImageResDto profileImageResDto = userService.updateProfileImage(file);
             return ResponseEntity.ok(Map.of("message", "프로필 이미지가 성공적으로 업데이트 되었습니다.", "profileImageUrl", profileImageResDto.getProfileImageUrl()));
