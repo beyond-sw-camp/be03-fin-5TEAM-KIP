@@ -11,6 +11,7 @@ import com.FINAL.KIP.user.domain.User;
 import com.FINAL.KIP.user.dto.req.CreateUserReqDto;
 import com.FINAL.KIP.user.dto.req.LoginReqDto;
 import com.FINAL.KIP.user.dto.req.UserInfoUpdateReqDto;
+import com.FINAL.KIP.user.dto.res.ProfileImageResDto;
 import com.FINAL.KIP.user.dto.res.UserResDto;
 import com.FINAL.KIP.user.repository.UserRepository;
 import jakarta.persistence.EntityNotFoundException;
@@ -21,10 +22,14 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.nio.file.StandardCopyOption;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
@@ -36,6 +41,9 @@ public class UserService {
     private final UserRefreshTokenRepository userRefreshTokenRepository;
     private final BookRepository bookRepository;
 
+    private final String uploadDir = "uploads/profiles"; // 프로필 이미지를 저장할 디렉토리 경로
+
+
     @Autowired
     public UserService(UserRepository userRepo, PasswordEncoder passwordEncoder, JwtTokenProvider jwtTokenProvider, UserRefreshTokenRepository userRefreshTokenRepository, BookRepository bookRepository) {
         this.userRepo = userRepo;
@@ -45,7 +53,7 @@ public class UserService {
         this.bookRepository = bookRepository;
     }
 
-//    Create
+    //    Create
     @UserAdmin
     public UserResDto createUser(CreateUserReqDto dto) {
         dto.setPassword(passwordEncoder.encode(dto.makeUserReqDtoToUser().getPassword())); // 비밀번호 암호화
@@ -58,16 +66,16 @@ public class UserService {
     public List<UserResDto> createUsers(List<CreateUserReqDto> dtos) {
         for (CreateUserReqDto createUserReqDto : dtos) {
             createUserReqDto.setPassword(
-                passwordEncoder.encode(createUserReqDto.makeUserReqDtoToUser().getPassword()));
+                    passwordEncoder.encode(createUserReqDto.makeUserReqDtoToUser().getPassword()));
         }
         return dtos.stream()
-            .map(CreateUserReqDto::makeUserReqDtoToUser)
-            .map(userRepo::save)
-            .map(UserResDto::new)
-            .collect(Collectors.toList());
+                .map(CreateUserReqDto::makeUserReqDtoToUser)
+                .map(userRepo::save)
+                .map(UserResDto::new)
+                .collect(Collectors.toList());
     }
 
-//    Read
+    //    Read
     @JustAdmin
     public List<UserResDto> getAllUsers() {
         List<User> users = userRepo.findAll();
@@ -81,7 +89,7 @@ public class UserService {
         return userRepo.findById(id).orElse(null);
     }
 
-    public CommonResponse login(LoginReqDto loginReqDto) throws IllegalArgumentException{
+    public CommonResponse login(LoginReqDto loginReqDto) throws IllegalArgumentException {
         User user = userRepo.findByEmployeeId(loginReqDto.getEmployeeId())
                 .filter(
                         kip -> passwordEncoder.matches(loginReqDto.getPassword(), kip.getPassword()))
@@ -104,21 +112,22 @@ public class UserService {
     }
 
     @UserAdmin
-    public CommonResponse mypage(){
+    public CommonResponse mypage() {
         User userInfo = getUserFromAuthentication();
         return new CommonResponse(HttpStatus.OK, "User info loaded successfully!", userInfo);
     }
 
     @Transactional
     @UserAdmin
-    public void update(UserInfoUpdateReqDto userInfoUpdateReqDto){
+    public void update(UserInfoUpdateReqDto userInfoUpdateReqDto) {
         User userInfo = getUserFromAuthentication();
         userInfo.updateUserInfo(userInfoUpdateReqDto.getName(), userInfoUpdateReqDto.getEmail(),
                 userInfoUpdateReqDto.getPhoneNumber());
     }
+
     @Transactional
     @UserAdmin
-    public void delete(String employeeId){
+    public void delete(String employeeId) {
         User userInfo = getUserByEmployeeId(employeeId);
         userRepo.delete(userInfo);
     }
@@ -137,13 +146,95 @@ public class UserService {
     }
 
     // 사용자 북마크 목록 조회
-    public CommonResponse userBookList(){
+    public CommonResponse userBookList() {
         User userInfo = getUserFromAuthentication();
         String employeeId = userInfo.getEmployeeId();
 
         List<Object[]> bookList = bookRepository.findDocumentIdAndTitleByEmployeeId(employeeId);
         return new CommonResponse(HttpStatus.OK, "User Book List loaded successfully!", bookList);
 
+    }
 
+
+    // 현재 인증된 사용자 정보 조회
+    private User getAuthenticatedUser() {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        String employeeId = authentication.getName();
+        return userRepo.findByEmployeeId(employeeId)
+                .orElseThrow(() -> new EntityNotFoundException("인증된 사용자를 찾을 수 없습니다."));
+    }
+
+    // 프로필 이미지 업로드
+    @Transactional
+    public ProfileImageResDto uploadProfileImage(MultipartFile file) throws IOException {
+        User user = getAuthenticatedUser();
+
+        String originalFilename = file.getOriginalFilename();
+        String fileExtension = Objects.requireNonNull(originalFilename).substring(originalFilename.lastIndexOf("."));
+        String storedFileName = UUID.randomUUID().toString() + fileExtension;
+
+        Path destinationFile = Paths.get(uploadDir, originalFilename).toAbsolutePath().normalize();
+        Files.createDirectories(destinationFile.getParent());
+
+        Files.copy(file.getInputStream(), destinationFile, StandardCopyOption.REPLACE_EXISTING);
+
+        user.setProfileImageUrl(destinationFile.toString());
+        userRepo.save(user);
+
+        return new ProfileImageResDto(user.getId(), user.getProfileImageUrl());
+    }
+
+    // 프로필 이미지 조회
+    public String getProfileImageUrl() {
+        User user = getAuthenticatedUser();
+        return Optional.ofNullable(user.getProfileImageUrl())
+                .orElseThrow(() -> new EntityNotFoundException("프로필 이미지가 설정되지 않았습니다."));
+    }
+
+    // 프로필 이미지 삭제
+    @Transactional
+    public String deleteProfileImage() {
+        User user = getAuthenticatedUser();
+        if (user.getProfileImageUrl() == null || user.getProfileImageUrl().isEmpty()) {
+            return "프로필 이미지가 없습니다!";
+        } else {
+            try {
+                Path path = Paths.get(user.getProfileImageUrl());
+                Files.deleteIfExists(path);
+                user.setProfileImageUrl(null);
+                userRepo.save(user);
+                return "프로필 이미지가 성공적으로 삭제되었습니다.";
+            } catch (IOException e) {
+                return "프로필 이미지 삭제에 실패했습니다.";
+            }
+        }
+    }
+
+    // 프로필 이미지 업데이트
+    @Transactional
+    public ProfileImageResDto updateProfileImage(MultipartFile file) throws IOException {
+        User user = getAuthenticatedUser();
+
+        if (user.getProfileImageUrl() == null || user.getProfileImageUrl().isEmpty()) {
+            throw new EntityNotFoundException("수정할 프로필 이미지가 없습니다. 프로필 이미지를 먼저 올려 주세요.");
+        }
+
+        // 기존 이미지 삭제
+        Path oldImagePath = Paths.get(user.getProfileImageUrl());
+        Files.deleteIfExists(oldImagePath);
+
+        // 새 이미지 저장
+        String originalFilename = file.getOriginalFilename();
+        String fileExtension = Objects.requireNonNull(originalFilename).substring(originalFilename.lastIndexOf("."));
+        String storedFileName = UUID.randomUUID() + fileExtension;
+
+        Path destinationFile = Paths.get(uploadDir, originalFilename).toAbsolutePath().normalize();
+        Files.createDirectories(destinationFile.getParent());
+        Files.copy(file.getInputStream(), destinationFile, StandardCopyOption.REPLACE_EXISTING);
+
+        user.setProfileImageUrl(destinationFile.toString());
+        userRepo.save(user);
+
+        return new ProfileImageResDto(user.getId(), user.getProfileImageUrl());
     }
 }
