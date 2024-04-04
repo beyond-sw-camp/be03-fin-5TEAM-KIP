@@ -69,6 +69,9 @@ const drawer = ref(true);
         <NuxtLink to="/comments">
           <v-list-item prepend-icon="mdi-comment" title="COMMENTS" value="starred"></v-list-item>
         </NuxtLink>
+        <NuxtLink to="/dialogs">
+          <v-list-item prepend-icon="mdi-access-point" title="DIALOGS" value="starred"></v-list-item>
+        </NuxtLink>
 
       </v-list>
     </v-navigation-drawer>
