@@ -57,6 +57,14 @@ public class UserController {
         return new ResponseEntity<>(commonResponse , HttpStatus.OK);
     }
 
+    // 로그아웃
+    @DeleteMapping("logout/{id}")
+    public ResponseEntity<CommonResponse> userLogout(@PathVariable(value = "id") Long id){
+        CommonResponse commonResponse = userService.logout(id);
+        return new ResponseEntity<>(commonResponse , HttpStatus.OK);
+    }
+
+
     // 사용자 마이페이지
     @GetMapping("mypage")
     public ResponseEntity<CommonResponse> myPage() {
@@ -76,6 +84,12 @@ public class UserController {
     public ResponseEntity<CommonResponse> userDelete(@PathVariable(value = "employeeId") String employeeId){
         userService.delete(employeeId);
         return new ResponseEntity<>(new CommonResponse(HttpStatus.OK, "User deleted successfully", employeeId), HttpStatus.OK);
+    }
+
+    @GetMapping("/book/list")
+    public ResponseEntity<CommonResponse> userBookList(){
+        CommonResponse commonResponse = userService.userBookList();
+        return new ResponseEntity<>(commonResponse , HttpStatus.OK);
     }
 
 

@@ -12,8 +12,8 @@ import java.util.List;
 public class DocumentResDto {
 
     private final Long documentId;
-    private final String title;
     private final KmsDocType kmsDocType;
+    private final String title;
     private Long upLinkId;
     private String upDocTitle;
     private Long downLinkId;
@@ -22,10 +22,11 @@ public class DocumentResDto {
     private String groupName;
     private List<HashTagResDto> HashTags;
 
-    public DocumentResDto(Document document) {
+    public DocumentResDto(Document document, Boolean isAccssible) {
         this.documentId = document.getId();
-        this.title = document.getTitle();
         this.kmsDocType = document.getKmsDocType();
+        if (isAccssible) this.title = document.getTitle();
+        else this.title = "접근할 수 없는 유저입니다";
 
         if (document.getUpLink() != null) {
             this.upLinkId = document.getUpLink().getId();

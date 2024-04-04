@@ -33,7 +33,6 @@ public class Document extends BaseEntity {
     private KmsDocType kmsDocType;
   
     @Column(nullable = false)
-    @Builder.Default
     private int bookCount = 0; // 문서 북마크 갯수 체크
 
     @ManyToOne // OneToOne은 유니크 걸림

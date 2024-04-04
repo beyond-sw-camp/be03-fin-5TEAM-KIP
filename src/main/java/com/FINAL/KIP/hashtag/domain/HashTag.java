@@ -5,6 +5,9 @@ import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
 
+import java.util.ArrayList;
+import java.util.List;
+
 @Getter
 @Entity
 public class HashTag extends BaseEntity {
@@ -16,5 +19,8 @@ public class HashTag extends BaseEntity {
     @Setter
     @Column(unique = true, nullable = false)
     private String tagName;
+
+    @OneToMany(mappedBy = "hashTag", cascade = CascadeType.REMOVE)
+    private final List<DocHashTag> docHashTags = new ArrayList<>();
 
 }

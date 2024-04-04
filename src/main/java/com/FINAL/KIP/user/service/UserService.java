@@ -1,5 +1,6 @@
 package com.FINAL.KIP.user.service;
 
+import com.FINAL.KIP.bookmark.repository.BookRepository;
 import com.FINAL.KIP.common.CommonResponse;
 import com.FINAL.KIP.common.aspect.JustAdmin;
 import com.FINAL.KIP.common.aspect.UserAdmin;
@@ -33,13 +34,15 @@ public class UserService {
     private final PasswordEncoder passwordEncoder; //비밀번호 암호화
     private final JwtTokenProvider jwtTokenProvider;
     private final UserRefreshTokenRepository userRefreshTokenRepository;
+    private final BookRepository bookRepository;
 
     @Autowired
-    public UserService(UserRepository userRepo, PasswordEncoder passwordEncoder, JwtTokenProvider jwtTokenProvider, UserRefreshTokenRepository userRefreshTokenRepository) {
+    public UserService(UserRepository userRepo, PasswordEncoder passwordEncoder, JwtTokenProvider jwtTokenProvider, UserRefreshTokenRepository userRefreshTokenRepository, BookRepository bookRepository) {
         this.userRepo = userRepo;
         this.passwordEncoder = passwordEncoder;
         this.jwtTokenProvider = jwtTokenProvider;
         this.userRefreshTokenRepository = userRefreshTokenRepository;
+        this.bookRepository = bookRepository;
     }
 
 //    Create
@@ -101,6 +104,21 @@ public class UserService {
     }
 
     @UserAdmin
+    public CommonResponse logout(Long id) throws IllegalArgumentException{
+        User user = userRepo.findById(id)
+                .orElseThrow(() -> new IllegalArgumentException("없는 사용자입니다."));
+
+        UserRefreshToken userRefreshToken = userRefreshTokenRepository.findById(id)
+                .orElseThrow(() -> new IllegalArgumentException("사용자를 다시 확인해주세요."));
+
+        userRefreshTokenRepository.deleteById(id);
+        Map<String , String> result = new HashMap<>();
+        result.put("user_id", String.valueOf(userRefreshToken.getId()));
+        result.put("user_name", user.getName());
+        return new CommonResponse(HttpStatus.OK, "User Logout SUCCESS!", result);
+    }
+
+    @UserAdmin
     public CommonResponse mypage(){
         User userInfo = getUserFromAuthentication();
         return new CommonResponse(HttpStatus.OK, "User info loaded successfully!", userInfo);
@@ -131,5 +149,16 @@ public class UserService {
     public User getUserByEmployeeId(String employeeId) {
         return userRepo.findByEmployeeId(employeeId)
                 .orElseThrow(() -> new EntityNotFoundException("사원번호를 찾을 수 없습니다. " + employeeId));
+    }
+
+    // 사용자 북마크 목록 조회
+    public CommonResponse userBookList(){
+        User userInfo = getUserFromAuthentication();
+        String employeeId = userInfo.getEmployeeId();
+
+        List<Object[]> bookList = bookRepository.findDocumentIdAndTitleByEmployeeId(employeeId);
+        return new CommonResponse(HttpStatus.OK, "User Book List loaded successfully!", bookList);
+
+
     }
 }

@@ -8,25 +8,19 @@ import com.FINAL.KIP.document.dto.req.updateDocGroupIdReqDto;
 import com.FINAL.KIP.document.dto.req.updateDocTitleReqDto;
 import com.FINAL.KIP.document.dto.res.DocumentResDto;
 import com.FINAL.KIP.document.dto.res.DocumentVersionResDto;
-import com.FINAL.KIP.document.dto.res.GetDocumentResDto;
-import com.FINAL.KIP.document.dto.res.PublicDocResDto;
+import com.FINAL.KIP.document.dto.res.JustDocTitleResDto;
 import com.FINAL.KIP.document.repository.DocumentRepository;
 import com.FINAL.KIP.group.domain.Group;
-import com.FINAL.KIP.group.domain.UserIdAndGroupRole;
 import com.FINAL.KIP.group.service.GroupService;
-import com.FINAL.KIP.hashtag.domain.DocHashTag;
 import com.FINAL.KIP.hashtag.service.HashTagService;
 import com.FINAL.KIP.user.domain.User;
 import com.FINAL.KIP.user.service.UserService;
 import com.FINAL.KIP.version.domain.Version;
-import com.FINAL.KIP.version.dto.request.VersionCreateReqDto;
 import com.FINAL.KIP.version.dto.response.VersionDetailResDto;
 import com.FINAL.KIP.version.dto.response.VersionReplaceResDto;
 import com.FINAL.KIP.version.repository.VersionRepository;
 import com.FINAL.KIP.version.service.VersionService;
-import com.google.api.Http;
 import java.util.UUID;
-import org.checkerframework.checker.units.qual.A;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -46,21 +40,20 @@ public class DocumentService {
     private final GroupService groupService;
     private final UserService userService;
     private final HashTagService hashTagService;
-    private final VersionService versionService;
     private final VersionRepository versionRepository;
 
 
     @Autowired
     public DocumentService(DocumentRepository documentRepo,
-                           GroupService groupService,
-                           UserService userService,
-                           HashTagService hashTagService, VersionService versionService,
+        GroupService groupService,
+        UserService userService,
+        HashTagService hashTagService,
         VersionRepository versionRepository) {
+
         this.documentRepo = documentRepo;
         this.groupService = groupService;
         this.userService = userService;
         this.hashTagService = hashTagService;
-		this.versionService = versionService;
         this.versionRepository = versionRepository;
     }
 
@@ -69,11 +62,17 @@ public class DocumentService {
     public DocumentResDto createDocument(CreateDocumentReqDto dto) {
         Document newDocument = dto.makeDocDtoToDocument();
 
-        if (dto.getGroupId() != null) { // 전체공개문서와, 그룹 소속문서 연결.
+        if (dto.getGroupId() != null) { // 비공개 문서 생성시.
             Group group = groupService.getGroupById(dto.getGroupId());
-            newDocument.setGroup(group);
-
             Document upDocument = getDocumentById(dto.getUpLinkId());
+
+            if (group.getDocuments().stream()
+                    .filter(doc -> doc.getId().equals(upDocument.getId()))
+                    .findAny().isEmpty()) // 서로 다른 그룹끼리 문서 연결 요청이 들어 오는 것 방지
+                throw new IllegalArgumentException(
+                        "만들려는 문서의 ID 가 해당 그룹에 속해있지 않습니다.");
+
+            newDocument.setGroup(group);
             newDocument.setUpLink(upDocument);
 
             Document downDocument = upDocument.getDownLink();
@@ -83,52 +82,38 @@ public class DocumentService {
             if (downDocument != null)
                 downDocument.setUpLink(newDocument);
         }
-
         Document savedDocument = documentRepo.save(newDocument);
-        versionService.createNewVersion(new VersionCreateReqDto(dto.getContent(), savedDocument));
-
-        if (dto.getHashTags() != null && !dto.getHashTags().isEmpty()) {
-            hashTagService.createHashTags(dto.getHashTags());  // 중복빼고 저장.
-            List<DocHashTag> docHashTags = dto.getHashTags().stream()
-                    .map(req -> hashTagService.getHashTagByTagName(req.getTagName()))
-                    .map(hashTag -> new DocHashTag(savedDocument, hashTag))
-                    .toList(); // 태그 이름으로 다시 아이디 추출하여 Doc과 연결
-            savedDocument.addAllDocHashTags(docHashTags);
-        }
-        return new DocumentResDto(
-                documentRepo.save(savedDocument));
+        // 해시서비스로 공통화 시킴
+        if (dto.getHashTags() != null && !dto.getHashTags().isEmpty())
+            hashTagService.generateDocHashTags(dto.getHashTags(), savedDocument);
+        return new DocumentResDto(documentRepo.save(savedDocument), true);
     }
 
-
     //    Read
-    public List<PublicDocResDto> getPublicDocuments() {
+    public List<DocumentResDto> getPublicDocuments() {
         return documentRepo.findAll().stream()
                 .filter(document -> document.getGroup() == null)
-                .map(PublicDocResDto::new)
+                .map(doc -> new DocumentResDto(doc, true))
                 .collect(Collectors.toList());
     }
 
-    public GetDocumentResDto GetIsAccessibleDoc(Long docId, Long userId) {
-        boolean isAccessible = false;
-        Document tryToOpenDocument = getDocumentById(docId);
-        User tryUser = userService.getUserById(userId);
+    public DocumentResDto getIsAccessibleDoc(Long documentId) {
+        Document tryDocument = getDocumentById(documentId);
+        User tryUser = userService.getUserFromAuthentication();
+        Long docGroupId = tryDocument.getGroup().getId();
 
-        Long GroupId = tryToOpenDocument.getGroup().getId();
+        List<User> accessibleUsers = groupService.getAccessibleUsers(docGroupId);
+        accessibleUsers.add(userService.getUserById(1L)); // 관리자 추가
 
-        List<UserIdAndGroupRole> accessibleUsers = groupService.getAccessibleUsers(GroupId);
-        for (UserIdAndGroupRole obj : accessibleUsers) {
-            System.out.println(
-                    "맴버 아이디: " + obj.getUserId() + " " +
-                            userService.getUserById(obj.getUserId()).getName() +
-                            " / 권한정보: " + obj.getGroupRole());
-        }
-        isAccessible = accessibleUsers.stream()
-                .anyMatch(reqUserId -> reqUserId.getUserId().equals(tryUser.getId()));
+        /* 추후 파일별 접근 가능한 맴버 추가 로직 삽입 */
 
-        return new GetDocumentResDto(tryToOpenDocument, isAccessible);
+        boolean isAccessible = accessibleUsers.stream() // 접근 가능 유저 체크
+                .anyMatch(user -> user.equals(tryUser));
+
+        return new DocumentResDto(tryDocument, isAccessible);
     }
 
-    public List<GetDocumentResDto> getLinkedDocumentsByGroupId(Long groupId) {
+    public List<JustDocTitleResDto> getLinkedDocumentsByGroupId(Long groupId) {
         List<Document> linkedDocuments = new ArrayList<>();
         Group targetGroup = groupService.getGroupById(groupId);
         Document topDocument = getTopDocument(targetGroup);
@@ -141,7 +126,7 @@ public class DocumentService {
         }
 
         return linkedDocuments.stream()
-                .map(document -> new GetDocumentResDto(document, true))
+                .map(JustDocTitleResDto::new)
                 .collect(Collectors.toList());
     }
 
@@ -150,11 +135,11 @@ public class DocumentService {
     public DocumentResDto updateDocumentTitle(updateDocTitleReqDto dto) {
         Document targetDocument = getDocumentById(dto.getTargetDocumentId());
         targetDocument.setTitle(dto.getNewTitle());
-        return new DocumentResDto(documentRepo.save(targetDocument));
+        return new DocumentResDto(documentRepo.save(targetDocument),true);
     }
 
     @Transactional
-    public List<GetDocumentResDto> moveDocumentInGroup(moveDocInGroupReqDto dto) throws IllegalArgumentException {
+    public List<JustDocTitleResDto> moveDocumentInGroup(moveDocInGroupReqDto dto) throws IllegalArgumentException {
 
         if (Objects.equals(dto.getStartDocId(), dto.getEndDocId()))
             throw new IllegalArgumentException("이동하려는 아이디가 서로 같습니다.");
@@ -193,7 +178,7 @@ public class DocumentService {
             targetDocument.setKmsDocType(KmsDocType.SECTION);
         else
             targetDocument.setKmsDocType(KmsDocType.CONTENT);
-        return new DocumentResDto(targetDocument);
+        return new DocumentResDto(targetDocument,true);
     }
 
     @Transactional
@@ -217,7 +202,7 @@ public class DocumentService {
         targetDocumnet.setUpLink(null);
         targetDocumnet.setDownLink(null);
 
-        return new DocumentResDto(targetDocumnet);
+        return new DocumentResDto(targetDocumnet, true);
     }
 
     @Transactional
@@ -241,7 +226,7 @@ public class DocumentService {
         if (downDocumnet != null)
             downDocumnet.setUpLink(targetDocument);
 
-        return new DocumentResDto(targetDocument);
+        return new DocumentResDto(targetDocument, true);
     }
 
     //    Delete
