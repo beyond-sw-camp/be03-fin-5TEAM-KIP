@@ -1,38 +1,39 @@
 <script setup lang="ts">
+const postForm = ref();
 const search = ref()
 const selected = ref()
 const headers = ref([
+  {key: 'title', title: 'Title (Click To Edit)'},
   {
     align: 'start',
     key: 'author',
     sortable: false,
     title: 'author',
   },
-  {key: 'title', title: 'title'},
 ])
 const posts = ref([
-  {title: "Post 1", author: "Fred"},
-  {title: "Post 2", author: "sejong"},
-  {title: "Post 3", author: "sejong"},
-  {title: "Post 4", author: "Fred"},
-  {title: "Post 5", author: "Fred"},
-  {title: "Post 6", author: "Fred"},
-  {title: "Post 7", author: "Fred"},
-  {title: "Post 8", author: "Fred"},
-  {title: "Post 9", author: "Fred"},
-  {title: "Post 10", author: "Fred"},
-  {title: "Post 11", author: "Fred"},
-  {title: "Post 12", author: "Fred"},
-  {title: "Post 13", author: "Fred"},
-  {title: "Post 14", author: "Fred"},
-  {title: "Post 15", author: "Fred"},
-  {title: "Post 16", author: "Fred"},
-  {title: "Post 17", author: "Fred"},
-  {title: "Post 18", author: "Fred"},
-  {title: "Post 19", author: "Fred"},
-  {title: "Post 20", author: "Fred"},
-  {title: "Post 21", author: "Fred"},
-  {title: "Post 22", author: "Fred"},
+  {title: "(Click To Edit) Post 1", author: "Fred"},
+  {title: "(Click To Edit) Post 2", author: "sejong"},
+  {title: "(Click To Edit) Post 3", author: "sejong"},
+  {title: "(Click To Edit) Post 4", author: "Fred"},
+  {title: "(Click To Edit) Post 5", author: "Fred"},
+  {title: "(Click To Edit) Post 6", author: "Fred"},
+  {title: "(Click To Edit) Post 7", author: "Fred"},
+  {title: "(Click To Edit) Post 8", author: "Fred"},
+  {title: "(Click To Edit) Post 9", author: "Fred"},
+  {title: "(Click To Edit) Post 10", author: "Fred"},
+  {title: "(Click To Edit) Post 11", author: "Fred"},
+  {title: "(Click To Edit) Post 12", author: "Fred"},
+  {title: "(Click To Edit) Post 13", author: "Fred"},
+  {title: "(Click To Edit) Post 14", author: "Fred"},
+  {title: "(Click To Edit) Post 15", author: "Fred"},
+  {title: "(Click To Edit) Post 16", author: "Fred"},
+  {title: "(Click To Edit) Post 17", author: "Fred"},
+  {title: "(Click To Edit) Post 18", author: "Fred"},
+  {title: "(Click To Edit) Post 19", author: "Fred"},
+  {title: "(Click To Edit) Post 20", author: "Fred"},
+  {title: "(Click To Edit) Post 21", author: "Fred"},
+  {title: "(Click To Edit) Post 22", author: "Fred"},
 ]);
 </script>
 
@@ -42,7 +43,7 @@ const posts = ref([
       title="Nutrition"
       flat
   >
-    <template v-slot:text>
+    <template #text>
       <v-text-field
           v-model="search"
           label="Search"
@@ -62,10 +63,10 @@ const posts = ref([
         v-model="selected"
     >
 
-
+<!--      클릭을 통해서 모달찰(dialong) 열기-->
       <template #item.title="{ item }">
         <v-dialog fullscreen>
-          <template v-slot:activator="{ props: activatorProps }">
+          <template #activator="{ props: activatorProps }">
             <span
                 v-bind="activatorProps"
                 class="cursor-pointer"
@@ -73,26 +74,34 @@ const posts = ref([
           </template>
 
           <template v-slot:default="{ isActive }">
-            <v-card title="Dialog">
+            <v-card title="Edit Post">
               <v-card-text>
-                Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et
-                dolore magna aliqua.
+                <PostFrom
+                    ref="postForm"
+                    :post="item"
+                />
               </v-card-text>
 
               <v-card-actions>
                 <v-spacer></v-spacer>
 
+                <v-btn text="Cancel" @click="isActive.value = false"/>
+
                 <v-btn
-                    text="Close Dialog"
-                    @click="isActive.value = false"
+                    color="blue"
+                    variant="flat"
+                    text="Save Post"
+                    @click="
+                    postForm.submit();
+                    isActive.value = false;
+                  "
                 ></v-btn>
+
               </v-card-actions>
             </v-card>
           </template>
         </v-dialog>
       </template>
-
-
     </v-data-table>
   </v-card>
 
