@@ -64,14 +64,18 @@ const drawer = ref(true);
           <v-list-item prepend-icon="mdi-home-circle" title="HOME" value="myfiles"/>
         </NuxtLink>
         <NuxtLink to="/posts">
-          <v-list-item prepend-icon="mdi-note" title="POSTING" value="shared"></v-list-item>
+          <v-list-item prepend-icon="mdi-note" title="POSTING" value="shared"/>
         </NuxtLink>
         <NuxtLink to="/comments">
-          <v-list-item prepend-icon="mdi-comment" title="COMMENTS" value="starred"></v-list-item>
+          <v-list-item prepend-icon="mdi-comment" title="COMMENTS" value="starred"/>
         </NuxtLink>
         <NuxtLink to="/dialogs">
-          <v-list-item prepend-icon="mdi-access-point" title="DIALOGS" value="starred"></v-list-item>
+          <v-list-item prepend-icon="mdi-access-point" title="DIALOGS" value="starred"/>
         </NuxtLink>
+        <NuxtLink to="/login">
+          <v-list-item prepend-icon="mdi-login-variant" title="LOGIN" value="starred"/>
+        </NuxtLink>
+
 
       </v-list>
     </v-navigation-drawer>
