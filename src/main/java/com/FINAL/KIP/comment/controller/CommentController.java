@@ -1,9 +1,6 @@
 package com.FINAL.KIP.comment.controller;
 
-import com.FINAL.KIP.comment.dto.CommentListResDto;
-import com.FINAL.KIP.comment.dto.CommentResDto;
-import com.FINAL.KIP.comment.dto.CreateCommentReqDto;
-import com.FINAL.KIP.comment.dto.UpdateCommentReqDto;
+import com.FINAL.KIP.comment.dto.*;
 import com.FINAL.KIP.comment.service.CommentService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -42,4 +39,11 @@ public class CommentController {
         return ResponseEntity.ok(commentService.docCommentUpdate(DocumentId, updateCommentReqDto));
     }
 
+//    댓글 삭제
+    @DeleteMapping("/{DocumentId}/{CommentId}")
+    public String docCommentDelete(@PathVariable Long DocumentId, @PathVariable Long CommentId){
+        commentService.docCommentDelete(DocumentId, CommentId);
+
+        return CommentId + "번 댓글이 삭제되었습니다.";
+    }
 }

@@ -1,10 +1,7 @@
 package com.FINAL.KIP.comment.service;
 
 import com.FINAL.KIP.comment.domain.Comment;
-import com.FINAL.KIP.comment.dto.CommentListResDto;
-import com.FINAL.KIP.comment.dto.CommentResDto;
-import com.FINAL.KIP.comment.dto.CreateCommentReqDto;
-import com.FINAL.KIP.comment.dto.UpdateCommentReqDto;
+import com.FINAL.KIP.comment.dto.*;
 import com.FINAL.KIP.comment.repository.CommentRepository;
 import com.FINAL.KIP.document.domain.Document;
 import com.FINAL.KIP.document.repository.DocumentRepository;
@@ -46,7 +43,7 @@ public class CommentService {
         return new CommentResDto(savedNewComment);
     }
 
-    //    댓글 조회(Hierarchy)
+//    댓글 조회(Hierarchy)
 //    superCommentId가 null인 모든 댓글을 조회하여 CommentListResDto로 매핑하여 반환합니다.
     public List<CommentListResDto> docCommentList(Long documentId) {
         getDocCommentById(documentId);
@@ -57,27 +54,34 @@ public class CommentService {
                 .collect(Collectors.toList());
     }
 
-    //    댓글 수정
+//    댓글 수정
     public CommentResDto docCommentUpdate(Long documentId, UpdateCommentReqDto updateCommentReqDto) {
         getDocCommentById(documentId);
-        Comment comment = getCommentUpdateById(updateCommentReqDto.getCommentId());
+        Comment comment = getCommentById(updateCommentReqDto.getCommentId());
         comment.setComment(updateCommentReqDto.getComment());
         return new CommentResDto(commentRepository.save(comment));
     }
 
-//공통함수
+//    댓글 삭제
+    public void docCommentDelete(Long documentId, Long commentId){
+        getDocCommentById(documentId);
+        Comment comment = getCommentById(commentId);
+        commentRepository.delete(comment);
+    }
+
+//    ===== 공통함수 =====
 
 //    docCommentCreate 필요한 값 주입
     public Comment createNewComment(CreateCommentReqDto createCommentReqDto, Long id, String name) {
         Comment newComment = createCommentReqDto.makeAuthorityReqDtoToComment(id, name);
         Optional.ofNullable(createCommentReqDto.getSuperCommentId())
-                .map(this::getCommentById)
+                .map(this::getSuperCommentById)
                 .ifPresent(newComment::setSuperComment);
         return newComment;
     }
 
 //    createNewComment에서 상위 댓글 유무 확인
-    public Comment getCommentById(Long superCommentId) {
+    public Comment getSuperCommentById(Long superCommentId) {
         return commentRepository.findById(superCommentId)
                 .orElseThrow(() -> new EntityNotFoundException(
                         "상위 댓글이 없습니다. " + superCommentId));
@@ -91,11 +95,9 @@ public class CommentService {
     }
 
 //    댓글 유무 확인
-    public Comment getCommentUpdateById(Long commentId) {
+    public Comment getCommentById(Long commentId) {
         return commentRepository.findById(commentId)
                 .orElseThrow(() -> new EntityNotFoundException(
                         "없는 댓글입니다. " + commentId));
     }
-
-
 }
