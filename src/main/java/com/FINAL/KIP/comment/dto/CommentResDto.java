@@ -1,15 +1,21 @@
 package com.FINAL.KIP.comment.dto;
 
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import org.springframework.http.HttpStatus;
+import com.FINAL.KIP.comment.domain.Comment;
+import lombok.Getter;
 
-@Data
-@AllArgsConstructor
-@Builder
+@Getter
 public class CommentResDto {
-    private HttpStatus httpStatus;
-    private String message;
-    private Object result;
+    private final Long commentId;
+    private final String comment;
+    private final String userName;
+    private final Long superCommentId;
+    private final Long documentId;
+
+    public CommentResDto(Comment comment) {
+        this.commentId = comment.getId();
+        this.comment = comment.getComment();
+        this.userName = comment.getUserName();
+        this.superCommentId = comment.getSuperComment() != null ? comment.getSuperComment().getId() : null;
+        this.documentId = comment.getDocumentId();
+    }
 }

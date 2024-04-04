@@ -1,12 +1,15 @@
 package com.FINAL.KIP.comment.domain;
 
+import com.FINAL.KIP.common.domain.BaseEntity;
 import jakarta.persistence.*;
-import lombok.Data;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.Setter;
 
-@Data
+@Getter
 @Entity
 @Table(name = "comment")
-public class Comment {
+public class Comment extends BaseEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -18,6 +21,7 @@ public class Comment {
     @Column(nullable = false)
     private String userName;
 
+    @Setter
     @ManyToOne
     @JoinColumn
     private Comment superComment;
@@ -27,19 +31,14 @@ public class Comment {
 
     private String delYn="N"; // comment 삭제 유무
 
-    public Comment(String comment, Comment superComment, String userName, Long documentId) {
+    public Comment() {}
+
+    @Builder
+    public Comment(String comment, String userName, Long documentId) {
         this.comment = comment;
-        this.superComment = superComment;
         this.userName = userName;
         this.documentId = documentId;
     }
-
-//    @CreatedDate
-//    private LocalDateTime createdAt;
-//
-//    @LastModifiedDate
-//    private LocalDateTime updatedAt;
-
 
     public void deleteComment(){ // item 삭제 시 호출
         this.delYn = "Y";
@@ -48,7 +47,7 @@ public class Comment {
         this.comment = comment;
     }
 
-    public static Comment CreateComment(String comment, Comment superComment, String userName, Long documentId) {
-        return new Comment(comment, superComment, userName, documentId);
-    }
+//    public static Comment CreateComment(String comment, Comment superComment, String userName, Long documentId) {
+//        return new Comment(comment, superComment, userName, documentId);
+//    }
 }

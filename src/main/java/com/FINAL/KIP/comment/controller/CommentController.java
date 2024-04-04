@@ -1,15 +1,11 @@
 package com.FINAL.KIP.comment.controller;
 
-import com.FINAL.KIP.comment.dto.CommentReqDto;
 import com.FINAL.KIP.comment.dto.CommentResDto;
+import com.FINAL.KIP.comment.dto.CreateCommentReqDto;
 import com.FINAL.KIP.comment.service.CommentService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("doc")
@@ -22,11 +18,17 @@ public class CommentController {
         this.commentService = commentService;
     }
 
-//    comment create
+//    댓글 생성
     @PostMapping("{DocumentId}/comment")
-    public ResponseEntity<CommentResDto> docCommentCreate(@PathVariable Long DocumentId, CommentReqDto commentReqDto) {
-        CommentResDto commentResDto = commentService.docCommentCreate(DocumentId, commentReqDto);
-        return new ResponseEntity<>(commentResDto, HttpStatus.OK);
+    public ResponseEntity<CommentResDto> docCommentCreate(@PathVariable Long DocumentId, @RequestBody CreateCommentReqDto createCommentReqDto) {
+        return ResponseEntity.ok(commentService.docCommentCreate(DocumentId, createCommentReqDto));
     }
+
+//    댓글 조회
+//    @GetMapping("{DocumentId}/comment")
+//    public ResponseEntity<CommentResDto> docCommentList(@PathVariable Long DocumentId){
+//        CommentResDto commentResDto = commentService.docCommentList(DocumentId);
+//        return new ResponseEntity<>(commentResDto, HttpStatus.OK);
+//    }
 
 }
