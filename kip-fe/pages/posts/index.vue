@@ -63,7 +63,7 @@ const posts = ref([
         v-model="selected"
     >
 
-<!--      클릭을 통해서 모달찰(dialong) 열기-->
+      <!--      클릭을 통해서 모달찰(dialong) 열기-->
       <template #item.title="{ item }">
         <v-dialog fullscreen>
           <template #activator="{ props: activatorProps }">
@@ -79,23 +79,21 @@ const posts = ref([
                 <PostFrom
                     ref="postForm"
                     :post="item"
-                />
+                    @submit="isActive.value = false"/>
               </v-card-text>
 
               <v-card-actions>
-                <v-spacer></v-spacer>
+                <v-spacer/>
 
-                <v-btn text="Cancel" @click="isActive.value = false"/>
+                <v-btn
+                    text="Cancel"
+                    @click="isActive.value = false"/>
 
                 <v-btn
                     color="blue"
                     variant="flat"
                     text="Save Post"
-                    @click="
-                    postForm.submit();
-                    isActive.value = false;
-                  "
-                ></v-btn>
+                    @Click="postForm.submit()"/>
 
               </v-card-actions>
             </v-card>
