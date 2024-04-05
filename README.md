@@ -218,6 +218,11 @@
   <img src="https://github.com/beyond-sw-camp/be03-fin-5TEAM-KIP/assets/148752498/ac2b9825-22c6-4d1d-b21b-ea284a960ca4">
 </p>
 
+- 문서 권한요청 알람
+<p align="center">
+  <img src="https://github.com/beyond-sw-camp/be03-fin-5TEAM-KIP/assets/148752498/5d31db69-502b-4a70-a01f-dd4d72799bcd">
+</p>
+
 - 북마크 생성 및 취소
 <p align="center">
   <img src="https://github.com/beyond-sw-camp/be03-fin-5TEAM-KIP/assets/148752498/cb3703ca-d26f-4522-96e6-00b00e719798">
