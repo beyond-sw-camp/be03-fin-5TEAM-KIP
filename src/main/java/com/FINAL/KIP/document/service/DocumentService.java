@@ -7,6 +7,7 @@ import com.FINAL.KIP.document.dto.req.moveDocInGroupReqDto;
 import com.FINAL.KIP.document.dto.req.updateDocGroupIdReqDto;
 import com.FINAL.KIP.document.dto.req.updateDocTitleReqDto;
 import com.FINAL.KIP.document.dto.res.DocumentResDto;
+import com.FINAL.KIP.document.dto.res.DocumentVersionResDto;
 import com.FINAL.KIP.document.dto.res.JustDocTitleResDto;
 import com.FINAL.KIP.document.repository.DocumentRepository;
 import com.FINAL.KIP.group.domain.Group;
@@ -14,7 +15,15 @@ import com.FINAL.KIP.group.service.GroupService;
 import com.FINAL.KIP.hashtag.service.HashTagService;
 import com.FINAL.KIP.user.domain.User;
 import com.FINAL.KIP.user.service.UserService;
+import com.FINAL.KIP.version.domain.Version;
+import com.FINAL.KIP.version.dto.response.VersionDetailResDto;
+import com.FINAL.KIP.version.dto.response.VersionReplaceResDto;
+import com.FINAL.KIP.version.repository.VersionRepository;
+import com.FINAL.KIP.version.service.VersionService;
+import java.util.UUID;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -31,17 +40,21 @@ public class DocumentService {
     private final GroupService groupService;
     private final UserService userService;
     private final HashTagService hashTagService;
+    private final VersionRepository versionRepository;
 
 
     @Autowired
     public DocumentService(DocumentRepository documentRepo,
-                           GroupService groupService,
-                           UserService userService,
-                           HashTagService hashTagService) {
+        GroupService groupService,
+        UserService userService,
+        HashTagService hashTagService,
+        VersionRepository versionRepository) {
+
         this.documentRepo = documentRepo;
         this.groupService = groupService;
         this.userService = userService;
         this.hashTagService = hashTagService;
+        this.versionRepository = versionRepository;
     }
 
     //    Create
@@ -246,4 +259,66 @@ public class DocumentService {
                 .findFirst()
                 .orElseThrow(() -> new NoSuchElementException(" 최상단 문서가 없습니다."));
     }
+
+    @Transactional(readOnly = true)
+	public ResponseEntity<List<DocumentVersionResDto>> getAllVersion(String uuid) {
+        Document byUuid = findByUuid(uuid);
+
+        List<Version> versions = byUuid.getVersions();
+        List<DocumentVersionResDto> list = new ArrayList<>();
+        for (Version version : versions) {
+            list.add(new DocumentVersionResDto(
+                version.getWriter().getName(),
+                version.getCreated_at(),
+                version.getIsShow()
+            ));
+        }
+        return new ResponseEntity<>(list, HttpStatus.OK);
+    }
+
+    public Document findByUuid(String uuid) {
+        UUID documentUuid = UUID.fromString(uuid);
+        return documentRepo.findByUuid(documentUuid).orElseThrow(
+            () -> new IllegalArgumentException("해당 문서가 존재하지 않습니다.")
+        );
+    }
+
+    @Transactional
+    public ResponseEntity<VersionReplaceResDto> replaceVersion(String documentUuid,
+        Long versionId) {
+        Document byUuid = findByUuid(documentUuid);
+        Version showVersion = findShowVersion(byUuid);
+        Version updateVersion = findVersionById(versionId);
+        if (!showVersion.getDocument().equals(updateVersion.getDocument())) {
+            throw new IllegalArgumentException("두개의 버젼의 글이 동일하지 않습니다.");
+        }
+
+        showVersion.updateIsShow();
+        updateVersion.updateIsShow();
+
+        return new ResponseEntity<>(new VersionReplaceResDto(showVersion.getId(),
+            updateVersion.getId()), HttpStatus.OK);
+    }
+
+    public Version findShowVersion(Document document) {
+        return versionRepository.findByDocumentAndIsShow(document, "Y").orElseThrow(
+            () -> new IllegalArgumentException("알 수 없는 에러가 발생하였습니다.")
+        );
+    }
+
+    public Version findVersionById(Long id) {
+        return versionRepository.findById(id).orElseThrow(
+            () -> new IllegalArgumentException("해당 버전이 존재하지 않습니다.")
+        );
+    }
+
+    @Transactional(readOnly = true)
+    public ResponseEntity<VersionDetailResDto> detailVersion(String documentUuid, Long versionId) {
+        Document byUuid = findByUuid(documentUuid);
+        Version version = findVersionById(versionId);
+
+        return new ResponseEntity<>(new VersionDetailResDto(byUuid.getTitle(), version.getContent(),
+            version.getWriter().getName(), version.getCreated_at()), HttpStatus.OK);
+    }
+
 }

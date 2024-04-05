@@ -13,6 +13,7 @@ import java.util.List;
 public class CreateDocumentReqDto {
 
     private String title;
+    private String content;
     private Long upLinkId;
     private Long groupId;
     private List<HashTagReqDto> hashTags;
