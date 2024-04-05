@@ -176,3 +176,74 @@
 <p align="center">
   <img src="https://github.com/beyond-sw-camp/be03-fin-5TEAM-KIP/assets/148752498/bef93dea-73ca-4367-9f69-a0b1a5143072">
 </p>
+
+### ⭐ 주요 단위 테스트 결과서
+- 로그인
+<p align="center">
+  <img src="https://github.com/beyond-sw-camp/be03-fin-5TEAM-KIP/assets/148752498/965b5d1b-f76c-4cf1-b5d8-18effec3658c">
+</p>
+
+- 사용자 생성
+<p align="center">
+  <img src="https://github.com/beyond-sw-camp/be03-fin-5TEAM-KIP/assets/148752498/7df3164b-6d23-4f33-9032-81887025aa64">
+</p>
+
+- 전체 사용자 조회
+<p align="center">
+  <img src="https://github.com/beyond-sw-camp/be03-fin-5TEAM-KIP/assets/148752498/c949e7b4-b989-46ca-bc28-e4ba477616c0">
+</p>
+
+- 그룹생성
+<p align="center">
+  <img src="https://github.com/beyond-sw-camp/be03-fin-5TEAM-KIP/assets/148752498/7f1d726c-3d9d-49a6-bd63-52ca05dbfb2d">
+</p>
+
+- 모든 하위계층 그룹 조회
+<p align="center">
+  <img src="https://github.com/beyond-sw-camp/be03-fin-5TEAM-KIP/assets/148752498/f7df9435-8dcc-4904-9f81-afcc429db4d4">
+</p>
+
+- 그룹 내 여러 사용자 추가
+<p align="center">
+  <img src="https://github.com/beyond-sw-camp/be03-fin-5TEAM-KIP/assets/148752498/3b9e3b74-62d6-4f02-bde5-4f158883e0d4">
+</p>
+
+- 그룹 내의 사용자 조회
+<p align="center">
+  <img src="https://github.com/beyond-sw-camp/be03-fin-5TEAM-KIP/assets/148752498/cab26644-06b9-49a0-89b2-fb5c9dc4b54d">
+</p>
+
+- 문서 생성
+<p align="center">
+  <img src="https://github.com/beyond-sw-camp/be03-fin-5TEAM-KIP/assets/148752498/ac2b9825-22c6-4d1d-b21b-ea284a960ca4">
+</p>
+
+- 북마크 생성 및 취소
+<p align="center">
+  <img src="https://github.com/beyond-sw-camp/be03-fin-5TEAM-KIP/assets/148752498/cb3703ca-d26f-4522-96e6-00b00e719798">
+</p>
+
+- 문서별 북마크 갯수
+<p align="center">
+  <img src="https://github.com/beyond-sw-camp/be03-fin-5TEAM-KIP/assets/148752498/01b2b78b-1d26-4915-b93f-5dffa1cb7f5e">
+</p>
+
+- 해시태그 추가
+<p align="center">
+  <img src="https://github.com/beyond-sw-camp/be03-fin-5TEAM-KIP/assets/148752498/90ec9070-b97d-4ce8-a2e5-648ba4bd2601">
+</p>
+
+- 해시태그 조회
+<p align="center">
+  <img src="https://github.com/beyond-sw-camp/be03-fin-5TEAM-KIP/assets/148752498/c995dc15-fbac-4b59-b62d-444a7a3bbce9">
+</p>
+
+- 댓글 생성
+<p align="center">
+  <img src="https://github.com/beyond-sw-camp/be03-fin-5TEAM-KIP/assets/148752498/593212ab-6157-4466-a928-18ee33dc22ec">
+</p>
+
+- 댓글 조회
+<p align="center">
+  <img src="https://github.com/beyond-sw-camp/be03-fin-5TEAM-KIP/assets/148752498/8aa3141f-58d7-46c2-bcfc-358cb4c4b969">
+</p>
