@@ -166,7 +166,7 @@
 </p>
 
 ### ⭐ 프로그램 사양서
-- [KIP 프로그램 사양서(API 목록)](https://elite-bass-0e0.notion.site/API-178a96f9ca5f4a08961d97923dc7c8e8?pvs=4)
+- [KIP 프로그램 사양서 노션 링크](https://elite-bass-0e0.notion.site/API-178a96f9ca5f4a08961d97923dc7c8e8?pvs=4)
 - API 전체 목록
 <p align="center">
   <img src="https://github.com/beyond-sw-camp/be03-fin-5TEAM-KIP/assets/148752498/7c963ddb-fc8a-4059-888e-05fd8f55bbb9">
