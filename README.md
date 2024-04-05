@@ -9,6 +9,7 @@
 <br/>
 
 ***
+
 <details>
 <summary>
   <b>⭐프로젝트 개요</b>
@@ -33,7 +34,9 @@
 ***
 
 <details>
-<summary><b>⭐기술 스택</b></summary>
+<summary>
+  <b>⭐기술 스택</b>
+</summary>
 <div markdown="1">
 
 #### 📌공통
@@ -66,7 +69,9 @@
 ***
 
 <details>
-<summary><b>⭐요구사항 정의서</b></summary>
+<summary>
+  <b>⭐요구사항 정의서</b>
+</summary>
 <div markdown="1">
 
 #### 📌 목적
@@ -111,7 +116,9 @@
 ***
 
 <details>
-<summary><b>⭐조직의 구성(예시)</b></summary>
+<summary>
+  <b>⭐조직의 구성(예시)</b>
+</summary>
 <div markdown="1">
   
 #### 📌방산 조직 구성도
@@ -142,16 +149,21 @@
 </div>
 </details>
 
+***
 
 ### ⭐ERD
 <p align="center">
   <img src="https://github.com/beyond-sw-camp/be03-fin-5TEAM-KIP/assets/148752498/1d2009c9-4811-4ed2-9956-97d8e93da44b">
 </p>
 
+***
+
 ### ⭐ WBS
 <p align="center">
   <img src="https://github.com/beyond-sw-camp/be03-fin-5TEAM-KIP/assets/148752498/b15d6953-c466-446a-89d4-c21e84929911">
 </p>
+
+***
 
 ### ⭐ 화면설계서
 - 메인화면
@@ -161,10 +173,14 @@
 
 #### 📌 [KIP 화면설계 피그마 링크](https://www.figma.com/file/7uzpyZLpNiRnG6SaqKPq0G/KIP_FrontPage?type=design&node-id=0%3A1&mode=design&t=bmqXufLzF1sSbCEr-1)
 
+***
+
 ### ⭐ 시스템 아키텍처 설계서
 <p align="center">
   <img src="https://github.com/beyond-sw-camp/be03-fin-5TEAM-KIP/assets/148752498/b32e92b6-d4d1-42b0-95ce-f516e26b47b4">
 </p>
+
+***
 
 ### ⭐ 프로그램 사양서
 - API 전체 목록
@@ -179,7 +195,12 @@
 
 #### 📌 [KIP 프로그램 사양서 노션 링크](https://elite-bass-0e0.notion.site/API-178a96f9ca5f4a08961d97923dc7c8e8?pvs=4)
 
-### ⭐ 주요 단위 테스트 결과서
+***
+
+<details>
+<summary><b>⭐ 주요 단위 테스트 결과서</b></summary>
+<div markdown="1">
+
 - 문서 권한요청 알람
 <p align="center">
   <img src="https://github.com/beyond-sw-camp/be03-fin-5TEAM-KIP/assets/148752498/db89ce50-4014-4d35-afcf-1a69789d7b75">
@@ -254,3 +275,6 @@
 <p align="center">
   <img src="https://github.com/beyond-sw-camp/be03-fin-5TEAM-KIP/assets/148752498/8aa3141f-58d7-46c2-bcfc-358cb4c4b969">
 </p>
+
+</div>
+</details>
