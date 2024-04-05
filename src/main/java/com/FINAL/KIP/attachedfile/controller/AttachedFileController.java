@@ -1,7 +1,6 @@
 package com.FINAL.KIP.attachedfile.controller;
 
 import com.FINAL.KIP.attachedfile.dto.AttachedFileResDto;
-import com.FINAL.KIP.attachedfile.dto.DocumentFileLinkReqDto;
 import com.FINAL.KIP.attachedfile.dto.TempFileUploadResDto;
 import com.FINAL.KIP.attachedfile.service.AttachedFileService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -26,6 +25,7 @@ public class AttachedFileController {
         this.attachedFileService = attachedFileService;
     }
 
+    // 임시 파일 업로드
     @PostMapping("/temp-upload")
     public ResponseEntity<?> uploadTempFile(@RequestParam("file") MultipartFile file) {
         try {
@@ -36,26 +36,7 @@ public class AttachedFileController {
         }
     }
 
-    @PostMapping("/link-to-document")
-    public ResponseEntity<?> linkTempFileToDocument(@RequestBody DocumentFileLinkReqDto linkReqDto) {
-        try {
-            AttachedFileResDto response = attachedFileService.linkTempFileToDocument(linkReqDto);
-            return ResponseEntity.ok(response);
-        } catch (IllegalArgumentException e) {
-            return ResponseEntity.badRequest().body("임시 파일 또는 문서를 찾을 수 없습니다: " + e.getMessage());
-        }
-    }
-
-    @PostMapping("/upload/{docId}")
-    public ResponseEntity<?> uploadFile(@PathVariable Long docId, @RequestParam("file") MultipartFile file) {
-        try {
-            AttachedFileResDto response = attachedFileService.uploadFile(file, docId);
-            return ResponseEntity.ok(response);
-        } catch (IOException e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("파일 업로드 중 오류가 발생했습니다: " + e.getMessage());
-        }
-    }
-
+    // 파일 조회
     @GetMapping("/{id}")
     public ResponseEntity<?> getFile(@PathVariable Long id) {
         try {
@@ -66,6 +47,7 @@ public class AttachedFileController {
         }
     }
 
+    // 파일 전체 조회
     @GetMapping("/list")
     public ResponseEntity<?> getAllFiles() {
         try {
@@ -76,6 +58,7 @@ public class AttachedFileController {
         }
     }
 
+    // 파일 수정
     @PatchMapping("/{id}")
     public ResponseEntity<?> updateFile(@PathVariable Long id, @RequestParam("file") MultipartFile newFile) {
         try {
@@ -86,6 +69,7 @@ public class AttachedFileController {
         }
     }
 
+    // 파일 삭제
     @DeleteMapping("/{id}")
     public ResponseEntity<?> deleteFile(@PathVariable Long id) {
         try {
