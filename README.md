@@ -154,11 +154,12 @@
 </p>
 
 ### ⭐ 화면설계서
-- [KIP 화면설계 피그마 링크](https://www.figma.com/file/7uzpyZLpNiRnG6SaqKPq0G/KIP_FrontPage?type=design&node-id=0%3A1&mode=design&t=bmqXufLzF1sSbCEr-1)
 - 메인화면
 <p align="center">
   <img src="https://github.com/beyond-sw-camp/be03-fin-5TEAM-KIP/assets/148752498/e78374c8-e5e5-43d2-b53a-85d6c2b3c179">
 </p>
+
+#### 📌 [KIP 화면설계 피그마 링크](https://www.figma.com/file/7uzpyZLpNiRnG6SaqKPq0G/KIP_FrontPage?type=design&node-id=0%3A1&mode=design&t=bmqXufLzF1sSbCEr-1)
 
 ### ⭐ 시스템 아키텍처 설계서
 <p align="center">
@@ -166,7 +167,6 @@
 </p>
 
 ### ⭐ 프로그램 사양서
-- [KIP 프로그램 사양서 노션 링크](https://elite-bass-0e0.notion.site/API-178a96f9ca5f4a08961d97923dc7c8e8?pvs=4)
 - API 전체 목록
 <p align="center">
   <img src="https://github.com/beyond-sw-camp/be03-fin-5TEAM-KIP/assets/148752498/7c963ddb-fc8a-4059-888e-05fd8f55bbb9">
@@ -177,7 +177,14 @@
   <img src="https://github.com/beyond-sw-camp/be03-fin-5TEAM-KIP/assets/148752498/bef93dea-73ca-4367-9f69-a0b1a5143072">
 </p>
 
+#### 📌 [KIP 프로그램 사양서 노션 링크](https://elite-bass-0e0.notion.site/API-178a96f9ca5f4a08961d97923dc7c8e8?pvs=4)
+
 ### ⭐ 주요 단위 테스트 결과서
+- 문서 권한요청 알람
+<p align="center">
+  <img src="https://github.com/beyond-sw-camp/be03-fin-5TEAM-KIP/assets/148752498/db89ce50-4014-4d35-afcf-1a69789d7b75">
+</p>
+
 - 로그인
 <p align="center">
   <img src="https://github.com/beyond-sw-camp/be03-fin-5TEAM-KIP/assets/148752498/965b5d1b-f76c-4cf1-b5d8-18effec3658c">
@@ -216,11 +223,6 @@
 - 문서 생성
 <p align="center">
   <img src="https://github.com/beyond-sw-camp/be03-fin-5TEAM-KIP/assets/148752498/ac2b9825-22c6-4d1d-b21b-ea284a960ca4">
-</p>
-
-- 문서 권한요청 알람
-<p align="center">
-  <img src="https://github.com/beyond-sw-camp/be03-fin-5TEAM-KIP/assets/148752498/5d31db69-502b-4a70-a01f-dd4d72799bcd">
 </p>
 
 - 북마크 생성 및 취소
