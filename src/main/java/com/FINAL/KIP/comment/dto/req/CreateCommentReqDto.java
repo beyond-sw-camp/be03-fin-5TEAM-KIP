@@ -1,4 +1,4 @@
-package com.FINAL.KIP.comment.dto;
+package com.FINAL.KIP.comment.dto.req;
 
 import com.FINAL.KIP.comment.domain.Comment;
 import lombok.Getter;

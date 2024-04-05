@@ -1,7 +1,10 @@
 package com.FINAL.KIP.comment.service;
 
 import com.FINAL.KIP.comment.domain.Comment;
-import com.FINAL.KIP.comment.dto.*;
+import com.FINAL.KIP.comment.dto.req.CreateCommentReqDto;
+import com.FINAL.KIP.comment.dto.req.UpdateCommentReqDto;
+import com.FINAL.KIP.comment.dto.res.CommentListResDto;
+import com.FINAL.KIP.comment.dto.res.CommentResDto;
 import com.FINAL.KIP.comment.repository.CommentRepository;
 import com.FINAL.KIP.common.aspect.UserAdmin;
 import com.FINAL.KIP.document.domain.Document;

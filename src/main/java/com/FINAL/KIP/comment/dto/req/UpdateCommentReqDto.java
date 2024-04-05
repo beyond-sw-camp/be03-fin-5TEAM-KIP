@@ -1,4 +1,4 @@
-package com.FINAL.KIP.comment.dto;
+package com.FINAL.KIP.comment.dto.req;
 
 import lombok.Data;
 

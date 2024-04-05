@@ -1,6 +1,9 @@
 package com.FINAL.KIP.comment.controller;
 
-import com.FINAL.KIP.comment.dto.*;
+import com.FINAL.KIP.comment.dto.req.CreateCommentReqDto;
+import com.FINAL.KIP.comment.dto.req.UpdateCommentReqDto;
+import com.FINAL.KIP.comment.dto.res.CommentListResDto;
+import com.FINAL.KIP.comment.dto.res.CommentResDto;
 import com.FINAL.KIP.comment.service.CommentService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
