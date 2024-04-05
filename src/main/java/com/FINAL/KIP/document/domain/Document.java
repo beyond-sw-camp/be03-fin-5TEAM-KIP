@@ -4,6 +4,7 @@ import com.FINAL.KIP.common.domain.BaseEntity;
 import com.FINAL.KIP.group.domain.Group;
 import com.FINAL.KIP.hashtag.domain.DocHashTag;
 import com.FINAL.KIP.request.domain.Request;
+import com.FINAL.KIP.version.domain.Version;
 import jakarta.persistence.*;
 import lombok.Builder;
 import lombok.Getter;
@@ -45,6 +46,9 @@ public class Document extends BaseEntity {
     @ManyToOne
     @JoinColumn
     private Group group;
+
+    @OneToMany(mappedBy = "document", cascade = CascadeType.ALL)
+    private final List<Version> versions = new ArrayList<>();
 
     @OneToMany(mappedBy = "document", cascade = CascadeType.ALL)
     private final List<Request> requests = new ArrayList<>();

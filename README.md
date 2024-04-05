@@ -145,22 +145,22 @@
 
 ### ⭐ERD
 <p align="center">
-  <img src="https://github.com/beyond-sw-camp/be03-fin-5TEAM-KMS/assets/148752498/4277cd97-75ed-490e-8bc2-76dec83a9bb2">
+  <img src="https://github.com/beyond-sw-camp/be03-fin-5TEAM-KIP/assets/148752498/1d2009c9-4811-4ed2-9956-97d8e93da44b">
 </p>
 
 ### ⭐ WBS
 <p align="center">
-  <img src="https://github.com/beyond-sw-camp/be03-fin-5TEAM-KMS/assets/148752498/ec97bdd6-bb15-4848-9eb3-b79215799404">
+  <img src="https://github.com/beyond-sw-camp/be03-fin-5TEAM-KIP/assets/148752498/b15d6953-c466-446a-89d4-c21e84929911">
 </p>
 
 ### ⭐ 화면설계서
 - [KIP 화면설계 피그마 링크](https://www.figma.com/file/7uzpyZLpNiRnG6SaqKPq0G/KIP_FrontPage?type=design&node-id=0%3A1&mode=design&t=bmqXufLzF1sSbCEr-1)
 - 메인화면
 <p align="center">
-  <img src="https://github.com/beyond-sw-camp/be03-fin-5TEAM-KMS/assets/148752498/49954f97-abcb-4eb4-beca-eb027e270990">
+  <img src="https://github.com/beyond-sw-camp/be03-fin-5TEAM-KIP/assets/148752498/e78374c8-e5e5-43d2-b53a-85d6c2b3c179">
 </p>
 
-### ⭐ 시스템 아키텍처 초안
+### ⭐ 시스템 아키텍처 설계서
 <p align="center">
-  <img src="https://github.com/beyond-sw-camp/be03-fin-5TEAM-KMS/assets/148752498/6e87f2e3-c470-4951-80ae-8f9b14adb5b3">
+  <img src="https://github.com/beyond-sw-camp/be03-fin-5TEAM-KIP/assets/148752498/b32e92b6-d4d1-42b0-95ce-f516e26b47b4">
 </p>
