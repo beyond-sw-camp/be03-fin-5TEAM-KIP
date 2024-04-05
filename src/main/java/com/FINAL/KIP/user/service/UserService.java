@@ -138,6 +138,15 @@ public class UserService {
         userRepo.delete(userInfo);
     }
 
+//    사용자 북마크 목록 조회
+    public CommonResponse userBookList(){
+        User userInfo = getUserFromAuthentication();
+        String employeeId = userInfo.getEmployeeId();
+
+        List<Object[]> bookList = bookRepository.findDocumentIdAndTitleByEmployeeId(employeeId);
+        return new CommonResponse(HttpStatus.OK, "User Book List loaded successfully!", bookList);
+    }
+
     //  함수 공통화
     @UserAdmin
     public User getUserFromAuthentication() {
@@ -149,16 +158,5 @@ public class UserService {
     public User getUserByEmployeeId(String employeeId) {
         return userRepo.findByEmployeeId(employeeId)
                 .orElseThrow(() -> new EntityNotFoundException("사원번호를 찾을 수 없습니다. " + employeeId));
-    }
-
-    // 사용자 북마크 목록 조회
-    public CommonResponse userBookList(){
-        User userInfo = getUserFromAuthentication();
-        String employeeId = userInfo.getEmployeeId();
-
-        List<Object[]> bookList = bookRepository.findDocumentIdAndTitleByEmployeeId(employeeId);
-        return new CommonResponse(HttpStatus.OK, "User Book List loaded successfully!", bookList);
-
-
     }
 }

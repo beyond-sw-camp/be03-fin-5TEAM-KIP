@@ -3,6 +3,7 @@ package com.FINAL.KIP.bookmark.service;
 import com.FINAL.KIP.bookmark.domain.Book;
 import com.FINAL.KIP.bookmark.dto.BookResDto;
 import com.FINAL.KIP.bookmark.repository.BookRepository;
+import com.FINAL.KIP.common.aspect.UserAdmin;
 import com.FINAL.KIP.document.domain.Document;
 import com.FINAL.KIP.document.repository.DocumentRepository;
 import com.FINAL.KIP.user.domain.User;
@@ -27,6 +28,7 @@ public class BookService {
         this.bookRepository = bookRepository;
     }
 
+    @UserAdmin
     @Transactional
     public BookResDto docBookMark(Long documentId){
         Document document = documentRepository.findById(documentId).orElseThrow(() -> new EntityNotFoundException("없는 문서입니다."));
@@ -73,6 +75,7 @@ public class BookService {
         return bookResDto;
     }
 
+    @UserAdmin
     public BookResDto docBookCount(Long documentId){
         Document document = documentRepository.findById(documentId).orElseThrow(() -> new EntityNotFoundException("없는 문서입니다."));
         BookResDto bookResDto;

@@ -3,6 +3,7 @@ package com.FINAL.KIP.comment.service;
 import com.FINAL.KIP.comment.domain.Comment;
 import com.FINAL.KIP.comment.dto.*;
 import com.FINAL.KIP.comment.repository.CommentRepository;
+import com.FINAL.KIP.common.aspect.UserAdmin;
 import com.FINAL.KIP.document.domain.Document;
 import com.FINAL.KIP.document.repository.DocumentRepository;
 import com.FINAL.KIP.user.domain.User;
@@ -28,7 +29,8 @@ public class CommentService {
         this.commentRepository = commentRepository;
     }
 
-    //    댓글 생성
+//    댓글 생성
+    @UserAdmin
     @Transactional
     public CommentResDto docCommentCreate(Long documentId, CreateCommentReqDto createCommentReqDto) {
         Document document = documentRepository.findById(documentId).orElseThrow(() -> new EntityNotFoundException("없는 문서입니다."));
@@ -45,9 +47,12 @@ public class CommentService {
 
 //    댓글 조회(Hierarchy)
 //    superCommentId가 null인 모든 댓글을 조회하여 CommentListResDto로 매핑하여 반환합니다.
+    @UserAdmin
     public List<CommentListResDto> docCommentList(Long documentId) {
         getDocCommentById(documentId);
-        List<Comment> superComments = commentRepository.findBySuperCommentIsNull();
+        List<Comment> superComments = commentRepository.findByDocumentIdAndSuperCommentIsNull(documentId);
+        if (superComments.isEmpty())
+            throw new IllegalStateException(documentId + "번 문서에 댓글이 없습니다.");
 
         return superComments.stream()
                 .map(CommentListResDto::new)
@@ -55,7 +60,20 @@ public class CommentService {
     }
 
 //    댓글 수정
+    @UserAdmin
     public CommentResDto docCommentUpdate(Long documentId, UpdateCommentReqDto updateCommentReqDto) {
+
+        String name = SecurityContextHolder.getContext().getAuthentication().getName();
+        String[] split = name.split(":");
+        String employeeId = split[0];
+        User user = userRepo.findByEmployeeId(employeeId).orElseThrow(() -> new EntityNotFoundException("user not found"));
+
+//        사용자의 이름과 일치하는 댓글을 찾고 댓글이 없으면 예외발생
+        List<Comment> commentOptional = commentRepository.findByUserName(user.getName());
+        if (commentOptional.isEmpty()) {
+            throw new IllegalArgumentException("댓글 수정 권한이 없습니다.");
+        }
+
         getDocCommentById(documentId);
         Comment comment = getCommentById(updateCommentReqDto.getCommentId());
         comment.setComment(updateCommentReqDto.getComment());
@@ -63,7 +81,20 @@ public class CommentService {
     }
 
 //    댓글 삭제
+    @UserAdmin
     public void docCommentDelete(Long documentId, Long commentId){
+
+        String name = SecurityContextHolder.getContext().getAuthentication().getName();
+        String[] split = name.split(":");
+        String employeeId = split[0];
+        User user = userRepo.findByEmployeeId(employeeId).orElseThrow(() -> new EntityNotFoundException("user not found"));
+
+//        사용자의 이름과 일치하는 댓글을 찾고 댓글이 없으면 예외발생
+        List<Comment> commentOptional = commentRepository.findByUserName(user.getName());
+        if (commentOptional.isEmpty()) {
+            throw new IllegalArgumentException("댓글 삭제 권한이 없습니다.");
+        }
+
         getDocCommentById(documentId);
         Comment comment = getCommentById(commentId);
         commentRepository.delete(comment);
