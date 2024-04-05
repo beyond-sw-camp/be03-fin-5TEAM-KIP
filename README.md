@@ -160,7 +160,7 @@
   <img src="https://github.com/beyond-sw-camp/be03-fin-5TEAM-KIP/assets/148752498/08c0b864-2b65-4216-9dc7-d54ed3064a93">
 </p>
 
-### ⭐ 시스템 아키텍처 초안
+### ⭐ 시스템 아키텍처 설계서
 <p align="center">
   <img src="https://github.com/beyond-sw-camp/be03-fin-5TEAM-KIP/assets/148752498/b32e92b6-d4d1-42b0-95ce-f516e26b47b4">
 </p>
