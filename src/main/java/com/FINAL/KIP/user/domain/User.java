@@ -79,7 +79,11 @@ public class User extends BaseEntity {
         this.name = name;
         this.email = email;
         this.phoneNumber = phoneNumber;
+    }
 
+    public void setProfileImageUrl(String profileImageUrl) {
+        this.profileImageUrl = profileImageUrl;
     }
 
 }
+
