@@ -55,10 +55,6 @@ public class BookService {
                     .result(HttpStatus.OK)
                     .build();
             document.addBookCount();
-
-//            DocBookReport docBookReport = new DocBookReport(book.getDocument(), book.getEmployeeId());
-//            docBookReportRepository.save(docBookReport);
-
         } else {
             Book book = bookList.get(0);
             bookRepository.delete(book);
@@ -68,9 +64,6 @@ public class BookService {
                     .result(HttpStatus.OK)
                     .build();
             document.reduceLikeCount();
-
-//            DocBookReport findDocBookReport = docBookReportRepository.findByDocumentIdAndEmployeeId(book.getDocument().getId(), book.getEmployeeId());
-//            docBookReportRepository.delete(findDocBookReport);
         }
         return bookResDto;
     }
@@ -86,5 +79,4 @@ public class BookService {
                 .build();
         return bookResDto;
     }
-
 }
