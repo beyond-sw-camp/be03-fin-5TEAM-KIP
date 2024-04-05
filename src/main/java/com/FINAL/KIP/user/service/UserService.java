@@ -40,7 +40,6 @@ public class UserService {
     private final JwtTokenProvider jwtTokenProvider;
     private final UserRefreshTokenRepository userRefreshTokenRepository;
     private final BookRepository bookRepository;
-
     private final String uploadDir = "uploads/profiles"; // 프로필 이미지를 저장할 디렉토리 경로
 
 
