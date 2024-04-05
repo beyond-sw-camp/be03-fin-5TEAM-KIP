@@ -164,3 +164,15 @@
 <p align="center">
   <img src="https://github.com/beyond-sw-camp/be03-fin-5TEAM-KIP/assets/148752498/b32e92b6-d4d1-42b0-95ce-f516e26b47b4">
 </p>
+
+### ⭐ 프로그램 사양서
+- [KIP 프로그램 사양서(API 목록)](https://elite-bass-0e0.notion.site/API-178a96f9ca5f4a08961d97923dc7c8e8?pvs=4)
+- API 전체 목록
+<p align="center">
+  <img src="https://github.com/beyond-sw-camp/be03-fin-5TEAM-KIP/assets/148752498/7c963ddb-fc8a-4059-888e-05fd8f55bbb9">
+</p>
+
+- 문서, 사용자 API 목록
+<p align="center">
+  <img src="https://github.com/beyond-sw-camp/be03-fin-5TEAM-KIP/assets/148752498/bef93dea-73ca-4367-9f69-a0b1a5143072">
+</p>
