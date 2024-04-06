@@ -1,4 +1,8 @@
 <script setup lang="ts">
+
+import CartStore from "~/stores/CartStore";
+import KipColor from "~/stores/KipColor";
+
 // 햄버거 버튼
 const drawer = ref(true);
 </script>
@@ -10,7 +14,7 @@ const drawer = ref(true);
     <v-app-bar
         location="top"
         density="default"
-        :color="`#2D3250`"
+        :color="KipColor().kipMainColor"
         :elevation="5"
     >
 
@@ -22,11 +26,56 @@ const drawer = ref(true);
         />
       </template>
 
-        <v-toolbar-title>
-          <NuxtLink to="/">
-            KIP (Knowledge Is Power)
-          </NuxtLink>
-        </v-toolbar-title>
+      <v-toolbar-title>
+        <NuxtLink to="/">
+          KIP (Knowledge Is Power)
+        </NuxtLink>
+      </v-toolbar-title>
+
+      <!-- 알림 버튼 -->
+      <v-dialog max-width="500">
+        <template #activator="{ props: activatorProps }">
+          <v-btn
+              v-bind="activatorProps"
+              class="text-none"
+              stacked>
+            <v-badge
+                v-if="CartStore().count !== 0"
+                color="error"
+                :content="CartStore().count">
+              <v-icon
+                  icon="mdi-bell-ring"
+                  size="x-large"
+              /></v-badge>
+            <v-icon
+                v-else
+                icon="mdi-bell"
+                size="x-large"
+            />
+          </v-btn>
+        </template>
+
+        <template #default="{ isActive }">
+          <v-card title="Dialog">
+            <v-card-text>
+              Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et
+              dolore magna aliqua.
+            </v-card-text>
+
+            <v-card-actions>
+              <v-spacer></v-spacer>
+
+              <v-btn
+                  text="Close Dialog"
+                  @click="isActive.value = false"
+                  color="surface-variant"
+                  variant="flat"
+              ></v-btn>
+            </v-card-actions>
+          </v-card>
+        </template>
+      </v-dialog>
+
 
       <template #append>
         <v-menu>
@@ -49,6 +98,7 @@ const drawer = ref(true);
             </v-list-item>
           </v-list>
         </v-menu>
+
       </template>
     </v-app-bar>
 
@@ -67,13 +117,16 @@ const drawer = ref(true);
           <v-list-item prepend-icon="mdi-note" title="POSTING" value="shared"/>
         </NuxtLink>
         <NuxtLink to="/comments">
-          <v-list-item prepend-icon="mdi-comment" title="COMMENTS" value="starred"/>
+          <v-list-item prepend-icon="mdi-comment" title="COMMENTS" value="COMMENTS"/>
         </NuxtLink>
         <NuxtLink to="/dialogs">
-          <v-list-item prepend-icon="mdi-access-point" title="DIALOGS" value="starred"/>
+          <v-list-item prepend-icon="mdi-access-point" title="DIALOGS"/>
         </NuxtLink>
         <NuxtLink to="/login">
-          <v-list-item prepend-icon="mdi-login-variant" title="LOGIN" value="starred"/>
+          <v-list-item prepend-icon="mdi-login-variant" title="LOGIN"/>
+        </NuxtLink>
+        <NuxtLink to="/pinia">
+          <v-list-item prepend-icon="mdi-store-cog" title="PINIA"/>
         </NuxtLink>
 
 
