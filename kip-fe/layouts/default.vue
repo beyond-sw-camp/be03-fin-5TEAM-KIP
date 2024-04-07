@@ -1,11 +1,18 @@
 <script setup lang="ts">
-
 import CartStore from "~/stores/CartStore";
 import KipColor from "~/stores/KipColor";
-import AuthUserStore from "~/stores/AuthUserStore";
+import LeftNavigation from "~/components/LeftNavigation.vue";
+import NotificationCopo from "~/components/NotificationCopo.vue";
 
 // 햄버거 버튼
 const drawer = ref(true);
+const rail = ref(true);
+
+// function
+const handleRailClick = () => {
+  rail.value = !rail.value;
+};
+
 </script>
 
 <template>
@@ -34,7 +41,7 @@ const drawer = ref(true);
       </v-toolbar-title>
 
       <!-- 알림 버튼 -->
-      <v-dialog max-width="500">
+      <v-dialog max-width="600">
         <template #activator="{ props: activatorProps }">
           <v-btn
               v-bind="activatorProps"
@@ -58,49 +65,9 @@ const drawer = ref(true);
         </template>
 
         <template #default="{ isActive }">
-          <v-card :title="`${AuthUserStore().username}'s Notification`"
-                  class="mx-auto"
-                  max-width="450"
-          >
-            <v-card
-                v-for="product in CartStore().grouped"
-                class="mx-auto"
-                max-width="344"
-                :subtitle="`$${product[0].price} X ${CartStore().groupCount(product[0].name)}개`"
-                :title="product[0].name">
-
-
-              <template v-slot:prepend>
-                <v-avatar
-                    :image="`/images/${product[0].image}`"
-                    size="55"
-                />
-              </template>
-
-              <template v-slot:append>
-                <v-icon
-                    icon="mdi-trash-can"
-                    size="x-large"
-                    @click="CartStore().deleteItems(product[0].name)"
-                />
-              </template>
-
-            </v-card>
-
-            <!--닫기버튼-->
-            <v-card-actions>
-              Total Price: ${{ CartStore().totalPrice }}
-              <v-spacer/>
-              <v-btn
-                  text="X"
-                  @click="isActive.value = false"
-                  :color="KipColor().kipMainColor"
-                  variant="flat"
-              />
-            </v-card-actions>
-          </v-card>
-
-
+          <NotificationCopo
+              @isActive = "isActive.value = false"
+          />
         </template>
       </v-dialog>
 
@@ -133,40 +100,15 @@ const drawer = ref(true);
 
     <!--  좌측메뉴  -->
     <v-navigation-drawer
-        expand-on-hover
-        rail
         v-model="drawer"
-    >
-      <v-list density="compact" nav>
-        <NuxtLink to="/">
-          <v-list-item prepend-icon="mdi-home-circle" title="HOME" value="myfiles"/>
-        </NuxtLink>
-        <NuxtLink to="/posts">
-          <v-list-item prepend-icon="mdi-note" title="POSTING" value="shared"/>
-        </NuxtLink>
-        <NuxtLink to="/comments">
-          <v-list-item prepend-icon="mdi-comment" title="COMMENTS" value="COMMENTS"/>
-        </NuxtLink>
-        <NuxtLink to="/dialogs">
-          <v-list-item prepend-icon="mdi-access-point" title="DIALOGS"/>
-        </NuxtLink>
-        <NuxtLink to="/login">
-          <v-list-item prepend-icon="mdi-login-variant" title="LOGIN"/>
-        </NuxtLink>
-        <NuxtLink to="/pinia">
-          <v-list-item prepend-icon="mdi-store-cog" title="PINIA"/>
-        </NuxtLink>
-
-
-      </v-list>
+        :rail="rail"
+        permanent>
+      <LeftNavigation @railEvent="handleRailClick"/>
     </v-navigation-drawer>
 
     <!--  메인 페이지  -->
     <v-main>
-      <div class="pa-5">
-        <NuxtPage/>
-      </div>
-
+      <NuxtPage/>
     </v-main>
 
   </v-layout>
