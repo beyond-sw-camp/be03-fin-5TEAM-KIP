@@ -2,6 +2,7 @@
 
 import CartStore from "~/stores/CartStore";
 import KipColor from "~/stores/KipColor";
+import AuthUserStore from "~/stores/AuthUserStore";
 
 // 햄버거 버튼
 const drawer = ref(true);
@@ -40,13 +41,14 @@ const drawer = ref(true);
               class="text-none"
               stacked>
             <v-badge
-                v-if="CartStore().count !== 0"
+                v-if="!CartStore().isEmpty"
                 color="error"
                 :content="CartStore().count">
               <v-icon
                   icon="mdi-bell-ring"
                   size="x-large"
-              /></v-badge>
+              />
+            </v-badge>
             <v-icon
                 v-else
                 icon="mdi-bell"
@@ -56,23 +58,49 @@ const drawer = ref(true);
         </template>
 
         <template #default="{ isActive }">
-          <v-card title="Dialog">
-            <v-card-text>
-              Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et
-              dolore magna aliqua.
-            </v-card-text>
+          <v-card :title="`${AuthUserStore().username}'s Notification`"
+                  class="mx-auto"
+                  max-width="450"
+          >
+            <v-card
+                v-for="product in CartStore().grouped"
+                class="mx-auto"
+                max-width="344"
+                :subtitle="`$${product[0].price} X ${CartStore().groupCount(product[0].name)}개`"
+                :title="product[0].name">
 
+
+              <template v-slot:prepend>
+                <v-avatar
+                    :image="`/images/${product[0].image}`"
+                    size="55"
+                />
+              </template>
+
+              <template v-slot:append>
+                <v-icon
+                    icon="mdi-trash-can"
+                    size="x-large"
+                    @click="CartStore().deleteItems(product[0].name)"
+                />
+              </template>
+
+            </v-card>
+
+            <!--닫기버튼-->
             <v-card-actions>
-              <v-spacer></v-spacer>
-
+              Total Price: ${{ CartStore().totalPrice }}
+              <v-spacer/>
               <v-btn
-                  text="Close Dialog"
+                  text="X"
                   @click="isActive.value = false"
-                  color="surface-variant"
+                  :color="KipColor().kipMainColor"
                   variant="flat"
-              ></v-btn>
+              />
             </v-card-actions>
           </v-card>
+
+
         </template>
       </v-dialog>
 

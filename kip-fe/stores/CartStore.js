@@ -18,22 +18,15 @@ export default defineStore("CartStore", {
             const sorted = Object.keys(grouped).sort();
             let inOrder = {};
             sorted.forEach((key) => inOrder[key] = grouped[key]);
-            return inOrder;
+            return inOrder; // 이름순 정렬을 유지.
         },
 
-        groupCount: state =>
-            (name) => state.grouped[name].length,
-        totalPrice: state=>
+        groupCount: state => (name) => state.grouped[name].length,
+        totalPrice: state =>
             state.items.reduce((sum, item) => sum + item.price, 0),
     },
 
     actions: {
-
-        checkout() {
-            const authUserStore = useAuthUserStore();
-            alert(`${authUserStore.username} just bought ${this.count} items at a totla of $${this.totalPrice} `);
-        },
-
         addItems(count, item) {
             count = parseInt(count);
             for (let i = 0; i < count; i++) {
@@ -42,10 +35,6 @@ export default defineStore("CartStore", {
         },
         deleteItems(name){
             this.items = this.items.filter(item => item.name !== name);
-        },
-        updateCount(count, item){
-            this.deleteItems(item.name);
-            this.addItems(count, item);
         }
     }
 })

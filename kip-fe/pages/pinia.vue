@@ -2,6 +2,7 @@
 import CartStore from "@/stores/CartStore";
 import AuthUserStore from "~/stores/AuthUserStore.js";
 import ProductStore from "@/stores/ProductStore";
+import KipColor from "~/stores/KipColor.js";
 ProductStore().fill()
 
 const productCounts = reactive({});
@@ -15,7 +16,7 @@ const addItems = (product) => {
 <template>
   <v-sheet
       class="d-flex pa-10"
-      color="yellow-lighten-3"
+      :color="KipColor().kipMainColor"
   >
     <v-card
         v-for="product in ProductStore().getProducts"
@@ -42,10 +43,13 @@ const addItems = (product) => {
       />
 
       <v-card-actions>
+        <v-spacer/>
         <v-btn
-            color="orange"
             text="Add To Cart"
-            @click="addItems(product)"/>
+            @click="addItems(product)"
+            :color="KipColor().kipMainColor"
+            variant="elevated"
+        />
       </v-card-actions>
 
     </v-card>
