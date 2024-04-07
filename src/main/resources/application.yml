@@ -35,8 +35,8 @@ cloud:
     s3:
       bucket: kip-s3
     credentials:
-      secret-key: AKIAW3MEEKQNWAYRQTYZ
-      access-key: JLlvepT8K25EqkZaVofOXc+kunIpjarn69pZi7oQ
+      secret-key: 1
+      access-key: 1
     region:
       static: ap-northeast-2
       auto: false
