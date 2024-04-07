@@ -1,7 +1,5 @@
 import {defineStore} from "pinia";
 import {groupBy} from "lodash";
-import useAuthUserStore from "@/stores/AuthUserStore";
-
 
 export default defineStore("CartStore", {
     state: () => {
@@ -27,14 +25,25 @@ export default defineStore("CartStore", {
     },
 
     actions: {
+        fetchItemsFromLocalStorage() {
+            let savedItems = [];
+            if (typeof (window) !== 'undefined') {
+                const storedItems = window.localStorage.getItem('CartStore:items');
+                savedItems = storedItems ? JSON.parse(storedItems) : [];
+            }
+            this.items = savedItems;
+        },
         addItems(count, item) {
             count = parseInt(count);
-            for (let i = 0; i < count; i++) {
+            for (let i = 0; i < count; i++)
                 this.items.push({...item});
-            }
+            if (typeof (window) !== 'undefined')
+                window.localStorage.setItem('CartStore:items', JSON.stringify(this.items));
         },
-        deleteItems(name){
+        deleteItems(name) {
             this.items = this.items.filter(item => item.name !== name);
+            if (typeof (window) !== 'undefined')
+                window.localStorage.setItem('CartStore:items', JSON.stringify(this.items));
         }
     }
 })

@@ -1,10 +1,7 @@
 <script setup>
 import CartStore from "@/stores/CartStore";
-import AuthUserStore from "~/stores/AuthUserStore.js";
 import ProductStore from "@/stores/ProductStore";
 import KipColor from "~/stores/KipColor.js";
-
-ProductStore().fill()
 
 const productCounts = reactive({});
 const addItems = (product) => {
