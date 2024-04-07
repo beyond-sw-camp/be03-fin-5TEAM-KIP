@@ -26,6 +26,7 @@ spring:
 jwt:
   expiration: 30 #30분
   secretKey: kipsecret장준혁김영광박세종윤지용
+
 fcm:
   certification : kip-fcm-firebase-adminsdk-gm80d-6a9b5bbd58.json
 
@@ -34,8 +35,8 @@ cloud:
     s3:
       bucket: kip-s3
     credentials:
-      access-key: AKIAW3MEEKQNWAYRQTYZ
-      secret-key: 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
+      secret-key: AKIAW3MEEKQNWAYRQTYZ
+      access-key: JLlvepT8K25EqkZaVofOXc+kunIpjarn69pZi7oQ
     region:
       static: ap-northeast-2
       auto: false
