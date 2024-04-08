@@ -6,14 +6,14 @@ const password = ref();
 </script>
 
 <template>
-  <v-container>
+  <v-container class="login__container">
     <v-card
-        class="mx-auto pa-13 pb-8"
+        class="login__card mx-auto pa-13 pb-5 mb-5"
         elevation="18"
         min-width="400">
       <v-img
-          class="mx-auto my-6"
-          max-width="200"
+          class="mx-auto"
+          max-width="20vh"
           src="/images/logos/kiplogo.svg"/>
 
       <v-card-title class="text-center">Welcome to KIP</v-card-title>
@@ -36,7 +36,6 @@ const password = ref();
           v-model="password"
       />
 
-      <span>{{empolymentId}}{{password}}</span>
       <v-btn
           class="mb-8 pa-8"
           color="blue"
@@ -49,13 +48,13 @@ const password = ref();
 </template>
 
 <style>
-.v-container {
-  height: 90%;
+.login__container {
+  height: 90vh;
   display: flex;
   align-items: center;
 }
 
-.v-card {
+.login__card {
   width: 40%;
   border-radius: 20px !important;
 }
