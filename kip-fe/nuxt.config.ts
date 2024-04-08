@@ -13,7 +13,8 @@ export default defineNuxtConfig({
                 // @ts-expect-error
                 config.plugins.push(vuetify({autoImport: true}))
             })
-        } // Nuxt 전용 뷰티파이 불러오는 설정
+        }, // Nuxt 전용 뷰티파이 불러오는 설정
+        '@pinia/nuxt',
     ],
     vite: {
         vue: {
