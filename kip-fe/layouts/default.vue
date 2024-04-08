@@ -16,20 +16,15 @@ const handleRailClick = () => {
 </script>
 
 <template>
-  <v-layout class="rounded rounded-md">
+  <v-layout>
 
     <!--  상단메뉴  -->
-    <v-app-bar
-        location="top"
-        density="default"
-        :color="KipColor().kipMainColor"
-        :elevation="5"
-    >
+    <v-app-bar :color="KipColor().kipMainColor">
 
       <template #prepend>
         <!-- 햄버거 버튼 -->
         <v-app-bar-nav-icon
-            variant="text"
+            variant="plain"
             @click.stop="$event => drawer = !drawer"
         />
       </template>
@@ -100,6 +95,7 @@ const handleRailClick = () => {
 
     <!--  좌측메뉴  -->
     <v-navigation-drawer
+        :color="KipColor().kipMainColor"
         v-model="drawer"
         :rail="rail"
         permanent>
@@ -113,3 +109,21 @@ const handleRailClick = () => {
 
   </v-layout>
 </template>
+
+<style>
+/* 공통컬러 불러오기 */
+@import '../assets/css/color.css';
+
+.v-main{
+  background-color: var(--primary-color);
+  height: 100vh;
+}
+.v-sheet {
+  border-radius: 20px;
+}
+.v-navigation-drawer__content {
+  color: white;
+}
+
+
+</style>
