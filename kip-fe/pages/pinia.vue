@@ -12,11 +12,8 @@ const addItems = (product) => {
 </script>
 
 <template>
-  <v-container class="ma-auto pa-0">
-    <v-sheet
-        class="d-flex pa-10 mt-5"
-        :color="KipColor().kipSheetColor"
-    >
+  <v-container>
+    <v-sheet class="d-flex pa-10 mt-5">
       <v-row>
         <v-col
             v-for="product in ProductStore().getProducts"

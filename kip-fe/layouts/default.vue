@@ -61,7 +61,7 @@ const handleRailClick = () => {
 
         <template #default="{ isActive }">
           <NotificationCopo
-              @isActive = "isActive.value = false"
+              @isActive="isActive.value = false"
           />
         </template>
       </v-dialog>
@@ -104,7 +104,9 @@ const handleRailClick = () => {
 
     <!--  메인 페이지  -->
     <v-main>
-      <NuxtPage/>
+      <div class="main__sheet">
+        <NuxtPage/>
+      </div>
     </v-main>
 
   </v-layout>
@@ -114,13 +116,24 @@ const handleRailClick = () => {
 /* 공통컬러 불러오기 */
 @import '../assets/css/color.css';
 
-.v-main{
+.v-main {
   background-color: var(--primary-color);
+  padding: 20px;
   height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
 }
-.v-sheet {
+.main__sheet{
+  background-color: white;
+  width: 98%;
+  height: 95%;
   border-radius: 20px;
+  box-sizing: border-box;
+  overflow: hidden;
 }
+
 .v-navigation-drawer__content {
   color: white;
 }

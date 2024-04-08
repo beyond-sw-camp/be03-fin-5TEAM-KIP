@@ -1,53 +1,62 @@
+<script setup>
+const visible = ref();
+const empolymentId = ref();
+const password = ref();
+
+</script>
+
 <template>
-  <v-container class="bg-surface-variant">
-    <v-row
-        class="mb-6"
-    >
-      <v-col
-          md="6"
-          sm="5"
-      >
-        <v-sheet class="pa-2 ma-2">
-          .v-col-sm-5 .v-col-md-6
-        </v-sheet>
-      </v-col>
-      <v-col
-          md="6"
-          offset-md="0"
-          offset-sm="2"
-          sm="5"
-      >
-        <v-sheet class="pa-2 ma-2">
-          .v-col-sm-5 .offset-sm-2 .v-col-md-6 .offset-md-0
-        </v-sheet>
-      </v-col>
-    </v-row>
-    <v-row no-gutters>
-      <v-col
-          lg="6"
-          md="5"
-          sm="6"
-      >
-        <v-sheet class="pa-2 ma-2">
-          sm-6 md-5 lg-6
-        </v-sheet>
-      </v-col>
-      <v-col
-          lg="6"
-          md="5"
-          offset-lg="0"
-          offset-md="2"
-          sm="6"
-      >
-        <v-sheet class="pa-2 ma-2">
-          .v-col-sm-6 md-5 .offset-md-2 .v-col-lg-6 .offset-lg-0
-        </v-sheet>
-      </v-col>
-    </v-row>
+  <v-container>
+    <v-card
+        class="mx-auto pa-13 pb-8"
+        elevation="18"
+        min-width="400">
+      <v-img
+          class="mx-auto my-6"
+          max-width="200"
+          src="/images/logos/kiplogo.svg"/>
+
+      <v-card-title class="text-center">Welcome to KIP</v-card-title>
+
+      <v-text-field
+          placeholder=" Empolyment ID"
+          prepend-inner-icon="mdi-key-variant"
+          variant="outlined"
+          class="mt-10"
+          v-model="empolymentId"
+      />
+      <v-text-field
+          :append-inner-icon="visible ? 'mdi-eye-off' : 'mdi-eye'"
+          :type="visible ? 'text' : 'password'"
+          placeholder=" Enter your password"
+          prepend-inner-icon="mdi-lock-outline"
+          variant="outlined"
+          @click:append-inner="visible = !visible"
+          class="mb-5"
+          v-model="password"
+      />
+
+      <span>{{empolymentId}}{{password}}</span>
+      <v-btn
+          class="mb-8 pa-8"
+          color="blue"
+          size="large"
+          variant="tonal"
+          block
+          text="LOGIN"/>
+    </v-card>
   </v-container>
 </template>
 
-<!-- xl 1920(160px) => 1800(150px) -->
-<!-- lg 1280(106px) => 1200(100px) -->
-<!-- md  960( 80px) =>  900( 75px) -->
-<!-- sm  600( 50px) =>  959( 80px) -->
+<style>
+.v-container {
+  height: 90%;
+  display: flex;
+  align-items: center;
+}
+
+.v-card {
+  width: 40%;
+  border-radius: 20px !important;
+}
+</style>
