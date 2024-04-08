@@ -147,7 +147,16 @@ public class UserService {
         userRepo.delete(userInfo);
     }
 
-    //  함수 공통화
+//    사용자 북마크 목록 조회
+    public CommonResponse userBookList(){
+        User userInfo = getUserFromAuthentication();
+        String employeeId = userInfo.getEmployeeId();
+
+        List<Object[]> bookList = bookRepository.findDocumentIdAndTitleByEmployeeId(employeeId);
+        return new CommonResponse(HttpStatus.OK, "User Book List loaded successfully!", bookList);
+    }
+
+//    ===== 함수 공통화 =====
     @UserAdmin
     public User getUserFromAuthentication() {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
@@ -160,15 +169,6 @@ public class UserService {
                 .orElseThrow(() -> new EntityNotFoundException("사원번호를 찾을 수 없습니다. " + employeeId));
     }
 
-    // 사용자 북마크 목록 조회
-    public CommonResponse userBookList(){
-        User userInfo = getUserFromAuthentication();
-        String employeeId = userInfo.getEmployeeId();
-
-        List<Object[]> bookList = bookRepository.findDocumentIdAndTitleByEmployeeId(employeeId);
-        return new CommonResponse(HttpStatus.OK, "User Book List loaded successfully!", bookList);
-
-    }
     // 현재 인증된 사용자 정보 조회
     private User getAuthenticatedUser() {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
@@ -177,6 +177,7 @@ public class UserService {
                 .orElseThrow(() -> new EntityNotFoundException("인증된 사용자를 찾을 수 없습니다."));
     }
 
+//    ===== 프로필 이미지 =====
     // 프로필 이미지 업로드
     @Transactional
     public ProfileImageResDto uploadProfileImage(MultipartFile file) throws IOException {
