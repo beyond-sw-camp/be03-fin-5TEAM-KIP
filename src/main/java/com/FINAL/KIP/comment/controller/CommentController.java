@@ -43,7 +43,7 @@ public class CommentController {
     }
 
 //    댓글 삭제
-    @DeleteMapping("/{DocumentId}/{CommentId}")
+    @DeleteMapping("/{DocumentId}/comment/{CommentId}")
     public String docCommentDelete(@PathVariable Long DocumentId, @PathVariable Long CommentId){
         commentService.docCommentDelete(DocumentId, CommentId);
 
