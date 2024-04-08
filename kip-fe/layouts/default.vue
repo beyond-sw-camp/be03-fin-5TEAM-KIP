@@ -16,20 +16,15 @@ const handleRailClick = () => {
 </script>
 
 <template>
-  <v-layout class="rounded rounded-md">
+  <v-layout>
 
     <!--  상단메뉴  -->
-    <v-app-bar
-        location="top"
-        density="default"
-        :color="KipColor().kipMainColor"
-        :elevation="5"
-    >
+    <v-app-bar :color="KipColor().kipMainColor">
 
       <template #prepend>
         <!-- 햄버거 버튼 -->
         <v-app-bar-nav-icon
-            variant="text"
+            variant="plain"
             @click.stop="$event => drawer = !drawer"
         />
       </template>
@@ -66,7 +61,7 @@ const handleRailClick = () => {
 
         <template #default="{ isActive }">
           <NotificationCopo
-              @isActive = "isActive.value = false"
+              @isActive="isActive.value = false"
           />
         </template>
       </v-dialog>
@@ -100,6 +95,7 @@ const handleRailClick = () => {
 
     <!--  좌측메뉴  -->
     <v-navigation-drawer
+        :color="KipColor().kipMainColor"
         v-model="drawer"
         :rail="rail"
         permanent>
@@ -108,8 +104,39 @@ const handleRailClick = () => {
 
     <!--  메인 페이지  -->
     <v-main>
-      <NuxtPage/>
+      <div class="main__sheet">
+        <NuxtPage/>
+      </div>
     </v-main>
 
   </v-layout>
 </template>
+
+<style>
+/* 공통컬러 불러오기 */
+@import '../assets/css/color.css';
+
+.v-main {
+  background-color: var(--primary-color);
+  padding: 20px;
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+.main__sheet{
+  background-color: white;
+  width: 98%;
+  height: 95%;
+  border-radius: 20px;
+  box-sizing: border-box;
+  overflow: hidden;
+}
+
+.v-navigation-drawer__content {
+  color: white;
+}
+
+
+</style>

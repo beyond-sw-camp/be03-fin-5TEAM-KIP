@@ -3,5 +3,7 @@ import { defineStore } from 'pinia';
 export default defineStore("KipColors",{
     state: () => ({
         kipMainColor: '#2D3250',
+        kipSubColor: '#7077A1',
+        kipSheetColor: '#eeeeee',
     }),
 });
