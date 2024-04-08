@@ -1,16 +1,29 @@
 package com.FINAL.KIP.attachedfile.service;
 
+import com.FINAL.KIP.attachedfile.domain.AttachedFile;
+import com.FINAL.KIP.attachedfile.dto.AttachedFileResDto;
 import com.FINAL.KIP.attachedfile.repository.AttachedFileRepository;
 import com.FINAL.KIP.common.s3.S3Config;
 import com.FINAL.KIP.document.repository.DocumentRepository;
 import com.amazonaws.services.s3.model.ObjectMetadata;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.core.io.InputStreamResource;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
+import java.io.InputStream;
+import java.net.URL;
+import java.net.URLConnection;
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
+import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 @Transactional
@@ -33,187 +46,98 @@ public class AttachedFileService {
         this.s3Config = s3Config;
     }
 
-//    파일 업로드
-        public String uploadFile(MultipartFile file) throws IOException {
-            String originalFilename = file.getOriginalFilename();
+    //    파일 업로드
+    public String uploadFile(MultipartFile file, Long documentId) throws IOException {
+        String originalFilename = file.getOriginalFilename();
 
-            ObjectMetadata metadata = new ObjectMetadata();
-            metadata.setContentLength(file.getSize());
-            metadata.setContentType(file.getContentType());
+//        파일 길이(String)이 길면 DB에 들어가지 않기 때문에 길이 잘라서 DB 삽입(...)
+        int maxFilenameLength = 20; // String 클래스의 최대 길이를 사용합니다.
+        if (originalFilename.length() > maxFilenameLength) {
+            originalFilename = originalFilename.substring(0, maxFilenameLength - 3) + "...";
+        }
 
-            s3Config.amazonS3Client().putObject(bucket, originalFilename, file.getInputStream(), metadata);
-            return s3Config.amazonS3Client().getUrl(bucket, originalFilename).toString();
+        // 파일 확장자 추출
+        String fileExtension = "";
+        String contentType = file.getContentType();
+        int slashIndex = contentType.lastIndexOf('/');
+        if (slashIndex != -1 && slashIndex < contentType.length() - 1) {
+            fileExtension = contentType.substring(slashIndex + 1);
+        }
+
+        // 파일 이름에 파일 확장자를 추가
+        if (!fileExtension.isEmpty()) {
+            originalFilename += "." + fileExtension;
+        }
+
+        ObjectMetadata metadata = new ObjectMetadata();
+        metadata.setContentLength(file.getSize());
+        metadata.setContentType(file.getContentType());
+
+        AttachedFile attachedFile = new AttachedFile();
+        attachedFile.setFileName(originalFilename);
+        attachedFile.setFileType(file.getContentType());
+        attachedFile.setFileUrl(s3Config.amazonS3Client().getUrl(bucket, originalFilename).toString());
+        attachedFile.setDocumentId(documentId);
+
+        attachedFileRepository.save(attachedFile);
+
+//        S3로 올라갈때는 String 자르지 않고 통 이름으로 올라감
+//        s3Config.amazonS3Client().putObject(bucket, file.getOriginalFilename(), file.getInputStream(), metadata);
+//        return s3Config.amazonS3Client().getUrl(bucket, file.getOriginalFilename()).toString();
+
+
+        s3Config.amazonS3Client().putObject(bucket, originalFilename, file.getInputStream(), metadata);
+        return s3Config.amazonS3Client().getUrl(bucket, originalFilename).toString();
     }
 
+    //    파일 조회
+    public List<AttachedFileResDto> fileList(Long documentId) throws IOException{
+        List<AttachedFile> files = attachedFileRepository.findByDocumentId(documentId);
+        if(files.isEmpty()){
+            throw new IOException(documentId + "번 문서에 첨부파일이 없습니다.");
+        }
 
+        // 파일 목록을 AttachedFileResDto로 변환합니다.
+        List<AttachedFileResDto> fileList = files.stream()
+                .map(attachedFile -> AttachedFileResDto.builder()
+                        .id(attachedFile.getId())
+                        .fileName(attachedFile.getFileName())
+                        .fileType(attachedFile.getFileType())
+                        .fileUrl(attachedFile.getFileUrl())
+                        .build())
+                .collect(Collectors.toList());
 
-//    // 파일 업로드
-//    public TempFileUploadResDto uploadTempFile(MultipartFile file) throws IOException {
-//        if (file.isEmpty()) {
-//            throw new IOException("업로드된 파일이 비어 있습니다.");
-//        }
-//        String originalFileName = file.getOriginalFilename();
-//        String fileType = file.getContentType();
-//        Long fileSize = file.getSize();
-//        String tempFileId = UUID.randomUUID().toString();
-//        Path filePath = Paths.get("uploads/temp/" + tempFileId + "_" + originalFileName);
-//        Files.createDirectories(filePath.getParent());
-//        Files.write(filePath, file.getBytes(), StandardOpenOption.CREATE);
-//
-//        AttachedFile savedFile = AttachedFile.builder()
-//                .fileName(originalFileName)
-//                .fileType(fileType)
-//                .fileSize(fileSize)
-//                .fileUrl(filePath.toString())
-//                .tempFileId(tempFileId)
-//                .isTemp(true)
-//                .build();
-//
-//        attachedFileRepository.save(savedFile);
-//
-//        return TempFileUploadResDto.builder()
-//                .id(savedFile.getId())
-//                .tempFileId(savedFile.getTempFileId())
-//                .message("파일이 성공적으로 업로드 되었습니다.")
-//                .build();
-//    }
-//
-//    // 문서에 파일 연결
-//    public AttachedFileResDto linkTempFileToDocument(DocumentFileLinkReqDto linkReqDto) {
-//        AttachedFile file = attachedFileRepository.findByTempFileId(linkReqDto.getTempFileId())
-//                .orElseThrow(() -> new IllegalArgumentException("임시 파일을 찾을 수 없습니다: " + linkReqDto.getTempFileId()));
-//        Document document = documentRepository.findById(linkReqDto.getDocId())
-//                .orElseThrow(() -> new IllegalArgumentException("문서를 찾을 수 없습니다: " + linkReqDto.getDocId()));
-//
-//        file.setDocument(document);
-//        file.setIsTemp(false);
-//        attachedFileRepository.save(file);
-//
-//        return AttachedFileResDto.builder()
-//                .id(file.getId())
-//                .fileName(file.getFileName())
-//                .fileType(file.getFileType())
-//                .fileSize(file.getFileSize())
-//                .fileUrl(file.getFileUrl())
-//                .message("파일이 문서에 성공적으로 연결되었습니다.")
-//                .build();
-//    }
-//
-//    // 파일 업로드 및 문서에 바로 연결
-//    public AttachedFileResDto uploadFile(MultipartFile file, Long docId) throws IOException {
-//        if (file.isEmpty()) {
-//            throw new IOException("업로드된 파일이 비어 있습니다.");
-//        }
-//        Document document = documentRepository.findById(docId)
-//                .orElseThrow(() -> new IllegalArgumentException("문서를 찾을 수 없습니다: " + docId));
-//
-//        String originalFileName = file.getOriginalFilename();
-//        String fileType = file.getContentType();
-//        Long fileSize = file.getSize();
-//        String storedFileName = UUID.randomUUID().toString() + "_" + originalFileName;
-//        Path filePath = Paths.get("uploads/" + storedFileName);
-//        Files.createDirectories(filePath.getParent());
-//        Files.write(filePath, file.getBytes(), StandardOpenOption.CREATE);
-//
-//        AttachedFile savedFile = AttachedFile.builder()
-//                .fileName(originalFileName)
-//                .fileType(fileType)
-//                .fileSize(fileSize)
-//                .fileUrl(filePath.toString())
-//                .document(document)
-//                .isTemp(false)
-//                .build();
-//
-//        attachedFileRepository.save(savedFile);
-//
-//        return AttachedFileResDto.builder()
-//                .id(savedFile.getId())
-//                .fileName(savedFile.getFileName())
-//                .fileType(savedFile.getFileType())
-//                .fileSize(savedFile.getFileSize())
-//                .fileUrl(savedFile.getFileUrl())
-//                .message("파일이 성공적으로 업로드되어 문서에 연결되었습니다.")
-//                .build();
-//    }
-//
-//    // 특정 파일 조회
-//    public Resource getFile(Long id) throws IOException {
-//        AttachedFile file = attachedFileRepository.findById(id)
-//                .orElseThrow(() -> new IllegalArgumentException("파일을 찾을 수 없습니다: " + id));
-//
-//        Path filePath = Paths.get(file.getFileUrl());
-//        Resource resource = new UrlResource(filePath.toUri());
-//        if (!resource.exists() || !resource.isReadable()) {
-//            throw new IOException("파일을 읽을 수 없습니다: " + file.getFileName());
-//        }
-//        return resource;
-//    }
-//
-//    // 모든 파일 조회
-//    public List<AttachedFileResDto> getAllFiles() {
-//        List<AttachedFile> files = attachedFileRepository.findAll();
-//        if (files.isEmpty()) {
-//            throw new RuntimeException("조회할 파일이 없습니다.");
-//        }
-//        return files.stream()
-//                .map(file -> AttachedFileResDto.builder()
-//                        .id(file.getId())
-//                        .fileName(file.getFileName())
-//                        .fileType(file.getFileType())
-//                        .fileSize(file.getFileSize())
-//                        .fileUrl(file.getFileUrl())
-//                        .message("파일 조회 성공")
-//                        .build())
-//                .collect(Collectors.toList());
-//    }
-//
-//    // 파일 수정(업데이트)
-//    public AttachedFileResDto updateFile(Long id, MultipartFile newFile) throws IOException {
-//        if (newFile.isEmpty()) {
-//            throw new IOException("업데이트할 새 파일이 비어 있습니다.");
-//        }
-//        AttachedFile existingFile = attachedFileRepository.findById(id)
-//                .orElseThrow(() -> new IllegalArgumentException("파일을 찾을 수 없습니다: " + id));
-//
-//        String originalFileName = newFile.getOriginalFilename();
-//        String fileType = newFile.getContentType();
-//        Long fileSize = newFile.getSize();
-//
-//        Path oldFilePath = Paths.get(existingFile.getFileUrl());
-//        Files.deleteIfExists(oldFilePath);
-//
-//        String storedFileName = UUID.randomUUID().toString() + "_" + originalFileName;
-//        Path newFilePath = Paths.get("uploads/" + storedFileName);
-//        Files.createDirectories(newFilePath.getParent());
-//        Files.write(newFilePath, newFile.getBytes(), StandardOpenOption.CREATE);
-//
-//        existingFile.setFileName(originalFileName);
-//        existingFile.setFileType(fileType);
-//        existingFile.setFileSize(fileSize);
-//        existingFile.setFileUrl(newFilePath.toString());
-//        attachedFileRepository.save(existingFile);
-//
-//        return AttachedFileResDto.builder()
-//                .id(existingFile.getId())
-//                .fileName(existingFile.getFileName())
-//                .fileType(existingFile.getFileType())
-//                .fileSize(existingFile.getFileSize())
-//                .fileUrl(existingFile.getFileUrl())
-//                .message("파일이 성공적으로 업데이트되었습니다.")
-//                .build();
-//    }
-//
-//    // 파일 삭제
-//    public String deleteFile(Long id) {
-//        AttachedFile file = attachedFileRepository.findById(id)
-//                .orElseThrow(() -> new IllegalArgumentException("파일을 찾을 수 없습니다: " + id));
-//        try {
-//            Path path = Paths.get(file.getFileUrl());
-//            Files.deleteIfExists(path);
-//            attachedFileRepository.delete(file);
-//            return "파일이 성공적으로 삭제되었습니다.";
-//        } catch (IOException e) {
-//            throw new RuntimeException("파일 삭제 중 오류가 발생했습니다.", e);
-//        }
-//    }
+        return fileList;
+    }
+
+    //    파일 다운로드
+    public ResponseEntity<byte[]> downloadFile(String originName) throws IOException {
+        // AWS S3에서 파일의 URL을 가져옵니다.
+        URL fileUrl = s3Config.amazonS3Client().getUrl(bucket, originName);
+
+        // 파일의 내용을 가져옵니다.
+        URLConnection connection = fileUrl.openConnection();
+        InputStream inputStream = connection.getInputStream();
+
+        // 파일 이름을 인코딩합니다.
+        String encodedFilename = URLEncoder.encode(originName, StandardCharsets.UTF_8);
+
+        // 응답 헤더를 설정합니다.
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.APPLICATION_OCTET_STREAM);
+        headers.setContentDispositionFormData("attachment", encodedFilename);
+
+        // InputStreamResource를 사용하여 ResponseEntity를 생성하여 반환합니다.
+        InputStreamResource resource = new InputStreamResource(inputStream);
+        return ResponseEntity.ok()
+                .headers(headers)
+                .body(resource.getContentAsByteArray());
+    }
+
+    //    파일 삭제
+    public void deleteFile(String originName)  {
+        AttachedFile attachedFile = attachedFileRepository.findByFileName(originName);
+        attachedFileRepository.delete(attachedFile);
+        s3Config.amazonS3Client().deleteObject(bucket, originName);
+    }
 }
