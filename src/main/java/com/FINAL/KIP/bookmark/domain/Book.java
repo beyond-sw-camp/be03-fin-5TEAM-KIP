@@ -1,5 +1,6 @@
 package com.FINAL.KIP.bookmark.domain;
 
+import com.FINAL.KIP.common.domain.BaseEntity;
 import com.FINAL.KIP.document.domain.Document;
 import com.FINAL.KIP.user.domain.User;
 import jakarta.persistence.*;
@@ -19,7 +20,7 @@ import java.time.LocalDateTime;
 @Getter
 @NoArgsConstructor
 @AllArgsConstructor
-public class Book {
+public class Book extends BaseEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;

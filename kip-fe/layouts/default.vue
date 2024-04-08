@@ -1,6 +1,18 @@
 <script setup lang="ts">
+import CartStore from "~/stores/CartStore";
+import KipColor from "~/stores/KipColor";
+import LeftNavigation from "~/components/LeftNavigation.vue";
+import NotificationCopo from "~/components/NotificationCopo.vue";
+
 // 햄버거 버튼
 const drawer = ref(true);
+const rail = ref(true);
+
+// function
+const handleRailClick = () => {
+  rail.value = !rail.value;
+};
+
 </script>
 
 <template>
@@ -10,7 +22,7 @@ const drawer = ref(true);
     <v-app-bar
         location="top"
         density="default"
-        :color="`#2D3250`"
+        :color="KipColor().kipMainColor"
         :elevation="5"
     >
 
@@ -22,11 +34,43 @@ const drawer = ref(true);
         />
       </template>
 
-        <v-toolbar-title>
-          <NuxtLink to="/">
-            KIP (Knowledge Is Power)
-          </NuxtLink>
-        </v-toolbar-title>
+      <v-toolbar-title>
+        <NuxtLink to="/">
+          KIP (Knowledge Is Power)
+        </NuxtLink>
+      </v-toolbar-title>
+
+      <!-- 알림 버튼 -->
+      <v-dialog max-width="600">
+        <template #activator="{ props: activatorProps }">
+          <v-btn
+              v-bind="activatorProps"
+              class="text-none"
+              stacked>
+            <v-badge
+                v-if="!CartStore().isEmpty"
+                color="error"
+                :content="CartStore().count">
+              <v-icon
+                  icon="mdi-bell-ring"
+                  size="x-large"
+              />
+            </v-badge>
+            <v-icon
+                v-else
+                icon="mdi-bell"
+                size="x-large"
+            />
+          </v-btn>
+        </template>
+
+        <template #default="{ isActive }">
+          <NotificationCopo
+              @isActive = "isActive.value = false"
+          />
+        </template>
+      </v-dialog>
+
 
       <template #append>
         <v-menu>
@@ -49,43 +93,22 @@ const drawer = ref(true);
             </v-list-item>
           </v-list>
         </v-menu>
+
       </template>
     </v-app-bar>
 
 
     <!--  좌측메뉴  -->
     <v-navigation-drawer
-        expand-on-hover
-        rail
         v-model="drawer"
-    >
-      <v-list density="compact" nav>
-        <NuxtLink to="/">
-          <v-list-item prepend-icon="mdi-home-circle" title="HOME" value="myfiles"/>
-        </NuxtLink>
-        <NuxtLink to="/posts">
-          <v-list-item prepend-icon="mdi-note" title="POSTING" value="shared"/>
-        </NuxtLink>
-        <NuxtLink to="/comments">
-          <v-list-item prepend-icon="mdi-comment" title="COMMENTS" value="starred"/>
-        </NuxtLink>
-        <NuxtLink to="/dialogs">
-          <v-list-item prepend-icon="mdi-access-point" title="DIALOGS" value="starred"/>
-        </NuxtLink>
-        <NuxtLink to="/login">
-          <v-list-item prepend-icon="mdi-login-variant" title="LOGIN" value="starred"/>
-        </NuxtLink>
-
-
-      </v-list>
+        :rail="rail"
+        permanent>
+      <LeftNavigation @railEvent="handleRailClick"/>
     </v-navigation-drawer>
 
     <!--  메인 페이지  -->
     <v-main>
-      <div class="pa-5">
-        <NuxtPage/>
-      </div>
-
+      <NuxtPage/>
     </v-main>
 
   </v-layout>
