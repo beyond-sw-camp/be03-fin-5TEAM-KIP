@@ -3,9 +3,13 @@ const visible = ref();
 const empolymentId = ref();
 const password = ref();
 import AuthUserStore from "~/stores/AuthUserStore";
+import { useRouter } from 'vue-router';
+const router = useRouter();
+
 
 const login = () => {
-  AuthUserStore().userLogin(empolymentId.value,password.value)
+  AuthUserStore().userLogin(empolymentId.value, password.value);
+  router.push('/pinia');
 }
 
 
@@ -44,8 +48,7 @@ const login = () => {
           class="mb-5"
           v-model="password"
       />
-      {{  AuthUserStore().getAccessToken }}
-      {{  AuthUserStore().getUserInfo }}
+
       <v-btn
           @click="login"
           class="mb-8 pa-8"

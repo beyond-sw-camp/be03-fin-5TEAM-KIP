@@ -23,7 +23,7 @@ export default defineStore("AuthUserStore", {
                 // 로그인 하고
                 const response =
                     await fetch(`${BASE_URL}/user/login`, {
-                        method: 'POST',
+                        method: 'POST',  //POST 요청은 'Content-Type' 설정
                         body: JSON.stringify({employeeId, password}),
                         headers: {'Content-Type': 'application/json'}
                     });
@@ -34,10 +34,7 @@ export default defineStore("AuthUserStore", {
                 const userInfoRes =
                     await fetch(`${BASE_URL}/user/mypage`, {
                         method: 'GET',
-                        headers: {
-                            'Content-Type': 'application/json',
-                            'Authorization': 'Bearer ' + tokenData
-                        }
+                        headers: {'Authorization': 'Bearer ' + tokenData}
                     })
                 const userData = await userInfoRes.json();
 
@@ -48,9 +45,30 @@ export default defineStore("AuthUserStore", {
                 // 로컬 스토리지에 저장.
                 if (typeof window !== "undefined")  // CSR 인경우만 동작함.
                     window.localStorage.setItem('accessToken', tokenData);
-            } catch (e) {
-                console.log(e);
-            }
+
+            } catch (e) {console.log(e,'로그인 실패')}
+        },
+
+
+        async userLogOut(){
+            try{
+                const response =
+                    await fetch(`${BASE_URL}/user/logout`, {
+                        method: 'DELETE',
+                        headers:{'Authorization': 'Bearer ' + this.accessToken}
+                    })
+                const deleteRes = response.json();
+                console.log(deleteRes.result)
+
+                // 피니아 코컬스토리지 정보 비움.
+                this.accessToken = "";
+                this.userInfo = {};
+                if (typeof window !== "undefined")
+                    window.localStorage.removeItem('accessToken');
+
+            } catch (e) {console.log(e,'로그아웃 실패')}
+
         }
+
     },
 });

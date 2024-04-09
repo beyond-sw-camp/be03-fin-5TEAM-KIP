@@ -113,18 +113,10 @@ public class UserService {
     }
 
     @UserAdmin
-    public CommonResponse logout(Long id) throws IllegalArgumentException{
-        User user = userRepo.findById(id)
-                .orElseThrow(() -> new IllegalArgumentException("없는 사용자입니다."));
-
-        UserRefreshToken userRefreshToken = userRefreshTokenRepository.findById(id)
-                .orElseThrow(() -> new IllegalArgumentException("사용자를 다시 확인해주세요."));
-
-        userRefreshTokenRepository.deleteById(id);
-        Map<String , String> result = new HashMap<>();
-        result.put("user_id", String.valueOf(userRefreshToken.getId()));
-        result.put("user_name", user.getName());
-        return new CommonResponse(HttpStatus.OK, "User Logout SUCCESS!", result);
+    public CommonResponse logout() {
+        User user = getUserFromAuthentication();
+        userRefreshTokenRepository.deleteById(user.getId());
+        return new CommonResponse(HttpStatus.OK, "User Logout SUCCESS!", new UserResDto(user));
     }
 
     @UserAdmin
