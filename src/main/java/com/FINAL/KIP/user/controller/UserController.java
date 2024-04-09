@@ -63,9 +63,9 @@ public class UserController {
     }
 
     // 로그아웃
-    @DeleteMapping("logout/{id}")
-    public ResponseEntity<CommonResponse> userLogout(@PathVariable(value = "id") Long id) {
-        CommonResponse commonResponse = userService.logout(id);
+    @DeleteMapping("logout")
+    public ResponseEntity<CommonResponse> userLogout() {
+        CommonResponse commonResponse = userService.logout();
         return new ResponseEntity<>(commonResponse, HttpStatus.OK);
     }
 

@@ -2,6 +2,20 @@
 const visible = ref();
 const empolymentId = ref();
 const password = ref();
+import AuthUserStore from "~/stores/AuthUserStore";
+import { useRouter } from 'vue-router';
+const router = useRouter();
+
+
+const login = () => {
+  AuthUserStore().userLogin(empolymentId.value, password.value);
+  router.push('/pinia');
+}
+
+const setUserInfo = () => {
+  AuthUserStore().setUserInfoAndTokenToPiniaFromLocalStorage();
+}
+
 
 </script>
 
@@ -37,6 +51,7 @@ const password = ref();
       />
 
       <v-btn
+          @click="login"
           class="mb-8 pa-8"
           color="blue"
           size="large"
@@ -44,6 +59,8 @@ const password = ref();
           block
           text="LOGIN"/>
     </v-card>
+    <v-btn @click="setUserInfo">hi</v-btn>
+
   </v-container>
 </template>
 
