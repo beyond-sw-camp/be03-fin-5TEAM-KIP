@@ -10,16 +10,23 @@ AuthUserStore().setUserInfoAndTokenToPiniaFromLocalStorage();
 
 <template>
   <NuxtLoadingIndicator />
+  <div class="app__layout">
   <NuxtLayout>
   </NuxtLayout>
+  </div>
 </template>
 
 <!-- 전역 스타일 -->
 <style>
+::-webkit-scrollbar {
+  display: none; /* Chrome, Safari */
+}
+
 a {
   color: inherit;
   text-decoration: none;
 }
+
 </style>
 
 <!-- v-container 프론트 반응형 1 단위 -->
