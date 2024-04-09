@@ -34,9 +34,6 @@ const handleRailClick = () => {
     <NuxtLink to="/comments">
       <v-list-item prepend-icon="mdi-comment" title="COMMENTS" value="COMMENTS"/>
     </NuxtLink>
-    <NuxtLink to="/login">
-      <v-list-item prepend-icon="mdi-login-variant" title="LOGIN" value="LOGIN"/>
-    </NuxtLink>
     <NuxtLink to="/pinia">
       <v-list-item prepend-icon="mdi-store-cog" title="PINIA" value="PINIA"/>
     </NuxtLink>

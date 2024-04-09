@@ -3,6 +3,9 @@ import CartStore from "~/stores/CartStore";
 import KipColor from "~/stores/KipColor";
 import LeftNavigation from "~/components/LeftNavigation.vue";
 import NotificationCopo from "~/components/NotificationCopo.vue";
+import AuthUserStore from "~/stores/AuthUserStore";
+import { useRouter } from 'vue-router';
+const router = useRouter();
 
 // 햄버거 버튼
 const drawer = ref(true);
@@ -12,7 +15,10 @@ const rail = ref(true);
 const handleRailClick = () => {
   rail.value = !rail.value;
 };
-
+const logout = () => {
+  AuthUserStore().userLogOut();
+  router.push('/');
+}
 </script>
 
 <template>
@@ -34,7 +40,7 @@ const handleRailClick = () => {
           KIP (Knowledge Is Power)
         </NuxtLink>
       </v-toolbar-title>
-
+      {{ AuthUserStore().getUserInfo.name }}님 환영합니다.
       <!-- 알림 버튼 -->
       <v-dialog max-width="600">
         <template #activator="{ props: activatorProps }">
@@ -68,27 +74,31 @@ const handleRailClick = () => {
 
 
       <template #append>
-        <v-menu>
+        <v-menu transition="slide-y-transition">
           <template v-slot:activator="{ props }">
             <!-- 아바타 버튼 -->
             <v-avatar
                 image="https://avatars.githubusercontent.com/u/123573918?v=4"
                 size="55"
                 v-bind="props"
-                class="cursor-pointer"
-            />
+                class="cursor-pointer"/>
           </template>
           <v-list>
-            <v-list-item
-                v-for="(item, index) in ['Profile','Setting', 'Logout']"
-                :key="index"
-                :value="index"
-            >
-              <v-list-item-title>{{ item }}</v-list-item-title>
+            <v-list-item @click="this.$router.push('/pinia');">
+              <template v-slot:prepend>
+                <v-icon icon="mdi-information-box-outline"/>
+              </template>
+              <v-list-item-title>MyPage </v-list-item-title>
+            </v-list-item>
+
+            <v-list-item @click="logout">
+              <template v-slot:prepend>
+                <v-icon icon="mdi-logout"/>
+              </template>
+              <v-list-item-title>LogOut </v-list-item-title>
             </v-list-item>
           </v-list>
         </v-menu>
-
       </template>
     </v-app-bar>
 
@@ -125,7 +135,8 @@ const handleRailClick = () => {
   align-items: center;
   justify-content: center;
 }
-.main__sheet{
+
+.main__sheet {
   background-color: white;
   width: 98%;
   height: 95%;
