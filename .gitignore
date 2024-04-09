@@ -5,7 +5,7 @@ build/
 !**/src/main/**/build/
 !**/src/test/**/build/
 application.yml
-*.yml
+jwt.yml
 src/main/resources/kip-fcm-firebase-adminsdk-gm80d-6a9b5bbd58.json
 
 ### STS ###

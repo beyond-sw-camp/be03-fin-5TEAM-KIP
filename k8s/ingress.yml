@@ -1,0 +1,28 @@
+# ingress-controller 설치 명령어
+# kubectl apply -f https://raw.githubusercontent.com/kubernetes/ingress-nginx/controller-v1.8.1/deploy/static/provider/aws/deploy.yaml
+
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: kip-backend-ingress
+  annotations:
+    kubernetes.io/ingress.class: nginx
+    nginx.ingress.kubernetes.io/rewrite-target: /$1 #첫번째 prefix제거 /jang 제거
+    cert-manager.io/cluster-issuer: letsencrypt-prod
+
+spec:
+  tls:
+  - hosts:
+    - "server.teamkip.info"
+    secretName: kip-backend-com-tls
+  rules:
+    - host: server.teamkip.info
+      http:
+        paths:
+          - path: /user/(.*) #모든 url요청을 k8s-service로 라우팅
+            pathType: Prefix
+            backend:
+              service:
+                name: kip-backend-service
+                port:
+                  number: 80

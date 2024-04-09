@@ -1,0 +1,54 @@
+name: deploy kip-backend
+
+on:
+  push:
+    branches:
+      - k8s
+#  pull_request:
+#    branches:
+#      - main
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: checkout github
+        uses: actions/checkout@v2
+
+      - name: install kubectl
+        uses: azure/setup-kubectl@v3
+        with:
+          version: "v1.25.9"
+        id: install
+
+      # aws 권한 세팅 (aws configure 팀 키값)
+      - name: configure aws
+        uses: aws-actions/configure-aws-credentials@v1
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ap-northeast-2
+
+      - name: update cluster information
+        run: aws eks update-kubeconfig --name kip --region ap-northeast-2
+        
+      - name: Login to ECR
+        id: login-ecr
+        uses: aws-actions/amazon-ecr-login@v1
+
+      - name: build and push docker image to ecr
+        env:
+          REGISTRY: 471112897563.dkr.ecr.ap-northeast-2.amazonaws.com
+          REPOSITORY: kip
+          IMAGE_TAG: latest
+        run: |
+          docker build \
+          -t $REGISTRY/$REPOSITORY:$IMAGE_TAG \
+          -f ./ordering/Dockerfile ./ordering
+          docker push $REGISTRY/$REPOSITORY:$IMAGE_TAG
+
+      # kubectl rollout restart deployment kip-backend # depl-serve name
+      - name: eks kubectl apply
+        run: |
+          kubectl apply -f ./ordering/k8s/kip-backend-depl-serv.yml
+          kubectl rollout restart deployment kip-backend
