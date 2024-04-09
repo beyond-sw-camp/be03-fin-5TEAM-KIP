@@ -44,7 +44,7 @@ jobs:
         run: |
           docker build \
           -t $REGISTRY/$REPOSITORY:$IMAGE_TAG \
-          -f ./KIP/Dockerfile ./KIP
+          -f Dockerfile .
           docker push $REGISTRY/$REPOSITORY:$IMAGE_TAG
 
       # kubectl rollout restart deployment kip-backend # depl-serve name
