@@ -7,7 +7,7 @@ import KipColor from "~/stores/KipColor";
 </script>
 
 <template>
-  <v-card :title="`${AuthUserStore().username}'s Notification`"
+  <v-card :title="`${AuthUserStore().name}'s Notification`"
           class="mx-auto"
           max-width="450">
     <v-card

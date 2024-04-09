@@ -2,6 +2,15 @@
 const visible = ref();
 const empolymentId = ref();
 const password = ref();
+import AuthUserStore from "~/stores/AuthUserStore";
+
+const login = () => {
+  AuthUserStore().userLogin(empolymentId.value,password.value)
+}
+
+
+
+
 
 </script>
 
@@ -35,8 +44,10 @@ const password = ref();
           class="mb-5"
           v-model="password"
       />
-
+      {{  AuthUserStore().getAccessToken }}
+      {{  AuthUserStore().getUserInfo }}
       <v-btn
+          @click="login"
           class="mb-8 pa-8"
           color="blue"
           size="large"
@@ -44,6 +55,7 @@ const password = ref();
           block
           text="LOGIN"/>
     </v-card>
+
   </v-container>
 </template>
 

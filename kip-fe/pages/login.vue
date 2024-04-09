@@ -1,4 +1,5 @@
 <script lang="ts" setup>
+const BASE_URL = import.meta.env.VITE_BASE_URL;
 const employeeId = ref();
 const password = ref();
 const users = ref();
@@ -12,7 +13,7 @@ async function login() {
 }
 async function userLogin(employeeId: string, password: string) {
   console.log(JSON.stringify({employeeId, password} ));
-  const response = await fetch('http://localhost:8080/user/login', {
+  const response = await fetch(`${BASE_URL}/user/login`, {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json'
@@ -27,16 +28,16 @@ async function userLogin(employeeId: string, password: string) {
   const data = await response.json();
   console.log(data);
   if (typeof window !== "undefined") { // CSR 인경우만 동작함.
-    window.localStorage.setItem('userToken', data.result.access_token);
+    window.localStorage.setItem('accessToken', data.result.access_token);
   }
 }
 async function getUserList() {
-  const token = window.localStorage.getItem('userToken');
-  const response = await fetch('http://localhost:8080/user', {
+  const accessToken = window.localStorage.getItem('accessToken');
+  const response = await fetch(`${BASE_URL}/user/mypage`, {
     method: 'GET',
     headers: {
       'Content-Type': 'application/json',
-      'Authorization': 'Bearer ' + token
+      'Authorization': 'Bearer ' + accessToken
     },
   });
   console.log("Respose",response.ok)    // 응답값 체크

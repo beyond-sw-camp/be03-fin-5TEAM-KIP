@@ -3,6 +3,7 @@ import CartStore from "~/stores/CartStore";
 import KipColor from "~/stores/KipColor";
 import LeftNavigation from "~/components/LeftNavigation.vue";
 import NotificationCopo from "~/components/NotificationCopo.vue";
+import AuthUserStore from "~/stores/AuthUserStore";
 
 // 햄버거 버튼
 const drawer = ref(true);
@@ -34,7 +35,7 @@ const handleRailClick = () => {
           KIP (Knowledge Is Power)
         </NuxtLink>
       </v-toolbar-title>
-
+      삼성맨 {{AuthUserStore().getUserInfo.name}}님 환영합니다.
       <!-- 알림 버튼 -->
       <v-dialog max-width="600">
         <template #activator="{ props: activatorProps }">
