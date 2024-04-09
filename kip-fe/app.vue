@@ -1,11 +1,12 @@
 <script setup>
 import ProductStore from "~/stores/ProductStore.js";
 import CartStore from "~/stores/CartStore.js";
+import AuthUserStore from "~/stores/AuthUserStore.js";
 
 ProductStore().fill();
 CartStore().fetchItemsFromLocalStorage(); // 로컬스토리지에서 가지고옴.
-
-</script>s
+AuthUserStore().setUserInfoAndTokenToPiniaFromLocalStorage();
+</script>
 
 <template>
   <NuxtLoadingIndicator />
