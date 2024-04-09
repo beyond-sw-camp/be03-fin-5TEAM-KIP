@@ -2,7 +2,7 @@
 import CartStore from "~/stores/CartStore";
 import KipColor from "~/stores/KipColor";
 import LeftNavigation from "~/components/LeftNavigation.vue";
-import NotificationCopo from "~/components/NotificationCopo.vue";
+import NotificationCopo from "~/components/NotificationCompo.vue";
 import AuthUserStore from "~/stores/AuthUserStore";
 import {useRouter} from 'vue-router';
 
@@ -130,8 +130,6 @@ const logout = () => {
 @import '../assets/css/color.css';
 
 /* 좌측 메뉴 관련 CSS */
-
-
 .v-navigation-drawer__content {
   background-color: white;
   margin-top: 0.8vw;

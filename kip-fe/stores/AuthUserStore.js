@@ -1,5 +1,4 @@
 import {defineStore} from 'pinia';
-
 const BASE_URL = import.meta.env.VITE_BASE_URL;
 
 export default defineStore("AuthUserStore", {
@@ -24,8 +23,8 @@ export default defineStore("AuthUserStore", {
                 const response =
                     await fetch(`${BASE_URL}/user/login`, {
                         method: 'POST',  //POST 요청은 'Content-Type' 설정
+                        headers: {'Content-Type': 'application/json'},
                         body: JSON.stringify({employeeId, password}),
-                        headers: {'Content-Type': 'application/json'}
                     });
                 const tokenRes = await response.json()
                 const tokenData = tokenRes.result.access_token;
@@ -80,17 +79,17 @@ export default defineStore("AuthUserStore", {
                 const deleteRes = response.json();
                 console.log(deleteRes.result)
 
-                // 피니아 코컬스토리지 정보 비움.
-                this.accessToken = "";
-                this.userInfo = {};
-                if (typeof window !== "undefined")
+                this.$reset(); // 유져 정보 리셋
+                CartStore().$reset() // 장바구니 리셋
+
+                if (typeof window !== "undefined"){ // 로컬스토리지 리셋
                     window.localStorage.removeItem('accessToken');
+                    window.localStorage.removeItem('CartStore:items');
+                }
 
             } catch (e) {
                 console.log(e, '로그아웃 실패')
             }
         },
-
-
     },
 });
