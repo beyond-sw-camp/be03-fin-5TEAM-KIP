@@ -50,5 +50,5 @@ jobs:
       # kubectl rollout restart deployment kip-backend # depl-serve name
       - name: eks kubectl apply
         run: |
-          kubectl apply -f ./KIP/k8s/kip-backend-depl-serv.yml
+          kubectl apply -f ./k8s/kip-backend-depl-serv.yml
           kubectl rollout restart deployment kip-backend
