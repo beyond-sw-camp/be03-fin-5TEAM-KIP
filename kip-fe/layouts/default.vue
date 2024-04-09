@@ -4,7 +4,8 @@ import KipColor from "~/stores/KipColor";
 import LeftNavigation from "~/components/LeftNavigation.vue";
 import NotificationCopo from "~/components/NotificationCopo.vue";
 import AuthUserStore from "~/stores/AuthUserStore";
-import { useRouter } from 'vue-router';
+import {useRouter} from 'vue-router';
+
 const router = useRouter();
 
 // 햄버거 버튼
@@ -24,13 +25,25 @@ const logout = () => {
 <template>
   <v-layout>
 
-    <!--  상단메뉴  -->
-    <v-app-bar :color="KipColor().kipMainColor">
+    <!--  좌측메뉴  -->
+    <v-navigation-drawer
+        :color="KipColor().kipMainColor"
+        v-model="drawer"
+        :rail="rail"
+        width="240"
+        permanent>
+      <LeftNavigation @railEvent="handleRailClick"/>
+    </v-navigation-drawer>
 
+
+    <!--  상단메뉴  -->
+    <v-app-bar
+        :color="KipColor().kipMainColor"
+        class="top__header__sheet"
+        height="68">
       <template #prepend>
         <!-- 햄버거 버튼 -->
         <v-app-bar-nav-icon
-            variant="plain"
             @click.stop="$event => drawer = !drawer"
         />
       </template>
@@ -88,29 +101,19 @@ const logout = () => {
               <template v-slot:prepend>
                 <v-icon icon="mdi-information-box-outline"/>
               </template>
-              <v-list-item-title>MyPage </v-list-item-title>
+              <v-list-item-title>MyPage</v-list-item-title>
             </v-list-item>
 
             <v-list-item @click="logout">
               <template v-slot:prepend>
                 <v-icon icon="mdi-logout"/>
               </template>
-              <v-list-item-title>LogOut </v-list-item-title>
+              <v-list-item-title>LogOut</v-list-item-title>
             </v-list-item>
           </v-list>
         </v-menu>
       </template>
     </v-app-bar>
-
-
-    <!--  좌측메뉴  -->
-    <v-navigation-drawer
-        :color="KipColor().kipMainColor"
-        v-model="drawer"
-        :rail="rail"
-        permanent>
-      <LeftNavigation @railEvent="handleRailClick"/>
-    </v-navigation-drawer>
 
     <!--  메인 페이지  -->
     <v-main>
@@ -126,9 +129,36 @@ const logout = () => {
 /* 공통컬러 불러오기 */
 @import '../assets/css/color.css';
 
+/* 좌측 메뉴 관련 CSS */
+
+
+.v-navigation-drawer__content {
+  background-color: white;
+  margin-top: 0.8vw;
+  margin-bottom: 0.8vw;
+  border-radius: 20px !important;
+  overflow: hidden;
+}
+
+/* 상단 헤더 CSS */
+.top__header__sheet {
+  overflow: hidden;
+  box-shadow: none !important;
+}
+
+.v-toolbar__content {
+  margin: 0.8vw;
+  border-radius: 20px !important;
+  width: 98.5% !important;
+  color: var(--primary-color);
+  background-color: white;
+}
+
+
+/* 본문 관련 CSS */
 .v-main {
   background-color: var(--primary-color);
-  padding: 20px;
+  padding-top: calc(0.8vw + 69px) !important;
   height: 100vh;
   display: flex;
   flex-direction: column;
@@ -138,16 +168,11 @@ const logout = () => {
 
 .main__sheet {
   background-color: white;
-  width: 98%;
-  height: 95%;
+  margin: 0.8vw;
+  width: 98.5%;
+  height: 100%;
   border-radius: 20px;
   box-sizing: border-box;
   overflow: hidden;
 }
-
-.v-navigation-drawer__content {
-  color: white;
-}
-
-
 </style>

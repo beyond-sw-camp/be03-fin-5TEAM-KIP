@@ -11,12 +11,6 @@ const login = () => {
   AuthUserStore().userLogin(empolymentId.value, password.value);
   router.push('/pinia');
 }
-
-const setUserInfo = () => {
-  AuthUserStore().setUserInfoAndTokenToPiniaFromLocalStorage();
-}
-
-
 </script>
 
 <template>
@@ -59,8 +53,6 @@ const setUserInfo = () => {
           block
           text="LOGIN"/>
     </v-card>
-    <v-btn @click="setUserInfo">hi</v-btn>
-
   </v-container>
 </template>
 
