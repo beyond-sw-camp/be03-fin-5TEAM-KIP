@@ -34,6 +34,7 @@ public class User extends BaseEntity {
     @Column(nullable = false)
     private String password;
 
+    @Setter
     private String profileImageUrl;
 
     private LocalDateTime employedDay;
@@ -44,9 +45,6 @@ public class User extends BaseEntity {
     @Column(nullable = false)
     @Enumerated(EnumType.STRING)
     private Role role;
-
-    @Setter
-    private String delYn = "N";
 
     @OneToMany(mappedBy = "requester", cascade = CascadeType.ALL)
     private final List<Request> requests = new ArrayList<>();
@@ -79,10 +77,6 @@ public class User extends BaseEntity {
         this.name = name;
         this.email = email;
         this.phoneNumber = phoneNumber;
-    }
-
-    public void setProfileImageUrl(String profileImageUrl) {
-        this.profileImageUrl = profileImageUrl;
     }
 
 }

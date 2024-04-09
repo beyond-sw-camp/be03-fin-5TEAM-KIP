@@ -12,8 +12,8 @@ const addItems = (product) => {
 </script>
 
 <template>
-  <v-container>
-    <v-sheet class="d-flex pa-10 mt-5">
+  <v-container class="pina__container">
+    <v-sheet class="d-flex ma-auto">
       <v-row>
         <v-col
             v-for="product in ProductStore().getProducts"
@@ -24,7 +24,6 @@ const addItems = (product) => {
             lg="3"
         >
           <v-card
-              class="mx-auto"
               max-width="400"
           >
             <v-img
@@ -61,5 +60,8 @@ const addItems = (product) => {
   </v-container>
 </template>
 <style>
-
+.pina__container{
+  height: 90vh;
+  display: flex;
+}
 </style>

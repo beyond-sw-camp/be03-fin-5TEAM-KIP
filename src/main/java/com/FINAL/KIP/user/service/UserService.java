@@ -129,8 +129,9 @@ public class UserService {
 
     @UserAdmin
     public CommonResponse mypage(){
-        User userInfo = getUserFromAuthentication();
-        return new CommonResponse(HttpStatus.OK, "User info loaded successfully!", userInfo);
+        User userInfo = getUserFromAuthentication(); // 순환참조 생겨서 dto로 변경 (세종)
+        UserResDto userResDto = new UserResDto(userInfo);
+        return new CommonResponse(HttpStatus.OK, "User info loaded successfully!", userResDto);
     }
 
     @Transactional
