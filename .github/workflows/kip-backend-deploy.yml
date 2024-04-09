@@ -44,11 +44,11 @@ jobs:
         run: |
           docker build \
           -t $REGISTRY/$REPOSITORY:$IMAGE_TAG \
-          -f ./ordering/Dockerfile ./ordering
+          -f ./KIP/Dockerfile ./KIP
           docker push $REGISTRY/$REPOSITORY:$IMAGE_TAG
 
       # kubectl rollout restart deployment kip-backend # depl-serve name
       - name: eks kubectl apply
         run: |
-          kubectl apply -f ./ordering/k8s/kip-backend-depl-serv.yml
+          kubectl apply -f ./KIP/k8s/kip-backend-depl-serv.yml
           kubectl rollout restart deployment kip-backend
