@@ -1,6 +1,4 @@
 <script setup>
-import  KipColor  from '@/stores/kipColor';
-
 definePageMeta({
   layout: "plain"
 })
@@ -8,14 +6,21 @@ definePageMeta({
 const visible = ref();
 const empolymentId = ref();
 const password = ref();
+
+// Stores
+const user = useUser();
+const color = useColor();
+
+
 const login = () => {
-  AuthUserStore().userLogin(empolymentId.value, password.value);
+  user.userLogin(empolymentId.value, password.value);
   useRouter().push('/pinia');
 }
+
 </script>
 
 <template>
-<v-sheet class="login__sheet" color>
+<v-sheet class="login__sheet">
   <v-container class="login__container">
     <v-card
         class="login__card mx-auto pa-13 pb-5 mb-5"
@@ -33,7 +38,7 @@ const login = () => {
           variant="outlined"
           class="mt-10"
           v-model="empolymentId"
-          :color="KipColor().kipSubColor"
+          :color="color.kipSubColor"
       />
       <v-text-field
           :append-inner-icon="visible ? 'mdi-eye-off' : 'mdi-eye'"
@@ -44,7 +49,7 @@ const login = () => {
           @click:append-inner="visible = !visible"
           class="mb-5"
           v-model="password"
-          :color="KipColor().kipSubColor"
+          :color="color.kipSubColor"
       />
 
       <v-btn

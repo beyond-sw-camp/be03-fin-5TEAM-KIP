@@ -1,20 +1,22 @@
 <script setup lang="ts">
-import CartStore from "~/stores/CartStore";
-import KipColor from "~/stores/KipColor";
 import LeftNavigation from "~/components/LeftNavigation.vue";
 import NotificationCopo from "~/components/NotificationCompo.vue";
-import AuthUserStore from "~/stores/AuthUserStore";
 
 // 햄버거 버튼
 const drawer = ref(true);
 const rail = ref(true);
+
+// 피니아
+const user = useUser();
+const cart = useCart()
+const color = useColor();
 
 // function
 const handleRailClick = () => {
   rail.value = !rail.value;
 };
 const logout = () => {
-  AuthUserStore().userLogOut();
+  user.userLogOut();
   useRouter().push('/');
 }
 </script>
@@ -24,7 +26,7 @@ const logout = () => {
 
     <!--  좌측메뉴  -->
     <v-navigation-drawer
-        :color="KipColor().kipMainColor"
+        :color="color.kipMainColor"
         v-model="drawer"
         :rail="rail"
         width="240"
@@ -35,7 +37,7 @@ const logout = () => {
 
     <!--  상단메뉴  -->
     <v-app-bar
-        :color="KipColor().kipMainColor"
+        :color="color.kipMainColor"
         class="top__header__sheet"
         height="68">
       <template #prepend>
@@ -50,7 +52,7 @@ const logout = () => {
           KIP (Knowledge Is Power)
         </NuxtLink>
       </v-toolbar-title>
-      {{ AuthUserStore().getUserInfo.name }}님 환영합니다.
+      {{ user.getUserInfo.name }}님 환영합니다.
       <!-- 알림 버튼 -->
       <v-dialog max-width="600">
         <template #activator="{ props: activatorProps }">
@@ -59,9 +61,9 @@ const logout = () => {
               class="text-none"
               stacked>
             <v-badge
-                v-if="!CartStore().isEmpty"
+                v-if="!cart.isEmpty"
                 color="error"
-                :content="CartStore().count">
+                :content="cart.count">
               <v-icon
                   icon="mdi-bell-ring"
                   size="x-large"

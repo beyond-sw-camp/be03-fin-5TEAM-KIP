@@ -1,4 +1,3 @@
-
 <script setup>
 const rail = ref(true);
 const emit = defineEmits(["railEvent"]);

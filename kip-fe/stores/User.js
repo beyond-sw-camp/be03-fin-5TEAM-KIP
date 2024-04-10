@@ -1,11 +1,11 @@
-import {defineStore} from 'pinia';
 const BASE_URL = import.meta.env.VITE_BASE_URL;
 
-export default defineStore("AuthUserStore", {
+export const useUser = defineStore("user", {
     state() {
         return {
+            accessToken: "",
             userInfo: {},
-            accessToken: ""
+            isLoggedIn: false,
         };
     },
     getters: {
@@ -14,6 +14,9 @@ export default defineStore("AuthUserStore", {
         },
         getUserInfo(state) {
             return state.userInfo;
+        },
+        getIsLoggedIn(state){
+            return state.isLoggedIn;
         }
     },
     actions: {
@@ -44,6 +47,9 @@ export default defineStore("AuthUserStore", {
                 // 로컬 스토리지에 저장.
                 if (typeof window !== "undefined")  // CSR 인경우만 동작함.
                     window.localStorage.setItem('accessToken', tokenData);
+
+                // 로그인 표시
+                this.isLoggedIn = true;
 
             } catch (e) {
                 console.log(e, '로그인 실패')
