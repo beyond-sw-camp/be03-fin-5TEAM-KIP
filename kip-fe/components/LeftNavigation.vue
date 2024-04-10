@@ -33,8 +33,8 @@ const handleRailClick = () => {
         <NuxtLink to="/comments">
           <v-list-item prepend-icon="mdi-comment" title="COMMENTS" value="COMMENTS"/>
         </NuxtLink>
-        <NuxtLink to="/pinia">
-          <v-list-item prepend-icon="mdi-store-cog" title="PINIA" value="PINIA"/>
+        <NuxtLink to="/kip">
+          <v-list-item prepend-icon="mdi-store-cog" title="KIP" value="kip"/>
         </NuxtLink>
       </v-list>
     </v-sheet>

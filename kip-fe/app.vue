@@ -1,7 +1,8 @@
 <script setup>
+
+useUser().setUserInfoAndTokenToPiniaFromLocalStorage();
 useProduct().fill();
 useCart().fetchItemsFromLocalStorage(); // 로컬스토리지에서 가지고옴.
-useUser().setUserInfoAndTokenToPiniaFromLocalStorage();
 useHead({
   titleTemplate: (titleChunk) => {
     return titleChunk ? `${titleChunk} - Knowledge Is Power` : 'Knowledge Is Power (KIP)'

@@ -20,7 +20,7 @@ export const useUser = defineStore("user", {
         }
     },
     actions: {
-        async userLogin(employeeId, password) {
+        async login(employeeId, password) {
             try {
                 // 로그인 하고
                 const response =
@@ -50,10 +50,12 @@ export const useUser = defineStore("user", {
 
                 // 로그인 표시
                 this.isLoggedIn = true;
-
+                await useRouter().push('/kip');
             } catch (e) {
                 console.log(e, '로그인 실패')
+                alert("아이디 또는 비밀번호가 잘못 되었습니다.")
             }
+
         },
 
         // 로그아웃 안하고 새로고침 했을때 사용자 정보 유지 하는 함수.
@@ -69,13 +71,14 @@ export const useUser = defineStore("user", {
                             });
                         const userInfoRes = await response.json();
                         this.userInfo = userInfoRes.result;
+                        this.isLoggedIn = true;
                     } catch (e) {
                         console.log(e, '유저정보 가져오기 실패')
                     }
             }
         },
 
-        async userLogOut() {
+        async logout() {
             try {
                 const response =
                     await fetch(`${BASE_URL}/user/logout`, {
@@ -86,13 +89,13 @@ export const useUser = defineStore("user", {
                 console.log(deleteRes.result)
 
                 this.$reset(); // 유져 정보 리셋
-                CartStore().$reset() // 장바구니 리셋
+                useCart().$reset() // 장바구니 리셋
 
                 if (typeof window !== "undefined"){ // 로컬스토리지 리셋
                     window.localStorage.removeItem('accessToken');
                     window.localStorage.removeItem('CartStore:items');
                 }
-
+                useRouter().push('/');
             } catch (e) {
                 console.log(e, '로그아웃 실패')
             }

@@ -1,4 +1,7 @@
 <script setup lang="ts">
+definePageMeta({
+  middleware: ["login"]
+})
 import LeftNavigation from "~/components/LeftNavigation.vue";
 import NotificationCopo from "~/components/NotificationCompo.vue";
 
@@ -14,10 +17,6 @@ const color = useColor();
 // function
 const handleRailClick = () => {
   rail.value = !rail.value;
-};
-const logout = () => {
-  user.userLogOut();
-  useRouter().push('/');
 }
 </script>
 
@@ -96,14 +95,14 @@ const logout = () => {
                 class="cursor-pointer"/>
           </template>
           <v-list>
-            <v-list-item @click="this.$router.push('/pinia');">
+            <v-list-item @click="useRouter().push('/kip');">
               <template v-slot:prepend>
                 <v-icon icon="mdi-information-box-outline"/>
               </template>
               <v-list-item-title>MyPage</v-list-item-title>
             </v-list-item>
 
-            <v-list-item @click="logout">
+            <v-list-item @click="user.logout">
               <template v-slot:prepend>
                 <v-icon icon="mdi-logout"/>
               </template>

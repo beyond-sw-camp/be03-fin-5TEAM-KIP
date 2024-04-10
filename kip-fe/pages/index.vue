@@ -12,11 +12,6 @@ const user = useUser();
 const color = useColor();
 
 
-const login = () => {
-  user.userLogin(empolymentId.value, password.value);
-  useRouter().push('/pinia');
-}
-
 </script>
 
 <template>
@@ -53,7 +48,7 @@ const login = () => {
       />
 
       <v-btn
-          @click="login"
+          @click="user.login(empolymentId, password)"
           class="mb-8 pa-8"
           color="blue"
           size="large"
