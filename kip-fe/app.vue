@@ -6,6 +6,13 @@ import AuthUserStore from "~/stores/AuthUserStore.js";
 ProductStore().fill();
 CartStore().fetchItemsFromLocalStorage(); // 로컬스토리지에서 가지고옴.
 AuthUserStore().setUserInfoAndTokenToPiniaFromLocalStorage();
+
+useHead({
+  titleTemplate: (titleChunk) => {
+    return titleChunk ? `${titleChunk} - Knowledge Is Power` : 'Knowledge Is Power (KIP)'
+  }
+})
+
 </script>
 
 <template>

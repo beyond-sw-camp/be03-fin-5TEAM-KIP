@@ -1,15 +1,16 @@
-<script setup lang="ts">
+<script setup>
 import  KipColor  from '@/stores/kipColor';
+
 definePageMeta({
   layout: "plain"
 })
+
 const visible = ref();
 const empolymentId = ref();
 const password = ref();
-const router = useRouter();
 const login = () => {
   AuthUserStore().userLogin(empolymentId.value, password.value);
-  router.push('/pinia');
+  useRouter().push('/pinia');
 }
 </script>
 

@@ -3,7 +3,6 @@ import AuthUserStore from "~/stores/AuthUserStore";
 import CartStore from "~/stores/CartStore";
 import KipColor from "~/stores/KipColor";
 
-
 </script>
 
 <template>

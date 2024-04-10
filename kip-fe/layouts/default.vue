@@ -4,7 +4,6 @@ import KipColor from "~/stores/KipColor";
 import LeftNavigation from "~/components/LeftNavigation.vue";
 import NotificationCopo from "~/components/NotificationCompo.vue";
 import AuthUserStore from "~/stores/AuthUserStore";
-const router = useRouter();
 
 // 햄버거 버튼
 const drawer = ref(true);
@@ -16,7 +15,7 @@ const handleRailClick = () => {
 };
 const logout = () => {
   AuthUserStore().userLogOut();
-  router.push('/');
+  useRouter().push('/');
 }
 </script>
 
