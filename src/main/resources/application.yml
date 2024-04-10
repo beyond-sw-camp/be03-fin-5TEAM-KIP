@@ -2,7 +2,7 @@ spring:
   security:
     user:
       name: user
-      password: password #  PasswordEncoder.encode(password)
+      password: password #  PasswordEncoder.encode(password)1
 
   datasource:
     driver-class-name: org.mariadb.jdbc.Driver
