@@ -4,8 +4,6 @@ import KipColor from "~/stores/KipColor";
 import LeftNavigation from "~/components/LeftNavigation.vue";
 import NotificationCopo from "~/components/NotificationCompo.vue";
 import AuthUserStore from "~/stores/AuthUserStore";
-import {useRouter} from 'vue-router';
-
 const router = useRouter();
 
 // 햄버거 버튼
@@ -118,7 +116,7 @@ const logout = () => {
     <!--  메인 페이지  -->
     <v-main>
       <div class="main__sheet">
-        <NuxtPage/>
+        <slot></slot>
       </div>
     </v-main>
 

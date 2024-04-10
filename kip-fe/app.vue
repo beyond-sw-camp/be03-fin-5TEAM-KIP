@@ -10,10 +10,9 @@ AuthUserStore().setUserInfoAndTokenToPiniaFromLocalStorage();
 
 <template>
   <NuxtLoadingIndicator />
-  <div class="app__layout">
   <NuxtLayout>
+    <NuxtPage/>
   </NuxtLayout>
-  </div>
 </template>
 
 <!-- 전역 스타일 -->
