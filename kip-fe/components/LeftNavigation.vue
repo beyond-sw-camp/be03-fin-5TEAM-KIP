@@ -39,6 +39,9 @@ const handleRailClick = () => {
         <NuxtLink to="/practice">
           <v-list-item prepend-icon="mdi-arm-flex" title="JiYoung3" value="JiYoung3" class="left__nav__list"/>
         </NuxtLink>
+        <NuxtLink to="/mypage_test">
+          <v-list-item prepend-icon="mdi-arm-flex" title="JiYoung3" value="JiYoung3" class="left__nav__list"/>
+        </NuxtLink>
       </v-list>
     </v-sheet>
 </template>git
