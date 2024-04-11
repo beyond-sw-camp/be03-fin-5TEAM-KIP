@@ -13,6 +13,7 @@ const rail = ref(true);
 const user = useUser();
 const cart = useCart()
 const color = useColor();
+const group = useGroup();
 
 // function
 const handleRailClick = () => {
@@ -39,19 +40,25 @@ const handleRailClick = () => {
         :color="color.kipMainColor"
         class="top__header__sheet"
         height="68">
-      <template #prepend>
-        <!-- 햄버거 버튼 -->
+      <template #prepend> <!-- 상단 메뉴의 제일 왼쪽-->
+                          <!-- 햄버거 버튼 -->
         <v-app-bar-nav-icon
             @click.stop="$event => drawer = !drawer"
         />
       </template>
 
-      <v-toolbar-title>
-        <NuxtLink to="/kip">
-          KIP (Knowledge Is Power)
-        </NuxtLink>
-      </v-toolbar-title>
+      <!--부서 계층 목록 -->
+      <v-breadcrumbs :items="group.getNameOfSuperGroups">
+        <template v-slot:divider>
+          <v-icon icon="mdi-chevron-right"></v-icon>
+        </template>
+      </v-breadcrumbs>
+
+      <!--가운데 공간 만듬 -->
+      <v-spacer/>
+
       {{ user.getUserInfo.name }}님 환영합니다.
+
       <!-- 알림 버튼 -->
       <v-dialog max-width="600">
         <template #activator="{ props: activatorProps }">
@@ -84,7 +91,7 @@ const handleRailClick = () => {
       </v-dialog>
 
 
-      <template #append>
+      <template #append> <!-- 상단 메뉴의 제일 오른쪽-->
         <v-menu transition="slide-y-transition">
           <template v-slot:activator="{ props }">
             <!-- 아바타 버튼 -->

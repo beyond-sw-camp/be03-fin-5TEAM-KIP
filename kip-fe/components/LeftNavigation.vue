@@ -1,12 +1,18 @@
 <script setup>
+
+// 왼쪽 네비게이션 오른쪽으로 확장 축소 하는 코드.
 const rail = ref(true);
 const emit = defineEmits(["railEvent"]);
-
-// function
 const handleRailClick = () => {
   emit('railEvent');
   rail.value = !rail.value;
 };
+
+const group = useGroup();
+await group.setMyGroupsInfo();  // (awit) 그룹정보를 모두 가지고 온뒤 넘어감
+console.log(group.getMyGroupNamesAndId,"그룹리스트")
+
+
 </script>
 
 <template>
