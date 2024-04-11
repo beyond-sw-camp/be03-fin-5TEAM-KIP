@@ -1,6 +1,6 @@
 <script setup>
 
-useUser().setUserInfoAndTokenToPiniaFromLocalStorage();
+await useUser().setUserInfoAndTokenToPiniaFromLocalStorage();
 useProduct().fill();
 useCart().fetchItemsFromLocalStorage(); // 로컬스토리지에서 가지고옴.
 useHead({

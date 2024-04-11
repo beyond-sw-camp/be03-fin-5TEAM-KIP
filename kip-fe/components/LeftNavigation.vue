@@ -1,12 +1,20 @@
 <script setup>
+
+// 왼쪽 네비게이션 오른쪽으로 확장 축소 하는 코드.
 const rail = ref(true);
 const emit = defineEmits(["railEvent"]);
-
-// function
 const handleRailClick = () => {
   emit('railEvent');
   rail.value = !rail.value;
 };
+
+const group = useGroup();
+
+await group.$reset(); // 그룹정보 리셋 후 다시 세팅
+await group.setMyGroupsInfo();  // (awit) 그룹정보를 모두 가지고 온뒤 넘어감
+console.log(group.getMyGroupNamesAndId,"그룹리스트")
+
+
 </script>
 
 <template>
@@ -43,6 +51,20 @@ const handleRailClick = () => {
           <v-list-item prepend-icon="mdi-arm-flex" title="JiYoung3" value="JiYoung3" class="left__nav__list"/>
         </NuxtLink>
       </v-list>
+      <v-list density="compact" v-for="item in group.getMyGroupNamesAndId" :key="item.groupId">
+        <NuxtLink :to="`/group/${item.groupId}`">
+          <v-list-item v-if="item.groupType === `DEPARTMENT`"
+                       prepend-icon="mdi-account-clock"
+                       :title="item.groupName"
+                       :value="item.groupId"
+                       class="left__nav__list"/>
+          <v-list-item v-else
+                       prepend-icon="mdi-flower-tulip"
+                       :title="item.groupName"
+                       :value="item.groupId"
+                       class="left__nav__list"/>
+        </NuxtLink>
+      </v-list>
     </v-sheet>
 </template>git
 
@@ -53,5 +75,8 @@ color: var(--primary-color);
 
 .left__nav__list {
   padding-left: 10px !important;
+}
+.v-list-item__spacer {
+  width: 13px !important;
 }
 </style>
