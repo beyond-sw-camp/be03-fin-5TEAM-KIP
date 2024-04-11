@@ -33,8 +33,11 @@ const handleRailClick = () => {
         <NuxtLink to="/kip">
           <v-list-item prepend-icon="mdi-store-cog" title="KIP" value="kip" class="left__nav__list"/>
         </NuxtLink>
-        <NuxtLink to="/jiyongPracticeprofile">
-          <v-list-item prepend-icon="mdi-arm-flex" title="JiYoung" value="JiYoung"/>
+        <NuxtLink to="/jiyongMainpractice">
+          <v-list-item prepend-icon="mdi-arm-flex" title="JiYoung2" value="JiYoung2" class="left__nav__list"/>
+        </NuxtLink>
+        <NuxtLink to="/practice">
+          <v-list-item prepend-icon="mdi-arm-flex" title="JiYoung3" value="JiYoung3" class="left__nav__list"/>
         </NuxtLink>
       </v-list>
     </v-sheet>
