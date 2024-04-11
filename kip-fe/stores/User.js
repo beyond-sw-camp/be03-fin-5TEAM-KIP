@@ -17,6 +17,9 @@ export const useUser = defineStore("user", {
         },
         getIsLoggedIn(state){
             return state.isLoggedIn;
+        },
+        getProfileImageUrl(state){
+            return state.userInfo.profileImageUrl;
         }
     },
     actions: {

@@ -9,6 +9,8 @@ const handleRailClick = () => {
 };
 
 const group = useGroup();
+
+await group.$reset(); // 그룹정보 리셋 후 다시 세팅
 await group.setMyGroupsInfo();  // (awit) 그룹정보를 모두 가지고 온뒤 넘어감
 console.log(group.getMyGroupNamesAndId,"그룹리스트")
 
@@ -40,6 +42,20 @@ console.log(group.getMyGroupNamesAndId,"그룹리스트")
           <v-list-item prepend-icon="mdi-store-cog" title="KIP" value="kip" class="left__nav__list"/>
         </NuxtLink>
       </v-list>
+      <v-list density="compact" v-for="item in group.getMyGroupNamesAndId" :key="item.groupId">
+        <NuxtLink :to="`/group/${item.groupId}`">
+          <v-list-item v-if="item.groupType === `DEPARTMENT`"
+                       prepend-icon="mdi-account-clock"
+                       :title="item.groupName"
+                       :value="item.groupId"
+                       class="left__nav__list"/>
+          <v-list-item v-else
+                       prepend-icon="mdi-flower-tulip"
+                       :title="item.groupName"
+                       :value="item.groupId"
+                       class="left__nav__list"/>
+        </NuxtLink>
+      </v-list>
     </v-sheet>
 </template>
 
@@ -50,5 +66,8 @@ color: var(--primary-color);
 
 .left__nav__list {
   padding-left: 10px !important;
+}
+.v-list-item__spacer {
+  width: 13px !important;
 }
 </style>

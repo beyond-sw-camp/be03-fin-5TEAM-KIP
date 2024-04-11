@@ -96,7 +96,7 @@ const handleRailClick = () => {
           <template v-slot:activator="{ props }">
             <!-- 아바타 버튼 -->
             <v-avatar
-                image="https://avatars.githubusercontent.com/u/123573918?v=4"
+                :image="user.getProfileImageUrl"
                 size="55"
                 v-bind="props"
                 class="cursor-pointer"/>

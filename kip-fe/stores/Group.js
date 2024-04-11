@@ -37,10 +37,7 @@ export const useGroup = defineStore("group", {
                     method: 'GET',
                     headers: {'Authorization': 'Bearer ' + this.accessToken},
                 });
-            const groupsInfoRes = await response.json();
-            this.myGroupsInfo = groupsInfoRes;
-            console.log(groupsInfoRes)
-            console.log(this.accessToken)
+            this.myGroupsInfo = await response.json();
         }
     }
 });
