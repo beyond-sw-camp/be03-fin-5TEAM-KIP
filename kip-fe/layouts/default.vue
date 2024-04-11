@@ -1,24 +1,22 @@
 <script setup lang="ts">
-import CartStore from "~/stores/CartStore";
-import KipColor from "~/stores/KipColor";
+definePageMeta({
+  middleware: ["login"]
+})
 import LeftNavigation from "~/components/LeftNavigation.vue";
-import NotificationCopo from "~/components/NotificationCopo.vue";
-import AuthUserStore from "~/stores/AuthUserStore";
-import {useRouter} from 'vue-router';
-
-const router = useRouter();
+import NotificationCopo from "~/components/NotificationCompo.vue";
 
 // 햄버거 버튼
 const drawer = ref(true);
 const rail = ref(true);
 
+// 피니아
+const user = useUser();
+const cart = useCart()
+const color = useColor();
+
 // function
 const handleRailClick = () => {
   rail.value = !rail.value;
-};
-const logout = () => {
-  AuthUserStore().userLogOut();
-  router.push('/');
 }
 </script>
 
@@ -27,7 +25,7 @@ const logout = () => {
 
     <!--  좌측메뉴  -->
     <v-navigation-drawer
-        :color="KipColor().kipMainColor"
+        :color="color.kipMainColor"
         v-model="drawer"
         :rail="rail"
         width="240"
@@ -38,7 +36,7 @@ const logout = () => {
 
     <!--  상단메뉴  -->
     <v-app-bar
-        :color="KipColor().kipMainColor"
+        :color="color.kipMainColor"
         class="top__header__sheet"
         height="68">
       <template #prepend>
@@ -49,11 +47,11 @@ const logout = () => {
       </template>
 
       <v-toolbar-title>
-        <NuxtLink to="/">
+        <NuxtLink to="/kip">
           KIP (Knowledge Is Power)
         </NuxtLink>
       </v-toolbar-title>
-      {{ AuthUserStore().getUserInfo.name }}님 환영합니다.
+      {{ user.getUserInfo.name }}님 환영합니다.
       <!-- 알림 버튼 -->
       <v-dialog max-width="600">
         <template #activator="{ props: activatorProps }">
@@ -62,9 +60,9 @@ const logout = () => {
               class="text-none"
               stacked>
             <v-badge
-                v-if="!CartStore().isEmpty"
+                v-if="!cart.isEmpty"
                 color="error"
-                :content="CartStore().count">
+                :content="cart.count">
               <v-icon
                   icon="mdi-bell-ring"
                   size="x-large"
@@ -97,14 +95,14 @@ const logout = () => {
                 class="cursor-pointer"/>
           </template>
           <v-list>
-            <v-list-item @click="this.$router.push('/pinia');">
+            <v-list-item @click="useRouter().push('/kip');">
               <template v-slot:prepend>
                 <v-icon icon="mdi-information-box-outline"/>
               </template>
               <v-list-item-title>MyPage</v-list-item-title>
             </v-list-item>
 
-            <v-list-item @click="logout">
+            <v-list-item @click="user.logout">
               <template v-slot:prepend>
                 <v-icon icon="mdi-logout"/>
               </template>
@@ -118,7 +116,7 @@ const logout = () => {
     <!--  메인 페이지  -->
     <v-main>
       <div class="main__sheet">
-        <NuxtPage/>
+        <slot></slot>
       </div>
     </v-main>
 
@@ -130,12 +128,12 @@ const logout = () => {
 @import '../assets/css/color.css';
 
 /* 좌측 메뉴 관련 CSS */
-
-
 .v-navigation-drawer__content {
   background-color: white;
   margin-top: 0.8vw;
   margin-bottom: 0.8vw;
+  margin-left: 0.6vw;
+
   border-radius: 20px !important;
   overflow: hidden;
 }

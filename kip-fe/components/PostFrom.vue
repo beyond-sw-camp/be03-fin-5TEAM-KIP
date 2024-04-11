@@ -1,6 +1,4 @@
 <script setup lang="ts">
-import {ref} from "vue";
-
 const emit = defineEmits(["submit"]);
 const props = defineProps<{
   post: Record<string, any>;

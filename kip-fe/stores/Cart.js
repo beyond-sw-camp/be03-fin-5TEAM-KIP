@@ -1,7 +1,6 @@
-import {defineStore} from "pinia";
 import {groupBy} from "lodash";
 
-export default defineStore("CartStore", {
+export const useCart = defineStore("cart", {
     state: () => {
         return {
             items: [],
