@@ -1,12 +1,11 @@
-import {defineStore} from 'pinia';
-
 const BASE_URL = import.meta.env.VITE_BASE_URL;
 
-export default defineStore("AuthUserStore", {
+export const useUser = defineStore("user", {
     state() {
         return {
+            accessToken: "",
             userInfo: {},
-            accessToken: ""
+            isLoggedIn: false,
         };
     },
     getters: {
@@ -15,17 +14,20 @@ export default defineStore("AuthUserStore", {
         },
         getUserInfo(state) {
             return state.userInfo;
+        },
+        getIsLoggedIn(state){
+            return state.isLoggedIn;
         }
     },
     actions: {
-        async userLogin(employeeId, password) {
+        async login(employeeId, password) {
             try {
                 // 로그인 하고
                 const response =
                     await fetch(`${BASE_URL}/user/login`, {
                         method: 'POST',  //POST 요청은 'Content-Type' 설정
+                        headers: {'Content-Type': 'application/json'},
                         body: JSON.stringify({employeeId, password}),
-                        headers: {'Content-Type': 'application/json'}
                     });
                 const tokenRes = await response.json()
                 const tokenData = tokenRes.result.access_token;
@@ -46,9 +48,14 @@ export default defineStore("AuthUserStore", {
                 if (typeof window !== "undefined")  // CSR 인경우만 동작함.
                     window.localStorage.setItem('accessToken', tokenData);
 
+                // 로그인 표시
+                this.isLoggedIn = true;
+                await useRouter().push('/kip');
             } catch (e) {
                 console.log(e, '로그인 실패')
+                alert("아이디 또는 비밀번호가 잘못 되었습니다.")
             }
+
         },
 
         // 로그아웃 안하고 새로고침 했을때 사용자 정보 유지 하는 함수.
@@ -64,13 +71,15 @@ export default defineStore("AuthUserStore", {
                             });
                         const userInfoRes = await response.json();
                         this.userInfo = userInfoRes.result;
+                        this.isLoggedIn = true;
                     } catch (e) {
                         console.log(e, '유저정보 가져오기 실패')
                     }
+                await useRouter().push('/kip');
             }
         },
 
-        async userLogOut() {
+        async logout() {
             try {
                 const response =
                     await fetch(`${BASE_URL}/user/logout`, {
@@ -80,17 +89,18 @@ export default defineStore("AuthUserStore", {
                 const deleteRes = response.json();
                 console.log(deleteRes.result)
 
-                // 피니아 코컬스토리지 정보 비움.
-                this.accessToken = "";
-                this.userInfo = {};
-                if (typeof window !== "undefined")
+                this.$reset(); // 유져 정보 리셋
+                useCart().$reset() // 장바구니 리셋
+
+                if (typeof window !== "undefined"){ // 로컬스토리지 리셋
                     window.localStorage.removeItem('accessToken');
+                    window.localStorage.removeItem('CartStore:items');
+                }
+                await useRouter().push('/');
 
             } catch (e) {
                 console.log(e, '로그아웃 실패')
             }
         },
-
-
     },
 });

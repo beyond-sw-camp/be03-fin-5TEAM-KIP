@@ -1,19 +1,20 @@
 <script setup>
-import ProductStore from "~/stores/ProductStore.js";
-import CartStore from "~/stores/CartStore.js";
-import AuthUserStore from "~/stores/AuthUserStore.js";
 
-ProductStore().fill();
-CartStore().fetchItemsFromLocalStorage(); // 로컬스토리지에서 가지고옴.
-AuthUserStore().setUserInfoAndTokenToPiniaFromLocalStorage();
+useUser().setUserInfoAndTokenToPiniaFromLocalStorage();
+useProduct().fill();
+useCart().fetchItemsFromLocalStorage(); // 로컬스토리지에서 가지고옴.
+useHead({
+  titleTemplate: (titleChunk) => {
+    return titleChunk ? `${titleChunk} - Knowledge Is Power` : 'Knowledge Is Power (KIP)'
+  }
+})
 </script>
 
 <template>
   <NuxtLoadingIndicator />
-  <div class="app__layout">
   <NuxtLayout>
+    <NuxtPage/>
   </NuxtLayout>
-  </div>
 </template>
 
 <!-- 전역 스타일 -->

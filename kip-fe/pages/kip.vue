@@ -1,11 +1,13 @@
 <script setup>
-import CartStore from "@/stores/CartStore";
-import ProductStore from "@/stores/ProductStore";
-import KipColor from "~/stores/KipColor.js";
-
 const productCounts = reactive({});
+
+// 피니아.
+const cart = useCart()
+const color = useColor();
+const product = useProduct()
+
 const addItems = (product) => {
-  CartStore().addItems(productCounts[product.name], product);
+  cart.addItems(productCounts[product.name], product);
   productCounts[product.name] = 0;
 }
 
@@ -16,7 +18,7 @@ const addItems = (product) => {
     <v-sheet class="d-flex ma-auto">
       <v-row>
         <v-col
-            v-for="product in ProductStore().getProducts"
+            v-for="product in product.getProducts"
             :key="product.name"
             :cols="12"
             sm="6"
@@ -48,7 +50,7 @@ const addItems = (product) => {
               <v-btn
                   text="Add To Cart"
                   @click="addItems(product)"
-                  :color="KipColor().kipMainColor"
+                  :color="color.kipMainColor"
                   variant="elevated"
               />
             </v-card-actions>

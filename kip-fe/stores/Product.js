@@ -1,6 +1,5 @@
-import {defineStore} from "pinia";
 
-export default defineStore("ProductStore", {
+export const useProduct =  defineStore("product", {
     state: () => {
         return {
             products: []
