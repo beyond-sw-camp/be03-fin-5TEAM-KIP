@@ -24,9 +24,6 @@ const handleRailClick = () => {
           @click="handleRailClick"
       />
       <v-list density="compact" nav>
-        <NuxtLink to="/">
-          <v-list-item prepend-icon="mdi-home-circle" title="HOME" value="myfiles"/>
-        </NuxtLink>
         <NuxtLink to="/posts">
           <v-list-item prepend-icon="mdi-note" title="POSTING" value="shared"/>
         </NuxtLink>

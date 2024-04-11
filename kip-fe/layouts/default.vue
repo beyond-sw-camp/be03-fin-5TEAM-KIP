@@ -47,7 +47,7 @@ const handleRailClick = () => {
       </template>
 
       <v-toolbar-title>
-        <NuxtLink to="/">
+        <NuxtLink to="/kip">
           KIP (Knowledge Is Power)
         </NuxtLink>
       </v-toolbar-title>
