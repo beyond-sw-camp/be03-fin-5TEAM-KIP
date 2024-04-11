@@ -36,6 +36,9 @@ const handleRailClick = () => {
         <NuxtLink to="/pinia">
           <v-list-item prepend-icon="mdi-store-cog" title="PINIA" value="PINIA"/>
         </NuxtLink>
+        <NuxtLink to="/jiyongPracticeprofile">
+          <v-list-item prepend-icon="mdi-arm-flex" title="JiYoung" value="JiYoung"/>
+        </NuxtLink>
       </v-list>
     </v-sheet>
 </template>git
