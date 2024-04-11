@@ -41,7 +41,7 @@ const handleRailClick = () => {
         </NuxtLink>
       </v-list>
     </v-sheet>
-</template>git
+</template>
 
 <style>
 .left__nav__sheet {

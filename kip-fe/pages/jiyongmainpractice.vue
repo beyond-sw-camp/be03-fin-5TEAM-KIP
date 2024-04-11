@@ -1,98 +1,127 @@
 <template>
   <v-app>
-    <!-- 사이드바 -->
-    <v-navigation-drawer permanent app class="deep-blue">
-      <v-list dense class="white--text">
-        <v-list-item link to="/introduction">
-          <v-list-item-content>
-            <v-list-item-title>소개</v-list-item-title>
-          </v-list-item-content>
-        </v-list-item>
-        <v-list-item link to="/core-guides">
-          <v-list-item-content>
-            <v-list-item-title>핵심 가이드</v-list-item-title>
-          </v-list-item-content>
-        </v-list-item>
-        <!-- 기타 사이드바 아이템들 -->
-      </v-list>
-    </v-navigation-drawer>
+    <v-container fluid>
+      <v-row no-gutters>
+        <!-- 왼쪽 사이드바 영역 -->
+        <v-col cols="3">
+          <v-list dense class="pa-4">
+            <!-- '기계 부서' 타이틀 -->
+            <v-list-item>
+              <v-list-item-content>
+                <v-list-item-title class="font-weight-bold">기계 부서</v-list-item-title>
+              </v-list-item-content>
+            </v-list-item>
+            <v-divider></v-divider>
 
-    <!-- 메인 콘텐츠 -->
-    <v-main>
-      <v-container fluid>
-        <v-row>
-          <!-- 메인 콘텐츠 왼쪽 칼럼: 소개 및 Vue는 무엇일까요? -->
-          <v-col cols="12" md="9">
-            <v-card flat class="mb-4">
-              <v-card-title class="headline">소개</v-card-title>
-              <!-- 소개 섹션 내용 -->
-            </v-card>
-            <v-card outlined class="px-5 py-3">
-              <v-card-title class="headline">Vue는 무엇일까요?</v-card-title>
-              <v-card-text class="body-1">
-                Vue(view)는 사용자 인터페이스를 구축하기 위한 프로그레시브 프레임워크입니다. 선언적 렌더링과 컴포넌트 시스템 등...
-                <!-- 더 많은 내용 -->
-              </v-card-text>
-            </v-card>
-            <!-- 추가 콘텐츠 섹션 -->
-          </v-col>
+            <!-- 핵심 가이드 섹션 -->
+            <v-list-item>
+              <v-list-item-content>
+                <v-list-item-title>핵심 가이드</v-list-item-title>
+              </v-list-item-content>
+            </v-list-item>
 
-          <!-- 메인 콘텐츠 오른쪽 칼럼: 이 페이지에서 및 첨부파일 -->
-          <v-col cols="12" md="3">
-            <v-card flat class="mb-4">
-              <v-card-title>이 페이지에서</v-card-title>
+            <!-- 소개 섹션 -->
+            <v-list-item>
+              <v-list-item-content>
+                <v-list-item-title>소개</v-list-item-title>
+              </v-list-item-content>
+            </v-list-item>
+
+            <!-- 다른 메뉴 항목들 -->
+            <v-list-item v-for="text in texts" :key="text">
+              <v-list-item-content>
+                <v-list-item-title>{{ text }}</v-list-item-title>
+              </v-list-item-content>
+            </v-list-item>
+          </v-list>
+        </v-col>
+
+        <!-- 세로선 -->
+        <v-col cols="1">
+          <v-divider vertical></v-divider>
+        </v-col>
+
+        <!-- 가운데 소개 섹션 -->
+        <v-col cols="5" class="text-center">
+          <v-divider></v-divider>
+          <v-card flat class="mt-4">
+            <v-card-title class="headline my-2">소개</v-card-title>
+            <!-- 소개 내용을 여기에 추가 -->
+          </v-card>
+          <v-divider></v-divider> <!-- 가로 선 추가 -->
+          <v-card flat class="mt-4">
+            <v-card-text>
+              <!-- 커다란 공간(문서 등이 들어갈 곳) -->
+            </v-card-text>
+          </v-card>
+        </v-col>
+
+        <!-- 가로선 -->
+        <v-col cols="1">
+          <v-divider></v-divider>
+        </v-col>
+
+        <!-- 오른쪽 영역 -->
+        <v-col cols="2">
+          <!-- 'On This Page' 섹션 -->
+          <v-card flat>
+            <v-card-title class="headline my-2 text-right">On This Page</v-card-title>
+            <v-card-text>
               <v-list dense>
-                <v-list-item link to="#introduction">소개</v-list-item>
-                <v-list-item link to="#whatisvue">Vue는 무엇일까요?</v-list-item>
-                <!-- 기타 링크들 -->
-              </v-list>
-            </v-card>
-            <v-card flat>
-              <v-card-title>첨부파일</v-card-title>
-              <v-list dense>
-                <v-list-item href="path/to/first-file.pdf" target="_blank">
-                  <v-list-item-action>
-                    <v-icon color="blue">mdi-file-pdf-box</v-icon>
-                  </v-list-item-action>
-                  <v-list-item-content>첫 번째 파일</v-list-item-content>
+                <v-list-item v-for="item in rightSideItems" :key="item">
+                  <v-list-item-content>
+                    <v-list-item-title>{{ item.title }}</v-list-item-title>
+                    <v-list-item-subtitle v-if="item.subtitle">{{ item.subtitle }}</v-list-item-subtitle>
+                  </v-list-item-content>
                 </v-list-item>
-                <!-- 기타 첨부파일 아이템들 -->
               </v-list>
-            </v-card>
-          </v-col>
-        </v-row>
-      </v-container>
-    </v-main>
+            </v-card-text>
+          </v-card>
+
+          <!-- 첨부 파일 섹션 -->
+          <v-card flat>
+            <v-card-title class="headline my-2">첨부 파일</v-card-title>
+            <v-card-text>
+              <v-btn text color="primary">service-task.pdf</v-btn>
+              <v-btn text color="primary">work-project.zip</v-btn>
+              <!-- 더 많은 파일들... -->
+            </v-card-text>
+          </v-card>
+        </v-col>
+      </v-row>
+    </v-container>
   </v-app>
 </template>
 
 <script>
 export default {
-  name: 'MainPage',
   data() {
     return {
-      // 컴포넌트 데이터
+      texts: [
+        '템플릿문법', '반응형기초', '계산된속성', '조건부렌더링', '리스트렌더링',
+        '이벤트 핸들링', 'form 입력바인딩', '생명주기 훅', '감 시 자',
+        '템플릿 참조', '컴포넌트 기초', '컴포넌트 심화', '등록', 'props',
+        '이벤트', '컴포넌트 v-model', '풀스루 속성', '슬롯', 'provide / inject',
+        '비동기 컴포넌트'
+      ],
+      rightSideItems: [
+        { title: 'Vue는 무엇일까요?' },
+        { title: '프로그레시브 프레임워크' },
+        { title: '싱글 파일 컴포넌트' },
+        { title: 'API 스타일' },
+        { title: '여전히 궁금한 것이 있나요?', subtitle: '니가 직접 알아보세요!' }
+      ],
     };
   },
-  methods: {
-    // 컴포넌트 메소드
-  },
-  // 필요한 경우 컴포넌트 라이프사이클 훅 등을 포함할 수 있습니다.
 };
 </script>
 
 <style scoped>
-.deep-blue {
-  background-color: #1E2D3D;
+.font-weight-bold {
+  font-weight: bold;
 }
-
-/* 추가 스타일링이 필요하면 여기에 정의하세요 */
-.v-card--outlined {
-  box-shadow: none; /* 카드 경계선만 표시하고 그림자는 제거 */
-}
-
-/* 패딩 추가로 카드 내용을 좀 더 넓게 표시 */
-.v-card--outlined .v-card__text {
-  padding: 16px; /* 내부 패딩을 늘립니다 */
+.headline {
+  font-size: 1.5rem;
+  font-weight: bold;
 }
 </style>
