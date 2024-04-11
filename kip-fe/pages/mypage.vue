@@ -23,10 +23,10 @@
               <v-card-title class="text-h5">Change Profile</v-card-title>
               <v-card-text class="text-center flex-grow-1">
                 <v-avatar size="120" class="mx-auto my-4">
-                  <img :src="profilePhotoUrl" alt="profile" />
+                  <img :src="profilePhotoUrl || '/default-profile.png'" alt="profile" />
                 </v-avatar>
-                <v-btn color="primary" class="ma-2">Upload</v-btn>
-                <v-btn color="error" class="ma-2">Reset</v-btn>
+                <v-btn color="primary" class="ma-2" @click="uploadPhoto">Upload</v-btn>
+                <v-btn color="error" class="ma-2" @click="resetPhoto">Reset</v-btn>
                 <div class="caption">Allowed JPG, GIF or PNG. Max size of 800K</div>
               </v-card-text>
             </v-card>
@@ -66,8 +66,8 @@
                 ></v-text-field>
               </v-card-text>
               <v-card-actions class="justify-end mt-auto">
-                <v-btn color="primary">Save</v-btn>
-                <v-btn color="grey">Cancel</v-btn>
+                <v-btn color="primary" @click="saveDetails">Save</v-btn>
+                <v-btn color="grey" @click="cancelEdit">Cancel</v-btn>
               </v-card-actions>
             </v-card>
           </v-col>
@@ -81,18 +81,19 @@
               <v-card-text>
                 <v-row>
                   <v-col cols="12" md="6">
-                    <v-text-field label="Your Name" outlined dense></v-text-field>
-                    <v-text-field label="Store Name" outlined dense></v-text-field>
+                    <v-text-field label="Your Name" outlined dense v-model="userInfo.name"></v-text-field>
+                    <!-- employeeId 를 읽기 전용으로 추가 -->
+                    <v-text-field label="Employee ID" outlined dense v-model="userInfo.employeeId" readonly></v-text-field>
                   </v-col>
                   <v-col cols="12" md="6">
-                    <v-text-field label="Email" outlined dense></v-text-field>
-                    <v-text-field label="Phone" outlined dense></v-text-field>
+                    <v-text-field label="Email" outlined dense v-model="userInfo.email"></v-text-field>
+                    <v-text-field label="Phone" outlined dense v-model="userInfo.phoneNumber"></v-text-field>
                   </v-col>
                 </v-row>
               </v-card-text>
               <v-card-actions class="justify-end">
-                <v-btn color="primary">Save</v-btn>
-                <v-btn color="grey">Cancel</v-btn>
+                <v-btn color="primary" @click="updateUserDetails">Save</v-btn>
+                <v-btn color="grey" @click="cancelEdit">Cancel</v-btn>
               </v-card-actions>
             </v-card>
           </v-col>
@@ -103,10 +104,13 @@
 </template>
 
 <script>
+import { useUser } from "@/stores/user";
+import { ref, onMounted } from 'vue';
+
 export default {
   data() {
     return {
-      profilePhotoUrl: '', // 프로필 사진 URL을 여기에 추가하세요
+      profilePhotoUrl: '',
       showPassword: false,
       password: {
         current: '',
@@ -115,76 +119,60 @@ export default {
       },
     };
   },
-  methods: {
-    uploadPhoto() {
+  setup() {
+    const userStore = useUser();
+    const userInfo = ref(userStore.userInfo);
+
+    onMounted(async () => {
+      if (!userStore.userInfo.name) {
+        await userStore.fetchUserInfo();
+      }
+      userInfo.value = { ...userStore.userInfo };
+    });
+
+    const updateUserDetails = () => {
+      userStore.updateUserInfo({
+        name: userInfo.value.name,
+        email: userInfo.value.email,
+        phoneNumber: userInfo.value.phoneNumber,
+      }).then(() => {
+        alert("User details updated successfully.");
+      }).catch((error) => {
+        console.error("Failed to update user details:", error);
+        alert("Failed to update user details.");
+      });
+    };
+
+    const uploadPhoto = () => {
       // 사진 업로드 로직 처리
-    },
-    resetPhoto() {
+    };
+
+    const resetPhoto = () => {
       // 사진을 기본값으로 리셋
-    },
-    saveDetails() {
-      // 개인 정보 저장
-    },
-    cancelEdit() {
+    };
+
+    const saveDetails = () => {
+      // 비밀번호 변경 로직 처리
+    };
+
+    const cancelEdit = () => {
       // 편집 취소
-    },
-    showPasswordToggle() {
+    };
+
+    const showPasswordToggle = () => {
       // 비밀번호 보기 토글
       this.showPassword = !this.showPassword;
-    },
+    };
+
+    return {
+      userInfo,
+      updateUserDetails,
+      uploadPhoto,
+      resetPhoto,
+      saveDetails,
+      cancelEdit,
+      showPasswordToggle,
+    };
   },
 };
 </script>
-
-<style scoped>
-.caption {
-  text-align: center;
-  color: rgba(0, 0, 0, 0.6);
-}
-
-.ma-2 {
-  margin: 8px;
-}
-
-.v-avatar.my-4 {
-  margin-top: 16px;
-  margin-bottom: 16px;
-}
-
-.v-btn.ma-2 {
-  margin-top: 8px;
-  margin-bottom: 8px;
-}
-
-.v-card-actions.justify-end {
-  justify-content: flex-end;
-}
-
-.v-card-text.flex-grow-1 {
-  flex-grow: 1;
-}
-
-.v-container {
-  max-width: 960px;
-  margin: auto;
-}
-
-@media (min-width: 1264px) {
-  .v-container {
-    max-width: 85%;
-  }
-}
-
-/* Make sure the buttons are aligned at the bottom of the cards */
-.v-card-actions {
-  margin-top: auto;
-}
-
-/* Adjust the card title size */
-.v-card-title {
-  font-size: 1.25rem;
-  font-weight: bold;
-}
-
-/* Additional styles can be placed here */
-</style>

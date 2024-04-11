@@ -47,6 +47,7 @@ console.log(group.getMyGroupNamesAndId,"그룹리스트")
         <NuxtLink to="/practice">
           <v-list-item prepend-icon="mdi-arm-flex" title="JiYoung3" value="JiYoung3" class="left__nav__list"/>
         </NuxtLink>
+
       </v-list>
       <v-list density="compact" v-for="item in group.getMyGroupNamesAndId" :key="item.groupId">
         <NuxtLink :to="`/group/${item.groupId}`">
