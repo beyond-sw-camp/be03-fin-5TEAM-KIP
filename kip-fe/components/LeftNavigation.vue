@@ -23,15 +23,15 @@ const handleRailClick = () => {
           variant="text"
           @click="handleRailClick"
       />
-      <v-list density="compact" nav>
+      <v-list density="compact">
         <NuxtLink to="/posts">
-          <v-list-item prepend-icon="mdi-note" title="POSTING" value="shared"/>
+          <v-list-item prepend-icon="mdi-note" title="POSTING" value="shared" class="left__nav__list"/>
         </NuxtLink>
         <NuxtLink to="/comments">
-          <v-list-item prepend-icon="mdi-comment" title="COMMENTS" value="COMMENTS"/>
+          <v-list-item prepend-icon="mdi-comment" title="COMMENTS" value="COMMENTS" class="left__nav__list"/>
         </NuxtLink>
         <NuxtLink to="/kip">
-          <v-list-item prepend-icon="mdi-store-cog" title="KIP" value="kip"/>
+          <v-list-item prepend-icon="mdi-store-cog" title="KIP" value="kip" class="left__nav__list"/>
         </NuxtLink>
       </v-list>
     </v-sheet>
@@ -40,5 +40,9 @@ const handleRailClick = () => {
 <style>
 .left__nav__sheet {
 color: var(--primary-color);
+}
+
+.left__nav__list {
+  padding-left: 10px !important;
 }
 </style>

@@ -132,6 +132,8 @@ const handleRailClick = () => {
   background-color: white;
   margin-top: 0.8vw;
   margin-bottom: 0.8vw;
+  margin-left: 0.6vw;
+
   border-radius: 20px !important;
   overflow: hidden;
 }
