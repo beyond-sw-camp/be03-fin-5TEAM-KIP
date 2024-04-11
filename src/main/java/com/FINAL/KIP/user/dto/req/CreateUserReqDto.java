@@ -7,6 +7,7 @@ import lombok.Getter;
 import lombok.Setter;
 
 import java.time.LocalDateTime;
+import java.util.concurrent.ThreadLocalRandom;
 
 
 @Setter
@@ -26,7 +27,8 @@ public class CreateUserReqDto {
                 .email(this.email)
                 .phoneNumber(this.phoneNumber)
                 .password(this.password)
-                .profileImageUrl(this.profileImageUrl)
+//                .profileImageUrl(this.profileImageUrl) 임시로 랜덤이미지
+                .profileImageUrl("https://picsum.photos/"+ ThreadLocalRandom.current().nextInt(49, 61))
                 .employedDay(this.employedDay)
                 .employeeId(this.employeeId)
                 .role(Role.USER)
