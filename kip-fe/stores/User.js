@@ -75,6 +75,7 @@ export const useUser = defineStore("user", {
                     } catch (e) {
                         console.log(e, '유저정보 가져오기 실패')
                     }
+                await useRouter().push('/kip');
             }
         },
 
@@ -95,7 +96,8 @@ export const useUser = defineStore("user", {
                     window.localStorage.removeItem('accessToken');
                     window.localStorage.removeItem('CartStore:items');
                 }
-                useRouter().push('/');
+                await useRouter().push('/');
+
             } catch (e) {
                 console.log(e, '로그아웃 실패')
             }
