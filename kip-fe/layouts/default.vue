@@ -95,7 +95,7 @@ const handleRailClick = () => {
                 class="cursor-pointer"/>
           </template>
           <v-list>
-            <v-list-item @click="useRouter().push('/kip');">
+            <v-list-item @click="useRouter().push('/mypage');">
               <template v-slot:prepend>
                 <v-icon icon="mdi-information-box-outline"/>
               </template>
