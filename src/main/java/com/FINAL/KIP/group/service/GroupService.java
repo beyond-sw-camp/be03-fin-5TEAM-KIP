@@ -76,7 +76,7 @@ public class GroupService {
 
 
     //  Read
-    @JustAdmin
+    @UserAdmin
     public GroupResDto getGroupInfoById(Long groupId) {
         Group group = getGroupById(groupId);
         return new GroupResDto(group);
@@ -118,7 +118,12 @@ public class GroupService {
         Group group = getGroupById(dto.getGroupId());
         group.setGroupName(dto.getGroupName());
         group.setGroupType(dto.getGroupType());
-        group.setSuperGroup(getGroupById(dto.getSupperGroupId()));
+
+        // 상위그룹을 null 로 처리할 때 실행되는 함수 .
+        Optional.ofNullable(dto.getSupperGroupId())
+                .map(this::getGroupById)
+                .ifPresent(group::setSuperGroup);
+
         return new GroupResDto(groupRepo.save(group));
     }
 

@@ -55,7 +55,7 @@ public class UserService {
     }
 
 //    Create
-    @UserAdmin
+    @JustAdmin
     public UserResDto createUser(CreateUserReqDto dto) {
         dto.setPassword(passwordEncoder.encode(dto.makeUserReqDtoToUser().getPassword())); // 비밀번호 암호화
         User user = dto.makeUserReqDtoToUser();
@@ -63,7 +63,7 @@ public class UserService {
         return new UserResDto(savedUser);
     }
 
-    @UserAdmin
+    @JustAdmin
     public List<UserResDto> createUsers(List<CreateUserReqDto> dtos) {
         for (CreateUserReqDto createUserReqDto : dtos) {
             createUserReqDto.setPassword(
