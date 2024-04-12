@@ -4,7 +4,6 @@ const user = useUser();
 export const useGroup = defineStore("group", {
     state() {
         return {
-            accessToken: user.getAccessToken,
             myGroupsInfo: [],
         };
     },
@@ -35,7 +34,7 @@ export const useGroup = defineStore("group", {
             const response =
                 await fetch(`${BASE_URL}/group/mygroups`, {
                     method: 'GET',
-                    headers: {'Authorization': 'Bearer ' + this.accessToken},
+                    headers: {'Authorization': 'Bearer ' + user.getAccessToken},
                 });
             this.myGroupsInfo = await response.json();
         }
