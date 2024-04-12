@@ -1,83 +1,135 @@
-<script setup lang="ts">
+<script setup>
 import { VTreeview } from 'vuetify/labs/VTreeview'
+import {id} from "vuetify/locale";
+
+const open = ref([1, 2]);
 const items = ref([
   {
     id: 1,
-    title: 'Applications :',
-    children: [
-      { id: 2, title: 'Calendar : app' },
-      { id: 3, title: 'Chrome : app' },
-      { id: 4, title: 'Webstorm : app' },
-    ],
-  },
-  {
-    id: 5,
-    title: 'Documents :',
+    title: 'Vuetify Human Resources',
     children: [
       {
-        id: 6,
-        title: 'vuetify :',
+        id: 205,
+        title: 'Andrew',
+      },
+
+        {
+        id: 2,
+        title: 'Core team',
         children: [
           {
-            id: 7,
-            title: 'src :',
+            id: 201,
+            title: 'John',
             children: [
-              { id: 8, title: 'index : ts' },
-              { id: 9, title: 'bootstrap : ts' },
+              {
+                id: 201,
+                title: 'John',
+              },
+              {
+                id: 202,
+                title: 'Kael',
+              },
+              {
+                id: 203,
+                title: 'Nekosaur',
+              },
+              {
+                id: 204,
+                title: 'Jacek',
+              },
+              {
+                id: 205,
+                title: 'Andrew',
+              },
             ],
+          },
+          {
+            id: 202,
+            title: 'Kael',
+          },
+          {
+            id: 203,
+            title: 'Nekosaur',
+          },
+          {
+            id: 204,
+            title: 'Jacek',
+          },
+          {
+            id: 205,
+            title: 'Andrew',
           },
         ],
       },
       {
-        id: 10,
-        title: 'material2 :',
+        id: 3,
+        title: 'Administrators',
         children: [
           {
-            id: 11,
-            title: 'src :',
-            children: [
-              { id: 12, title: 'v-btn : ts' },
-              { id: 13, title: 'v-card : ts' },
-              { id: 14, title: 'v-window : ts' },
-            ],
+            id: 301,
+            title: 'Mike',
+          },
+          {
+            id: 302,
+            title: 'Hunt',
+          },
+        ],
+      },
+      {
+        id: 4,
+        title: 'Contributors',
+        children: [
+          {
+            id: 401,
+            title: 'Phlow',
+          },
+          {
+            id: 402,
+            title: 'Brandon',
+          },
+          {
+            id: 403,
+            title: 'Sean',
           },
         ],
       },
     ],
   },
-  {
-    id: 15,
-    title: 'Downloads :',
-    children: [
-      { id: 16, title: 'October : pdf' },
-      { id: 17, title: 'November : pdf' },
-      { id: 18, title: 'Tutorial : html' },
-    ],
-  },
-  {
-    id: 19,
-    title: 'Videos :',
-    children: [
-      {
-        id: 20,
-        title: 'Tutorials :',
-        children: [
-          { id: 21, title: 'Basic layouts : mp4' },
-          { id: 22, title: 'Advanced techniques : mp4' },
-          { id: 23, title: 'All about app : dir' },
-        ],
-      },
-      { id: 24, title: 'Intro : mov' },
-      { id: 25, title: 'Conference introduction : avi' },
-    ],
-  },
-]);
+])
+const group = useGroup();
+await group.setHierarchyInfo();
+const groups = group.getHierarchyInfo;
+
+const clicked = ref("hi");
 </script>
 
-
 <template>
-  <v-treeview :items="items" color="red" activatable>
-  </v-treeview>
+  <v-card
+      class="mx-auto"
+      max-width="400"
+  >
+    <v-card-text>
+      <v-treeview
+          v-model:open="open"
+          :filter="filter"
+          :items="groups"
+      >
+        <template v-slot:prepend="{ item }">
+          <v-icon
+              v-if="item.children"
+              :icon="`mdi-${item.children.length === 0
+              ? 'account-group' : 'folder-network'}`"
+              @click="clicked = item.id"
+          ></v-icon>
+        </template>
+        <template v-slot:title="{ item }">
+          <div @click="clicked = item.id">{{item.title}}
+          </div>
+        </template>
+      </v-treeview>
+    </v-card-text>
+  </v-card>
+  {{clicked}}
 </template>
 
 <style scoped>
