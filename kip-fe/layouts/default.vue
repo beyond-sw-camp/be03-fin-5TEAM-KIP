@@ -131,8 +131,6 @@ const handleRailClick = () => {
 </template>
 
 <style>
-/* 공통컬러 불러오기 */
-@import '../assets/css/color.css';
 
 /* 좌측 메뉴 관련 CSS */
 .v-navigation-drawer__content {
