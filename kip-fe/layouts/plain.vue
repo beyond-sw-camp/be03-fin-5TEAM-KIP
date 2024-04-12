@@ -3,7 +3,7 @@
 </script>
 
 <template>
-<slot></slot>
+  <NuxtPage/>
 </template>
 
 <style scoped>

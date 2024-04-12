@@ -29,7 +29,8 @@ const handleRailClick = () => {
         :color="color.kipMainColor"
         v-model="drawer"
         :rail="rail"
-        width="240"
+        rail-width="71"
+        width="250"
         permanent>
       <LeftNavigation @railEvent="handleRailClick"/>
     </v-navigation-drawer>
@@ -123,7 +124,7 @@ const handleRailClick = () => {
     <!--  메인 페이지  -->
     <v-main>
       <div class="main__sheet">
-        <slot></slot>
+        <nuxt-page/>
       </div>
     </v-main>
 
@@ -137,7 +138,7 @@ const handleRailClick = () => {
   background-color: white;
   margin-top: 0.8vw;
   margin-bottom: 0.8vw;
-  margin-left: 0.6vw;
+  margin-left: 0.8vw;
   border-radius: 20px !important;
   overflow: hidden;
 }
