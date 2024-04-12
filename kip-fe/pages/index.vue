@@ -61,8 +61,6 @@ const color = useColor();
 </template>
 
 <style>
-/* 공통컬러 불러오기 */
-@import '../assets/css/color.css';
 
 .login__sheet{
   background-color: var(--primary-color) !important;
