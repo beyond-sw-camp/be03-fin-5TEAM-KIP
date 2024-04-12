@@ -1,11 +1,20 @@
 <script setup>
 import { VTreeview } from 'vuetify/labs/VTreeview'
 
-const open = ref([1, 2]);
+// 피니아
 const group = useGroup();
+const color = useColor();
+
+// 데이터 세팅
 await group.setHierarchyInfo();
 const groups = group.getHierarchyInfo;
-const clicked = ref("hi");
+const open = ref([1, 2]);
+const clickedGroupId = ref(1);
+
+const setGroupUsersInfo = (groupId) => {
+  clickedGroupId.value = groupId
+  group.setGroupUsersInfo(groupId);
+}
 
 </script>
 
@@ -19,17 +28,18 @@ const clicked = ref("hi");
           v-model:open="open"
           :filter="filter"
           :items="groups"
+          color=""
       >
         <template v-slot:prepend="{ item }">
           <v-icon
               v-if="item.children"
               :icon="`mdi-${item.children.length === 0
               ? 'account-group' : 'folder-network'}`"
-              @click="clicked = item.id"
+              @click="setGroupUsersInfo( item.id)"
           ></v-icon>
         </template>
         <template v-slot:title="{ item }">
-          <div @click="clicked = item.id">{{item.title}}
+          <div @click="setGroupUsersInfo( item.id)">{{item.title}}
           </div>
         </template>
       </v-treeview>
