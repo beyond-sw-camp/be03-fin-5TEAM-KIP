@@ -1,5 +1,4 @@
 <script setup>
-
 await useUser().setUserInfoAndTokenToPiniaFromLocalStorage();
 useProduct().fill();
 useCart().fetchItemsFromLocalStorage(); // 로컬스토리지에서 가지고옴.
@@ -17,18 +16,6 @@ useHead({
   </NuxtLayout>
 </template>
 
-<!-- 전역 스타일 -->
-<style>
-::-webkit-scrollbar {
-  display: none; /* Chrome, Safari */
-}
-
-a {
-  color: inherit;
-  text-decoration: none;
-}
-
-</style>
 
 <!-- v-container 프론트 반응형 1 단위 -->
 <!-- xl 1920(160px) => 1800(150px) -->

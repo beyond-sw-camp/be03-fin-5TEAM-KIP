@@ -106,4 +106,25 @@ export const useUser = defineStore("user", {
             }
         },
     },
+
+    // updateUserInfo 메소드와 마이페이지 컴포넌트의 입력 필드에 v-model을 적용 mypage
+
+    async updateUserInfo(updatedInfo) {
+        try {
+            const response = await fetch(`${BASE_URL}/user`, {
+                method: 'PATCH',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${this.accessToken}`,
+                },
+                body: JSON.stringify(updatedInfo),
+            });
+            if (!response.ok) throw new Error('Failed to update user info');
+            const updatedUserData = await response.json();
+            this.userInfo = updatedUserData.result; // 업데이트된 사용자 정보로 상태 업데이트
+        } catch (e) {
+            console.error('Update user info failed', e);
+            // 에러 처리 로직
+        }
+    },
 });
