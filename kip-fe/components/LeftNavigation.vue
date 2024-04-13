@@ -1,6 +1,6 @@
 <script setup>
-
 // 왼쪽 네비게이션 오른쪽으로 확장 축소 하는 코드.
+
 const rail = ref(true);
 const emit = defineEmits(["railEvent"]);
 const handleRailClick = () => {
@@ -13,7 +13,6 @@ const group = useGroup();
 await group.$reset(); // 그룹정보 리셋 후 다시 세팅
 await group.setMyGroupsInfo();  // (awit) 그룹정보를 모두 가지고 온뒤 넘어감
 console.log(group.getMyGroupNamesAndId,"그룹리스트")
-
 
 </script>
 
@@ -47,9 +46,10 @@ console.log(group.getMyGroupNamesAndId,"그룹리스트")
         <NuxtLink to="/practice">
           <v-list-item prepend-icon="mdi-arm-flex" title="JiYoung3" value="JiYoung3" class="left__nav__list"/>
         </NuxtLink>
-        <NuxtLink to="/mypage_test">
-          <v-list-item prepend-icon="mdi-arm-flex" title="JiYoung3" value="JiYoung3" class="left__nav__list"/>
+        <NuxtLink to="/mypage-test">
+          <v-list-item prepend-icon="mdi-arm-flex" title="test123" value="test123" class="left__nav__list"/>
         </NuxtLink>
+
       </v-list>
       <v-list density="compact" v-for="item in group.getMyGroupNamesAndId" :key="item.groupId">
         <NuxtLink :to="`/group/${item.groupId}`">
