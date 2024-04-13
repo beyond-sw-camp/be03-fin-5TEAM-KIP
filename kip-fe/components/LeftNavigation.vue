@@ -47,7 +47,10 @@ console.log(group.getMyGroupNamesAndId,"그룹리스트")
           <v-list-item prepend-icon="mdi-arm-flex" title="JiYoung3" value="JiYoung3" class="left__nav__list"/>
         </NuxtLink>
         <NuxtLink to="/mypage-test">
-          <v-list-item prepend-icon="mdi-arm-flex" title="test123" value="test123" class="left__nav__list"/>
+          <v-list-item prepend-icon="mdi-arm-flex" title="mypage-test" value="mypage-test" class="left__nav__list"/>
+        </NuxtLink>
+        <NuxtLink to="/mypage-test2">
+          <v-list-item prepend-icon="mdi-arm-flex" title="mypage-test" value="mypage-test" class="left__nav__list"/>
         </NuxtLink>
 
       </v-list>

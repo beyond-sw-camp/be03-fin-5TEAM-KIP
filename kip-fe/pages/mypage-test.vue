@@ -4,8 +4,8 @@ const bookmarks = useBookMarks();
 
 await bookmarks.$reset();
 await bookmarks.setMyBookMarks();
-console.log(bookmarks.getMyBookMarkTitlesAndId,"북마크 리스트")
 
+console.log(bookmarks.getMyBookMarksDetails, "북마크 리스트")
 </script>
 
 <template>
@@ -24,12 +24,12 @@ console.log(bookmarks.getMyBookMarkTitlesAndId,"북마크 리스트")
             <v-card outlined class="pa-4">
               <v-card-title class="text-h5">Your BookMarks</v-card-title>
 <!--               BookMarks 내용 추가 -->
-              <v-list dense v-for="book in bookmarks.getMyBookMarkTitlesAndId" :key="book.bookId">
-                <NuxtLink :to="`/user/book/${book.bookId}`">
+              <v-list dense v-for="book in bookmarks.getMyBookMarksDetails" :key="book.documentId">
+                <NuxtLink :to="`/user/book/${book.documentId}`">
                   <v-list-item>
                     <v-list-item-content>
-                      <v-list-item-title>{{ book.bookTitle }}</v-list-item-title>
-                      <v-list-item-title>{{ book.bookTitle }}</v-list-item-title>
+                      <v-list-item-title>{{ book.title }}</v-list-item-title>
+                      <v-list-item-subtitle>{{ book.groupName }}</v-list-item-subtitle>
                     </v-list-item-content>
                   </v-list-item>
                 </NuxtLink>

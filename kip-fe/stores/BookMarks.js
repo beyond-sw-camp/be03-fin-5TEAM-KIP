@@ -9,11 +9,12 @@ export const useBookMarks = defineStore("bookmarks", {
         };
     },
     getters: {
-        // getter를 수정하여 반환 형식을 맞춤
-        getMyBookMarkTitlesAndId(state){
+        // getter를 업데이트하여 모든 정보를 반환
+        getMyBookMarksDetails(state){
             return state.myBookMarks.map(book => ({
-                bookId: book[0],       // 첫 번째 요소가 bookId
-                bookTitle: book[1]     // 두 번째 요소가 bookTitle
+                documentId: book.documentId,  // 문서 ID
+                title: book.title,            // 제목
+                groupName: book.groupName     // 그룹 이름
             }))
         },
     },
@@ -24,14 +25,8 @@ export const useBookMarks = defineStore("bookmarks", {
                 method: 'GET',
                 headers: {'Authorization': 'Bearer ' + this.accessToken},
             });
-            const data = await response.json();
-            // 서버에서 받은 데이터 구조에 맞추어 myBookMarks를 설정
-            if (data.status === "OK") {
-                this.myBookMarks = data.result;
-            } else {
-                console.error('Failed to load bookmarks:', data.message);
-                this.myBookMarks = []; // 에러가 발생했을 경우 목록을 비움
-            }
+            this.myBookMarks = await response.json();
+
         }
     }
 });
