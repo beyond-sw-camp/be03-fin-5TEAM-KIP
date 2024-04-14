@@ -3,7 +3,12 @@ definePageMeta({
   layout: "plain"
 })
 
-const empolyeeIdInput = ref();
+onMounted(() => {
+  console.log('Component is mounted')
+});
+
+const empolyeeIdInput = ref("");
+const passwordInput = ref("");
 
 // Stores
 const user = useUser();
@@ -11,68 +16,108 @@ const color = useColor();
 
 async function handleSubmit(data) {
   user.login(data.empolymentId, data.password)
-  await wait(2000);
+  await wait(2000); // 2초 대기
   await useRouter().push('/kip');
 }
 
 // DB에 존재하는 ID 인지 검사.
 async function id_check(employeeId) {
-  user.isExistId = false
-  let regex = /^k-\d{10}$/;  // 정규식과 일치할때만 서버에 요청하여 검사
-  if(regex.test(employeeId.value))
+  user.isExistId = false // 검사 전에 초기화
+  user.isCorrectPassword = false
+  // 정규식과 일치할때만 서버에 요청하여 검사
+  if (id_Regex(employeeId))
     await user.isExistEmployeeId(employeeId)
   else return true; // 정규식 오류 메시지를 불러오기위해 항상 true로 놓음.
   return user.getIsExistId;
 }
+
+function id_Regex(employeeId) {
+  // 사번 정규식 적는곳
+  return /^k-\d{10}$/.test(employeeId.value);
+}
+
+// 비밀번호 체크 관련함수.
+async function pass_check(password) {
+  user.isCorrectPassword = false // 검사전에 초기화
+  if (password_Regex(password))
+    await user.isPasswordCorrect(empolyeeIdInput.value, password.value)
+  else return true
+  return user.getIsCorrectPassword;
+}
+
+function password_Regex(password) {
+  // 비밀번호 정규식 넣는 곳.
+  return /^\d{4}$/.test(password.value);
+}
+
+
+// 잇풋 값이 아무것도 없을때 초기화
+watch(empolyeeIdInput, handleEmptyInput);
+watch(passwordInput, handleEmptyInput);
+function handleEmptyInput() {
+  if (empolyeeIdInput.value === "" ){
+    user.isExistId = false;
+    user.isCorrectPassword = false
+  }
+  if (passwordInput.value === "")
+    user.isCorrectPassword = false
+}
+
+
 </script>
-
-
 
 <template>
   <v-sheet class="login__sheet">
     <v-container class="login__container">
-      <v-card
-          class="login__card mx-auto pa-13 pb-5 mb-5"
-          elevation="18"
-          min-width="400"
-          min-height="500">
-        <v-img
-            class="mx-auto"
-            max-width="20vh"
-            src="/images/logos/kiplogo.svg"/>
+        <v-card
+            class="login__card mx-auto"
+            elevation="18"
+            min-width="400"
+            min-height="500">
 
-        <FormKit
-            type="form"
-            submit-behavior="live"
-            submit-label=" 환영합니다"
-            :actions="user.getIsExistId && empolyeeIdInput.length === 12"
-            @submit="handleSubmit">
+          <div class="login__box">
 
-          <!--아이디 입력 받는 부분 -->
+          <v-img
+              class="login__image"
+              width="20vw"
+              src="/images/logos/kiplogo.svg"/>
+
           <FormKit
-              v-model="empolyeeIdInput"
-              placeholder="Empolyment ID"
-              validation="id_check|matches:/^k-\d{10}$/"
-              validation-visibility="live"
-              :validation-rules="{id_check}"
-              type="text"
-              name="empolymentId"/>
+              type="form"
+              submit-behavior="live"
+              :submit-label="` ${user.getJustUserName}님 환영합니다 `"
+              :actions="user.getIsCorrectPassword"
+              @submit="handleSubmit">
 
-          <!--비밀번호 입력 받는 부분 길이도 12, 존재도 해야 열림-->
-          <FormKit
-              v-if="user.getIsExistId && empolyeeIdInput.length === 12"
-              placeholder="Password"
-              type="password"
-              name="password"/>
+            <!--아이디 입력 받는 부분 -->
+            <FormKit
+                v-model="empolyeeIdInput"
+                placeholder="Empolyment ID"
+                validation="id_check|matches:/^k-\d{10}$/"
+                validation-visibility="live"
+                :validation-rules="{id_check}"
+                type="text"
+                name="empolymentId"/>
 
-        </FormKit>
+            <!--비밀번호 입력 받는 부분-->
+            <FormKit
+                v-model="passwordInput"
+                v-if="user.getIsExistId"
+                placeholder="Password"
+                validation="pass_check|password_Regex"
+                validation-visibility="live"
+                :validation-rules="{pass_check, password_Regex}"
+                type="password"
+                name="password"/>
 
-      </v-card>
+          </FormKit>
+          </div>
+        </v-card>
     </v-container>
   </v-sheet>
 </template>
 
-<style>
+<style scoped>
 
 .login__sheet {
   background-color: var(--primary-color) !important;
@@ -87,7 +132,32 @@ async function id_check(employeeId) {
 }
 
 .login__card {
+  display: flex;
+  justify-content: center;
+  align-items: center;
   width: 43%;
   border-radius: 20px !important;
+  padding-top: 4vw ;
+  padding-bottom: 3vw ;
+}
+
+.login__box {
+  display: flex;
+  flex-direction: column;
+  justify-content: start;
+  align-items: center;
+  width: 80%;
+}
+
+.formkit-form {
+  flex-direction: column;
+  justify-content: start;
+  align-items: end;
+  width: 320px;
+  height: 160px;
+}
+
+.login__image {
+  margin-bottom: 4vw;
 }
 </style>

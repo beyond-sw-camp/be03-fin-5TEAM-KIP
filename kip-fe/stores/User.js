@@ -7,11 +7,19 @@ export const useUser = defineStore("user", {
             userInfo: {},
             isLoggedIn: false,
             isExistId: false,
+            isCorrectPassword: false,
+            justUserName: "",
         };
     },
     getters: {
         getIsExistId(state) {
             return state.isExistId;
+        },
+        getIsCorrectPassword(state) {
+            return state.isCorrectPassword;
+        },
+        getJustUserName(state) {
+            return state.justUserName;
         },
         getAccessToken(state) {
             return state.accessToken;
@@ -41,15 +49,18 @@ export const useUser = defineStore("user", {
         },
 
         // DB 아이디와 패스워드가 일치하면 이름을 리턴하는 요청
-        async isPasswordCorrect({employeeId, password}) {
+        async isPasswordCorrect(employeeId, password) {
             try {
                 const response = await fetch(`${BASE_URL}/user/check`, {
-                    method: 'GET',
+                    method: 'POST',
                     headers: {'Content-Type': 'application/json'},
                     body: JSON.stringify({employeeId, password}),
                 });
+                const result = await response.json();
+                this.isCorrectPassword = result.isValid;
+                this.justUserName = result.userName;
             } catch (e) {
-                console.log(e, "패스워드 조사 실패")
+                console.log(e, "패스워드 검사 후 이름 불러오기 실패")
             }
         },
 

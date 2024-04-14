@@ -10,7 +10,10 @@ const config: DefaultConfigOptions = {
         en: {
             validation: {
                 id_check: '존재하지 않는 사번 입니다.',
-                matches: '사번은 k-(10자리 숫자) 형식 입니다.'
+                matches: '사번은 k-(10자리 숫자) 형식 입니다.',
+                pass_check: '잘못된 비밀번호 입니다.',
+                password_Regex: '패스워드는 4자리 숫자 입니다.'
+
             }
         }
     },
