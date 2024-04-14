@@ -21,6 +21,7 @@ async function handleSubmit(data) {
           validation="required|matches:/^k-{a-zA-Z]+$/|length:5"
           value="k-"
           prefix-icon="avatarMan"
+          suffix-icon="avatarMan"
           inner-class="mycustom-inner"
           input-class="hi"
       />

@@ -3,10 +3,7 @@ definePageMeta({
   layout: "plain"
 })
 
-onMounted(() => {
-  console.log('Component is mounted')
-});
-
+const visible = ref(false);
 const empolyeeIdInput = ref("");
 const passwordInput = ref("");
 
@@ -16,7 +13,7 @@ const color = useColor();
 
 async function handleSubmit(data) {
   user.login(data.empolymentId, data.password)
-  await wait(2000); // 2초 대기
+  await wait(1200); // 2초 대기
   await useRouter().push('/kip');
 }
 
@@ -40,7 +37,8 @@ function id_Regex(employeeId) {
 async function pass_check(password) {
   user.isCorrectPassword = false // 검사전에 초기화
   if (password_Regex(password))
-    await user.isPasswordCorrect(empolyeeIdInput.value, password.value)
+    await user.isPasswordCorrect(
+        empolyeeIdInput.value, password.value)
   else return true
   return user.getIsCorrectPassword;
 }
@@ -54,8 +52,9 @@ function password_Regex(password) {
 // 잇풋 값이 아무것도 없을때 초기화
 watch(empolyeeIdInput, handleEmptyInput);
 watch(passwordInput, handleEmptyInput);
+
 function handleEmptyInput() {
-  if (empolyeeIdInput.value === "" ){
+  if (empolyeeIdInput.value === "") {
     user.isExistId = false;
     user.isCorrectPassword = false
   }
@@ -63,20 +62,18 @@ function handleEmptyInput() {
     user.isCorrectPassword = false
 }
 
-
 </script>
 
 <template>
   <v-sheet class="login__sheet">
     <v-container class="login__container">
-        <v-card
-            class="login__card mx-auto"
-            elevation="18"
-            min-width="400"
-            min-height="500">
+      <v-card
+          class="login__card mx-auto"
+          elevation="18"
+          min-width="400"
+          min-height="500">
 
-          <div class="login__box">
-
+        <div class="login__box">
           <v-img
               class="login__image"
               width="20vw"
@@ -104,15 +101,18 @@ function handleEmptyInput() {
                 v-model="passwordInput"
                 v-if="user.getIsExistId"
                 placeholder="Password"
+                :suffix-icon="visible ? 'eye' : 'eyeClosed'"
+                @suffix-icon-click="visible = !visible"
+                suffix-icon-class="hover:text-blue-500"
                 validation="pass_check|password_Regex"
                 validation-visibility="live"
                 :validation-rules="{pass_check, password_Regex}"
-                type="password"
+                :type="visible ? 'text' : 'password'"
                 name="password"/>
 
           </FormKit>
-          </div>
-        </v-card>
+        </div>
+      </v-card>
     </v-container>
   </v-sheet>
 </template>
@@ -135,10 +135,10 @@ function handleEmptyInput() {
   display: flex;
   justify-content: center;
   align-items: center;
-  width: 43%;
+  width: 46%;
   border-radius: 20px !important;
-  padding-top: 4vw ;
-  padding-bottom: 3vw ;
+  padding-top: 4vw;
+  padding-bottom: 3vw;
 }
 
 .login__box {
@@ -156,7 +156,6 @@ function handleEmptyInput() {
   width: 320px;
   height: 160px;
 }
-
 .login__image {
   margin-bottom: 4vw;
 }
