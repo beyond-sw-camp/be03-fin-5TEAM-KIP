@@ -33,7 +33,6 @@ async function asyncValidtion(value: string) {
 
 function handleSubmit() {
   if (!valid.value) return;
-  console.log("submitting", form.value);
   emit("submit");
 }
 

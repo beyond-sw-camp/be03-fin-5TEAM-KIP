@@ -88,6 +88,16 @@ console.log(group.getMyGroupNamesAndId,"그룹리스트")
           variant="text"
           class="group__list"/>
 
+      <v-list-item
+          title="FormKitTest"
+          value="FormKit"
+          to="/FormKit"
+          prepend-icon="mdi-list-box-outline"
+          :color="color.kipMainColor"
+          rounded="xl"
+          variant="text"
+          class="group__list"/>
+
       <v-divider class="group__list"/>
 
       <!-- 부서목록 -->

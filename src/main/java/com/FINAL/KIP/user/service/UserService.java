@@ -244,4 +244,8 @@ public class UserService {
 
         return new ProfileImageResDto(user.getId(), user.getProfileImageUrl());
     }
+
+    public Boolean checkIfEmployeeIdExists(String employeeId) {
+        return userRepo.existsByEmployeeId(employeeId);
+    }
 }
