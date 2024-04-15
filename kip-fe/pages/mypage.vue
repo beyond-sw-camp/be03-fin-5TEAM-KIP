@@ -5,9 +5,7 @@
       <v-col>
         <v-tabs centered>
           <v-tab>Account</v-tab>
-          <v-tab>Notifications</v-tab>
-          <v-tab>Bills</v-tab>
-          <v-tab>Security</v-tab>
+          <v-tab>BookMark</v-tab>
         </v-tabs>
       </v-col>
     </v-row>
@@ -15,7 +13,7 @@
     <!-- 메인 컨텐츠 -->
     <v-row justify="center" class="my-5">
       <v-col cols="12" md="10" lg="8">
-        <!-- 프로필 변경 & 비밀번호 변경 -->
+          <!-- 프로필 변경 & 비밀번호 변경 -->
         <v-row>
           <!-- Change Profile -->
           <v-col cols="12" md="6">

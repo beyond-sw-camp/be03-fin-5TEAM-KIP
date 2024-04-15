@@ -14,4 +14,8 @@ public interface BookRepository extends JpaRepository<Book, Long> {
     @Query("SELECT b.document.id, b.title FROM Book b WHERE b.employeeId = :employeeId")
     List<Object[]> findDocumentIdAndTitleByEmployeeId(@Param("employeeId") String employeeId);
 
+    // employeeId로 groupName을 찾기 위한 쿼리 메소드
+    @Query("SELECT b.groupName FROM Book b WHERE b.employeeId = :employeeId")
+    List<String> findGroupNameByEmployeeId(@Param("employeeId") String employeeId);
+
 }

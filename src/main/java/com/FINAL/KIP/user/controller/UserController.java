@@ -6,6 +6,7 @@ import com.FINAL.KIP.securities.JwtTokenProvider;
 import com.FINAL.KIP.user.dto.req.CreateUserReqDto;
 import com.FINAL.KIP.user.dto.req.LoginReqDto;
 import com.FINAL.KIP.user.dto.req.UserInfoUpdateReqDto;
+import com.FINAL.KIP.user.dto.res.BookResDto;
 import com.FINAL.KIP.user.dto.res.ProfileImageResDto;
 import com.FINAL.KIP.user.dto.res.UserResDto;
 import com.FINAL.KIP.user.service.UserService;
@@ -104,21 +105,10 @@ public class UserController {
     }
 
     @GetMapping("/book/list")
-    public ResponseEntity<CommonResponse> userBookList() {
-        CommonResponse commonResponse = userService.userBookList();
-        return new ResponseEntity<>(commonResponse, HttpStatus.OK);
+    public ResponseEntity<List<BookResDto>> userBookList() {
+        List<BookResDto> bookResDto = userService.userBookList();
+        return new ResponseEntity<>(bookResDto, HttpStatus.OK);
     }
-
-
-//        User user = userService.login(loginReqDto);
-////        토큰 생성
-//        String jwtToken = jwtTokenProvider.createToken(user.getEmployeeId(), user.getRole().toString());
-//        Map<String, Object> user_info = new HashMap<>();
-//        user_info.put("id", user.getId());
-//        user_info.put("employeeId", user.getEmployeeId());
-//        user_info.put("token", jwtToken);
-//        return new ResponseEntity<>(new CommonResponse(HttpStatus.OK, "user successfully login", user_info), HttpStatus.OK);
-//    }
 
     // 프로필 이미지 업로드
     @PostMapping("/profile/upload")

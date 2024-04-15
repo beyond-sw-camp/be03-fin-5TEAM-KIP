@@ -6,6 +6,7 @@ import com.FINAL.KIP.bookmark.repository.BookRepository;
 import com.FINAL.KIP.common.aspect.UserAdmin;
 import com.FINAL.KIP.document.domain.Document;
 import com.FINAL.KIP.document.repository.DocumentRepository;
+import com.FINAL.KIP.group.repository.GroupRepository;
 import com.FINAL.KIP.user.domain.User;
 import com.FINAL.KIP.user.repository.UserRepository;
 import jakarta.persistence.EntityNotFoundException;
@@ -19,11 +20,13 @@ import java.util.List;
 @Service
 public class BookService {
     private final DocumentRepository documentRepository;
+    private final GroupRepository groupRepository;
     private final UserRepository userRepo;
     private final BookRepository bookRepository;
 
-    public BookService(DocumentRepository documentRepository, UserRepository userRepo, BookRepository bookRepository) {
+    public BookService(DocumentRepository documentRepository, GroupRepository groupRepository, UserRepository userRepo, BookRepository bookRepository) {
         this.documentRepository = documentRepository;
+        this.groupRepository = groupRepository;
         this.userRepo = userRepo;
         this.bookRepository = bookRepository;
     }
@@ -38,6 +41,7 @@ public class BookService {
         String employeeId = split[0];
         User user = userRepo.findByEmployeeId(employeeId).orElseThrow(() -> new EntityNotFoundException("user not found"));
 
+
         List<Book> bookList = bookRepository.findBooksByEmployeeIdAndDocumentId(employeeId, documentId);
         BookResDto bookResDto;
 
@@ -47,6 +51,7 @@ public class BookService {
                     .user(user)
                     .employeeId(employeeId)
                     .title(document.getTitle())
+                    .groupName(document.getGroup().getGroupName())
                     .build();
             bookRepository.save(book);
             bookResDto = BookResDto.builder()
