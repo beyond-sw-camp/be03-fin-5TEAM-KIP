@@ -5,6 +5,7 @@ export const useGroupuser = defineStore("groupuser", {
     state() {
         return {
             groupName: "",
+            groupType: "",
             usersInfoInGroup: [],
         };
     },
@@ -12,15 +13,11 @@ export const useGroupuser = defineStore("groupuser", {
         getGroupName(state) {
             return state.groupName;
         },
+        getGroupType(state) {
+            return state.groupType;
+        },
         getUsersInfoInGroup(state) {
-            // 역할순으로 정렬하고 역할이 같으면 이름순으로 정렬
             return state.usersInfoInGroup
-                .sort((a, b) => {
-                    const roleCompare = b.groupRole.localeCompare(a.groupRole)
-                    if (roleCompare === 0)
-                        return a.name.localeCompare(b.name);
-                    return roleCompare;
-                });
         },
 
     },
@@ -33,8 +30,17 @@ export const useGroupuser = defineStore("groupuser", {
                         headers: {'Authorization': 'Bearer ' + user.getAccessToken},
                     });
                 const temp = await response.json();
-                this.usersInfoInGroup = temp.userList;
                 this.groupName = temp.groupName;
+                this.groupType = temp.groupType;
+
+                // 역할순으로 정렬하고 역할이 같으면 이름순으로 정렬
+                this.usersInfoInGroup = temp.userList
+                    .sort((a, b) => {
+                        const roleCompare = b.groupRole.localeCompare(a.groupRole)
+                        if (roleCompare === 0)
+                            return a.name.localeCompare(b.name);
+                        return roleCompare;
+                    });
             } catch (e) {
                 console.log(e, "그룹에 속한 유저 정보 로드 실패")
             }
@@ -53,24 +59,19 @@ export const useGroupuser = defineStore("groupuser", {
                     .map(user => user.userId === updatedUserRole.userId
                         ? {...user, groupRole: updatedUserRole.groupRole}
                         : user)
-                    .sort((a, b) => {
-                        const roleCompare = b.groupRole.localeCompare(a.groupRole)
-                        if (roleCompare === 0)
-                            return a.name.localeCompare(b.name);
-                        return roleCompare;
-                    });
             } catch (e) {
                 console.log(e, "그룹에 속한 유저 역할 수정 실패")
             }
         },
         async deleteUserFromGroup(gruopId, userId) {
             try {
-                await fetch(`${BASE_URL}/group/${gruopId}/${userId}/delete`, {
+                const response = await fetch(`${BASE_URL}/group/${gruopId}/${userId}/delete`, {
                     method: 'DELETE',
                     headers: {'Authorization': 'Bearer ' + user.getAccessToken},
                 });
-                this.usersInfoInGroup = this.usersInfoInGroup
-                    .filter(user => user.userId !== userId);
+                if (response.ok)
+                    this.usersInfoInGroup = this.usersInfoInGroup
+                        .filter(user => user.userId !== userId);
             } catch (e) {
                 console.log(e, "그룹에 소속된 유저 그룹에서 제외 실패")
             }
