@@ -12,10 +12,13 @@ const headers = ref([
 await bookmarks.$reset();
 await bookmarks.setMyBookMarks();
 
-// 북마크 삭제 함수 (구현 필요)
-function removeBookmark(documentId) {
-  // 여기에 북마크 삭제 로직을 구현하십시오.
-  console.log('Deleting bookmark with id:', documentId);
+// 북마크 삭제 함수 구현
+async function removeBookmark(documentId) {
+  // 사용자 확인을 위한 추가적인 단계가 필요하면 여기에 추가
+  const confirmed = window.confirm('북마크를 삭제하시겠습니까?');
+  if (confirmed) {
+    await bookmarks.removeMyBookmark(documentId);
+  }
 }
 </script>
 
