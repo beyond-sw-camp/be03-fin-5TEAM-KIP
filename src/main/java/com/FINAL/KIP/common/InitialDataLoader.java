@@ -25,7 +25,7 @@ public InitialDataLoader(UserRepository userRepository, PasswordEncoder password
                     .email("admin@test.com")
                     .password(passwordEncoder.encode("1234"))
                     .phoneNumber("01012345678")
-                    .profileImageUrl("https://picsum.photos/62") // 임시 프로필
+                    .profileImageUrl("https://picsum.photos/262") // 임시 프로필
                     .employeeId("KK")
                     .role(Role.ADMIN)
                     .build();

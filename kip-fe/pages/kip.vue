@@ -20,13 +20,14 @@ const addItems = (product) => {
         <v-col
             v-for="product in product.getProducts"
             :key="product.name"
-            :cols="12"
+            cols="12"
             sm="6"
             md="4"
             lg="3"
+            xl="6"
         >
           <v-card
-              max-width="400"
+              max-width="450"
           >
             <v-img
                 class="align-end text-white"
