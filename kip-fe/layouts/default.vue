@@ -162,18 +162,15 @@ const handleRailClick = () => {
 .v-main {
   background-color: var(--primary-color);
   padding-top: calc(0.8vw + 69px) !important;
-  height: 100vh;
   display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
+  min-height: 100vh;
 }
 
 .main__sheet {
   background-color: white;
   margin: 0.8vw;
   width: 98.5%;
-  height: 100%;
+  min-height: calc(100vh - 0.8vw - 90px);
   border-radius: 20px;
   box-sizing: border-box;
   overflow: hidden;

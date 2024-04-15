@@ -53,6 +53,18 @@ public class UserController {
         return ResponseEntity.ok(userService.getAllUsers());
     }
 
+    // 아이디 DB에 존재하는지 여부 리턴
+    @GetMapping("{employeeId}")
+        public ResponseEntity<Boolean> checkIfEmployeeIdExists(@PathVariable String employeeId){
+        return ResponseEntity.ok(userService.checkIfEmployeeIdExists(employeeId));
+    }
+
+    // 아이디와 패스워드가 일치하면 회원 이름만 리턴
+    @PostMapping("check")
+    public ResponseEntity<Map<String, Object>> checkIdPassAndReturnName(@RequestBody LoginReqDto dto){
+        return ResponseEntity.ok(userService.checkIdPassAndReturnName(dto));
+    }
+
     // 로그인
     @PostMapping("login") //login은 토큰 사용으로 Map형식으로 받아주어야함 // Map<String, Object>
     public ResponseEntity<CommonResponse> userLogin(@RequestBody LoginReqDto loginReqDto) {
