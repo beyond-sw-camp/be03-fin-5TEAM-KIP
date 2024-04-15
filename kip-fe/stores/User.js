@@ -6,29 +6,70 @@ export const useUser = defineStore("user", {
             accessToken: "",
             userInfo: {},
             isLoggedIn: false,
+            isExistId: false,
+            isCorrectPassword: false,
+            justUserName: "",
         };
     },
     getters: {
+        getIsExistId(state) {
+            return state.isExistId;
+        },
+        getIsCorrectPassword(state) {
+            return state.isCorrectPassword;
+        },
+        getJustUserName(state) {
+            return state.justUserName;
+        },
         getAccessToken(state) {
             return state.accessToken;
         },
         getUserInfo(state) {
             return state.userInfo;
         },
-        getIsLoggedIn(state){
+        getIsLoggedIn(state) {
             return state.isLoggedIn;
         },
-        getProfileImageUrl(state){
+        getProfileImageUrl(state) {
             return state.userInfo.profileImageUrl;
         }
     },
     actions: {
+
+        // DB에 아이디 있는지 검서하는 요청.
+        async isExistEmployeeId(employeeId) {
+            try {
+                const response = await fetch(`${BASE_URL}/user/${employeeId.value}`, {
+                    method: 'GET',
+                });
+                this.isExistId = await response.json();
+            } catch (e) {
+                console.log(e, "아이디 검사 실패")
+            }
+        },
+
+        // DB 아이디와 패스워드가 일치하면 이름을 리턴하는 요청
+        async isPasswordCorrect(employeeId, password) {
+            try {
+                const response = await fetch(`${BASE_URL}/user/check`, {
+                    method: 'POST',
+                    headers: {'Content-Type': 'application/json'},
+                    body: JSON.stringify({employeeId, password}),
+                });
+                const result = await response.json();
+                this.isCorrectPassword = result.isValid;
+                this.justUserName = result.userName;
+            } catch (e) {
+                console.log(e, "패스워드 검사 후 이름 불러오기 실패")
+            }
+        },
+
         async login(employeeId, password) {
             try {
                 // 로그인 하고
                 const response =
                     await fetch(`${BASE_URL}/user/login`, {
-                        method: 'POST',  //POST 요청은 'Content-Type' 설정
+                        method: 'POST',  // BODY 타입 'Content-Type' 설정
                         headers: {'Content-Type': 'application/json'},
                         body: JSON.stringify({employeeId, password}),
                     });
@@ -50,10 +91,9 @@ export const useUser = defineStore("user", {
                 // 로컬 스토리지에 저장.
                 if (typeof window !== "undefined")  // CSR 인경우만 동작함.
                     window.localStorage.setItem('accessToken', tokenData);
-
                 // 로그인 표시
                 this.isLoggedIn = true;
-                await useRouter().push('/kip');
+
             } catch (e) {
                 console.log(e, '로그인 실패')
                 alert("아이디 또는 비밀번호가 잘못 되었습니다.")
@@ -95,7 +135,7 @@ export const useUser = defineStore("user", {
                 this.$reset(); // 유져 정보 리셋
                 useCart().$reset() // 장바구니 리셋
 
-                if (typeof window !== "undefined"){ // 로컬스토리지 리셋
+                if (typeof window !== "undefined") { // 로컬스토리지 리셋
                     window.localStorage.removeItem('accessToken');
                     window.localStorage.removeItem('CartStore:items');
                 }

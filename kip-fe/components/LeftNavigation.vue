@@ -88,10 +88,20 @@ console.log(group.getMyGroupNamesAndId,"그룹리스트")
           class="group__list"/>
 
       <v-list-item
+          title="FormKitTest"
+          value="FormKit"
+          to="/FormKit"
+          prepend-icon="mdi-list-box-outline"
+          :color="color.kipMainColor"
+          rounded="xl"
+          variant="text"
+          class="group__list"/>
+
+      <v-list-item
           title="mypage-test"
           value="mypage-test"
           to="/mypage-test"
-          prepend-icon="mdi-arm-flex"
+          prepend-icon="mdi-list-box-outline"
           :color="color.kipMainColor"
           rounded="xl"
           variant="text"
@@ -101,12 +111,11 @@ console.log(group.getMyGroupNamesAndId,"그룹리스트")
           title="mypage-test2"
           value="mypage-test2"
           to="/mypage-test2"
-          prepend-icon="mdi-arm-flex"
+          prepend-icon="mdi-list-box-outline"
           :color="color.kipMainColor"
           rounded="xl"
           variant="text"
           class="group__list"/>
-
       <v-divider class="group__list"/>
 
       <!-- 부서목록 -->

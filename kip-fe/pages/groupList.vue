@@ -1,85 +1,52 @@
-<script setup lang="ts">
+<script setup>
 import { VTreeview } from 'vuetify/labs/VTreeview'
-const items = ref([
-  {
-    id: 1,
-    title: 'Applications :',
-    children: [
-      { id: 2, title: 'Calendar : app' },
-      { id: 3, title: 'Chrome : app' },
-      { id: 4, title: 'Webstorm : app' },
-    ],
-  },
-  {
-    id: 5,
-    title: 'Documents :',
-    children: [
-      {
-        id: 6,
-        title: 'vuetify :',
-        children: [
-          {
-            id: 7,
-            title: 'src :',
-            children: [
-              { id: 8, title: 'index : ts' },
-              { id: 9, title: 'bootstrap : ts' },
-            ],
-          },
-        ],
-      },
-      {
-        id: 10,
-        title: 'material2 :',
-        children: [
-          {
-            id: 11,
-            title: 'src :',
-            children: [
-              { id: 12, title: 'v-btn : ts' },
-              { id: 13, title: 'v-card : ts' },
-              { id: 14, title: 'v-window : ts' },
-            ],
-          },
-        ],
-      },
-    ],
-  },
-  {
-    id: 15,
-    title: 'Downloads :',
-    children: [
-      { id: 16, title: 'October : pdf' },
-      { id: 17, title: 'November : pdf' },
-      { id: 18, title: 'Tutorial : html' },
-    ],
-  },
-  {
-    id: 19,
-    title: 'Videos :',
-    children: [
-      {
-        id: 20,
-        title: 'Tutorials :',
-        children: [
-          { id: 21, title: 'Basic layouts : mp4' },
-          { id: 22, title: 'Advanced techniques : mp4' },
-          { id: 23, title: 'All about app : dir' },
-        ],
-      },
-      { id: 24, title: 'Intro : mov' },
-      { id: 25, title: 'Conference introduction : avi' },
-    ],
-  },
-]);
+
+// 피니아
+const group = useGroup();
+const color = useColor();
+
+// 데이터 세팅
+await group.setHierarchyInfo();
+const groups = group.getHierarchyInfo;
+const open = ref([1, 2]);
+const clickedGroupId = ref(1);
+
+const setGroupUsersInfo = (groupId) => {
+  clickedGroupId.value = groupId
+  group.setGroupUsersInfo(groupId);
+}
+
 </script>
 
-
 <template>
-  <v-treeview :items="items" color="red" activatable>
-  </v-treeview>
+  <v-card
+      class="mx-auto"
+      max-width="400"
+  >
+    <v-card-text>
+      <v-treeview
+          v-model:open="open"
+          :filter="filter"
+          :items="groups"
+          color=""
+      >
+        <template v-slot:prepend="{ item }">
+          <v-icon
+              v-if="item.children"
+              :icon="`mdi-${item.children.length === 0
+              ? 'account-group' : 'folder-network'}`"
+              @click="setGroupUsersInfo( item.id)"
+          ></v-icon>
+        </template>
+        <template v-slot:title="{ item }">
+          <div @click="setGroupUsersInfo( item.id)">{{item.title}}
+          </div>
+        </template>
+      </v-treeview>
+    </v-card-text>
+  </v-card>
 </template>
 
-<style scoped>
+<style>
 
 </style>

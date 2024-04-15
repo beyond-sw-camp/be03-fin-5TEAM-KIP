@@ -134,6 +134,7 @@ public class UserService {
         userInfo.updateUserInfo(userInfoUpdateReqDto.getName(), userInfoUpdateReqDto.getEmail(),
                 userInfoUpdateReqDto.getPhoneNumber());
     }
+
     @Transactional
     @UserAdmin
     public void delete(String employeeId){
@@ -166,7 +167,6 @@ public class UserService {
         return getUserByEmployeeId(authentication.getName());
     }
 
-    @UserAdmin
     public User getUserByEmployeeId(String employeeId) {
         return userRepo.findByEmployeeId(employeeId)
                 .orElseThrow(() -> new EntityNotFoundException("사원번호를 찾을 수 없습니다. " + employeeId));
@@ -253,5 +253,21 @@ public class UserService {
         userRepo.save(user);
 
         return new ProfileImageResDto(user.getId(), user.getProfileImageUrl());
+    }
+
+
+    // 로그인 이전에 기본 정보 체크하는 함수들
+    public Boolean checkIfEmployeeIdExists(String employeeId) {
+        return userRepo.existsByEmployeeId(employeeId);
+    }
+
+    public Map<String, Object> checkIdPassAndReturnName(LoginReqDto dto) {
+        Map<String, Object> passwordValidAndUserName = new HashMap<>();
+        User user = getUserByEmployeeId(dto.getEmployeeId());
+        passwordValidAndUserName.put("userName", user.getName());
+        if (passwordEncoder.matches(dto.getPassword(), user.getPassword()))
+            passwordValidAndUserName.put("isValid", true);
+        else passwordValidAndUserName.put("isValid", false);
+        return passwordValidAndUserName;
     }
 }
