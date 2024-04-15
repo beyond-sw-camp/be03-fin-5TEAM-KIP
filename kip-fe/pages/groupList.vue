@@ -4,7 +4,7 @@ import {VTreeview} from 'vuetify/labs/VTreeview'
 // 피니아
 const group = useGroup();
 const color = useColor();
-const groupuser = useGroupuser();
+const groupUser = useGroupuser();
 
 // 데이터 세팅
 await group.setHierarchyInfo();
@@ -15,7 +15,7 @@ const clickedGroupId = ref(1);
 const setUsersInfoInGroup = async (groupId) => {
   console.log(groupId,"그룹아이디")
   clickedGroupId.value = groupId
-  await groupuser.setUsersInfoInGroup(groupId);
+  await groupUser.setUsersInfoInGroup(groupId);
 }
 </script>
 
@@ -24,7 +24,7 @@ const setUsersInfoInGroup = async (groupId) => {
     <v-row justify="center">
       <v-col cols="4">
         <!--          왼쪽 조직 리스트-->
-        {{clickedGroupId}} {{groupuser.getGroupName}}
+        {{clickedGroupId}} {{groupUser.getGroupName}}
         <v-sheet>
           <v-card
               elevation="5"
@@ -61,7 +61,7 @@ const setUsersInfoInGroup = async (groupId) => {
 
           <v-card
               width="100%"
-              v-for="user in groupuser.getUsersInfoInGroup"
+              v-for="user in groupUser.getUsersInfoInGroup"
               :key="user.userId"
               class="mb-5 ml-5"
               min-width="100"
@@ -81,8 +81,18 @@ const setUsersInfoInGroup = async (groupId) => {
 
 
             <v-card-actions class="d-flex justify-center">
-              <v-btn variant="elevated" :color="color.kipMainColor" class="ma-2" text="역할변경"></v-btn>
-              <v-btn variant="elevated" color="red-lighten-1" class="ma-2" text="삭제"></v-btn>
+              <v-btn
+                  @click="groupUser.updateUserRoleInGroup(clickedGroupId, user.userId)"
+                  variant="elevated"
+                  :color="color.kipSubColor"
+                  class="ma-2"
+                  text="역할변경"/>
+              <v-btn
+                  @Click="groupUser.deleteUserFromGroup(clickedGroupId, user.userId)"
+                  variant="elevated"
+                  :color="color.kipMainColor"
+                  class="ma-2"
+                  text="그룹제외"/>
             </v-card-actions>
           </v-card>
         </v-sheet>

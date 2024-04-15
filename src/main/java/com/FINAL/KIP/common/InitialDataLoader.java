@@ -19,14 +19,14 @@ public InitialDataLoader(UserRepository userRepository, PasswordEncoder password
 
     @Override
     public void run(String... args) throws Exception {
-        if (userRepository.findByEmployeeId("KK").isEmpty()) {
+        if (userRepository.findByEmployeeId("k-1234567890").isEmpty()) {
             User adminMember = User.builder()
-                    .name("admin1")
-                    .email("admin@test.com")
+                    .name("관리자")
+                    .email("admin@kip.com")
                     .password(passwordEncoder.encode("1234"))
                     .phoneNumber("01012345678")
                     .profileImageUrl("https://picsum.photos/262") // 임시 프로필
-                    .employeeId("KK")
+                    .employeeId("k-1234567890")
                     .role(Role.ADMIN)
                     .build();
             userRepository.save(adminMember);
