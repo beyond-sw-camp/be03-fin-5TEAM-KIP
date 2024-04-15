@@ -4,7 +4,6 @@ const user = useUser();
 export const useBookMarks = defineStore("bookmarks", {
     state() {
         return {
-            accessToken: user.getAccessToken,
             myBookMarks: [],
         };
     },
@@ -24,7 +23,7 @@ export const useBookMarks = defineStore("bookmarks", {
             try {
                 const response = await fetch(`${BASE_URL}/user/book/list`, {
                     method: 'GET',
-                    headers: {'Authorization': 'Bearer ' + this.accessToken},
+                    headers: {'Authorization': 'Bearer ' + user.getAccessToken},
                 });
                 if (!response.ok) throw new Error('Failed to fetch bookmarks.');
                 this.myBookMarks = await response.json();
@@ -39,7 +38,7 @@ export const useBookMarks = defineStore("bookmarks", {
             try {
                 const response = await fetch(`${BASE_URL}/doc/${documentId}/book`, {
                     method: 'POST',
-                    headers: { 'Authorization': 'Bearer ' + this.accessToken },
+                    headers: { 'Authorization': 'Bearer ' + user.getAccessToken },
                 });
                 const data = await response.json();
                 if (response.ok) {

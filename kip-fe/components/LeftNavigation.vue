@@ -98,19 +98,9 @@ console.log(group.getMyGroupNamesAndId,"그룹리스트")
           class="group__list"/>
 
       <v-list-item
-          title="mypage-test"
-          value="mypage-test"
-          to="/mypage-test"
-          prepend-icon="mdi-list-box-outline"
-          :color="color.kipMainColor"
-          rounded="xl"
-          variant="text"
-          class="group__list"/>
-
-      <v-list-item
-          title="mypage-test2"
-          value="mypage-test2"
-          to="/mypage-test2"
+          title="mypage-test1"
+          value="mypage-test1"
+          to="/mypage-test1"
           prepend-icon="mdi-list-box-outline"
           :color="color.kipMainColor"
           rounded="xl"
