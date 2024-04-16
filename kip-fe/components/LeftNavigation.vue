@@ -67,19 +67,9 @@ await group.setMyGroupsInfo();  // (awit) 그룹정보를 모두 가지고 온�
           class="group__list"/>
 
       <v-list-item
-          title="JiYoung2"
-          value="JiYoung2"
-          to="/jiyongMainpractice"
-          prepend-icon="mdi-arm-flex"
-          :color="color.kipMainColor"
-          rounded="xl"
-          variant="text"
-          class="group__list"/>
-
-      <v-list-item
-          title="JiYoung3"
-          value="JiYoung3"
-          to="/practice"
+          title="main-test"
+          value="main-test"
+          to="/main-test"
           prepend-icon="mdi-arm-flex"
           :color="color.kipMainColor"
           rounded="xl"
@@ -101,16 +91,6 @@ await group.setMyGroupsInfo();  // (awit) 그룹정보를 모두 가지고 온�
           value="mypage-test1"
           to="/mypage-test1"
           prepend-icon="mdi-list-box-outline"
-          :color="color.kipMainColor"
-          rounded="xl"
-          variant="text"
-          class="group__list"/>
-
-      <v-list-item
-          title="main"
-          value="main"
-          to="/main"
-          prepend-icon="mdi-arm-flex"
           :color="color.kipMainColor"
           rounded="xl"
           variant="text"
