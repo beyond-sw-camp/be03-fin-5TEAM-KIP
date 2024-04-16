@@ -15,7 +15,7 @@ spring:
     database-platform: org.hibernate.dialect.MariaDBDialect
     generate-ddl: true
     hibernate:
-      ddl-auto: create
+      ddl-auto: update
     show-sql: true
 
   data:
@@ -24,7 +24,7 @@ spring:
       port: 6379
       password: kip1234
 jwt:
-  expiration: 30 #30분
+  expiration: 3000 #30분 x 100 (50시간 임시로 설정) - 세종
   secretKey: kipsecret장준혁김영광박세종윤지용
 fcm:
   certification : kip-fcm-firebase-adminsdk-gm80d-6a9b5bbd58.json

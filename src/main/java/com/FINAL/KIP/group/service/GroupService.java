@@ -174,6 +174,7 @@ public class GroupService {
 
     @UserAdmin
     public List<GroupUser> getGroupUsers(addUsersToGroupReqDto dto) {
+        System.out.println(dto.getGroupId() +"그룹 아이디");
         List<GroupUser> addedUsers = new ArrayList<>();
         Group group = getGroupById(dto.getGroupId());
         for (UserIdAndGroupRole user : dto.getGroupUsers()) {
