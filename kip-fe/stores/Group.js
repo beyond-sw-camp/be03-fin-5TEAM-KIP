@@ -6,6 +6,7 @@ export const useGroup = defineStore("group", {
         return {
             myGroupsInfo: [],
             HierarchyInfo: [],
+            GroupUsersInfo: {},
         };
     },
     getters: {
@@ -16,7 +17,7 @@ export const useGroup = defineStore("group", {
                 groupType: group.groupType,
             }))
         },
-        getNameOfSuperGroups(state){
+        getNameOfSuperGroups(state) {
             // 소속된 그룹들 중에 "DEPARTMENT" 부서를 찾음
             const findMyDepartmentGroup =
                 state.myGroupsInfo.find(group => group.groupType === "DEPARTMENT")
@@ -29,7 +30,7 @@ export const useGroup = defineStore("group", {
             superDepartment.push(findMyDepartmentGroup.groupName)
             return superDepartment;  // 최종 리스티를 반환.
         },
-        getHierarchyInfo(state){
+        getHierarchyInfo(state) {
             return state.HierarchyInfo;
         }
     },
@@ -56,6 +57,14 @@ export const useGroup = defineStore("group", {
 
             this.HierarchyInfo = listInfo;
         },
+        async setGroupUsersInfo(groupId) {
+            const response =
+                await fetch(`${BASE_URL}/group/${groupId}/users`, {
+                    method: 'GET',
+                    headers: {'Authorization': 'Bearer ' + user.getAccessToken},
+                });
 
+            this.GroupUsersInfo = await response.json();
+        }
     }
-});
+})
