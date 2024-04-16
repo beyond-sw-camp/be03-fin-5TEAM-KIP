@@ -1,3 +1,26 @@
+<script>
+export default {
+  data() {
+    return {
+      texts: [
+        '템플릿문법', '반응형기초', '계산된속성', '조건부렌더링', '리스트렌더링',
+        '이벤트 핸들링', 'form 입력바인딩', '생명주기 훅', '감 시 자',
+        '템플릿 참조', '컴포넌트 기초', '컴포넌트 심화', '등록', 'props',
+        '이벤트', '컴포넌트 v-model', '풀스루 속성', '슬롯', 'provide / inject',
+        '비동기 컴포넌트'
+      ],
+      rightSideItems: [
+        { title: 'Vue는 무엇일까요?' },
+        { title: '프로그레시브 프레임워크' },
+        { title: '싱글 파일 컴포넌트' },
+        { title: 'API 스타일' },
+        { title: '여전히 궁금한 것이 있나요?', subtitle: '니가 직접 알아보세요!' }
+      ],
+    };
+  },
+};
+</script>
+
 <template>
   <v-app>
     <v-container fluid>
@@ -43,7 +66,7 @@
 
         <!-- 가운데 소개 섹션 -->
         <v-col cols="5" class="text-center">
-          <v-divider></v-divider>
+<!--          <v-divider></v-divider>-->
           <v-card flat class="mt-4">
             <v-card-title class="headline my-2">소개</v-card-title>
             <!-- 소개 내용을 여기에 추가 -->
@@ -52,13 +75,10 @@
           <v-card flat class="mt-4">
             <v-card-text>
               <!-- 커다란 공간(문서 등이 들어갈 곳) -->
+              1231ed12d12d12d12d12d12222222222222222222222222222222222222222222222222222
+              12d21d12d12d12d12d222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222
             </v-card-text>
           </v-card>
-        </v-col>
-
-        <!-- 가로선 -->
-        <v-col cols="1">
-          <v-divider></v-divider>
         </v-col>
 
         <!-- 오른쪽 영역 -->
@@ -92,29 +112,6 @@
     </v-container>
   </v-app>
 </template>
-
-<script>
-export default {
-  data() {
-    return {
-      texts: [
-        '템플릿문법', '반응형기초', '계산된속성', '조건부렌더링', '리스트렌더링',
-        '이벤트 핸들링', 'form 입력바인딩', '생명주기 훅', '감 시 자',
-        '템플릿 참조', '컴포넌트 기초', '컴포넌트 심화', '등록', 'props',
-        '이벤트', '컴포넌트 v-model', '풀스루 속성', '슬롯', 'provide / inject',
-        '비동기 컴포넌트'
-      ],
-      rightSideItems: [
-        { title: 'Vue는 무엇일까요?' },
-        { title: '프로그레시브 프레임워크' },
-        { title: '싱글 파일 컴포넌트' },
-        { title: 'API 스타일' },
-        { title: '여전히 궁금한 것이 있나요?', subtitle: '니가 직접 알아보세요!' }
-      ],
-    };
-  },
-};
-</script>
 
 <style scoped>
 .font-weight-bold {
