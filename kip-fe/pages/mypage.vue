@@ -102,6 +102,7 @@
 </template>
 
 <script>
+
 import { useUser } from "@/stores/user";
 import { ref, onMounted } from 'vue';
 
@@ -142,7 +143,7 @@ export default {
     };
 
     const uploadPhoto = () => {
-      // 사진 업로드 로직 처리
+      // 사진 업로드 로직
     };
 
     const resetPhoto = () => {
@@ -150,7 +151,7 @@ export default {
     };
 
     const saveDetails = () => {
-      // 비밀번호 변경 로직 처리
+      // 비밀번호 변경 로직
     };
 
     const cancelEdit = () => {
