@@ -28,7 +28,7 @@ public class CreateUserReqDto {
                 .phoneNumber(this.phoneNumber)
                 .password(this.password)
 //                .profileImageUrl(this.profileImageUrl) 임시로 랜덤이미지
-                .profileImageUrl("https://picsum.photos/"+ ThreadLocalRandom.current().nextInt(49, 61))
+                .profileImageUrl("https://picsum.photos/2"+ ThreadLocalRandom.current().nextInt(40, 80))
                 .employedDay(this.employedDay)
                 .employeeId(this.employeeId)
                 .role(Role.USER)

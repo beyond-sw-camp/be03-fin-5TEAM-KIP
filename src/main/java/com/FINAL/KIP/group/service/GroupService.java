@@ -90,8 +90,7 @@ public class GroupService {
     @UserAdmin
     public GroupUsersResDto getGroupUsers(Long groupId) {
         Group group = getGroupById(groupId);
-        List<GroupUser> groupUsers = getGroupUserByGroup(group);
-        return new GroupUsersResDto(groupUsers);
+        return new GroupUsersResDto(group);
     }
 
     @UserAdmin
