@@ -1,6 +1,4 @@
 <script setup>
-// import { ref } from 'vue';
-// import { useBookMarks } from './bookmarks.js'; // 상대 경로 확인 필요
 
 const bookmarks = useBookMarks();
 const headers = ref([
