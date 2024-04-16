@@ -6,7 +6,6 @@ export const useGroup = defineStore("group", {
         return {
             myGroupsInfo: [],
             HierarchyInfo: [],
-            GroupUsersInfo: {},
         };
     },
     getters: {
@@ -57,14 +56,6 @@ export const useGroup = defineStore("group", {
 
             this.HierarchyInfo = listInfo;
         },
-        async setGroupUsersInfo(groupId) {
-            const response =
-                await fetch(`${BASE_URL}/group/${groupId}/users`, {
-                    method: 'GET',
-                    headers: {'Authorization': 'Bearer ' + user.getAccessToken},
-                });
 
-            this.GroupUsersInfo = await response.json();
-        }
     }
 });

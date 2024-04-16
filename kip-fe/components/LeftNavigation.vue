@@ -14,7 +14,6 @@ const color = useColor();
 
 await group.$reset(); // 그룹정보 리셋 후 다시 세팅
 await group.setMyGroupsInfo();  // (awit) 그룹정보를 모두 가지고 온뒤 넘어감
-console.log(group.getMyGroupNamesAndId,"그룹리스트")
 
 </script>
 
