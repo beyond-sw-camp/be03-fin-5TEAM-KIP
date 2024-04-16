@@ -28,9 +28,16 @@ const setAllUserInfoInKip = async () => {
   await groupUser.setAllUserInfoInKip();
 }
 
+const deleteUserFromGroup = async (groupId, userId) => {
+  await groupUser.deleteUserFromGroup(groupId,userId)
+  await setUsersInfoInGroup(clickedGroupId.value);
+  await groups.setMyGroupsInfo(); // 이게 작동 안함.
+}
+
 const addUserToGroup = async (userId) => {
   await groupUser.addUserToGroup(clickedGroupId.value, userId);
   await setUsersInfoInGroup(clickedGroupId.value);
+  await group.setMyGroupsInfo();
 }
 
 </script>
@@ -214,7 +221,7 @@ const addUserToGroup = async (userId) => {
                   class="ma-2 px-3"
                   text="역할변경"/>
               <v-btn
-                  @Click="groupUser.deleteUserFromGroup(clickedGroupId, user.userId)"
+                  @Click="deleteUserFromGroup(clickedGroupId, user.userId)"
                   variant="elevated"
                   color="red-lighten-1"
                   class="ma-2 px-3"

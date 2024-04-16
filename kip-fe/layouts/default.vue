@@ -1,4 +1,4 @@
-<script setup lang="ts">
+<script setup>
 definePageMeta({
   middleware: ["login"]
 })
@@ -19,6 +19,7 @@ const group = useGroup();
 const handleRailClick = () => {
   rail.value = !rail.value;
 }
+
 </script>
 
 <template>
@@ -47,9 +48,8 @@ const handleRailClick = () => {
             @click.stop="$event => drawer = !drawer"
         />
       </template>
-
       <!--부서 계층 목록 -->
-      <v-breadcrumbs :items="group.getNameOfSuperGroups">
+      <v-breadcrumbs :items="group.getTopNaviGroupList">
         <template v-slot:divider>
           <v-icon icon="mdi-chevron-right"></v-icon>
         </template>
