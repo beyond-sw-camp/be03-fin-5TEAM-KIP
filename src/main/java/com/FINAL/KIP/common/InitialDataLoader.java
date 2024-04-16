@@ -1,5 +1,8 @@
 package com.FINAL.KIP.common;
 
+import com.FINAL.KIP.group.domain.Group;
+import com.FINAL.KIP.group.domain.GroupType;
+import com.FINAL.KIP.group.repository.GroupRepository;
 import com.FINAL.KIP.user.domain.Role;
 import com.FINAL.KIP.user.domain.User;
 import com.FINAL.KIP.user.repository.UserRepository;
@@ -11,10 +14,14 @@ import org.springframework.stereotype.Component;
 public class InitialDataLoader implements CommandLineRunner {
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
+    private final GroupRepository groupRepository;
 
-public InitialDataLoader(UserRepository userRepository, PasswordEncoder passwordEncoder){
+public InitialDataLoader(UserRepository userRepository,
+                         PasswordEncoder passwordEncoder,
+                         GroupRepository groupRepository){
     this.userRepository = userRepository;
     this.passwordEncoder = passwordEncoder;
+    this.groupRepository = groupRepository;
 }
 
     @Override
@@ -30,6 +37,13 @@ public InitialDataLoader(UserRepository userRepository, PasswordEncoder password
                     .role(Role.ADMIN)
                     .build();
             userRepository.save(adminMember);
+        }
+        if (groupRepository.findById(1L).isEmpty()) {
+            Group adminGroup = Group.builder()
+                    .groupName("한화시스템")
+                    .groupType(GroupType.DEPARTMENT)
+                    .build();
+            groupRepository.save(adminGroup);
         }
     }
 }
