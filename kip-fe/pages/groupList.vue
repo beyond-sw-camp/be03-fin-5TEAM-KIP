@@ -1,11 +1,15 @@
 <script setup>
 import {VTreeview} from 'vuetify/labs/VTreeview'
 
+
 // 피니아
 const user = useUser();
 const group = useGroup();
 const color = useColor();
 const groupUser = useGroupuser();
+
+// 상단 네비 제목 설정
+group.TopNaviGroupList = ["Knowledge is Power","부서목록", "타 부서 문서와 구성원을 조회할 수 있습니다. 🥩️"];
 
 // 데이터 세팅
 await group.setHierarchyInfo();
