@@ -42,7 +42,18 @@ export const useUser = defineStore("user", {
                 const response = await fetch(`${BASE_URL}/user/${employeeId.value}`, {
                     method: 'GET',
                 });
-                this.isExistId = await response.json();
+                this.isExistId = await response.json()
+            } catch (e) {
+                console.log(e, "아이디 검사 실패")
+            }
+        },
+
+        async isExistEmployeeIdForCreate(employeeId) {
+            try {
+                const response = await fetch(`${BASE_URL}/user/${employeeId}`, {
+                    method: 'GET',
+                });
+                this.isExistId = await response.json()
             } catch (e) {
                 console.log(e, "아이디 검사 실패")
             }
