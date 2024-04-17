@@ -32,7 +32,7 @@ export const useUser = defineStore("user", {
         },
         getProfileImageUrl(state) {
             return state.userInfo.profileImageUrl;
-        }
+        },
     },
     actions: {
 
