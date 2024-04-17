@@ -13,7 +13,7 @@
     <!-- 메인 컨텐츠 -->
     <v-row justify="center" class="my-5">
       <v-col cols="12" md="10" lg="8">
-          <!-- 프로필 변경 & 비밀번호 변경 -->
+        <!-- 프로필 변경 & 비밀번호 변경 -->
         <v-row>
           <!-- Change Profile -->
           <v-col cols="12" md="6">
@@ -80,7 +80,6 @@
                 <v-row>
                   <v-col cols="12" md="6">
                     <v-text-field label="Your Name" outlined dense v-model="userInfo.name"></v-text-field>
-                    <!-- employeeId 를 읽기 전용으로 추가 -->
                     <v-text-field label="Employee ID" outlined dense v-model="userInfo.employeeId" readonly></v-text-field>
                   </v-col>
                   <v-col cols="12" md="6">
@@ -102,7 +101,6 @@
 </template>
 
 <script>
-
 import { useUser } from "@/stores/user";
 import { ref, onMounted } from 'vue';
 
@@ -129,21 +127,25 @@ export default {
       userInfo.value = { ...userStore.userInfo };
     });
 
-    const updateUserDetails = () => {
-      userStore.updateUserInfo({
-        name: userInfo.value.name,
-        email: userInfo.value.email,
-        phoneNumber: userInfo.value.phoneNumber,
-      }).then(() => {
-        alert("User details updated successfully.");
-      }).catch((error) => {
+    const updateUserDetails = async () => {
+      try {
+        const updatedInfo = {
+          name: userInfo.value.name,
+          email: userInfo.value.email,
+          phoneNumber: userInfo.value.phoneNumber
+        };
+        userStore.userInfo.name = userInfo.value.name  // 프론트로 변경
+        alert("사용자 정보가 변경되었습니다.");
+        // window.localStorage.setItem('refreshed', 'true'); // 리프레시 상태 저장
+        // location.reload(); // 페이지 새로고침
+      } catch (error) {
         console.error("Failed to update user details:", error);
         alert("Failed to update user details.");
-      });
+      }
     };
 
     const uploadPhoto = () => {
-      // 사진 업로드 로직
+      // 사진 업로드 로직 처리
     };
 
     const resetPhoto = () => {
@@ -151,7 +153,7 @@ export default {
     };
 
     const saveDetails = () => {
-      // 비밀번호 변경 로직
+      // 비밀번호 변경 로직 처리
     };
 
     const cancelEdit = () => {
