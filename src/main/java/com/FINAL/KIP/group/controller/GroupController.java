@@ -1,7 +1,6 @@
 package com.FINAL.KIP.group.controller;
 
 
-import com.FINAL.KIP.group.domain.GroupUser;
 import com.FINAL.KIP.group.dto.req.CreateGroupReqDto;
 import com.FINAL.KIP.group.dto.req.UpdateGroupReqDto;
 import com.FINAL.KIP.group.dto.req.addUsersToGroupReqDto;

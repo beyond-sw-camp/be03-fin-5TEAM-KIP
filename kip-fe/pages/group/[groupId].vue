@@ -8,6 +8,7 @@ const documentList = useDocumentList();
 await documentList.$reset();
 await documentList.setDocumentList(groupId);
 await groupName.setGroupUsersInfo(groupId);
+groupName.setTopNaviGroupList(groupId);
 
 const selectDocument = (documentId) => {
   // TODO: 선택한 문서 ID를 사용하여 문서의 상세 정보를 가져오고 표시하는 로직을 구현

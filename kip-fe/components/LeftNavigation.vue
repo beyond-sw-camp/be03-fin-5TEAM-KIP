@@ -14,6 +14,7 @@ const color = useColor();
 
 await group.$reset(); // 그룹정보 리셋 후 다시 세팅
 await group.setMyGroupsInfo();  // (awit) 그룹정보를 모두 가지고 온뒤 넘어감
+group.setTopNaviGroupList(0);
 
 </script>
 
@@ -71,16 +72,6 @@ await group.setMyGroupsInfo();  // (awit) 그룹정보를 모두 가지고 온�
           value="main-test"
           to="/main-test"
           prepend-icon="mdi-arm-flex"
-          :color="color.kipMainColor"
-          rounded="xl"
-          variant="text"
-          class="group__list"/>
-
-      <v-list-item
-          title="FormKitTest"
-          value="FormKit"
-          to="/FormKit"
-          prepend-icon="mdi-list-box-outline"
           :color="color.kipMainColor"
           rounded="xl"
           variant="text"
