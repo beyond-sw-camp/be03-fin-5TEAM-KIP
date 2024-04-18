@@ -51,7 +51,7 @@ public class AttachedFileService {
         String originalFilename = file.getOriginalFilename();
 
 //        파일 길이(String)이 길면 DB에 들어가지 않기 때문에 길이 잘라서 DB 삽입(...)
-        int maxFilenameLength = 20; // String 클래스의 최대 길이를 사용합니다.
+        int maxFilenameLength = 30; // String 클래스의 최대 길이를 사용합니다.
         if (originalFilename.length() > maxFilenameLength) {
             originalFilename = originalFilename.substring(0, maxFilenameLength - 3) + "...";
         }
@@ -64,10 +64,10 @@ public class AttachedFileService {
             fileExtension = contentType.substring(slashIndex + 1);
         }
 
-        // 파일 이름에 파일 확장자를 추가
-        if (!fileExtension.isEmpty()) {
-            originalFilename += "." + fileExtension;
-        }
+//        // 파일 이름에 파일 확장자를 추가
+//        if (!fileExtension.isEmpty()) {
+//            originalFilename += "." + fileExtension;
+//        }
 
         ObjectMetadata metadata = new ObjectMetadata();
         metadata.setContentLength(file.getSize());

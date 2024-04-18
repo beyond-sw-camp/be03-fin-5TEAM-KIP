@@ -24,7 +24,7 @@ public InitialDataLoader(UserRepository userRepository, PasswordEncoder password
                     .name("admin1")
                     .email("admin@test.com")
                     .password(passwordEncoder.encode("1234"))
-                    .phoneNumber("01012345678")
+                    .phoneNumber("01012345659")
                     .employeeId("KK")
                     .role(Role.ADMIN)
                     .build();
