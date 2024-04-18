@@ -6,7 +6,6 @@ import com.FINAL.KIP.user.domain.User;
 import lombok.Getter;
 import lombok.Setter;
 
-import java.time.LocalDateTime;
 import java.util.concurrent.ThreadLocalRandom;
 
 
@@ -18,7 +17,7 @@ public class CreateUserReqDto {
     private String phoneNumber;
     private String password;
     private String profileImageUrl;
-    private LocalDateTime employedDay;
+    private String employedDay;
     private String employeeId;
 
     public User makeUserReqDtoToUser() {

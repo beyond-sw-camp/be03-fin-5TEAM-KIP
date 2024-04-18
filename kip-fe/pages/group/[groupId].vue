@@ -12,6 +12,8 @@ await documentList.setDocumentList(groupId);
 await groupName.setGroupUsersInfo(groupId);
 await documentList.setFirstDocumentDetails();
 
+groupName.setTopNaviGroupList(groupId);
+
 // 문서 선택 시 상세 정보를 가져오는 함수
 const selectDocument = async (documentId) => {
   // 문서의 상세 정보를 가져옴

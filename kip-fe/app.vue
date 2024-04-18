@@ -2,6 +2,8 @@
 await useUser().setUserInfoAndTokenToPiniaFromLocalStorage();
 useProduct().fill();
 useCart().fetchItemsFromLocalStorage(); // 로컬스토리지에서 가지고옴.
+
+// 파비콘
 useHead({
   titleTemplate: (titleChunk) => {
     return titleChunk ? `${titleChunk} - Knowledge Is Power` : 'Knowledge Is Power (KIP)'
