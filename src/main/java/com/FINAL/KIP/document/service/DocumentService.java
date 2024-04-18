@@ -19,18 +19,13 @@ import com.FINAL.KIP.version.domain.Version;
 import com.FINAL.KIP.version.dto.response.VersionDetailResDto;
 import com.FINAL.KIP.version.dto.response.VersionReplaceResDto;
 import com.FINAL.KIP.version.repository.VersionRepository;
-import com.FINAL.KIP.version.service.VersionService;
-import java.util.UUID;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.NoSuchElementException;
-import java.util.Objects;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
@@ -101,18 +96,17 @@ public class DocumentService {
 	}
 
 	public DocumentResDto getIsAccessibleDoc(Long documentId) {
+		boolean isAccessible = true;
 		Document tryDocument = getDocumentById(documentId);
 		User tryUser = userService.getUserFromAuthentication();
-		Long docGroupId = tryDocument.getGroup().getId();
-
-		List<User> accessibleUsers = groupService.getAccessibleUsers(docGroupId);
-		accessibleUsers.add(userService.getUserById(1L)); // 관리자 추가
-
-		/* 추후 파일별 접근 가능한 맴버 추가 로직 삽입 */
-
-		boolean isAccessible = accessibleUsers.stream() // 접근 가능 유저 체크
-			.anyMatch(user -> user.equals(tryUser));
-
+		if(tryDocument.getGroup() != null) {
+			Long docGroupId = tryDocument.getGroup().getId();
+			List<User> accessibleUsers = groupService.getAccessibleUsers(docGroupId);
+			accessibleUsers.add(userService.getUserById(1L)); // 관리자 추가
+			/* 추후 파일별 접근 가능한 맴버 추가 로직 삽입 */
+			isAccessible = accessibleUsers.stream() // 접근 가능 유저 체크
+					.anyMatch(user -> user.equals(tryUser));
+		}
 		return new DocumentResDto(tryDocument, isAccessible);
 	}
 
