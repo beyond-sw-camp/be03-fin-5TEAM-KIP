@@ -1,15 +1,16 @@
 <script setup>
 
-const route = useRoute()
-const groupId = route.params.groupId;
+const color = useColor();
 const documentList = useDocumentList();
-const firstPublicDocumentTitle = computed(() => documentList.getFirstPublicDocumentTitle);
 
 await documentList.$reset();
 await documentList.setPublicDocumentList();
+await documentList.setFirstPublicDocumentDetails();
 
-const selectDocument = (documentId) => {
-  // TODO: 선택한 문서 ID를 사용하여 문서의 상세 정보를 가져오고 표시하는 로직을 구현
+// 문서 선택 시 상세 정보를 가져오는 함수
+const selectDocument = async (documentId) => {
+  // 문서의 상세 정보를 가져옴
+  await documentList.setDocumentDetails(documentId);
 };
 </script>
 
@@ -19,7 +20,7 @@ const selectDocument = (documentId) => {
       <v-row no-gutters>
         <!-- 왼쪽 사이드바 -->
         <v-col cols="3">
-          <v-list dense class="pa-4">
+          <v-list class="pa-4">
             <v-list-item>
               <v-list-item-content>
                 <v-list-item-title class="font-weight-bold headline text-center">
@@ -29,29 +30,34 @@ const selectDocument = (documentId) => {
             </v-list-item>
             <v-divider></v-divider>
 
-            <v-list-item
-                v-for="doc in documentList.getPublicDocumentList"
-                :key="doc.documentId"
-                @click="selectDocument(doc.documentId)">
-              <v-list-item-content>
-                <v-list-item-title> {{ doc.title }} </v-list-item-title>
-              </v-list-item-content>
-            </v-list-item>
+            <!-- 그룹 문서 title 출력 -->
+            <v-tabs color="primary" direction="vertical">
+              <v-tab
+                  v-for="doc in documentList.getPublicDocumentList"
+                  :key="doc.documentId"
+                  @click="selectDocument(doc.documentId)"
+              >
+                {{ doc.title }}
+              </v-tab>
+            </v-tabs>
           </v-list>
         </v-col>
 
         <!-- 세로선 -->
-        <v-col cols="1" class="divider-container">
-          <v-divider vertical></v-divider>
-        </v-col>
+        <v-divider class="divider-container" vertical></v-divider>
 
-        <!-- 가운데 문서내용 부분 -->
-        <v-col cols="5" class="text-center">
-          <v-card flat>
-            <v-card-title class="headline my-2">{{ firstPublicDocumentTitle }}</v-card-title>
-            <!-- 그룹 첫번째 문서의 제목 추가 -->
-          </v-card>
-          <v-divider></v-divider> <!-- 가로 선 추가 -->
+        <!-- 가운데 문서제목 부분 -->
+        <v-col class="text-center">
+          <v-list class="pa-4">
+            <v-card flat>
+              <v-card-title class="headline">
+                {{ documentList.selectedDocumentDetails.title }}
+              </v-card-title>
+            </v-card>
+          <!-- 가로 선 추가 -->
+          <v-divider></v-divider>
+          </v-list>
+
           <v-card flat class="mt-4">
             <v-card-text>
               <!-- 문서의 내용 -->
@@ -64,7 +70,7 @@ const selectDocument = (documentId) => {
         <v-col cols="2">
           <!-- 'On This Page' 섹션 -->
           <v-card flat>
-            <v-card-title class="headline my-2 text-right">On This Page</v-card-title>
+            <v-card-title class="headline text-center">On This Page</v-card-title>
             <v-card-text>
               <v-list dense>
                 <v-list-item v-for="item in rightSideItems" :key="item">
@@ -79,13 +85,30 @@ const selectDocument = (documentId) => {
 
           <!-- 첨부 파일 섹션 -->
           <v-card flat>
-            <v-card-title class="headline my-2">첨부 파일</v-card-title>
+            <v-card-title class="headline text-center">첨부 파일</v-card-title>
             <v-card-text>
               <v-btn text color="primary">service-task.pdf</v-btn>
               <v-btn text color="primary">work-project.zip</v-btn>
               <!-- 더 많은 파일들... -->
             </v-card-text>
           </v-card>
+
+          <div class="pa-4">
+            <v-card-title class="headline text-center">해시 태그</v-card-title>
+            <v-responsive>
+              <v-chip-group column>
+                <v-chip
+                    v-for="(hashTag, index) in documentList.selectedDocumentDetails.hashTags"
+                    :key="index"
+                    prepend-icon="mdi mdi-pound"
+                    v-if="documentList.selectedDocumentDetails && documentList.selectedDocumentDetails.hashTags.length > 0">
+                  {{ hashTag.tagName }}
+                </v-chip>
+                <div v-else>해시태그가 없습니다.</div>
+              </v-chip-group>
+            </v-responsive>
+          </div>
+
         </v-col>
       </v-row>
     </v-container>
@@ -101,7 +124,7 @@ const selectDocument = (documentId) => {
   font-weight: bold;
 }
 .divider-container {
-  height: 100vh; /* 뷰포트의 전체 높이로 설정 */
-  min-height: 600px; /* 최소 높이 설정, 필요에 따라 조정 */
+  height: 80vh; /* 뷰포트의 전체 높이로 설정 */
+  min-height: 630px; /* 최소 높이 설정, 필요에 따라 조정 */
 }
 </style>

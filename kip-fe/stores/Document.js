@@ -15,13 +15,9 @@ export const useDocumentList = defineStore("documentList", {
         getDocumentList(state){
             return state.documentList.map(document => ({
                 documentId: document.documentId,  // 문서 ID
-                doctype: document.doctype,            // 제목
-                title: document.title     // 그룹 이름
+                doctype: document.doctype,      //문서 타입
+                title: document.title     // 제목
             }))
-        },
-        // 첫번째 그룹문서 title조회
-        getFirstDocumentTitle(state) {
-            return state.documentList.length > 0 ? state.documentList[0].title : '';
         },
 
         // 전체공개문서 title 조회
@@ -31,12 +27,6 @@ export const useDocumentList = defineStore("documentList", {
                 title: publicDocument.title
             }))
         },
-        // 첫번째 전체공개문서 title조회
-        getFirstPublicDocumentTitle(state) {
-            return state.publicDocumentList.length > 0 ? state.publicDocumentList[0].title : '';
-        },
-
-
     },
 
     actions: {
@@ -80,5 +70,20 @@ export const useDocumentList = defineStore("documentList", {
             }
         },
 
+        // 첫번째 그룹문서의 상세정보를 가져오기
+        async setFirstDocumentDetails(){
+            if (this.documentList.length > 0) {
+                const firstDocumentId = this.documentList[0].documentId;
+                await this.setDocumentDetails(firstDocumentId);
+            }
+        },
+
+        // 첫번째 전체공개문서의 상세정보를 가져오기
+        async setFirstPublicDocumentDetails(){
+            if (this.publicDocumentList.length > 0) {
+                const firstPublicDocumentId = this.publicDocumentList[0].documentId;
+                await this.setDocumentDetails(firstPublicDocumentId);
+            }
+        },
     }
 });
