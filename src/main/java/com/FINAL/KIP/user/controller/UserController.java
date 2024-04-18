@@ -5,6 +5,7 @@ import com.FINAL.KIP.common.firebase.service.FCMService;
 import com.FINAL.KIP.securities.JwtTokenProvider;
 import com.FINAL.KIP.user.dto.req.CreateUserReqDto;
 import com.FINAL.KIP.user.dto.req.LoginReqDto;
+import com.FINAL.KIP.user.dto.req.PasswordChangeRequest;
 import com.FINAL.KIP.user.dto.req.UserInfoUpdateReqDto;
 import com.FINAL.KIP.user.dto.res.BookResDto;
 import com.FINAL.KIP.user.dto.res.ProfileImageResDto;
@@ -56,13 +57,13 @@ public class UserController {
 
     // 아이디 DB에 존재하는지 여부 리턴
     @GetMapping("{employeeId}")
-        public ResponseEntity<Boolean> checkIfEmployeeIdExists(@PathVariable String employeeId){
+    public ResponseEntity<Boolean> checkIfEmployeeIdExists(@PathVariable String employeeId) {
         return ResponseEntity.ok(userService.checkIfEmployeeIdExists(employeeId));
     }
 
     // 아이디와 패스워드가 일치하면 회원 이름만 리턴
     @PostMapping("check")
-    public ResponseEntity<Map<String, Object>> checkIdPassAndReturnName(@RequestBody LoginReqDto dto){
+    public ResponseEntity<Map<String, Object>> checkIdPassAndReturnName(@RequestBody LoginReqDto dto) {
         return ResponseEntity.ok(userService.checkIdPassAndReturnName(dto));
     }
 
@@ -96,6 +97,7 @@ public class UserController {
         userService.update(userInfoUpdateReqDto);
         return new ResponseEntity<>(new CommonResponse(HttpStatus.OK, "User updated successfully", userInfoUpdateReqDto.getName()), HttpStatus.OK);
     }
+
 
     // 사용자 회원 삭제
     @DeleteMapping("{employeeId}")
@@ -160,5 +162,20 @@ public class UserController {
         } catch (IOException e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(Map.of("error", "프로필 이미지 업데이트에 실패했습니다: " + e.getMessage()));
         }
+    }
+
+    // 비밀번호 변경
+    @PatchMapping("/change-password")
+    public ResponseEntity<?> changePassword(@RequestBody PasswordChangeRequest request) {
+        // UserService의 changePassword 메소드를 호출하여 비밀번호 변경 시도
+        boolean passwordChanged = userService.changePassword(request.getFindByEmployeeId(), request.getCurrentPassword(), request.getNewPassword());
+
+        // 비밀번호 변경이 실패했다면, 즉 현재 비밀번호가 틀렸을때
+        if (!passwordChanged) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Current password is incorrect.");
+        }
+
+        // 비밀번호 변경 성공
+        return ResponseEntity.ok("Password successfully updated.");
     }
 }

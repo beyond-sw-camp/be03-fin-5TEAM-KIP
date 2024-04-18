@@ -150,7 +150,7 @@ export const useUser = defineStore("user", {
         async fetchUserInfo() {
             try {
                 const response = await fetch(`${BASE_URL}/user/mypage`, {
-                    headers: { 'Authorization': `Bearer ${this.accessToken}` }
+                    headers: {'Authorization': `Bearer ${this.accessToken}`}
                 });
                 if (!response.ok) throw new Error('Failed to fetch user info');
                 this.userInfo = await response.json();
@@ -178,8 +178,39 @@ export const useUser = defineStore("user", {
                 console.error('Failed to update user info:', error);
                 alert('Failed to update user details.');
             }
+        },
+
+        async changePassword(employeeId, currentPassword, newPassword) {
+            try {
+                const body = JSON.stringify({
+                    findByEmployeeId: employeeId, // 추가된 필드
+                    currentPassword: currentPassword,
+                    newPassword: newPassword
+                });
+
+                const response = await fetch(`${BASE_URL}/user/change-password`, {
+                    method: 'PATCH',
+                    headers: {
+                        'Authorization': `Bearer ${this.accessToken}`,
+                        'Content-Type': 'application/json',
+                    },
+                    body: body
+                });
+
+                if (!response.ok) {
+                    const errorText = await response.text();
+                    throw new Error(errorText || 'Password change failed');
+                }
+
+                const data = await response.json();
+                alert('Password successfully updated.');
+            } catch (error) {
+                console.error('Failed to change password:', error);
+                alert(error.message || 'Error changing password');
+            }
         }
-    },
+        },
+
     setup() {
         const accessToken = ref('');
         const userInfo = ref({});

@@ -1,6 +1,5 @@
 <template>
   <v-container fluid>
-    <!-- 상단 탭 네비게이션 -->
     <v-row>
       <v-col>
         <v-tabs centered>
@@ -10,12 +9,9 @@
       </v-col>
     </v-row>
 
-    <!-- 메인 컨텐츠 -->
     <v-row justify="center" class="my-5">
       <v-col cols="12" md="10" lg="8">
-        <!-- 프로필 변경 & 비밀번호 변경 -->
         <v-row>
-          <!-- Change Profile -->
           <v-col cols="12" md="6">
             <v-card class="d-flex flex-column" outlined>
               <v-card-title class="text-h5">Change Profile</v-card-title>
@@ -23,14 +19,19 @@
                 <v-avatar size="120" class="mx-auto my-4">
                   <img :src="profilePhotoUrl || '/default-profile.png'" alt="profile" />
                 </v-avatar>
-                <v-btn color="primary" class="ma-2" @click="uploadPhoto">Upload</v-btn>
-                <v-btn color="error" class="ma-2" @click="resetPhoto">Reset</v-btn>
+                <v-file-input
+                    v-model="file"
+                    label="Upload new photo"
+                    prepend-icon="mdi-camera"
+                    accept="image/png, image/jpeg, image/gif"
+                    @change="uploadPhoto"
+                ></v-file-input>
+                <v-btn color="error" @click="resetPhoto">Reset</v-btn>
                 <div class="caption">Allowed JPG, GIF or PNG. Max size of 800K</div>
               </v-card-text>
             </v-card>
           </v-col>
 
-          <!-- Change Password -->
           <v-col cols="12" md="6">
             <v-card class="d-flex flex-column" outlined>
               <v-card-title class="text-h5">Change Password</v-card-title>
@@ -64,14 +65,13 @@
                 ></v-text-field>
               </v-card-text>
               <v-card-actions class="justify-end mt-auto">
-                <v-btn color="primary" @click="saveDetails">Save</v-btn>
+                <v-btn color="primary" @click="changePassword">Save</v-btn>
                 <v-btn color="grey" @click="cancelEdit">Cancel</v-btn>
               </v-card-actions>
             </v-card>
           </v-col>
         </v-row>
 
-        <!-- Personal Details -->
         <v-row>
           <v-col cols="12">
             <v-card outlined class="pa-4">
@@ -80,7 +80,8 @@
                 <v-row>
                   <v-col cols="12" md="6">
                     <v-text-field label="Your Name" outlined dense v-model="userInfo.name"></v-text-field>
-                    <v-text-field label="Employee ID" outlined dense v-model="userInfo.employeeId" readonly></v-text-field>
+                    <v-text-field label="Employee ID" outlined dense v-model="userInfo.employeeId"
+                                  readonly></v-text-field>
                   </v-col>
                   <v-col cols="12" md="6">
                     <v-text-field label="Email" outlined dense v-model="userInfo.email"></v-text-field>
@@ -101,79 +102,87 @@
 </template>
 
 <script>
-import { useUser } from "@/stores/user";
-import { ref, onMounted } from 'vue';
+import {ref, onMounted} from 'vue';
+import {useUser} from "@/stores/user";
 
 export default {
-  data() {
-    return {
-      profilePhotoUrl: '',
-      showPassword: false,
-      password: {
-        current: '',
-        new: '',
-        confirm: '',
-      },
-    };
-  },
   setup() {
     const userStore = useUser();
-    const userInfo = ref(userStore.userInfo);
+    const userInfo = ref({...userStore.userInfo});
+    const profilePhotoUrl = ref(userStore.getProfileImageUrl);
+    const password = ref({
+      current: '',
+      new: '',
+      confirm: ''
+    });
+    const showPassword = ref(false);
 
     onMounted(async () => {
       if (!userStore.userInfo.name) {
         await userStore.fetchUserInfo();
       }
-      userInfo.value = { ...userStore.userInfo };
+      userInfo.value = {...userStore.userInfo};
     });
 
     const updateUserDetails = async () => {
       try {
-        const updatedInfo = {
+        await userStore.updateUserInfo({
           name: userInfo.value.name,
           email: userInfo.value.email,
           phoneNumber: userInfo.value.phoneNumber
-        };
-        userStore.userInfo.name = userInfo.value.name  // 프론트로 변경
-        alert("사용자 정보가 변경되었습니다.");
-        // window.localStorage.setItem('refreshed', 'true'); // 리프레시 상태 저장
-        // location.reload(); // 페이지 새로고침
+        });
+        alert("User details updated successfully.");
       } catch (error) {
         console.error("Failed to update user details:", error);
         alert("Failed to update user details.");
       }
     };
 
-    const uploadPhoto = () => {
-      // 사진 업로드 로직 처리
+    const uploadPhoto = async (file) => {
+      // Upload photo logic
     };
 
     const resetPhoto = () => {
-      // 사진을 기본값으로 리셋
+      // Reset photo logic
     };
 
-    const saveDetails = () => {
-      // 비밀번호 변경 로직 처리
+    const changePassword = async () => {
+      if (password.value.new !== password.value.confirm) {
+        alert("New passwords do not match.");
+        return;
+      }
+      try {
+        await userStore.changePassword({
+          currentPassword: password.value.current,
+          newPassword: password.value.new
+        });
+        alert("Password changed successfully.");
+      } catch (error) {
+        console.error("Failed to change password:", error);
+        alert("Failed to change password.");
+      }
     };
 
     const cancelEdit = () => {
-      // 편집 취소
+      // Cancel edit logic
     };
 
     const showPasswordToggle = () => {
-      // 비밀번호 보기 토글
-      this.showPassword = !this.showPassword;
+      showPassword.value = !showPassword.value;
     };
 
     return {
       userInfo,
+      profilePhotoUrl,
+      password,
+      showPassword,
       updateUserDetails,
       uploadPhoto,
       resetPhoto,
-      saveDetails,
+      changePassword,
       cancelEdit,
-      showPasswordToggle,
+      showPasswordToggle
     };
-  },
+  }
 };
 </script>
