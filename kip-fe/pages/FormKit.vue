@@ -1,4 +1,4 @@
-<script setup lang="ts">
+<script setup>
 const formData = ref({
   username: "sejongpark",
   password: "123124"

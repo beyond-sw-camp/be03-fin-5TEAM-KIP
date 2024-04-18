@@ -7,6 +7,9 @@ export const useUser = defineStore("user", {
             userInfo: {},
             isLoggedIn: false,
             isExistId: false,
+            isExistIdForCreate: false,
+            isExistPhoneNumber: false,
+            isExistEmail: false,
             isCorrectPassword: false,
             justUserName: "",
         };
@@ -14,6 +17,15 @@ export const useUser = defineStore("user", {
     getters: {
         getIsExistId(state) {
             return state.isExistId;
+        },
+        getIsExistIdForCreate(state) {
+            return state.isExistIdForCreate;
+        },
+        getIsExistPhoneNumber(state) {
+            return state.isExistPhoneNumber;
+        },
+        getIsExistEmail(state) {
+            return state.isExistEmail;
         },
         getIsCorrectPassword(state) {
             return state.isCorrectPassword;
@@ -36,10 +48,10 @@ export const useUser = defineStore("user", {
     },
     actions: {
 
-        // DB에 아이디 있는지 검서하는 요청.
+        // DB에 사번이 있는지 검사하는 요청.
         async isExistEmployeeId(employeeId) {
             try {
-                const response = await fetch(`${BASE_URL}/user/${employeeId.value}`, {
+                const response = await fetch(`${BASE_URL}/user/${employeeId.value}/id`, {
                     method: 'GET',
                 });
                 this.isExistId = await response.json()
@@ -50,12 +62,34 @@ export const useUser = defineStore("user", {
 
         async isExistEmployeeIdForCreate(employeeId) {
             try {
-                const response = await fetch(`${BASE_URL}/user/${employeeId}`, {
+                const response = await fetch(`${BASE_URL}/user/${employeeId}/id`, {
                     method: 'GET',
                 });
-                this.isExistId = await response.json()
+                this.isExistIdForCreate = await response.json()
             } catch (e) {
                 console.log(e, "아이디 검사 실패")
+            }
+        },
+        async isExistPhoneNumberForCreate(phoneNumber) {
+            try {
+                const response = await fetch(`${BASE_URL}/user/${phoneNumber}/phone`, {
+                    method: 'GET',
+                });
+                this.isExistPhoneNumber = await response.json()
+            } catch (e) {
+                console.log(e, "폰번호 중복 체크 실패")
+            }
+        },
+
+
+        async isExistEmailForCreate(email) {
+            try {
+                const response = await fetch(`${BASE_URL}/user/${email}/email`, {
+                    method: 'GET',
+                });
+                this.isExistEmail = await response.json()
+            } catch (e) {
+                console.log(e, "이메일 중복체크 실패")
             }
         },
 

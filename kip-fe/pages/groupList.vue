@@ -45,19 +45,32 @@ const data = ref({
 
   rules: {
     required: value => !!value || '입력이 필요합니다.',
+
+    // 비밀번호
     passwordRule: value => /^\d{4}$/.test(value) || '숫자 4자리로 입력해주세요.',
-    employeeIdRule: value => /^k-\d{10}$/.test(value) || '사번은 k- 포함 숫자 12자리 입니다',
-    dupulicateCheck: async value => {
-      await user.isExistEmployeeIdForCreate(value)
-      return !user.getIsExistId || '이미 존재하는 사번입니다.'
-    },
-
-
     passwordConfim: value => data.value.password === value || '비밀번호가 일치하지 않습니다.',
-    email: value => {
+
+    // 사번
+    employeeIdRule: value => /^k-\d{10}$/.test(value) || '사번은 k- 포함 숫자 12자리 입니다',
+    employeeIdDupulicateCheck: async value => {
+      await user.isExistEmployeeIdForCreate(value)
+      return !user.getIsExistIdForCreate || '이미 존재하는 사번입니다.'},
+
+    // 연락처
+    phoneNumberRule: value => /^010-\d{4}-\d{4}$/.test(value) || '010-으로 시작하는 8자리 숫자를 입력해주세요',
+    phoneNumberDupulicateCheck: async value => {
+      await user.isExistPhoneNumberForCreate(value)
+      return !user.getIsExistPhoneNumber || '연락처가 중복됩니다.'},
+
+    // 이메일
+    emailRule: value => {
       const pattern = /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/
-      return pattern.test(value) || '이메일 형식이 아닙니다.'
-    }
+      return pattern.test(value) || '이메일 형식이 아닙니다.'},
+
+    emailDupulicateCheck: async value => {
+      await user.isExistEmailForCreate(value)
+      return !user.getIsExistEmail || '같은 이메일이 존재합니다.'},
+
     },
 
 
@@ -218,24 +231,18 @@ const addUserToGroup = async (userId) => {
         <v-form ref="form">
 
           <v-text-field
-              label="사번 ( k-1234567890 )"
+              label="사번"
+              placeholder="k-1234567890"
               v-model="data.employeeId"
-              :rules="[data.rules.employeeIdRule, data.rules.dupulicateCheck]"
+              :rules="[data.rules.employeeIdRule, data.rules.employeeIdDupulicateCheck]"
               clearable
               maxlength="12"
               required
               counter
           />
-
-          <v-text-field
-              label="이름"
-              v-model="data.name"
-              :rules="[data.rules.required]"
-              clearable
-              required
-          />
           <v-text-field
               label="비밀번호"
+              placeholder="1234"
               v-model="data.password"
               :append-icon="showPassword ? 'mdi-eye' : 'mdi-eye-off'"
               :rules="[data.rules.passwordRule]"
@@ -248,6 +255,7 @@ const addUserToGroup = async (userId) => {
           />
           <v-text-field
               label="비밀번호 확인"
+              placeholder="1234"
               v-model="data.passwordConfirm"
               :append-icon="showPasswordConfirm ? 'mdi-eye' : 'mdi-eye-off'"
               :rules="[data.rules.passwordConfim]"
@@ -259,17 +267,30 @@ const addUserToGroup = async (userId) => {
               @click:append="showPasswordConfirm = !showPasswordConfirm"
           />
           <v-text-field
-              v-model="data.phoneNumber"
-              :rules="data.nameRules"
+              label="이름"
+              placeholder="홍길동"
+              v-model="data.name"
+              :rules="[data.rules.required]"
               clearable
-              label="연락처"
               required
           />
+
           <v-text-field
-              v-model="data.email"
-              :rules="[data.rules.email]"
+              label="연락처"
+              placeholder="010-1234-5678"
+              v-model="data.phoneNumber"
+              :rules="[data.rules.phoneNumberRule, data.rules.phoneNumberDupulicateCheck]"
               clearable
+              maxlength="13"
+              required
+              counter
+          />
+          <v-text-field
               label="이메일"
+              placeholder="admin@kip.com"
+              v-model="data.email"
+              :rules="[data.rules.emailRule, data.rules.emailDupulicateCheck]"
+              clearable
               required
           />
           <v-text-field
@@ -279,8 +300,6 @@ const addUserToGroup = async (userId) => {
               label="입사일"
               required
           />
-
-
 
 
           <div class="d-flex">

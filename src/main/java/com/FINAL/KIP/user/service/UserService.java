@@ -270,4 +270,12 @@ public class UserService {
         else passwordValidAndUserName.put("isValid", false);
         return passwordValidAndUserName;
     }
+
+    public Boolean checkIfPhoneNumberExists(String phoneNumber) {
+        return userRepo.existsByPhoneNumber(phoneNumber);
+    }
+
+    public Boolean checkIfEmailExists(String email) {
+        return userRepo.existsByEmail(email);
+    }
 }
