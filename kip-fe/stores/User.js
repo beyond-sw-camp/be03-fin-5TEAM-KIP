@@ -186,7 +186,20 @@ export const useUser = defineStore("user", {
                 await useRouter().push('/publicDoc');
             }
         },
-
+        async deleteUser(employeeId, name) {
+            try {
+                confirm("회원이 영구적으로 삭제됩니다.")
+                const response =
+                    await fetch(`${BASE_URL}/user/${employeeId}`, {
+                        method: 'DELETE',
+                        headers: {'Authorization': 'Bearer ' + this.accessToken}
+                    })
+                if(response.ok)
+                    alert(`${name}님의 아이디가 영구 삭제되었습니다.`)
+            } catch (e) {
+                console.log(e, '사용자 삭제')
+            }
+        },
         async logout() {
             try {
                 const response =
@@ -195,7 +208,6 @@ export const useUser = defineStore("user", {
                         headers: {'Authorization': 'Bearer ' + this.accessToken}
                     })
                 const deleteRes = response.json();
-                console.log(deleteRes.result)
 
                 this.$reset(); // 유져 정보 리셋
                 useCart().$reset() // 장바구니 리셋

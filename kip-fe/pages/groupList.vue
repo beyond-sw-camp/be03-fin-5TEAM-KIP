@@ -190,8 +190,8 @@ const rules = {
         <!--           그룹에 소속된 회원 리스트-->
         <v-card
             width="100%"
-            v-for="user in groupUser.getAllUserInfoInKip"
-            :key="user.userId"
+            v-for="userIn in groupUser.getAllUserInfoInKip"
+            :key="userIn.userId"
             class="mb-5 ml-5"
             min-width="100"
             max-width="240"
@@ -205,17 +205,23 @@ const rules = {
               cover
           >
           </v-img>
-          <v-card-title v-text="`🐋 ${user.name} `"/>
-          <v-card-subtitle v-text="`📞 ${user.phoneNumber}`"/>
+          <v-card-title v-text="`🐋 ${userIn.name} `"/>
+          <v-card-subtitle v-text="`📞 ${userIn.phoneNumber}`"/>
 
 
           <v-card-actions class="d-flex justify-center">
             <v-btn
-                @Click="addUserToGroup(user.userId)"
+                @Click="addUserToGroup(userIn.userId)"
                 variant="elevated"
                 color="deep-purple-lighten-1"
                 class="ma-2 px-3"
-                :text="` ➕ 팀원 추가 ➕`"/>
+                :text="`팀원 추가`"/>
+            <v-btn
+                @Click="user.deleteUser(userIn.employeeId, userIn.name)"
+                variant="elevated"
+                color="red"
+                class="ma-2 px-3"
+                :text="`영구 삭제`"/>
           </v-card-actions>
         </v-card>
       </v-sheet>
@@ -430,7 +436,7 @@ const rules = {
               <v-btn
                   @Click="deleteUserFromGroup(clickedGroupId, user.userId)"
                   variant="elevated"
-                  color="red-lighten-1"
+                  color="red-lighten-2"
                   class="ma-2 px-3"
                   text="그룹제외"/>
             </v-card-actions>
