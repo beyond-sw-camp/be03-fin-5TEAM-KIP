@@ -6,7 +6,7 @@ import com.FINAL.KIP.user.domain.User;
 import lombok.Getter;
 import lombok.Setter;
 
-import java.time.LocalDateTime;
+import java.util.concurrent.ThreadLocalRandom;
 
 
 @Setter
@@ -17,7 +17,7 @@ public class CreateUserReqDto {
     private String phoneNumber;
     private String password;
     private String profileImageUrl;
-    private LocalDateTime employedDay;
+    private String employedDay;
     private String employeeId;
 
     public User makeUserReqDtoToUser() {
@@ -26,7 +26,8 @@ public class CreateUserReqDto {
                 .email(this.email)
                 .phoneNumber(this.phoneNumber)
                 .password(this.password)
-                .profileImageUrl(this.profileImageUrl)
+//                .profileImageUrl(this.profileImageUrl) 임시로 랜덤이미지
+                .profileImageUrl("https://picsum.photos/2"+ ThreadLocalRandom.current().nextInt(40, 80))
                 .employedDay(this.employedDay)
                 .employeeId(this.employeeId)
                 .role(Role.USER)

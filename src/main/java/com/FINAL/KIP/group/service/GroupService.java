@@ -2,6 +2,8 @@ package com.FINAL.KIP.group.service;
 
 import com.FINAL.KIP.common.aspect.JustAdmin;
 import com.FINAL.KIP.common.aspect.UserAdmin;
+import com.FINAL.KIP.document.domain.Document;
+import com.FINAL.KIP.document.repository.DocumentRepository;
 import com.FINAL.KIP.group.domain.*;
 import com.FINAL.KIP.group.dto.req.CreateGroupReqDto;
 import com.FINAL.KIP.group.dto.req.UpdateGroupReqDto;
@@ -13,9 +15,13 @@ import com.FINAL.KIP.group.dto.res.GroupUsersRoleResDto;
 import com.FINAL.KIP.group.repository.GroupRepository;
 import com.FINAL.KIP.group.repository.GroupUserRepository;
 import com.FINAL.KIP.user.domain.User;
+import com.FINAL.KIP.user.repository.UserRepository;
 import com.FINAL.KIP.user.service.UserService;
+import com.FINAL.KIP.version.domain.Version;
+import com.FINAL.KIP.version.repository.VersionRepository;
 import jakarta.persistence.EntityNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -29,14 +35,23 @@ public class GroupService {
 
     private final UserService userService;
     private final GroupRepository groupRepo;
+    private final DocumentRepository documentRepository;
     private final GroupUserRepository groupUserRepo;
+    private final UserRepository userRepository;
+    private final VersionRepository versionRepository;
 
     @Autowired
     public GroupService(GroupRepository groupRepo, UserService userService,
-                        GroupUserRepository groupUserRepo) {
+		DocumentRepository documentRepository,
+                        GroupUserRepository groupUserRepo,
+        UserRepository userRepository,
+        VersionRepository versionRepository) {
         this.userService = userService;
         this.groupRepo = groupRepo;
-        this.groupUserRepo = groupUserRepo;
+		this.documentRepository = documentRepository;
+		this.groupUserRepo = groupUserRepo;
+        this.userRepository = userRepository;
+        this.versionRepository = versionRepository;
     }
 
 
@@ -47,6 +62,12 @@ public class GroupService {
         Group newGroup = createNewGroup(dto);
         Group savedNewGroup = groupRepo.save(newGroup);
         savedNewGroup.getDocuments().get(0).setTitle(newGroup.getGroupName() + " 그룹에 오신것을 환영합니다.");
+        Version version = Version.builder()
+            .content(newGroup.getGroupName() + " 그룹에 오신것을 환영합니다.")
+            .document(savedNewGroup.getDocuments().get(0))
+            .writer(findUserByEmployeeId(
+                SecurityContextHolder.getContext().getAuthentication().getName())).build();
+        versionRepository.save(version);
         return new GroupResDto(savedNewGroup);
     }
 
@@ -76,7 +97,7 @@ public class GroupService {
 
 
     //  Read
-    @JustAdmin
+    @UserAdmin
     public GroupResDto getGroupInfoById(Long groupId) {
         Group group = getGroupById(groupId);
         return new GroupResDto(group);
@@ -90,8 +111,7 @@ public class GroupService {
     @UserAdmin
     public GroupUsersResDto getGroupUsers(Long groupId) {
         Group group = getGroupById(groupId);
-        List<GroupUser> groupUsers = getGroupUserByGroup(group);
-        return new GroupUsersResDto(groupUsers);
+        return new GroupUsersResDto(group);
     }
 
     @UserAdmin
@@ -118,7 +138,12 @@ public class GroupService {
         Group group = getGroupById(dto.getGroupId());
         group.setGroupName(dto.getGroupName());
         group.setGroupType(dto.getGroupType());
-        group.setSuperGroup(getGroupById(dto.getSupperGroupId()));
+
+        // 상위그룹을 null 로 처리할 때 실행되는 함수 .
+        Optional.ofNullable(dto.getSupperGroupId())
+                .map(this::getGroupById)
+                .ifPresent(group::setSuperGroup);
+
         return new GroupResDto(groupRepo.save(group));
     }
 
@@ -170,6 +195,7 @@ public class GroupService {
 
     @UserAdmin
     public List<GroupUser> getGroupUsers(addUsersToGroupReqDto dto) {
+        System.out.println(dto.getGroupId() +"그룹 아이디");
         List<GroupUser> addedUsers = new ArrayList<>();
         Group group = getGroupById(dto.getGroupId());
         for (UserIdAndGroupRole user : dto.getGroupUsers()) {
@@ -213,5 +239,10 @@ public class GroupService {
         return groupUserRepo.findById(groupUserId)
                 .orElseThrow(() -> new EntityNotFoundException(
                         "그룹 유저 아이디로 검색할 수 있는 그룹 유저가 없습니다. groupId: " + groupId + ", userId: " + userId));
+    }
+
+    private User findUserByEmployeeId(String employeeId) {
+        return userRepository.findByEmployeeId(employeeId)
+            .orElseThrow(() -> new IllegalArgumentException("해당 사번의 회원이 존재하지 않습니다."));
     }
 }

@@ -1,6 +1,4 @@
 <script setup lang="ts">
-import {ref} from "vue";
-
 const emit = defineEmits(["submit"]);
 const props = defineProps<{
   post: Record<string, any>;
@@ -35,7 +33,6 @@ async function asyncValidtion(value: string) {
 
 function handleSubmit() {
   if (!valid.value) return;
-  console.log("submitting", form.value);
   emit("submit");
 }
 

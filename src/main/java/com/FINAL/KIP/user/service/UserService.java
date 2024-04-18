@@ -11,6 +11,7 @@ import com.FINAL.KIP.user.domain.User;
 import com.FINAL.KIP.user.dto.req.CreateUserReqDto;
 import com.FINAL.KIP.user.dto.req.LoginReqDto;
 import com.FINAL.KIP.user.dto.req.UserInfoUpdateReqDto;
+import com.FINAL.KIP.user.dto.res.BookResDto;
 import com.FINAL.KIP.user.dto.res.ProfileImageResDto;
 import com.FINAL.KIP.user.dto.res.UserResDto;
 import com.FINAL.KIP.user.repository.UserRepository;
@@ -55,7 +56,7 @@ public class UserService {
     }
 
 //    Create
-    @UserAdmin
+    @JustAdmin
     public UserResDto createUser(CreateUserReqDto dto) {
         dto.setPassword(passwordEncoder.encode(dto.makeUserReqDtoToUser().getPassword())); // 비밀번호 암호화
         User user = dto.makeUserReqDtoToUser();
@@ -63,7 +64,7 @@ public class UserService {
         return new UserResDto(savedUser);
     }
 
-    @UserAdmin
+    @JustAdmin
     public List<UserResDto> createUsers(List<CreateUserReqDto> dtos) {
         for (CreateUserReqDto createUserReqDto : dtos) {
             createUserReqDto.setPassword(
@@ -113,24 +114,17 @@ public class UserService {
     }
 
     @UserAdmin
-    public CommonResponse logout(Long id) throws IllegalArgumentException{
-        User user = userRepo.findById(id)
-                .orElseThrow(() -> new IllegalArgumentException("없는 사용자입니다."));
-
-        UserRefreshToken userRefreshToken = userRefreshTokenRepository.findById(id)
-                .orElseThrow(() -> new IllegalArgumentException("사용자를 다시 확인해주세요."));
-
-        userRefreshTokenRepository.deleteById(id);
-        Map<String , String> result = new HashMap<>();
-        result.put("user_id", String.valueOf(userRefreshToken.getId()));
-        result.put("user_name", user.getName());
-        return new CommonResponse(HttpStatus.OK, "User Logout SUCCESS!", result);
+    public CommonResponse logout() {
+        User user = getUserFromAuthentication();
+        userRefreshTokenRepository.deleteById(user.getId());
+        return new CommonResponse(HttpStatus.OK, "User Logout SUCCESS!", new UserResDto(user));
     }
 
     @UserAdmin
     public CommonResponse mypage(){
-        User userInfo = getUserFromAuthentication();
-        return new CommonResponse(HttpStatus.OK, "User info loaded successfully!", userInfo);
+        User userInfo = getUserFromAuthentication(); // 순환참조 생겨서 dto로 변경 (세종)
+        UserResDto userResDto = new UserResDto(userInfo);
+        return new CommonResponse(HttpStatus.OK, "User info loaded successfully!", userResDto);
     }
 
     @Transactional
@@ -140,20 +134,32 @@ public class UserService {
         userInfo.updateUserInfo(userInfoUpdateReqDto.getName(), userInfoUpdateReqDto.getEmail(),
                 userInfoUpdateReqDto.getPhoneNumber());
     }
+
     @Transactional
     @UserAdmin
     public void delete(String employeeId){
+        if(employeeId.equals("k-1234567890"))
+            throw new IllegalArgumentException("관리자 계정은 삭제 불가합니다.");
         User userInfo = getUserByEmployeeId(employeeId);
         userRepo.delete(userInfo);
     }
 
 //    사용자 북마크 목록 조회
-    public CommonResponse userBookList(){
+    public List<BookResDto> userBookList(){
         User userInfo = getUserFromAuthentication();
         String employeeId = userInfo.getEmployeeId();
 
-        List<Object[]> bookList = bookRepository.findDocumentIdAndTitleByEmployeeId(employeeId);
-        return new CommonResponse(HttpStatus.OK, "User Book List loaded successfully!", bookList);
+        List<Object[]> bookInfoList = bookRepository.findDocumentIdAndTitleByEmployeeId(employeeId);
+        List<String> groupNames = bookRepository.findGroupNameByEmployeeId(employeeId);
+
+        List<BookResDto> bookResDtos = new ArrayList<>();
+        for (int i = 0; i < bookInfoList.size(); i++) { // 조회된 정보 리스트를 반복
+            Object[] bookInfo = bookInfoList.get(i); // 현재 북마크의 문서 ID와 제목
+            // bookInfoList 4개 와 groupNames 3개라면 마지막 bookInfoList groupNames와 짝이 맞지 않기(그룹이름 X) 때문에 "No Group Name"을 저장
+            String groupName = groupNames.size() > i ? groupNames.get(i) : "No Group Name"; // 그룹 이름이 없으면 "No Group Name"으로 설정
+            bookResDtos.add(new BookResDto((Long) bookInfo[0], (String) bookInfo[1], groupName)); // BookResDto 객체를 생성하고 리스트에 추가
+        }
+        return bookResDtos;
     }
 
 //    ===== 함수 공통화 =====
@@ -163,7 +169,6 @@ public class UserService {
         return getUserByEmployeeId(authentication.getName());
     }
 
-    @UserAdmin
     public User getUserByEmployeeId(String employeeId) {
         return userRepo.findByEmployeeId(employeeId)
                 .orElseThrow(() -> new EntityNotFoundException("사원번호를 찾을 수 없습니다. " + employeeId));
@@ -250,5 +255,29 @@ public class UserService {
         userRepo.save(user);
 
         return new ProfileImageResDto(user.getId(), user.getProfileImageUrl());
+    }
+
+
+    // 로그인 이전에 기본 정보 체크하는 함수들
+    public Boolean checkIfEmployeeIdExists(String employeeId) {
+        return userRepo.existsByEmployeeId(employeeId);
+    }
+
+    public Map<String, Object> checkIdPassAndReturnName(LoginReqDto dto) {
+        Map<String, Object> passwordValidAndUserName = new HashMap<>();
+        User user = getUserByEmployeeId(dto.getEmployeeId());
+        passwordValidAndUserName.put("userName", user.getName());
+        if (passwordEncoder.matches(dto.getPassword(), user.getPassword()))
+            passwordValidAndUserName.put("isValid", true);
+        else passwordValidAndUserName.put("isValid", false);
+        return passwordValidAndUserName;
+    }
+
+    public Boolean checkIfPhoneNumberExists(String phoneNumber) {
+        return userRepo.existsByPhoneNumber(phoneNumber);
+    }
+
+    public Boolean checkIfEmailExists(String email) {
+        return userRepo.existsByEmail(email);
     }
 }

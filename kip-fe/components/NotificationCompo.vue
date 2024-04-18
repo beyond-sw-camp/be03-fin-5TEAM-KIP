@@ -1,20 +1,19 @@
 <script setup>
-import AuthUserStore from "~/stores/AuthUserStore";
-import CartStore from "~/stores/CartStore";
-import KipColor from "~/stores/KipColor";
-
-
+// 피니아
+const user = useUser();
+const cart = useCart();
+const color = useColor()
 </script>
 
 <template>
-  <v-card :title="`${AuthUserStore().username}'s Notification`"
+  <v-card :title="`${user.getUserInfo.name}'s Notification`"
           class="mx-auto"
           max-width="450">
     <v-card
-        v-for="product in CartStore().grouped"
+        v-for="product in cart.grouped"
         class="mx-auto"
         max-width="344"
-        :subtitle="`$${product[0].price} X ${CartStore().groupCount(product[0].name)}개`"
+        :subtitle="`$${product[0].price} X ${cart.groupCount(product[0].name)}개`"
         :title="product[0].name">
 
       <template v-slot:prepend>
@@ -28,7 +27,7 @@ import KipColor from "~/stores/KipColor";
         <v-icon
             icon="mdi-trash-can"
             size="x-large"
-            @click="CartStore().deleteItems(product[0].name)"
+            @click="cart.deleteItems(product[0].name)"
         />
       </template>
 
@@ -36,12 +35,12 @@ import KipColor from "~/stores/KipColor";
 
     <!--닫기버튼-->
     <v-card-actions>
-      Total Price: ${{ CartStore().totalPrice }}
+      Total Price: ${{ cart.totalPrice }}
       <v-spacer/>
       <v-btn
           text="X"
           @click="$emit('isActive')"
-          :color="KipColor().kipMainColor"
+          :color="color.kipMainColor"
           variant="flat"
       />
     </v-card-actions>

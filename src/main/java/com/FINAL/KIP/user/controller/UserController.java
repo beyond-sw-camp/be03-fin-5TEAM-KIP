@@ -6,6 +6,7 @@ import com.FINAL.KIP.securities.JwtTokenProvider;
 import com.FINAL.KIP.user.dto.req.CreateUserReqDto;
 import com.FINAL.KIP.user.dto.req.LoginReqDto;
 import com.FINAL.KIP.user.dto.req.UserInfoUpdateReqDto;
+import com.FINAL.KIP.user.dto.res.BookResDto;
 import com.FINAL.KIP.user.dto.res.ProfileImageResDto;
 import com.FINAL.KIP.user.dto.res.UserResDto;
 import com.FINAL.KIP.user.service.UserService;
@@ -53,6 +54,31 @@ public class UserController {
         return ResponseEntity.ok(userService.getAllUsers());
     }
 
+    // [중복체크] 아이디 DB에 존재하는지 여부 리턴
+    @GetMapping("{employeeId}/id")
+        public ResponseEntity<Boolean> checkIfEmployeeIdExists(@PathVariable String employeeId){
+        return ResponseEntity.ok(userService.checkIfEmployeeIdExists(employeeId));
+    }
+
+    // [비번체크] 아이디와 패스워드가 일치하면 회원 이름만 리턴
+    @PostMapping("check")
+    public ResponseEntity<Map<String, Object>> checkIdPassAndReturnName(@RequestBody LoginReqDto dto){
+        return ResponseEntity.ok(userService.checkIdPassAndReturnName(dto));
+    }
+
+    // [중복체크] 휴대폰 아이디가 DB에 존재하는지 여부 리턴
+    @GetMapping("{phoneNumber}/phone")
+    public ResponseEntity<Boolean> checkIfPhoneNumberExists(@PathVariable String phoneNumber){
+        return ResponseEntity.ok(userService.checkIfPhoneNumberExists(phoneNumber));
+    }
+
+    // [중복체크] 이메일이 DB에 존재하는지 여부 리턴
+    @GetMapping("{email}/email")
+    public ResponseEntity<Boolean> checkIfEmailExists(@PathVariable String email){
+        return ResponseEntity.ok(userService.checkIfEmailExists(email));
+    }
+
+
     // 로그인
     @PostMapping("login") //login은 토큰 사용으로 Map형식으로 받아주어야함 // Map<String, Object>
     public ResponseEntity<CommonResponse> userLogin(@RequestBody LoginReqDto loginReqDto) {
@@ -63,9 +89,9 @@ public class UserController {
     }
 
     // 로그아웃
-    @DeleteMapping("logout/{id}")
-    public ResponseEntity<CommonResponse> userLogout(@PathVariable(value = "id") Long id) {
-        CommonResponse commonResponse = userService.logout(id);
+    @DeleteMapping("logout")
+    public ResponseEntity<CommonResponse> userLogout() {
+        CommonResponse commonResponse = userService.logout();
         return new ResponseEntity<>(commonResponse, HttpStatus.OK);
     }
 
@@ -92,21 +118,10 @@ public class UserController {
     }
 
     @GetMapping("/book/list")
-    public ResponseEntity<CommonResponse> userBookList() {
-        CommonResponse commonResponse = userService.userBookList();
-        return new ResponseEntity<>(commonResponse, HttpStatus.OK);
+    public ResponseEntity<List<BookResDto>> userBookList() {
+        List<BookResDto> bookResDto = userService.userBookList();
+        return new ResponseEntity<>(bookResDto, HttpStatus.OK);
     }
-
-
-//        User user = userService.login(loginReqDto);
-////        토큰 생성
-//        String jwtToken = jwtTokenProvider.createToken(user.getEmployeeId(), user.getRole().toString());
-//        Map<String, Object> user_info = new HashMap<>();
-//        user_info.put("id", user.getId());
-//        user_info.put("employeeId", user.getEmployeeId());
-//        user_info.put("token", jwtToken);
-//        return new ResponseEntity<>(new CommonResponse(HttpStatus.OK, "user successfully login", user_info), HttpStatus.OK);
-//    }
 
     // 프로필 이미지 업로드
     @PostMapping("/profile/upload")

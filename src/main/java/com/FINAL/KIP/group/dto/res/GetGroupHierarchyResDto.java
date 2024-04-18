@@ -9,16 +9,14 @@ import java.util.stream.Collectors;
 
 @Getter
 public class GetGroupHierarchyResDto {
-    private final Long groupId;
-    private final String groupName;
-    private final String groupType;
-    private final List<GetGroupHierarchyResDto> childGroups;
+    private final Long id;
+    private final String title;
+    private final List<GetGroupHierarchyResDto> children;
 
     public GetGroupHierarchyResDto(Group group){
-        this.groupId = group.getId();
-        this.groupName = group.getGroupName();
-        this.groupType = group.getGroupType().name();
-        this.childGroups = group.getChildGroups().stream()
+        this.id = group.getId();
+        this.title = group.getGroupName();
+        this.children = group.getChildGroups().stream()
                 .map(GetGroupHierarchyResDto::new)
                 .collect(Collectors.toList());
     }

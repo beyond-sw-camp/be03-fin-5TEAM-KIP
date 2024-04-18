@@ -9,7 +9,6 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
 
-import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -34,9 +33,10 @@ public class User extends BaseEntity {
     @Column(nullable = false)
     private String password;
 
+    @Setter
     private String profileImageUrl;
 
-    private LocalDateTime employedDay;
+    private String employedDay;
 
     @Column(unique = true, nullable = false)
     private String employeeId;
@@ -44,9 +44,6 @@ public class User extends BaseEntity {
     @Column(nullable = false)
     @Enumerated(EnumType.STRING)
     private Role role;
-
-    @Setter
-    private String delYn = "N";
 
     @OneToMany(mappedBy = "requester", cascade = CascadeType.ALL)
     private final List<Request> requests = new ArrayList<>();
@@ -64,7 +61,7 @@ public class User extends BaseEntity {
     @Builder
     public User(String name, String email, String password,
                 String phoneNumber, String profileImageUrl,
-                LocalDateTime employedDay, String employeeId, Role role) {
+                String employedDay, String employeeId, Role role) {
         this.name = name;
         this.email = email;
         this.password = password;
@@ -79,10 +76,6 @@ public class User extends BaseEntity {
         this.name = name;
         this.email = email;
         this.phoneNumber = phoneNumber;
-    }
-
-    public void setProfileImageUrl(String profileImageUrl) {
-        this.profileImageUrl = profileImageUrl;
     }
 
 }

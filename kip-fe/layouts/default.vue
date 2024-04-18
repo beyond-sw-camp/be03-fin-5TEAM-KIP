@@ -1,44 +1,64 @@
-<script setup lang="ts">
-import CartStore from "~/stores/CartStore";
-import KipColor from "~/stores/KipColor";
+<script setup>
+definePageMeta({
+  middleware: ["login"]
+})
 import LeftNavigation from "~/components/LeftNavigation.vue";
-import NotificationCopo from "~/components/NotificationCopo.vue";
+import NotificationCopo from "~/components/NotificationCompo.vue";
 
 // 햄버거 버튼
 const drawer = ref(true);
 const rail = ref(true);
 
+// 피니아
+const user = useUser();
+const cart = useCart()
+const color = useColor();
+const group = useGroup();
+
 // function
 const handleRailClick = () => {
   rail.value = !rail.value;
-};
+}
 
 </script>
 
 <template>
-  <v-layout class="rounded rounded-md">
+  <v-layout>
+
+    <!--  좌측메뉴  -->
+    <v-navigation-drawer
+        :color="color.kipMainColor"
+        v-model="drawer"
+        :rail="rail"
+        rail-width="71"
+        width="250"
+        permanent>
+      <LeftNavigation @railEvent="handleRailClick"/>
+    </v-navigation-drawer>
+
 
     <!--  상단메뉴  -->
     <v-app-bar
-        location="top"
-        density="default"
-        :color="KipColor().kipMainColor"
-        :elevation="5"
-    >
-
-      <template #prepend>
-        <!-- 햄버거 버튼 -->
+        :color="color.kipMainColor"
+        class="top__header__sheet"
+        height="68">
+      <template #prepend> <!-- 상단 메뉴의 제일 왼쪽-->
+                          <!-- 햄버거 버튼 -->
         <v-app-bar-nav-icon
-            variant="text"
             @click.stop="$event => drawer = !drawer"
         />
       </template>
+      <!--부서 계층 목록 -->
+      <v-breadcrumbs :items="group.getTopNaviGroupList">
+        <template v-slot:divider>
+          <v-icon icon="mdi-chevron-right"></v-icon>
+        </template>
+      </v-breadcrumbs>
 
-      <v-toolbar-title>
-        <NuxtLink to="/">
-          KIP (Knowledge Is Power)
-        </NuxtLink>
-      </v-toolbar-title>
+      <!--가운데 공간 만듬 -->
+      <v-spacer/>
+
+      {{ user.getUserInfo.name }}님 환영합니다.
 
       <!-- 알림 버튼 -->
       <v-dialog max-width="600">
@@ -48,9 +68,9 @@ const handleRailClick = () => {
               class="text-none"
               stacked>
             <v-badge
-                v-if="!CartStore().isEmpty"
+                v-if="!cart.isEmpty"
                 color="error"
-                :content="CartStore().count">
+                :content="cart.count">
               <v-icon
                   icon="mdi-bell-ring"
                   size="x-large"
@@ -66,50 +86,93 @@ const handleRailClick = () => {
 
         <template #default="{ isActive }">
           <NotificationCopo
-              @isActive = "isActive.value = false"
+              @isActive="isActive.value = false"
           />
         </template>
       </v-dialog>
 
 
-      <template #append>
-        <v-menu>
+      <template #append> <!-- 상단 메뉴의 제일 오른쪽-->
+        <v-menu transition="slide-y-transition">
           <template v-slot:activator="{ props }">
             <!-- 아바타 버튼 -->
             <v-avatar
-                image="https://avatars.githubusercontent.com/u/123573918?v=4"
+                :image="user.getProfileImageUrl"
                 size="55"
                 v-bind="props"
-                class="cursor-pointer"
-            />
+                class="cursor-pointer"/>
           </template>
           <v-list>
-            <v-list-item
-                v-for="(item, index) in ['Profile','Setting', 'Logout']"
-                :key="index"
-                :value="index"
-            >
-              <v-list-item-title>{{ item }}</v-list-item-title>
+            <v-list-item @click="useRouter().push('/mypage');">
+              <template v-slot:prepend>
+                <v-icon icon="mdi-information-box-outline"/>
+              </template>
+              <v-list-item-title>MyPage</v-list-item-title>
+            </v-list-item>
+
+            <v-list-item @click="user.logout">
+              <template v-slot:prepend>
+                <v-icon icon="mdi-logout"/>
+              </template>
+              <v-list-item-title>LogOut</v-list-item-title>
             </v-list-item>
           </v-list>
         </v-menu>
-
       </template>
     </v-app-bar>
 
-
-    <!--  좌측메뉴  -->
-    <v-navigation-drawer
-        v-model="drawer"
-        :rail="rail"
-        permanent>
-      <LeftNavigation @railEvent="handleRailClick"/>
-    </v-navigation-drawer>
-
     <!--  메인 페이지  -->
     <v-main>
-      <NuxtPage/>
+      <div class="main__sheet">
+        <nuxt-page/>
+      </div>
     </v-main>
 
   </v-layout>
 </template>
+
+<style>
+
+/* 좌측 메뉴 관련 CSS */
+.v-navigation-drawer__content {
+  background-color: white;
+  margin-top: 0.8vw;
+  margin-bottom: 0.8vw;
+  margin-left: 0.8vw;
+  border-radius: 20px !important;
+  overflow: hidden;
+}
+
+/* 상단 헤더 CSS */
+.top__header__sheet {
+  overflow: hidden;
+  box-shadow: none !important;
+}
+
+.v-toolbar__content {
+  margin: 0.8vw;
+  border-radius: 20px !important;
+  width: 98.3% !important;
+  color: var(--primary-color);
+  background-color: white;
+}
+
+
+/* 본문 관련 CSS */
+.v-main {
+  background-color: var(--primary-color);
+  padding-top: calc(0.8vw + 69px) !important;
+  display: flex;
+  min-height: 100vh;
+}
+
+.main__sheet {
+  background-color: white;
+  margin: 0.8vw;
+  width: 98.5%;
+  min-height: calc(100vh - 0.8vw - 90px);
+  border-radius: 20px;
+  box-sizing: border-box;
+  overflow: hidden;
+}
+</style>

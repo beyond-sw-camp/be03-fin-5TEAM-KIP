@@ -30,6 +30,8 @@ public class Book extends BaseEntity {
     @JoinColumn(name = "documentId", nullable = false)
     private Document document;
 
+    private String groupName;
+
     @Column(nullable = false)
     private String title;
 

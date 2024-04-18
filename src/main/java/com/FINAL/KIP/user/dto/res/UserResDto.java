@@ -1,11 +1,8 @@
 package com.FINAL.KIP.user.dto.res;
 
+import com.FINAL.KIP.user.domain.Role;
 import com.FINAL.KIP.user.domain.User;
 import lombok.Data;
-import lombok.Getter;
-import lombok.Setter;
-
-import java.time.LocalDateTime;
 
 @Data
 public class UserResDto {
@@ -14,8 +11,9 @@ public class UserResDto {
     private final String email;
     private final String phoneNumber;
     private final String profileImageUrl;
-    private final LocalDateTime employedDay;
+    private final String employedDay;
     private final String employeeId;
+    private final Role userRole;
 
     public UserResDto(User user){
         this.userId = user.getId();
@@ -25,5 +23,6 @@ public class UserResDto {
         this.profileImageUrl = user.getProfileImageUrl();
         this.employedDay = user.getEmployedDay();
         this.employeeId = user.getEmployeeId();
+        this.userRole = user.getRole();
     }
 }
