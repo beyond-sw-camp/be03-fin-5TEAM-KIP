@@ -12,6 +12,7 @@ export const useUser = defineStore("user", {
             isExistEmail: false,
             isCorrectPassword: false,
             justUserName: "",
+            createdUserData:{},
         };
     },
     getters: {
@@ -45,6 +46,9 @@ export const useUser = defineStore("user", {
         getProfileImageUrl(state) {
             return state.userInfo.profileImageUrl;
         },
+        getCreatedUserData(state){
+            return state.createdUserData;
+        }
     },
     actions: {
 
@@ -80,8 +84,6 @@ export const useUser = defineStore("user", {
                 console.log(e, "폰번호 중복 체크 실패")
             }
         },
-
-
         async isExistEmailForCreate(email) {
             try {
                 const response = await fetch(`${BASE_URL}/user/${email}/email`, {
@@ -90,6 +92,24 @@ export const useUser = defineStore("user", {
                 this.isExistEmail = await response.json()
             } catch (e) {
                 console.log(e, "이메일 중복체크 실패")
+            }
+        },
+
+        // 계정 생성
+        async createUserAccount(data) {
+            try {
+                const response = await fetch(`${BASE_URL}/user`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${this.accessToken}`,
+                    },
+                    body: JSON.stringify(data),
+                });
+                this.createdUserData = await response.json();
+
+            } catch (e) {
+                console.log(e, "새로운 계정 생성 실패")
             }
         },
 

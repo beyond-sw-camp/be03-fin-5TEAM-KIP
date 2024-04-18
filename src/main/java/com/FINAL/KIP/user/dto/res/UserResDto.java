@@ -4,8 +4,6 @@ import com.FINAL.KIP.user.domain.Role;
 import com.FINAL.KIP.user.domain.User;
 import lombok.Data;
 
-import java.time.LocalDateTime;
-
 @Data
 public class UserResDto {
     private final Long userId;
@@ -13,7 +11,7 @@ public class UserResDto {
     private final String email;
     private final String phoneNumber;
     private final String profileImageUrl;
-    private final LocalDateTime employedDay;
+    private final String employedDay;
     private final String employeeId;
     private final Role userRole;
 

@@ -1,12 +1,19 @@
 <script setup>
 import {VTreeview} from 'vuetify/labs/VTreeview'
 
-
 // 피니아
 const user = useUser();
 const group = useGroup();
 const color = useColor();
 const groupUser = useGroupuser();
+
+
+const loading = ref(false);
+const open = ref();
+const clickedGroupId = ref(1);
+const addNewMemberModdal = ref();
+const createMemberModdal = ref();
+const employedDay = ref()
 
 // 상단 네비 제목 설정
 group.TopNaviGroupList = ["Knowledge is Power", "부서목록", "타 부서 문서와 구성원을 조회할 수 있습니다. 🥩️"];
@@ -15,12 +22,10 @@ group.TopNaviGroupList = ["Knowledge is Power", "부서목록", "타 부서 문�
 await group.setHierarchyInfo();
 const groups = group.getHierarchyInfo;
 
-// 회원가입 관련 세팅
-const loading = ref(false);
-const open = ref();
-const clickedGroupId = ref(1);
-const addNewMemberModdal = ref();
-const createMemberModdal = ref();
+// 신규계정 데이터 관련
+const showPassword = ref(false)
+const showPasswordConfirm = ref(false);
+const passwordConfirm = ref('');
 
 
 // 그릅 유저 정보 초기화
@@ -28,80 +33,7 @@ groupUser.$reset();
 await groupUser.setUsersInfoInGroup(clickedGroupId.value);
 
 
-// 신규계정 관련
-
-const showPassword = ref(false)
-const showPasswordConfirm = ref(false);
-
-const data = ref({
-  name: '',
-  password: '',
-  employeeId: '',
-  employedDay: '',
-  phoneNumber: '',
-  empoly: '',
-  email: '',
-  passwordConfirm: '',
-
-  rules: {
-    required: value => !!value || '입력이 필요합니다.',
-
-    // 비밀번호
-    passwordRule: value => /^\d{4}$/.test(value) || '숫자 4자리로 입력해주세요.',
-    passwordConfim: value => data.value.password === value || '비밀번호가 일치하지 않습니다.',
-
-    // 사번
-    employeeIdRule: value => /^k-\d{10}$/.test(value) || '사번은 k- 포함 숫자 12자리 입니다',
-    employeeIdDupulicateCheck: async value => {
-      await user.isExistEmployeeIdForCreate(value)
-      return !user.getIsExistIdForCreate || '이미 존재하는 사번입니다.'},
-
-    // 연락처
-    phoneNumberRule: value => /^010-\d{4}-\d{4}$/.test(value) || '010-으로 시작하는 8자리 숫자를 입력해주세요',
-    phoneNumberDupulicateCheck: async value => {
-      await user.isExistPhoneNumberForCreate(value)
-      return !user.getIsExistPhoneNumber || '연락처가 중복됩니다.'},
-
-    // 이메일
-    emailRule: value => {
-      const pattern = /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/
-      return pattern.test(value) || '이메일 형식이 아닙니다.'},
-
-    emailDupulicateCheck: async value => {
-      await user.isExistEmailForCreate(value)
-      return !user.getIsExistEmail || '같은 이메일이 존재합니다.'},
-
-    },
-
-
-  select: null,
-  items: [
-    'Item 1',
-    'Item 2',
-    'Item 3',
-    'Item 4',
-  ],
-
-  checkbox: false,
-});
-
-
-const validate = async () => {
-  const {valid} = await this.$refs.form.validate()
-
-  if (valid) alert('Form is valid')
-};
-
-const reset = () => {
-  this.$refs.form.reset()
-};
-
-const resetValidation = () => {
-  this.$refs.form.resetValidation()
-};
-
-
-//
+// ❤️ 유저들의 정보를 세팅하는 함수들
 const setUsersInfoInGroup = async (groupId) => {
   clickedGroupId.value = groupId
   await groupUser.setUsersInfoInGroup(groupId);
@@ -126,6 +58,90 @@ const addUserToGroup = async (userId) => {
   await group.setMyGroupsInfo();
 }
 
+
+// ⏩ 회원가입 관련 세팅
+
+// 전송할 데이터
+const data = ref({
+  name: '',
+  email: '',
+  phoneNumber: '',
+  password: '',
+  employedDay: '',
+  employeeId: '',
+});
+
+// 최종 제출 관련 함수
+const handleSubmit = async (event) => {
+  loading.value = true
+  const results = await event
+  await wait(500); // 1.2초 대기
+  loading.value = false
+
+  if (results.valid) {
+    await user.createUserAccount(data.value)
+    await groupUser.addCreatedUserToAllUsers(user.getCreatedUserData)
+    alert(`${user.getCreatedUserData.name}님의 계정이 생성되었습니다.`)
+    Object.keys(data.value).forEach(key => data.value[key] = "");
+    passwordConfirm.value = ""
+    createMemberModdal.value = false; // 모달창 닫기
+  }
+
+}
+
+// 한국말로 입사일 형식 변경하는 함수
+const formattedDate = () => {
+  let date = new Date(employedDay.value);
+  let options = {
+    year: 'numeric',
+    month: 'long',
+    day: 'numeric',
+    weekday: 'long'
+  }
+  let formattedDate = date.toLocaleDateString('ko-KR', options);
+  data.value.employedDay = formattedDate
+  return formattedDate
+}
+
+
+
+
+// 폼데이터 벨리데이션 체크
+const rules = {
+  nameRule: value => !!value || '이름 입력이 필요합니다.',
+
+  // 비밀번호
+  passwordRule: value => /^\d{4}$/.test(value) || '숫자 4자리로 입력해주세요.',
+  passwordConfim: value => data.value.password === value || '비밀번호가 일치하지 않습니다.',
+
+  // 사번
+  employeeIdRule: value => /^k-\d{10}$/.test(value) || '사번은 k- 포함 숫자 12자리 입니다',
+  employeeIdDupulicateCheck: async value => {
+    await user.isExistEmployeeIdForCreate(value)
+    return !user.getIsExistIdForCreate || '이미 존재하는 사번입니다.'
+  },
+
+  // 연락처
+  phoneNumberRule: value => /^010-\d{4}-\d{4}$/.test(value) || '010- 으로 시작하는 8자리 숫자를 입력해주세요',
+  phoneNumberDupulicateCheck: async value => {
+    await user.isExistPhoneNumberForCreate(value)
+    return !user.getIsExistPhoneNumber || '연락처가 중복됩니다.'
+  },
+
+  // 이메일
+  emailRule: value => {
+    const pattern = /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/
+    return pattern.test(value) || '이메일 형식이 아닙니다.'
+  },
+  emailDupulicateCheck: async value => {
+    await user.isExistEmailForCreate(value)
+    return !user.getIsExistEmail || '같은 이메일이 존재합니다.'
+  },
+
+  // 입사일
+  employedDayRule: value => /^(19\d{2}|20\d{2})년 (\d{1,2})월 (\d{1,2})일 [월화수목금토일]요일$/.test(value) || '오른쪽 달력을 클릭하여 입력해 주세요',
+};
+// ⏩ 회원가입 관련 세팅 끝
 </script>
 
 <template>
@@ -133,7 +149,7 @@ const addUserToGroup = async (userId) => {
 
     <!--      ✅ 그룹에 사원 추가를 위한 다이얼로그 -->
     <v-dialog
-        width="70vw"
+        width="80vw"
         height="80vh"
         opacity="15%"
         v-model="addNewMemberModdal">
@@ -203,138 +219,115 @@ const addUserToGroup = async (userId) => {
           </v-card-actions>
         </v-card>
       </v-sheet>
-      <template v-slot:actions>
-        <v-btn
-            class="ms-auto"
-            text="Ok"
-            @click="addNewMemberModdal = false"
-        ></v-btn>
-      </template>
     </v-dialog>
 
 
     <!--   🥩 신규 회원 생성을 위한 다이얼로그 -->
     <v-dialog
         class="d-flex justify-center"
-        width="50vw"
-        height="70vh"
-        opacity="15%"
+        width="70vw"
+        height="90vh"
+        opacity="50%"
         v-model="createMemberModdal">
-
       <v-sheet
-          width="50vw"
-          height="70vh"
           rounded="xl"
           class="d-flex justify-center flex-wrap pa-10">
 
         <!--           ❤️ 그룹에 소속된 회원 리스트-->
-        <v-form ref="form">
-
-          <v-text-field
-              label="사번"
-              placeholder="k-1234567890"
-              v-model="data.employeeId"
-              :rules="[data.rules.employeeIdRule, data.rules.employeeIdDupulicateCheck]"
-              clearable
-              maxlength="12"
-              required
-              counter
-          />
-          <v-text-field
-              label="비밀번호"
-              placeholder="1234"
-              v-model="data.password"
-              :append-icon="showPassword ? 'mdi-eye' : 'mdi-eye-off'"
-              :rules="[data.rules.passwordRule]"
-              :type="showPassword ? 'text' : 'password'"
-              hint="4자리 숫자"
-              maxlength="4"
-              name="input-10-1"
-              counter
-              @click:append="showPassword = !showPassword"
-          />
-          <v-text-field
-              label="비밀번호 확인"
-              placeholder="1234"
-              v-model="data.passwordConfirm"
-              :append-icon="showPasswordConfirm ? 'mdi-eye' : 'mdi-eye-off'"
-              :rules="[data.rules.passwordConfim]"
-              :type="showPasswordConfirm ? 'text' : 'password'"
-              maxlength="4"
-              hint="4자리 숫자"
-              name="input-10-1"
-              counter
-              @click:append="showPasswordConfirm = !showPasswordConfirm"
-          />
-          <v-text-field
-              label="이름"
-              placeholder="홍길동"
-              v-model="data.name"
-              :rules="[data.rules.required]"
-              clearable
-              required
-          />
-
-          <v-text-field
-              label="연락처"
-              placeholder="010-1234-5678"
-              v-model="data.phoneNumber"
-              :rules="[data.rules.phoneNumberRule, data.rules.phoneNumberDupulicateCheck]"
-              clearable
-              maxlength="13"
-              required
-              counter
-          />
-          <v-text-field
-              label="이메일"
-              placeholder="admin@kip.com"
-              v-model="data.email"
-              :rules="[data.rules.emailRule, data.rules.emailDupulicateCheck]"
-              clearable
-              required
-          />
-          <v-text-field
-              v-model="data.employedDay"
-              :rules="data.nameRules"
-              clearable
-              label="입사일"
-              required
-          />
-
-
-          <div class="d-flex">
-            <v-btn
-                class="mt-4"
-                color="success"
-                @click="validate"
-            >
-              Validate
-            </v-btn>
-
-            <v-btn
-                class="mt-4"
-                color="error"
-                @click="reset"
-            >
-              Reset Form
-            </v-btn>
-            <v-btn
-                class="mt-4"
-                color="warning"
-                @click="resetValidation"
-            >
-              Reset Validation
-            </v-btn>
-          </div>
+        <v-form ref="form" style="width: 75vw" @submit.prevent="handleSubmit">
+          <v-row>
+            <v-col>
+              <v-text-field
+                  label="사번"
+                  placeholder="k-1234567890"
+                  v-model="data.employeeId"
+                  :rules="[rules.employeeIdRule, rules.employeeIdDupulicateCheck]"
+                  clearable
+                  maxlength="12"
+                  required
+                  counter
+              />
+              <v-text-field
+                  label="비밀번호"
+                  placeholder="1234"
+                  v-model="data.password"
+                  :append-icon="showPassword ? 'mdi-eye' : 'mdi-eye-off'"
+                  :rules="[rules.passwordRule]"
+                  :type="showPassword ? 'text' : 'password'"
+                  hint="4자리 숫자"
+                  maxlength="4"
+                  name="input-10-1"
+                  clearable
+                  counter
+                  @click:append="showPassword = !showPassword"
+              />
+              <v-text-field
+                  label="비밀번호 확인"
+                  placeholder="1234"
+                  v-model="passwordConfirm"
+                  :append-icon="showPasswordConfirm ? 'mdi-eye' : 'mdi-eye-off'"
+                  :rules="[rules.passwordRule, rules.passwordConfim]"
+                  :type="showPasswordConfirm ? 'text' : 'password'"
+                  maxlength="4"
+                  hint="4자리 숫자"
+                  name="input-10-1"
+                  clearable
+                  counter
+                  @click:append="showPasswordConfirm = !showPasswordConfirm"
+              />
+              <v-text-field
+                  label="이름"
+                  placeholder="홍길동"
+                  v-model="data.name"
+                  :rules="[rules.nameRule]"
+                  clearable
+                  required
+              />
+              <v-text-field
+                  label="연락처"
+                  placeholder="010-1234-5678"
+                  v-model="data.phoneNumber"
+                  :rules="[rules.phoneNumberRule, rules.phoneNumberDupulicateCheck]"
+                  clearable
+                  maxlength="13"
+                  required
+                  counter
+              />
+              <v-text-field
+                  label="이메일"
+                  placeholder="admin@kip.com"
+                  v-model="data.email"
+                  :rules="[rules.emailRule, rules.emailDupulicateCheck]"
+                  clearable
+                  required
+              />
+              <v-text-field
+                  v-model="data.employedDay"
+                  label="입사일"
+                  :rules="[rules.employedDayRule]"
+                  required
+                  clearable
+              />
+            </v-col>
+            <v-col>
+              <v-date-picker
+                  v-model="employedDay"
+                  width="100%"
+                  @click="formattedDate"
+                  show-adjacent-months
+              />
+              <v-btn
+                  class="mt-4"
+                  color="success"
+                  :loading="loading"
+                  text="신규 계정 생성하기"
+                  type="submit"
+                  block
+              />
+            </v-col>
+          </v-row>
         </v-form>
       </v-sheet>
-      <template v-slot:actions>
-        <v-btn
-            class="ms-auto"
-            text="Ok"
-            @click="addNewMemberModdal = false"
-        ></v-btn>
-      </template>
     </v-dialog>
 
     <!--    ☎️ 실제 본문 -->

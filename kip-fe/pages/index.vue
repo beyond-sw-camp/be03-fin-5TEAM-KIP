@@ -13,7 +13,7 @@ const color = useColor();
 
 async function handleSubmit(data) {
   user.login(data.empolymentId, data.password)
-  await wait(1200); // 2초 대기
+  await wait(1200); // 1.2초 대기
   await useRouter().push('/publicDoc');
 }
 

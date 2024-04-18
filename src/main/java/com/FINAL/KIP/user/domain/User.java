@@ -9,7 +9,6 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
 
-import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -37,7 +36,7 @@ public class User extends BaseEntity {
     @Setter
     private String profileImageUrl;
 
-    private LocalDateTime employedDay;
+    private String employedDay;
 
     @Column(unique = true, nullable = false)
     private String employeeId;
@@ -62,7 +61,7 @@ public class User extends BaseEntity {
     @Builder
     public User(String name, String email, String password,
                 String phoneNumber, String profileImageUrl,
-                LocalDateTime employedDay, String employeeId, Role role) {
+                String employedDay, String employeeId, Role role) {
         this.name = name;
         this.email = email;
         this.password = password;
