@@ -129,5 +129,9 @@ export const useGroupuser = defineStore("groupuser", {
                 console.log(e, "그룹에 새로운 사용자 추가 완료")
             }
         },
+        async addCreatedUserToAllUsers(user){
+            // 기존 유저정보 맨 앞에 추가.
+            this.allUserInfo.unshift(user);
+        }
     }
 });

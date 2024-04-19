@@ -13,8 +13,8 @@ const color = useColor();
 
 async function handleSubmit(data) {
   user.login(data.empolymentId, data.password)
-  await wait(1200); // 2초 대기
-  await useRouter().push('/kip');
+  await wait(1200); // 1.2초 대기
+  await useRouter().push('/publicDoc');
 }
 
 // DB에 존재하는 ID 인지 검사.

@@ -55,17 +55,30 @@ public class UserController {
         return ResponseEntity.ok(userService.getAllUsers());
     }
 
-    // 아이디 DB에 존재하는지 여부 리턴
-    @GetMapping("{employeeId}")
-    public ResponseEntity<Boolean> checkIfEmployeeIdExists(@PathVariable String employeeId) {
+    // [중복체크] 아이디 DB에 존재하는지 여부 리턴
+    @GetMapping("{employeeId}/id")
+        public ResponseEntity<Boolean> checkIfEmployeeIdExists(@PathVariable String employeeId){
         return ResponseEntity.ok(userService.checkIfEmployeeIdExists(employeeId));
     }
 
-    // 아이디와 패스워드가 일치하면 회원 이름만 리턴
+    // [비번체크] 아이디와 패스워드가 일치하면 회원 이름만 리턴
     @PostMapping("check")
     public ResponseEntity<Map<String, Object>> checkIdPassAndReturnName(@RequestBody LoginReqDto dto) {
         return ResponseEntity.ok(userService.checkIdPassAndReturnName(dto));
     }
+
+    // [중복체크] 휴대폰 아이디가 DB에 존재하는지 여부 리턴
+    @GetMapping("{phoneNumber}/phone")
+    public ResponseEntity<Boolean> checkIfPhoneNumberExists(@PathVariable String phoneNumber){
+        return ResponseEntity.ok(userService.checkIfPhoneNumberExists(phoneNumber));
+    }
+
+    // [중복체크] 이메일이 DB에 존재하는지 여부 리턴
+    @GetMapping("{email}/email")
+    public ResponseEntity<Boolean> checkIfEmailExists(@PathVariable String email){
+        return ResponseEntity.ok(userService.checkIfEmailExists(email));
+    }
+
 
     // 로그인
     @PostMapping("login") //login은 토큰 사용으로 Map형식으로 받아주어야함 // Map<String, Object>

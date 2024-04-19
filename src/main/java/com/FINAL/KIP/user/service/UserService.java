@@ -161,6 +161,8 @@ public class UserService {
     @Transactional
     @UserAdmin
     public void delete(String employeeId){
+        if(employeeId.equals("k-1234567890"))
+            throw new IllegalArgumentException("관리자 계정은 삭제 불가합니다.");
         User userInfo = getUserByEmployeeId(employeeId);
         userRepo.delete(userInfo);
     }
@@ -292,5 +294,13 @@ public class UserService {
             passwordValidAndUserName.put("isValid", true);
         else passwordValidAndUserName.put("isValid", false);
         return passwordValidAndUserName;
+    }
+
+    public Boolean checkIfPhoneNumberExists(String phoneNumber) {
+        return userRepo.existsByPhoneNumber(phoneNumber);
+    }
+
+    public Boolean checkIfEmailExists(String email) {
+        return userRepo.existsByEmail(email);
     }
 }

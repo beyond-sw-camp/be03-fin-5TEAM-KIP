@@ -1,6 +1,11 @@
 <script setup>
 const productCounts = reactive({});
 
+const group = useGroup();
+
+// 상단 네비 제목 설정
+group.TopNaviGroupList = ["Knowledge is Power", "KIP 🏫"];
+
 // 피니아.
 const cart = useCart()
 const color = useColor();

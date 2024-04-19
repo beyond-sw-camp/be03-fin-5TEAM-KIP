@@ -152,7 +152,7 @@ const handleRailClick = () => {
 .v-toolbar__content {
   margin: 0.8vw;
   border-radius: 20px !important;
-  width: 98.5% !important;
+  width: 98.3% !important;
   color: var(--primary-color);
   background-color: white;
 }

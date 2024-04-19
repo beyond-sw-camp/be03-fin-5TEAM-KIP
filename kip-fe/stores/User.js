@@ -7,13 +7,26 @@ export const useUser = defineStore("user", {
             userInfo: {},
             isLoggedIn: false,
             isExistId: false,
+            isExistIdForCreate: false,
+            isExistPhoneNumber: false,
+            isExistEmail: false,
             isCorrectPassword: false,
             justUserName: "",
+            createdUserData:{},
         };
     },
     getters: {
         getIsExistId(state) {
             return state.isExistId;
+        },
+        getIsExistIdForCreate(state) {
+            return state.isExistIdForCreate;
+        },
+        getIsExistPhoneNumber(state) {
+            return state.isExistPhoneNumber;
+        },
+        getIsExistEmail(state) {
+            return state.isExistEmail;
         },
         getIsCorrectPassword(state) {
             return state.isCorrectPassword;
@@ -33,18 +46,70 @@ export const useUser = defineStore("user", {
         getProfileImageUrl(state) {
             return state.userInfo.profileImageUrl;
         },
+        getCreatedUserData(state){
+            return state.createdUserData;
+        }
     },
     actions: {
 
-        // DB에 아이디 있는지 검서하는 요청.
+        // DB에 사번이 있는지 검사하는 요청.
         async isExistEmployeeId(employeeId) {
             try {
-                const response = await fetch(`${BASE_URL}/user/${employeeId.value}`, {
+                const response = await fetch(`${BASE_URL}/user/${employeeId.value}/id`, {
                     method: 'GET',
                 });
-                this.isExistId = await response.json();
+                this.isExistId = await response.json()
             } catch (e) {
                 console.log(e, "아이디 검사 실패")
+            }
+        },
+
+        async isExistEmployeeIdForCreate(employeeId) {
+            try {
+                const response = await fetch(`${BASE_URL}/user/${employeeId}/id`, {
+                    method: 'GET',
+                });
+                this.isExistIdForCreate = await response.json()
+            } catch (e) {
+                console.log(e, "아이디 검사 실패")
+            }
+        },
+        async isExistPhoneNumberForCreate(phoneNumber) {
+            try {
+                const response = await fetch(`${BASE_URL}/user/${phoneNumber}/phone`, {
+                    method: 'GET',
+                });
+                this.isExistPhoneNumber = await response.json()
+            } catch (e) {
+                console.log(e, "폰번호 중복 체크 실패")
+            }
+        },
+        async isExistEmailForCreate(email) {
+            try {
+                const response = await fetch(`${BASE_URL}/user/${email}/email`, {
+                    method: 'GET',
+                });
+                this.isExistEmail = await response.json()
+            } catch (e) {
+                console.log(e, "이메일 중복체크 실패")
+            }
+        },
+
+        // 계정 생성
+        async createUserAccount(data) {
+            try {
+                const response = await fetch(`${BASE_URL}/user`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${this.accessToken}`,
+                    },
+                    body: JSON.stringify(data),
+                });
+                this.createdUserData = await response.json();
+
+            } catch (e) {
+                console.log(e, "새로운 계정 생성 실패")
             }
         },
 
@@ -118,10 +183,23 @@ export const useUser = defineStore("user", {
                     } catch (e) {
                         console.log(e, '유저정보 가져오기 실패')
                     }
-                await useRouter().push('/kip');
+                await useRouter().push('/publicDoc');
             }
         },
-
+        async deleteUser(employeeId, name) {
+            try {
+                confirm("회원이 영구적으로 삭제됩니다.")
+                const response =
+                    await fetch(`${BASE_URL}/user/${employeeId}`, {
+                        method: 'DELETE',
+                        headers: {'Authorization': 'Bearer ' + this.accessToken}
+                    })
+                if(response.ok)
+                    alert(`${name}님의 아이디가 영구 삭제되었습니다.`)
+            } catch (e) {
+                console.log(e, '사용자 삭제')
+            }
+        },
         async logout() {
             try {
                 const response =
@@ -130,7 +208,6 @@ export const useUser = defineStore("user", {
                         headers: {'Authorization': 'Bearer ' + this.accessToken}
                     })
                 const deleteRes = response.json();
-                console.log(deleteRes.result)
 
                 this.$reset(); // 유져 정보 리셋
                 useCart().$reset() // 장바구니 리셋

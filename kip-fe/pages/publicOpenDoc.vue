@@ -1,18 +1,15 @@
 <script setup>
 
+const group = useGroup();
+// 상단 네비 제목 설정
+group.TopNaviGroupList = ["Knowledge is Power","전체공개문서","해시태그로 검색해 주세요.🏷️"];
+
 const color = useColor();
-const route = useRoute()
-const groupId = route.params.groupId;
-const groupName = useGroup();
 const documentList = useDocumentList();
-const firstDocumentTitle = computed(() => documentList.getFirstDocumentTitle);
 
 await documentList.$reset();
-await documentList.setDocumentList(groupId);
-await groupName.setGroupUsersInfo(groupId);
-await documentList.setFirstDocumentDetails();
-
-groupName.setTopNaviGroupList(groupId);
+await documentList.setPublicDocumentList();
+await documentList.setFirstPublicDocumentDetails();
 
 // 문서 선택 시 상세 정보를 가져오는 함수
 const selectDocument = async (documentId) => {
@@ -30,11 +27,8 @@ const selectDocument = async (documentId) => {
           <v-list class="pa-4">
             <v-list-item>
               <v-list-item-content>
-                <v-list-item-title class="font-weight-bold headline text-center"
-                                   v-for="group in groupName"
-                                   :key="group.groupId"
-                >
-                  {{group.groupName}}
+                <v-list-item-title class="font-weight-bold headline text-center">
+                  전체공개문서
                 </v-list-item-title>
               </v-list-item-content>
             </v-list-item>
@@ -43,7 +37,7 @@ const selectDocument = async (documentId) => {
             <!-- 그룹 문서 title 출력 -->
             <v-tabs color="primary" direction="vertical">
               <v-tab
-                  v-for="doc in documentList.getDocumentList"
+                  v-for="doc in documentList.getPublicDocumentList"
                   :key="doc.documentId"
                   @click="selectDocument(doc.documentId)"
               >

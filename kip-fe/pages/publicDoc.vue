@@ -1,4 +1,8 @@
-<script setup lang="ts">
+<script setup>
+const group = useGroup();
+// 상단 네비 제목 설정
+group.TopNaviGroupList = ["Knowledge is Power","전체공개문서","해시태그로 검색해 주세요.🏷️"];
+
 
 const postForm = ref();
 const search = ref()
