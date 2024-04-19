@@ -38,26 +38,30 @@ const setUsersInfoInGroup = async (groupId) => {
   clickedGroupId.value = groupId
   await groupUser.setUsersInfoInGroup(groupId);
 }
-
 const setAllUserInfoInKip = async () => {
   // 모달창 열고
   addNewMemberModdal.value = true
   // 현재 그룹에 없는 회원들만 조회
   await groupUser.setAllUserInfoInKip();
 }
-
 const deleteUserFromGroup = async (groupId, userId) => {
   await groupUser.deleteUserFromGroup(groupId, userId)
   await setUsersInfoInGroup(clickedGroupId.value);
   await groups.setMyGroupsInfo(); // 이게 작동 안함.
 }
-
 const addUserToGroup = async (userId) => {
   await groupUser.addUserToGroup(clickedGroupId.value, userId);
   await setUsersInfoInGroup(clickedGroupId.value);
   await group.setMyGroupsInfo();
 }
-
+const deletUserFromDataBaese = async (employeeId, name) => {
+  if(employeeId === "k-1234567890")
+    alert("관리자의 아이디는 삭제할 수 없습니다.")
+  else {
+    await user.deleteUser(employeeId, name);
+    await groupUser.deletUserFromAllUserInfoInKip(employeeId);
+  }
+}
 
 // ⏩ 회원가입 관련 세팅
 
@@ -201,7 +205,7 @@ const rules = {
           <v-img
               class="align-end text-white"
               height="200"
-              :src="user.profileImageUrl"
+              :src="userIn.profileImageUrl"
               cover
           >
           </v-img>
@@ -217,7 +221,7 @@ const rules = {
                 class="ma-2 px-3"
                 :text="`팀원 추가`"/>
             <v-btn
-                @Click="user.deleteUser(userIn.employeeId, userIn.name)"
+                @Click="deletUserFromDataBaese(userIn.employeeId, userIn.name)"
                 variant="elevated"
                 color="red"
                 class="ma-2 px-3"
