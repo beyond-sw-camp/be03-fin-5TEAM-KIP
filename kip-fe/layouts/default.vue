@@ -170,7 +170,7 @@ const handleRailClick = () => {
   background-color: white;
   margin: 0.8vw;
   width: 98.5%;
-  min-height: calc(100vh - 0.8vw - 90px);
+  min-height: calc(100vh - 1.6vw - 90px);
   border-radius: 20px;
   box-sizing: border-box;
   overflow: hidden;
