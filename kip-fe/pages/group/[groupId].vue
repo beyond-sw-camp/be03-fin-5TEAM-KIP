@@ -1,16 +1,20 @@
 <script setup>
 
 const color = useColor();
-const route = useRoute()
+const route = useRoute();
 const groupId = route.params.groupId;
 const groupName = useGroup();
 const documentList = useDocumentList();
-const firstDocumentTitle = computed(() => documentList.getFirstDocumentTitle);
+const attachedFile = useAttachedFile();
 
 await documentList.$reset();
 await documentList.setDocumentList(groupId);
 await groupName.setGroupUsersInfo(groupId);
 await documentList.setFirstDocumentDetails();
+
+await attachedFile.$reset();
+await attachedFile.setAttachedFile(documentList.getFirstDocId);
+// await attachedFile.setFirstDocAttachedFile();
 
 groupName.setTopNaviGroupList(groupId);
 
@@ -18,11 +22,11 @@ groupName.setTopNaviGroupList(groupId);
 const selectDocument = async (documentId) => {
   // 문서의 상세 정보를 가져옴
   await documentList.setDocumentDetails(documentId);
+  await attachedFile.setAttachedFile(documentId);
 };
 </script>
 
 <template>
-
   <v-container fluid>
     <v-row no-gutters>
       <!-- 왼쪽 사이드바 -->
@@ -68,7 +72,7 @@ const selectDocument = async (documentId) => {
         <v-divider></v-divider>
         </v-list>
 
-        <v-card flat class="mt-4 mx-auto" width="900">
+        <v-card flat class="mt-4 mx-auto" width="800">
             <!-- 문서의 내용 -->
             {{ documentList.selectedDocumentDetails.content }}
         </v-card>
@@ -92,14 +96,19 @@ const selectDocument = async (documentId) => {
         </v-card>
 
         <!-- 첨부 파일 섹션 -->
-        <v-card flat>
-          <v-card-title class="headline text-center">첨부 파일</v-card-title>
-          <v-card-text>
-            <v-btn text color="primary">service-task.pdf</v-btn>
-            <v-btn text color="primary">work-project.zip</v-btn>
-            <!-- 더 많은 파일들... -->
-          </v-card-text>
-        </v-card>
+        <div class="attached-files">
+          <v-card flat>
+            <v-card-title class="headline text-center">첨부 파일</v-card-title>
+            <v-card-text>
+              <v-btn text color="primary"
+                     v-for="file in attachedFile.getAttachedFile"
+                     :key="file.id"
+                     @click="handleFileClick(file.fileUrl)">
+                {{ file.fileName }}
+              </v-btn>
+            </v-card-text>
+          </v-card>
+        </div>
 
         <div class="pa-4">
           <v-card-title class="headline text-center">해시 태그</v-card-title>

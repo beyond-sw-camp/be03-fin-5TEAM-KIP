@@ -7,6 +7,7 @@ export const useDocumentList = defineStore("documentList", {
             documentList: [],
             publicDocumentList: [],
             selectedDocumentDetails: ref(null), // 선택된 문서의 상세 정보를 저장
+            firstDocumentId: "",
         };
     },
     getters: {
@@ -27,6 +28,10 @@ export const useDocumentList = defineStore("documentList", {
                 title: publicDocument.title
             }))
         },
+        //
+        getFirstDocId(state){
+            return state.firstDocumentId
+        }
     },
 
     actions: {
@@ -74,6 +79,7 @@ export const useDocumentList = defineStore("documentList", {
         async setFirstDocumentDetails(){
             if (this.documentList.length > 0) {
                 const firstDocumentId = this.documentList[0].documentId;
+                this.firstDocumentId = firstDocumentId
                 await this.setDocumentDetails(firstDocumentId);
             }
         },
