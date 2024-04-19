@@ -79,7 +79,7 @@ public class UserService {
     }
 
 //    Read
-    @JustAdmin
+    @UserAdmin
     public List<UserResDto> getAllUsers() {
         List<User> users = userRepo.findAll();
         return users.stream()

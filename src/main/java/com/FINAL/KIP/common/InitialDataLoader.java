@@ -32,7 +32,7 @@ public InitialDataLoader(UserRepository userRepository,
                     .email("admin@kip.com")
                     .password(passwordEncoder.encode("1234"))
                     .phoneNumber("01012345678")
-                    .profileImageUrl("https://picsum.photos/262") // 임시 프로필
+                    .profileImageUrl("https://picsum.photos/400") // 임시 프로필
                     .employeeId("k-1234567890")
                     .role(Role.ADMIN)
                     .build();
