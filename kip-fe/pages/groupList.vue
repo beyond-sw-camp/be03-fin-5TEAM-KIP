@@ -154,7 +154,6 @@ const rules = {
     <!--      ✅ 그룹에 사원 추가를 위한 다이얼로그 -->
     <v-dialog
         width="80vw"
-        height="80vh"
         opacity="15%"
         v-model="addNewMemberModdal">
       <v-sheet
@@ -236,7 +235,6 @@ const rules = {
     <v-dialog
         class="d-flex justify-center"
         width="70vw"
-        height="90vh"
         opacity="50%"
         v-model="createMemberModdal">
       <v-sheet
