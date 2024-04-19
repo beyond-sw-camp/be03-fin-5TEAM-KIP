@@ -43,16 +43,17 @@ public class UserService {
     private final BookRepository bookRepository;
 
     private final String uploadDir = "uploads/profiles"; // 프로필 이미지를 저장할 디렉토리 경로
-
+    private final UserRepository userRepository;
 
 
     @Autowired
-    public UserService(UserRepository userRepo, PasswordEncoder passwordEncoder, JwtTokenProvider jwtTokenProvider, UserRefreshTokenRepository userRefreshTokenRepository, BookRepository bookRepository) {
+    public UserService(UserRepository userRepo, PasswordEncoder passwordEncoder, JwtTokenProvider jwtTokenProvider, UserRefreshTokenRepository userRefreshTokenRepository, BookRepository bookRepository, UserRepository userRepository) {
         this.userRepo = userRepo;
         this.passwordEncoder = passwordEncoder;
         this.jwtTokenProvider = jwtTokenProvider;
         this.userRefreshTokenRepository = userRefreshTokenRepository;
         this.bookRepository = bookRepository;
+        this.userRepository = userRepository;
     }
 
 //    Create
@@ -133,6 +134,28 @@ public class UserService {
         User userInfo = getUserFromAuthentication();
         userInfo.updateUserInfo(userInfoUpdateReqDto.getName(), userInfoUpdateReqDto.getEmail(),
                 userInfoUpdateReqDto.getPhoneNumber());
+    }
+
+// 비밀번호 체크
+    public boolean checkCurrentPassword(Long userId, String currentPassword) {
+        User user = userRepo.findById(userId).orElseThrow(() -> new RuntimeException("User not found."));
+        return passwordEncoder.matches(currentPassword, user.getPassword());
+    }
+// 비밀번호 변경
+    public boolean changePassword(String userId, String currentPassword, String newPassword) {
+        // 유저를 사번으로 조회
+        User user = userRepository.findByEmployeeId(userId)
+                .orElseThrow(() -> new EntityNotFoundException("User not found with id: " + userId));
+
+        // 현재 비밀번호가 맞는지 확인
+        if (!passwordEncoder.matches(currentPassword, user.getPassword())) {
+            return false; // 현재 비밀번호가 일치하지 않으면 false 반환
+        }
+
+        // 새 비밀번호로 업데이트
+        user.setPassword(passwordEncoder.encode(newPassword));
+        userRepository.save(user);
+        return true; // 비밀번호 변경 성공
     }
 
     @Transactional

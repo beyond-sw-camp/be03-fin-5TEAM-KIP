@@ -222,26 +222,79 @@ export const useUser = defineStore("user", {
                 console.log(e, '로그아웃 실패')
             }
         },
-    },
 
-    // updateUserInfo 메소드와 마이페이지 컴포넌트의 입력 필드에 v-model을 적용 mypage
+        // 개인 페이지에 대한 정보 가져온다
+        async fetchUserInfo() {
+            try {
+                const response = await fetch(`${BASE_URL}/user/mypage`, {
+                    headers: {'Authorization': `Bearer ${this.accessToken}`}
+                });
+                if (!response.ok) throw new Error('Failed to fetch user info');
+                this.userInfo = await response.json();
+            } catch (error) {
+                console.error('Failed to fetch user info:', error);
+            }
+        },
 
-    async updateUserInfo(updatedInfo) {
-        try {
-            const response = await fetch(`${BASE_URL}/user`, {
-                method: 'PATCH',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'Authorization': `Bearer ${this.accessToken}`,
-                },
-                body: JSON.stringify(updatedInfo),
-            });
-            if (!response.ok) throw new Error('Failed to update user info');
-            const updatedUserData = await response.json();
-            this.userInfo = updatedUserData.result; // 업데이트된 사용자 정보로 상태 업데이트
-        } catch (e) {
-            console.error('Update user info failed', e);
-            // 에러 처리 로직
+        // 개인 정보 수정
+        async updateUserInfo(updatedInfo) {
+            try {
+                const response = await fetch(`${BASE_URL}/user`, {
+                    method: 'PATCH',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${this.accessToken}`
+                    },
+                    body: JSON.stringify(updatedInfo)
+                });
+                if (!response.ok) throw new Error('Failed to update user info');
+                const updatedUserData = await response.json();
+                this.userInfo = updatedUserData; // 상태 업데이트
+                return updatedUserData; // 업데이트된 사용자 정보 반환
+            } catch (error) {
+                console.error('Failed to update user info:', error);
+                alert('Failed to update user details.');
+            }
+        },
+
+        async changePassword(employeeId, currentPassword, newPassword) {
+            try {
+                const body = JSON.stringify({
+                    findByEmployeeId: employeeId, // 추가된 필드
+                    currentPassword: currentPassword,
+                    newPassword: newPassword
+                });
+
+                const response = await fetch(`${BASE_URL}/user/change-password`, {
+                    method: 'PATCH',
+                    headers: {
+                        'Authorization': `Bearer ${this.accessToken}`,
+                        'Content-Type': 'application/json',
+                    },
+                    body: body
+                });
+
+                if (!response.ok) {
+                    const errorText = await response.text();
+                    throw new Error(errorText || 'Password change failed');
+                }
+
+                const data = await response.json();
+                alert('Password successfully updated.');
+            } catch (error) {
+                console.error('Failed to change password:', error);
+                alert(error.message || 'Error changing password');
+            }
         }
-    },
+        },
+
+    setup() {
+        const accessToken = ref('');
+        const userInfo = ref({});
+
+        return {
+            accessToken,
+            userInfo
+        };
+    }
 });
