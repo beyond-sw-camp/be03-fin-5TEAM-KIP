@@ -15,7 +15,7 @@ export const useDocumentList = defineStore("documentList", {
         getDocumentList(state){
             return state.documentList.map(document => ({
                 documentId: document.documentId,  // 문서 ID
-                doctype: document.doctype,      //문서 타입
+                docType: document.docType,      //문서 타입
                 title: document.title     // 제목
             }))
         },

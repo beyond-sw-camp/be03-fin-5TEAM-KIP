@@ -86,16 +86,6 @@ await group.setMyGroupsInfo();  // (awit) 그룹정보를 모두 가지고 온�
           class="group__list"/>
 
       <v-list-item
-          title="FormKitTest"
-          value="FormKit"
-          to="/FormKit"
-          prepend-icon="mdi-list-box-outline"
-          :color="color.kipMainColor"
-          rounded="xl"
-          variant="text"
-          class="group__list"/>
-
-      <v-list-item
           title="bookmarks"
           value="bookmarks"
           to="/bookmarks"

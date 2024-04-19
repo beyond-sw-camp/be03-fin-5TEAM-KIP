@@ -6,14 +6,18 @@ const user = useUser();
 const group = useGroup();
 const color = useColor();
 const groupUser = useGroupuser();
+const document = useDocumentList()
 
-
+// 맴버 관련 데이터
 const loading = ref(false);
 const open = ref();
 const clickedGroupId = ref(1);
 const addNewMemberModdal = ref();
 const createMemberModdal = ref();
 const employedDay = ref()
+
+
+// 문서관련 데이터
 
 // 상단 네비 제목 설정
 group.TopNaviGroupList = ["Knowledge is Power", "부서목록", "타 부서 문서와 구성원을 조회할 수 있습니다. 🥩️"];
@@ -31,12 +35,14 @@ const passwordConfirm = ref('');
 // 그릅 유저 정보 초기화
 groupUser.$reset();
 await groupUser.setUsersInfoInGroup(clickedGroupId.value);
+await document.setDocumentList(clickedGroupId.value);
 
 
 // ❤️ 유저들의 정보를 세팅하는 함수들
 const setUsersInfoInGroup = async (groupId) => {
   clickedGroupId.value = groupId
   await groupUser.setUsersInfoInGroup(groupId);
+  await document.setDocumentList(groupId);
 }
 const setAllUserInfoInKip = async () => {
   // 모달창 열고
@@ -55,7 +61,7 @@ const addUserToGroup = async (userId) => {
   await group.setMyGroupsInfo();
 }
 const deletUserFromDataBaese = async (employeeId, name) => {
-  if(employeeId === "k-1234567890")
+  if (employeeId === "k-1234567890")
     alert("관리자의 아이디는 삭제할 수 없습니다.")
   else {
     await user.deleteUser(employeeId, name);
@@ -106,8 +112,6 @@ const formattedDate = () => {
   data.value.employedDay = formattedDate
   return formattedDate
 }
-
-
 
 
 // 폼데이터 벨리데이션 체크
@@ -343,6 +347,7 @@ const rules = {
 
       <!--          👈 왼쪽 조직 리스트 -->
       <v-col cols="4" class="pl-8">
+
         <v-sheet>
           <v-card
               elevation="5"
@@ -375,79 +380,121 @@ const rules = {
 
       <!--        👉 오른쪽 구성원 리스트-->
       <v-col cols="8">
-        <v-sheet
-            class="d-flex flex-wrap">
-          <v-card
-              width="100%"
-              class="mb-5 ml-5"
-              min-width="100"
-              max-width="240"
-              rounded="xl"
-              elevation="5"
-          >
-            <v-img
-                class="align-end text-white"
-                height="200"
-                :src="`/images/profile/user${Math.ceil((Math.random() * 14))}.jpg`"
-                cover
+        <v-row>
+          <v-col>
+            <v-sheet
+                class="d-flex flex-wrap">
+              <v-card
+                  width="100%"
+                  class="mb-5 ml-5"
+                  min-width="100"
+                  max-width="240"
+                  rounded="xl"
+                  elevation="5"
+              >
+                <v-img
+                    class="align-end text-white"
+                    height="200"
+                    :src="`/images/profile/user${Math.ceil((Math.random() * 14))}.jpg`"
+                    cover
+                >
+                </v-img>
+                <v-card-title v-text="`❤️ ${groupUser.getGroupName} [ ${ clickedGroupId } ]`"/>
+                <v-card-subtitle v-text="groupUser.getGroupType === 'DEPARTMENT' ? '🏢 부서조직': '🚀 NewBiz팀' "/>
+
+                <v-card-actions class="d-flex justify-center">
+                  <!--              신규 팀원 추가 버튼-->
+                  <v-btn
+                      @click="setAllUserInfoInKip"
+                      variant="elevated"
+                      color="green-lighten-1"
+                      class="ma-2 px-4"
+                      text="신규팀원추가"/>
+                </v-card-actions>
+              </v-card>
+
+              <!--          🧑‍🦱🧑‍🦱  그룹에 소속된 회원 리스트-->
+              <v-card
+                  width="100%"
+                  v-for="user in groupUser.getUsersInfoInGroup"
+                  :key="user.userId"
+                  class="mb-5 ml-5"
+                  min-width="200"
+                  max-width="240"
+                  rounded="xl"
+                  elevation="5"
+              >
+                <v-img
+                    class="align-end text-white"
+                    height="200"
+                    :src="user.profileImageUrl"
+                    cover
+                >
+                </v-img>
+                <v-card-title v-text="`${user.groupRole === 'SUPER'? '👑' : '✅'} ${user.name} `"/>
+                <v-card-subtitle v-text="`📞 ${user.phoneNumber}`"/>
+
+
+                <v-card-actions class="d-flex justify-center">
+                  <v-btn
+                      @click="groupUser.updateUserRoleInGroup(clickedGroupId, user.userId)"
+                      variant="elevated"
+                      :color="color.kipMainColor"
+                      class="ma-2 px-3"
+                      text="역할변경"/>
+                  <v-btn
+                      @Click="deleteUserFromGroup(clickedGroupId, user.userId)"
+                      variant="elevated"
+                      color="red-lighten-2"
+                      class="ma-2 px-3"
+                      text="그룹제외"/>
+                </v-card-actions>
+              </v-card>
+            </v-sheet>
+          </v-col>
+        </v-row>
+        <v-row>
+          <v-col>
+          <!--          📁📁 그룹에 소속된 문서 리스트-->
+          <v-sheet
+              class="d-flex flex-wrap">
+            <v-card
+                width="100%"
+                v-for="doc in document.getDocumentList"
+                :key="doc.userId"
+                class="mb-4 ml-5 pa-2"
+                rounded="xl"
+                elevation="5"
+                clase="d-flex"
             >
-            </v-img>
-            <v-card-title v-text="`❤️ ${groupUser.getGroupName}`"/>
-            <v-card-subtitle v-text="groupUser.getGroupType === 'DEPARTMENT' ? '🏢 부서조직': '🚀 NewBiz팀' "/>
-
-            <v-card-actions class="d-flex justify-center">
-              <!--              신규 팀원 추가 버튼-->
-              <v-btn
-                  @click="setAllUserInfoInKip"
-                  variant="elevated"
-                  color="green-lighten-1"
-                  class="ma-2 px-4"
-                  text="신규팀원추가"/>
-            </v-card-actions>
-          </v-card>
-
-          <!--           그룹에 소속된 회원 리스트-->
-          <v-card
-              width="100%"
-              v-for="user in groupUser.getUsersInfoInGroup"
-              :key="user.userId"
-              class="mb-5 ml-5"
-              min-width="100"
-              max-width="240"
-              rounded="xl"
-              elevation="5"
-          >
-            <v-img
-                class="align-end text-white"
-                height="200"
-                :src="user.profileImageUrl"
-                cover
-            >
-            </v-img>
-            <v-card-title v-text="`${user.groupRole === 'SUPER'? '👑' : '✅'} ${user.name} `"/>
-            <v-card-subtitle v-text="`📞 ${user.phoneNumber}`"/>
-
-
-            <v-card-actions class="d-flex justify-center">
-              <v-btn
-                  @click="groupUser.updateUserRoleInGroup(clickedGroupId, user.userId)"
-                  variant="elevated"
-                  :color="color.kipMainColor"
-                  class="ma-2 px-3"
-                  text="역할변경"/>
-              <v-btn
-                  @Click="deleteUserFromGroup(clickedGroupId, user.userId)"
-                  variant="elevated"
-                  color="red-lighten-2"
-                  class="ma-2 px-3"
-                  text="그룹제외"/>
-            </v-card-actions>
-          </v-card>
-        </v-sheet>
+              <div class="d-flex justify-space-around">
+                <v-spacer v-if="doc.docType !== 'SECTION'"></v-spacer>
+                <v-card-title v-text="`${doc.docType === 'SECTION' ? '⏩' : ''} ${doc.title} [ ${doc.documentId} ]`"/>
+                <v-spacer/>
+                <v-spacer/>
+                <v-spacer/>
+                <v-spacer/>
+                <v-spacer/>
+                <v-spacer/>
+                <v-card-actions class="d-flex justify-space-evenly">
+                  <v-btn
+                      @click=""
+                      variant="elevated"
+                      color="blue-lighten-1"
+                      class="px-4 mr-4"
+                      text="권한요청"
+                      rounded="xl"
+                  />
+                </v-card-actions>
+              </div>
+            </v-card>
+          </v-sheet>
+          </v-col>
+        </v-row>
       </v-col>
     </v-row>
   </v-container>
 </template>
-<style>
+<style scoped>
 
 </style>
