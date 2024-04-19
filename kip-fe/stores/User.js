@@ -257,33 +257,28 @@ export const useUser = defineStore("user", {
             }
         },
 
-        async changePassword(employeeId, currentPassword, newPassword) {
+        async changePassword(currentPassword, newPassword) {
             try {
-                const body = JSON.stringify({
-                    findByEmployeeId: employeeId, // 추가된 필드
-                    currentPassword: currentPassword,
-                    newPassword: newPassword
-                });
-
                 const response = await fetch(`${BASE_URL}/user/change-password`, {
                     method: 'PATCH',
                     headers: {
                         'Authorization': `Bearer ${this.accessToken}`,
-                        'Content-Type': 'application/json',
+                        'Content-Type': 'application/json'
                     },
-                    body: body
+                    body: JSON.stringify({
+                        findByEmployeeId: this.userInfo.employeeId,
+                        currentPassword,
+                        newPassword
+                    })
                 });
-
                 if (!response.ok) {
-                    const errorText = await response.text();
-                    throw new Error(errorText || 'Password change failed');
+                    const errorData = await response.json();
+                    throw new Error(errorData.message || 'Failed to change password');
                 }
-
-                const data = await response.json();
-                alert('Password successfully updated.');
+                return true; // On success
             } catch (error) {
-                console.error('Failed to change password:', error);
-                alert(error.message || 'Error changing password');
+                console.error('Error changing password:', error);
+                throw error; // Rethrow to handle it in the component
             }
         }
         },

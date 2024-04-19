@@ -35,15 +35,15 @@
           <v-col cols="12" md="6">
             <v-card class="d-flex flex-column" outlined>
               <v-card-title class="text-h5">Change Password</v-card-title>
-              <v-card-text class="flex-grow-1">
+              <v-card-text>
                 <v-text-field
                     v-model="password.current"
                     :type="showPassword ? 'text' : 'password'"
                     label="Current Password"
                     outlined
                     dense
-                    :append-icon="showPassword ? 'mdi-eye' : 'mdi-eye-off'"
-                    @click:append="showPasswordToggle"
+                    append-icon="mdi-eye"
+                    @click:append="showPassword = !showPassword"
                 ></v-text-field>
                 <v-text-field
                     v-model="password.new"
@@ -51,21 +51,21 @@
                     label="New Password"
                     outlined
                     dense
-                    :append-icon="showPassword ? 'mdi-eye' : 'mdi-eye-off'"
-                    @click:append="showPasswordToggle"
+                    append-icon="mdi-eye"
+                    @click:append="showPassword = !showPhonePassword"
                 ></v-text-field>
                 <v-text-field
                     v-model="password.confirm"
                     :type="showPassword ? 'text' : 'password'"
-                    label="Confirm Password"
+                    label="Confirm New Password"
                     outlined
                     dense
-                    :append-icon="showPassword ? 'mdi-eye' : 'mdi-eye-off'"
-                    @click:append="showPasswordToggle"
+                    append-icon="mdi-eye"
+                    @click:append="showPassword = !showPassword"
                 ></v-text-field>
               </v-card-text>
               <v-card-actions class="justify-end mt-auto">
-                <v-btn color="primary" @click="changePassword">Save</v-btn>
+                <v-btn color="primary" @click="changePassword">Change Password</v-btn>
                 <v-btn color="grey" @click="cancelEdit">Cancel</v-btn>
               </v-card-actions>
             </v-card>
@@ -80,8 +80,7 @@
                 <v-row>
                   <v-col cols="12" md="6">
                     <v-text-field label="Your Name" outlined dense v-model="userInfo.name"></v-text-field>
-                    <v-text-field label="Employee ID" outlined dense v-model="userInfo.employeeId"
-                                  readonly></v-text-field>
+                    <v-text-field label="Employee ID" outlined dense v-model="userInfo.employeeId" readonly></v-text-field>
                   </v-col>
                   <v-col cols="12" md="6">
                     <v-text-field label="Email" outlined dense v-model="userInfo.email"></v-text-field>
@@ -102,8 +101,8 @@
 </template>
 
 <script>
-import {ref, onMounted} from 'vue';
-import {useUser} from "@/stores/user";
+import { ref, onMounted } from 'vue';
+import { useUser } from "@/stores/user";
 
 export default {
   setup() {
@@ -116,6 +115,7 @@ export default {
       confirm: ''
     });
     const showPassword = ref(false);
+    const file = ref(null);
 
     onMounted(async () => {
       if (!userStore.userInfo.name) {
@@ -138,12 +138,12 @@ export default {
       }
     };
 
-    const uploadPhoto = async (file) => {
-      // Upload photo logic
+    const uploadPhoto = async () => {
+      // Upload photo logic here
     };
 
     const resetPhoto = () => {
-      // Reset photo logic
+      // Reset photo logic here
     };
 
     const changePassword = async () => {
@@ -152,11 +152,13 @@ export default {
         return;
       }
       try {
-        await userStore.changePassword({
-          currentPassword: password.value.current,
-          newPassword: password.value.new
-        });
-        alert("Password changed successfully.");
+        const success = await userStore.changePassword(password.value.current, password.value.new);
+        if (success) {
+          alert("Password changed successfully.");
+          password.value.current = '';
+          password.value.new = '';
+          password.value.confirm = '';
+        }
       } catch (error) {
         console.error("Failed to change password:", error);
         alert("Failed to change password.");
@@ -164,11 +166,9 @@ export default {
     };
 
     const cancelEdit = () => {
-      // Cancel edit logic
-    };
-
-    const showPasswordToggle = () => {
-      showPassword.value = !showPassword.value;
+      password.value.current = '';
+      password.value.new = '';
+      password.value.confirm = '';
     };
 
     return {
@@ -176,12 +176,12 @@ export default {
       profilePhotoUrl,
       password,
       showPassword,
+      file,
       updateUserDetails,
       uploadPhoto,
       resetPhoto,
       changePassword,
-      cancelEdit,
-      showPasswordToggle
+      cancelEdit
     };
   }
 };

@@ -17,6 +17,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.server.ResponseStatusException;
 
 import java.io.IOException;
 import java.util.List;
@@ -57,7 +58,7 @@ public class UserController {
 
     // [중복체크] 아이디 DB에 존재하는지 여부 리턴
     @GetMapping("{employeeId}/id")
-        public ResponseEntity<Boolean> checkIfEmployeeIdExists(@PathVariable String employeeId){
+    public ResponseEntity<Boolean> checkIfEmployeeIdExists(@PathVariable String employeeId) {
         return ResponseEntity.ok(userService.checkIfEmployeeIdExists(employeeId));
     }
 
@@ -69,13 +70,13 @@ public class UserController {
 
     // [중복체크] 휴대폰 아이디가 DB에 존재하는지 여부 리턴
     @GetMapping("{phoneNumber}/phone")
-    public ResponseEntity<Boolean> checkIfPhoneNumberExists(@PathVariable String phoneNumber){
+    public ResponseEntity<Boolean> checkIfPhoneNumberExists(@PathVariable String phoneNumber) {
         return ResponseEntity.ok(userService.checkIfPhoneNumberExists(phoneNumber));
     }
 
     // [중복체크] 이메일이 DB에 존재하는지 여부 리턴
     @GetMapping("{email}/email")
-    public ResponseEntity<Boolean> checkIfEmailExists(@PathVariable String email){
+    public ResponseEntity<Boolean> checkIfEmailExists(@PathVariable String email) {
         return ResponseEntity.ok(userService.checkIfEmailExists(email));
     }
 
@@ -180,15 +181,14 @@ public class UserController {
     // 비밀번호 변경
     @PatchMapping("/change-password")
     public ResponseEntity<?> changePassword(@RequestBody PasswordChangeRequest request) {
-        // UserService의 changePassword 메소드를 호출하여 비밀번호 변경 시도
-        boolean passwordChanged = userService.changePassword(request.getFindByEmployeeId(), request.getCurrentPassword(), request.getNewPassword());
-
-        // 비밀번호 변경이 실패했다면, 즉 현재 비밀번호가 틀렸을때
-        if (!passwordChanged) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Current password is incorrect.");
+        try {
+            boolean passwordChanged = userService.changePassword(request.getFindByEmployeeId(), request.getCurrentPassword(), request.getNewPassword());
+            if (!passwordChanged) {
+                throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Current password is incorrect.");
+            }
+            return ResponseEntity.ok("Password successfully updated.");
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Failed to change password: " + e.getMessage());
         }
-
-        // 비밀번호 변경 성공
-        return ResponseEntity.ok("Password successfully updated.");
     }
 }
