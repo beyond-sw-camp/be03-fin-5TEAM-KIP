@@ -1,4 +1,6 @@
 <script setup>
+import SearchModal from "~/components/SearchModal.vue";
+
 definePageMeta({
   middleware: ["login"]
 })
@@ -8,6 +10,7 @@ import NotificationCopo from "~/components/NotificationCompo.vue";
 // 햄버거 버튼
 const drawer = ref(true);
 const rail = ref(true);
+const dialog = ref(false);
 
 // 피니아
 const user = useUser();
@@ -57,9 +60,26 @@ const handleRailClick = () => {
 
       <!--가운데 공간 만듬 -->
       <v-spacer/>
-
       {{ user.getUserInfo.name }}님 환영합니다.
 
+      <v-dialog v-model="dialog" max-width="600">
+        <template #activator="{ props: activatorProps }">
+          <v-btn
+              v-bind="activatorProps"
+              class="text-none"
+              stacked>
+            <v-icon
+                icon="mdi-magnify"
+                size="x-large"
+            />
+          </v-btn>
+        </template>
+        <template #default>
+          <SearchModal
+              @closeModal="dialog = false"
+          />
+        </template>
+      </v-dialog>
       <!-- 알림 버튼 -->
       <v-dialog max-width="600">
         <template #activator="{ props: activatorProps }">
@@ -75,6 +95,7 @@ const handleRailClick = () => {
                   icon="mdi-bell-ring"
                   size="x-large"
               />
+
             </v-badge>
             <v-icon
                 v-else

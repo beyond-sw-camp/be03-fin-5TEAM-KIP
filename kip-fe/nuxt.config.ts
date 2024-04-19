@@ -17,7 +17,9 @@ export default defineNuxtConfig({
         ['@pinia/nuxt', {
             autoImports: ["defineStore", "acceptHMRUpdate"]  // 피니아 생성시 임포트 생략
         }],
-        '@formkit/nuxt'
+        '@formkit/nuxt',
+        'nuxt-lodash'
+
     ],
     css: ['~/assets/styles/global.css'],
     imports: { // stores 폴더에 있는 것들 모두 임포트
@@ -29,6 +31,14 @@ export default defineNuxtConfig({
                 transformAssetUrls,
             },
         }
-    }
+    },
+    nitro: {
+        routeRules: {
+            // toast-ui editor 가 SSR 을 지원하지 않아 reload시 에러가 나는것을 방지
+            "editor/toast": {
+                ssr: false,
+            },
+        },
+    },
 
 })
