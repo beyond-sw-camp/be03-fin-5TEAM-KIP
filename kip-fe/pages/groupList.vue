@@ -12,10 +12,12 @@ const document = useDocumentList()
 const loading = ref(false);
 const open = ref();
 const clickedGroupId = ref(1);
-const addNewMemberModdal = ref();
-const createMemberModdal = ref();
 const employedDay = ref()
 
+// 모달 관련 데이터
+const addNewMemberModdal = ref();
+const createMemberModdal = ref();
+const configGroupModal = ref();
 
 // 문서관련 데이터
 
@@ -24,7 +26,6 @@ group.TopNaviGroupList = ["Knowledge is Power", "부서목록", "타 부서 문�
 
 // 데이터 세팅
 await group.setHierarchyInfo();
-const groups = group.getHierarchyInfo;
 
 // 신규계정 데이터 관련
 const showPassword = ref(false)
@@ -70,7 +71,6 @@ const deletUserFromDataBaese = async (employeeId, name) => {
 }
 
 // ⏩ 회원가입 관련 세팅
-
 // 전송할 데이터
 const data = ref({
   name: '',
@@ -149,9 +149,29 @@ const rules = {
   // 입사일
   employedDayRule: value => /^(19\d{2}|20\d{2})년 (\d{1,2})월 (\d{1,2})일 [월화수목금토일]요일$/.test(value) || '오른쪽 달력을 클릭하여 입력해 주세요',
 };
-// ⏩ 회원가입 관련 세팅 끝
-</script>
 
+
+// 🏢 그룹 정보 관련 변수들
+const clickedGroupName = ref();
+const createGroupReq = ref({
+  groupName: "",
+  groupType: "DEPARTMENT",
+  supperGroupId: 1
+})
+
+// 🏢 그룹 정보 관련 함수들
+const OpenCrateModal = (groupInfo) => {
+  configGroupModal.value = true;
+  clickedGroupName.value = groupInfo.title
+  createGroupReq.value.supperGroupId = groupInfo.id
+}
+
+const createNewGruopWidhReq = async (groupReqdto) => {
+  await group.createNewGroup(groupReqdto)
+  configGroupModal.value = false;
+  createGroupReq.value.groupName = ""
+}
+</script>
 <template>
   <v-container fluid>
 
@@ -169,8 +189,7 @@ const rules = {
             min-width="100"
             max-width="240"
             rounded="xl"
-            elevation="5"
-        >
+            elevation="5">
           <v-img
               class="align-end text-white"
               height="200"
@@ -203,18 +222,15 @@ const rules = {
             min-width="100"
             max-width="240"
             rounded="xl"
-            elevation="5"
-        >
+            elevation="5">
           <v-img
               class="align-end text-white"
               height="200"
               :src="userIn.profileImageUrl"
-              cover
-          >
+              cover>
           </v-img>
           <v-card-title v-text="`🐋 ${userIn.name} `"/>
           <v-card-subtitle v-text="`📞 ${userIn.phoneNumber}`"/>
-
 
           <v-card-actions class="d-flex justify-center">
             <v-btn
@@ -347,7 +363,6 @@ const rules = {
 
       <!--          👈 왼쪽 조직 리스트 -->
       <v-col cols="4" class="pl-8">
-
         <v-sheet>
           <v-card
               elevation="5"
@@ -356,21 +371,51 @@ const rules = {
               <v-treeview
                   v-model:open="open"
                   :filter="filter"
-                  :items="groups"
-                  color=""
-              >
+                  :items="group.getHierarchyInfo"
+                  color="black">
                 <template v-slot:prepend="{ item }">
                   <v-icon
                       v-if="item.children"
                       :icon="`mdi-${item.children.length === 0
                                 ? 'account-group-outline' : 'folder-network'}`"
                       @click="setUsersInfoInGroup( item.id)"
-                  ></v-icon>
+                  />
                 </template>
                 <template v-slot:title="{ item }">
                   <div @click="setUsersInfoInGroup( item.id)">
                     {{ item.title }}
                   </div>
+                </template>
+                <template v-slot:append="{ item }">
+
+                  <!--                  🖱️ 마우스 올렸을 때 -->
+                  <v-hover v-slot="{ isHovering, props }">
+
+                    <!--                   ✏️ 수정버튼 -->
+                    <v-btn
+                        icon="mdi-pencil"
+                        v-bind="props"
+                        :class="{
+                            'on-hover': isHovering,
+                            'show-btns': isHovering
+                          }"
+                        color="rgba(255, 255, 255, 0)"
+                        variant="plain"
+                        @click="console.log(item)"
+                    />
+                    <!--                  ➕ 생성버튼 -->
+                    <v-btn
+                        icon="mdi-plus-circle"
+                        v-bind="props"
+                        :class="{
+                            'on-hover': isHovering,
+                            'show-btns': isHovering
+                          }"
+                        color="rgba(255, 255, 255, 0)"
+                        variant="plain"
+                        @click="OpenCrateModal(item)"
+                    />
+                  </v-hover>
                 </template>
               </v-treeview>
             </v-card-text>
@@ -378,8 +423,62 @@ const rules = {
         </v-sheet>
       </v-col>
 
+      <!--           🏢 그룹생성을 위한 모달 -->
+      <v-dialog
+          class="d-flex justify-center"
+          width="30vw"
+          opacity="50%"
+          v-model="configGroupModal">
+        <v-sheet
+            rounded="xl"
+            class="d-flex justify-center flex-wrap pa-10">
+
+          <v-form ref="form" style="width: 50vw" @submit.prevent="createNewGruopWidhReq(createGroupReq)">
+            <v-row>
+              <v-col>
+                <h2>{{ clickedGroupName }} 소속</h2>
+                <v-radio-group
+                    class="mt-5"
+                    v-model="createGroupReq.groupType"
+                    :color="color.kipMainColor"
+                    inline>
+                  <v-radio
+                      label="🏢 부서조직"
+                      value="DEPARTMENT"/>
+                  <v-radio
+                      label="🚀 NewBiz팀"
+                      value="BUSINESS"/>
+                </v-radio-group>
+                {{ createGroupReq }}
+                <v-text-field
+                    label="신규 그룹 이름"
+                    placeholder="한화시스템"
+                    v-model="createGroupReq.groupName"
+                    :rules="[rules.nameRule]"
+                    counter
+                    clearable
+                    required
+                />
+
+                <v-btn
+                    class="mt-7"
+                    color="success"
+                    :loading="loading"
+                    text="신규 그룹 생성하기"
+                    type="submit"
+                    block
+                />
+              </v-col>
+            </v-row>
+          </v-form>
+        </v-sheet>
+      </v-dialog>
+
+
       <!--        👉 오른쪽 구성원 리스트-->
       <v-col cols="8">
+
+        <!--          🧑‍🦱🧑‍🦱  그룹에 소속된 회원 리스트-->
         <v-row>
           <v-col>
             <v-sheet
@@ -413,7 +512,6 @@ const rules = {
                 </v-card-actions>
               </v-card>
 
-              <!--          🧑‍🦱🧑‍🦱  그룹에 소속된 회원 리스트-->
               <v-card
                   width="100%"
                   v-for="user in groupUser.getUsersInfoInGroup"
@@ -453,42 +551,41 @@ const rules = {
             </v-sheet>
           </v-col>
         </v-row>
+
+        <!--          📁📁 그룹에 소속된 문서 리스트-->
         <v-row>
           <v-col>
-          <!--          📁📁 그룹에 소속된 문서 리스트-->
-          <v-sheet
-              class="d-flex flex-wrap">
-            <v-card
-                width="100%"
-                v-for="doc in document.getDocumentList"
-                :key="doc.userId"
-                class="mb-4 ml-5 pa-2"
-                rounded="xl"
-                elevation="5"
-                clase="d-flex"
-            >
-              <div class="d-flex justify-space-around">
+            <v-sheet
+                class="d-flex flex-wrap">
+              <v-card
+                  width="100%"
+                  v-for="doc in document.getDocumentList"
+                  :key="doc.userId"
+                  class="mb-4 ml-5 pa-2"
+                  rounded="xl"
+                  elevation="5"
+                  clase="d-flex"
+              >
                 <v-spacer v-if="doc.docType !== 'SECTION'"></v-spacer>
-                <v-card-title v-text="`${doc.docType === 'SECTION' ? '⏩' : ''} ${doc.title} [ ${doc.documentId} ]`"/>
-                <v-spacer/>
-                <v-spacer/>
-                <v-spacer/>
-                <v-spacer/>
-                <v-spacer/>
-                <v-spacer/>
-                <v-card-actions class="d-flex justify-space-evenly">
-                  <v-btn
-                      @click=""
-                      variant="elevated"
-                      color="blue-lighten-1"
-                      class="px-4 mr-4"
-                      text="권한요청"
-                      rounded="xl"
-                  />
-                </v-card-actions>
-              </div>
-            </v-card>
-          </v-sheet>
+                <div class="d-flex justify-space-between">
+                  <v-card-title
+                      v-text="`${doc.docType === 'SECTION' ? '⏩' :
+                        '&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp' +
+                         '&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp'}
+                         ${doc.title} [ ${doc.documentId} ]`"/>
+                  <v-card-actions class="d-flex justify-space-evenly">
+                    <v-btn
+                        @click=""
+                        variant="elevated"
+                        color="blue-lighten-1"
+                        class="px-4 mr-4"
+                        text="권한요청"
+                        rounded="xl"
+                    />
+                  </v-card-actions>
+                </div>
+              </v-card>
+            </v-sheet>
           </v-col>
         </v-row>
       </v-col>
@@ -496,5 +593,7 @@ const rules = {
   </v-container>
 </template>
 <style scoped>
-
+.show-btns {
+  color: var(--primary-color) !important;
+}
 </style>

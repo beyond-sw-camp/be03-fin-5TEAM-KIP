@@ -29,10 +29,10 @@ public class GroupController {
 
     // Create
     @PostMapping
-    public ResponseEntity<GroupResDto> createGroup(
+    public ResponseEntity<GetGroupHierarchyResDto> createGroup(
             @RequestBody CreateGroupReqDto dto) {
         return ResponseEntity.ok(
-                groupService.createGroup(dto)
+                groupService.createGroupAndReturnHierrachy(dto)
         );
     }
 

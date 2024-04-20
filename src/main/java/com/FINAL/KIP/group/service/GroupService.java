@@ -2,7 +2,6 @@ package com.FINAL.KIP.group.service;
 
 import com.FINAL.KIP.common.aspect.JustAdmin;
 import com.FINAL.KIP.common.aspect.UserAdmin;
-import com.FINAL.KIP.document.domain.Document;
 import com.FINAL.KIP.document.repository.DocumentRepository;
 import com.FINAL.KIP.group.domain.*;
 import com.FINAL.KIP.group.dto.req.CreateGroupReqDto;
@@ -58,15 +57,23 @@ public class GroupService {
     //  Create
     @Transactional
     @JustAdmin
+    public GetGroupHierarchyResDto createGroupAndReturnHierrachy(CreateGroupReqDto dto) {
+        createGroup(dto);
+        return new GetGroupHierarchyResDto(getGroupById(1L));
+    }
+
+
+    @Transactional
+    @JustAdmin
     public GroupResDto createGroup(CreateGroupReqDto dto) {
         Group newGroup = createNewGroup(dto);
         Group savedNewGroup = groupRepo.save(newGroup);
         savedNewGroup.getDocuments().get(0).setTitle(newGroup.getGroupName() + " 그룹에 오신것을 환영합니다.");
         Version version = Version.builder()
-            .content(newGroup.getGroupName() + " 그룹에 오신것을 환영합니다.")
-            .document(savedNewGroup.getDocuments().get(0))
-            .writer(findUserByEmployeeId(
-                SecurityContextHolder.getContext().getAuthentication().getName())).build();
+                .content(newGroup.getGroupName() + " 그룹에 오신것을 환영합니다.")
+                .document(savedNewGroup.getDocuments().get(0))
+                .writer(findUserByEmployeeId(
+                        SecurityContextHolder.getContext().getAuthentication().getName())).build();
         versionRepository.save(version);
         return new GroupResDto(savedNewGroup);
     }
