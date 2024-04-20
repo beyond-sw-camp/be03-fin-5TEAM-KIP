@@ -10,14 +10,14 @@ const document = useDocumentList()
 
 // 맴버 관련 데이터
 const loading = ref(false);
-const open = ref();
 const clickedGroupId = ref(1);
 const employedDay = ref()
 
 // 모달 관련 데이터
 const addNewMemberModdal = ref();
 const createMemberModdal = ref();
-const configGroupModal = ref();
+const createNewGroupModal = ref();
+const updateGruopInfoModal = ref();
 
 // 문서관련 데이터
 
@@ -161,15 +161,22 @@ const createGroupReq = ref({
 
 // 🏢 그룹 정보 관련 함수들
 const OpenCrateModal = (groupInfo) => {
-  configGroupModal.value = true;
+  createNewGroupModal.value = true;
   clickedGroupName.value = groupInfo.title
   createGroupReq.value.supperGroupId = groupInfo.id
 }
 
 const createNewGruopWidhReq = async (groupReqdto) => {
   await group.createNewGroup(groupReqdto)
-  configGroupModal.value = false;
+  createNewGroupModal.value = false;
   createGroupReq.value.groupName = ""
+}
+
+const OpenUpdateGroupModal = (groupInfo) => {
+  updateGruopInfoModal.value = true;
+  clickedGroupName.value = groupInfo.title
+  createGroupReq.value.supperGroupId = groupInfo.id
+  createGroupReq.value.groupType = groupInfo.groupType
 }
 </script>
 <template>
@@ -363,16 +370,15 @@ const createNewGruopWidhReq = async (groupReqdto) => {
 
       <!--          👈 왼쪽 조직 리스트 -->
       <v-col cols="4" class="pl-8">
+
         <v-sheet>
           <v-card
               elevation="5"
               rounded="xl">
             <v-card-text>
               <v-treeview
-                  v-model:open="open"
-                  :filter="filter"
                   :items="group.getHierarchyInfo"
-                  color="black">
+                  color="blue">
                 <template v-slot:prepend="{ item }">
                   <v-icon
                       v-if="item.children"
@@ -383,7 +389,7 @@ const createNewGruopWidhReq = async (groupReqdto) => {
                 </template>
                 <template v-slot:title="{ item }">
                   <div @click="setUsersInfoInGroup( item.id)">
-                    {{ item.title }}
+                    {{ item.title }} {{ item.groupType === "DEPARTMENT" ? '&nbsp 🏢' : '&nbsp 🚀' }}
                   </div>
                 </template>
                 <template v-slot:append="{ item }">
@@ -401,7 +407,7 @@ const createNewGruopWidhReq = async (groupReqdto) => {
                           }"
                         color="rgba(255, 255, 255, 0)"
                         variant="plain"
-                        @click="console.log(item)"
+                        @click="OpenUpdateGroupModal(item)"
                     />
                     <!--                  ➕ 생성버튼 -->
                     <v-btn
@@ -423,12 +429,69 @@ const createNewGruopWidhReq = async (groupReqdto) => {
         </v-sheet>
       </v-col>
 
+      <!--          ✏️ 그룹수정을 위한 모달 -->
+      <v-dialog
+          class="d-flex justify-center"
+          width="30vw"
+          opacity="50%"
+          v-model="updateGruopInfoModal">
+        <v-sheet
+            rounded="xl"
+            class="d-flex justify-center flex-wrap pa-10">
+
+          <v-form ref="form" style="width: 50vw" @submit.prevent="createNewGruopWidhReq(createGroupReq)">
+            <v-row>
+              <v-col>
+                <h2>{{ clickedGroupName }} 정보 수정</h2>
+                <v-radio-group
+                    class="mt-5"
+                    v-model="createGroupReq.groupType"
+                    :color="color.kipMainColor"
+                    inline>
+                  <v-radio
+                      label="🏢 부서조직"
+                      value="DEPARTMENT"/>
+                  <v-radio
+                      label="🚀 NewBiz팀"
+                      value="BUSINESS"/>
+                </v-radio-group>
+                <v-text-field
+                    label="신규 그룹 이름"
+                    placeholder="한화시스템"
+                    v-model="createGroupReq.groupName"
+                    :rules="[rules.nameRule]"
+                    counter
+                    clearable
+                    required
+                />
+                <v-btn
+                    class="mt-7"
+                    color="info"
+                    :loading="loading"
+                    text="수정"
+                    type="submit"
+                    block
+                />
+                <v-btn
+                    class="mt-7"
+                    color="error"
+                    :loading="loading"
+                    text="영구 삭제"
+                    type="submit"
+                    block
+                />
+              </v-col>
+            </v-row>
+          </v-form>
+        </v-sheet>
+      </v-dialog>
+
       <!--           🏢 그룹생성을 위한 모달 -->
       <v-dialog
           class="d-flex justify-center"
           width="30vw"
           opacity="50%"
-          v-model="configGroupModal">
+          v-model="createNewGroupModal">
         <v-sheet
             rounded="xl"
             class="d-flex justify-center flex-wrap pa-10">
@@ -449,7 +512,6 @@ const createNewGruopWidhReq = async (groupReqdto) => {
                       label="🚀 NewBiz팀"
                       value="BUSINESS"/>
                 </v-radio-group>
-                {{ createGroupReq }}
                 <v-text-field
                     label="신규 그룹 이름"
                     placeholder="한화시스템"
