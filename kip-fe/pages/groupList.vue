@@ -247,12 +247,17 @@ const DeleteGruopFromDataBase = async () => {
 
 // 전체 공개문서로 변경
 const makePublicDocumentFromGroup = async (documentId) => {
-  if (confirm("문서가 전체공개 그룹으로 이동됩니다")){
+  if (confirm("문서가 전체공개 그룹으로 이동됩니다")) {
     await document.makePublicDocumentFromGroup(documentId)
     await document.setDocumentList(clickedGroupId.value)
     alert("전체공개로 이동하였습니다.")
   }
+}
 
+// 문서 타입 변경
+const ChangeDocumentType = async (documentId) => {
+  await document.ChangeDocumentType(documentId)
+  await document.setDocumentList(clickedGroupId.value)
 }
 
 
@@ -757,7 +762,19 @@ const makePublicDocumentFromGroup = async (documentId) => {
 
                     <!--           ☝️ 전체 공개 버튼 -->
                     <v-hover v-slot="{ isHovering, props }">
-
+                      <v-btn
+                          text="타입변경"
+                          @click="ChangeDocumentType(doc.documentId)"
+                          v-bind="props"
+                          :class="{
+                            'on-hover': isHovering,
+                            'type-btns': isHovering
+                          }"
+                          class="px-3 mr-2 mt-1"
+                          color="rgba(255, 255, 255, 0)"
+                          variant="outlined"
+                          rounded="xl"
+                      />
                       <v-btn
                           text="전체공개"
                           @click="makePublicDocumentFromGroup(doc.documentId)"
@@ -801,5 +818,9 @@ const makePublicDocumentFromGroup = async (documentId) => {
 
 .public-btns {
   color: #e16e6e !important;
+}
+
+.type-btns {
+  color: #57af3d !important;
 }
 </style>

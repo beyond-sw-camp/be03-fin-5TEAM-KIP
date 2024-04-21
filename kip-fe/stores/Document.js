@@ -62,6 +62,19 @@ export const useDocumentList = defineStore("documentList", {
                 console.log(e, "문서 전체공개로 변경하기 실패");
             }
         },
+        async ChangeDocumentType(documentId) {
+            try {
+                await fetch(`${BASE_URL}/doc/${documentId}/type`, {
+                    method: 'PATCH',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': 'Bearer ' + user.getAccessToken
+                    },
+                });
+            } catch (e) {
+                console.log(e, "문서 타입 변경 실패");
+            }
+        },
 
         async setPublicDocumentList(){
             try {
