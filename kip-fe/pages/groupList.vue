@@ -20,10 +20,12 @@ const createNewGroupModal = ref();
 const updateGruopInfoModal = ref();
 const selectSuperGroupModal = ref();
 
-// 문서관련 데이터
-
 // 상단 네비 제목 설정
-group.TopNaviGroupList = ["Knowledge is Power", "부서목록", "타 부서 문서와 구성원을 조회할 수 있습니다. 🥩️"];
+group.TopNaviGroupList = [
+  "Knowledge is Power",
+  "부서목록",
+  "타 부서 문서와 구성원을 조회할 수 있습니다. 🥩️"
+];
 
 // 데이터 세팅
 await group.setHierarchyInfo();
@@ -33,12 +35,10 @@ const showPassword = ref(false)
 const showPasswordConfirm = ref(false);
 const passwordConfirm = ref('');
 
-
 // 그릅 유저 정보 초기화
 groupUser.$reset();
 await groupUser.setUsersInfoInGroup(clickedGroupId.value);
 await document.setDocumentList(clickedGroupId.value);
-
 
 // ❤️ 유저들의 정보를 세팅하는 함수들
 const setUsersInfoInGroup = async (groupId) => {
@@ -226,6 +226,7 @@ const UpdateGroupInfoReq = async (event) => {
       alert("자신의 하위 그룹으로 이동시킬 수 없습니다. 다시 선택해 주세요.")
     else {
       await group.updateGroupInfo(createGroupReq.value)
+      await group.setMyGroupsInfo();
       updateGruopInfoModal.value = false;
     }
   }
@@ -246,11 +247,11 @@ const DeleteGruopFromDataBase = async () => {
 }
 
 // 전체 공개문서로 변경
-const makePublicDocumentFromGroup = async (documentId) => {
-  if (confirm("문서가 전체공개 그룹으로 이동됩니다")) {
+const makePublicDocument = async (title, documentId) => {
+  if (confirm(`${title} 문서가 전체공개 그룹으로 이동됩니다`)) {
     await document.makePublicDocumentFromGroup(documentId)
     await document.setDocumentList(clickedGroupId.value)
-    alert("전체공개로 이동하였습니다.")
+    alert(`${title} 문서가 전체공개로 이동하였습니다.`)
   }
 }
 
@@ -260,6 +261,17 @@ const ChangeDocumentType = async (documentId) => {
   await document.setDocumentList(clickedGroupId.value)
 }
 
+// 문서 삭제
+const deleteDocument = async (title, documentId) => {
+  // 최상단 문서 검사
+  if (document.getDocumentList[0].documentId === documentId)
+    alert("최상단 문서는 삭제할 수 없습니다.")
+  else if (confirm(`${title} 문서가 영구 삭제됩니다`)) {
+    await document.deleteDocument(documentId)
+    await document.setDocumentList(clickedGroupId.value)
+    alert(`${title} 문서가 삭제 되었습니다.`)
+  }
+}
 
 </script>
 <template>
@@ -529,7 +541,7 @@ const ChangeDocumentType = async (documentId) => {
                 <v-img
                     class="align-end text-white"
                     height="200"
-                    :src="user.profileImageUrl"
+                    :src="user['profileImageUrl']"
                     cover
                 >
                 </v-img>
@@ -607,7 +619,7 @@ const ChangeDocumentType = async (documentId) => {
               <v-img
                   class="align-end text-white"
                   height="200"
-                  :src="userIn.profileImageUrl"
+                  :src="userIn['profileImageUrl']"
                   cover>
               </v-img>
               <v-card-title v-text="`🐋 ${userIn.name} `"/>
@@ -762,6 +774,7 @@ const ChangeDocumentType = async (documentId) => {
 
                     <!--           ☝️ 전체 공개 버튼 -->
                     <v-hover v-slot="{ isHovering, props }">
+
                       <v-btn
                           text="타입변경"
                           @click="ChangeDocumentType(doc.documentId)"
@@ -777,11 +790,24 @@ const ChangeDocumentType = async (documentId) => {
                       />
                       <v-btn
                           text="전체공개"
-                          @click="makePublicDocumentFromGroup(doc.documentId)"
+                          @click="makePublicDocument(doc.title, doc.documentId)"
                           v-bind="props"
                           :class="{
                             'on-hover': isHovering,
                             'public-btns': isHovering
+                          }"
+                          class="px-3 mr-2 mt-1"
+                          color="rgba(255, 255, 255, 0)"
+                          variant="outlined"
+                          rounded="xl"
+                      />
+                      <v-btn
+                          text="영구삭제"
+                          @click="deleteDocument(doc.title, doc.documentId)"
+                          v-bind="props"
+                          :class="{
+                            'on-hover': isHovering,
+                            'delete-btns': isHovering
                           }"
                           class="px-3 mr-2 mt-1"
                           color="rgba(255, 255, 255, 0)"
@@ -814,6 +840,10 @@ const ChangeDocumentType = async (documentId) => {
 <style scoped>
 .show-btns {
   color: var(--primary-color) !important;
+}
+
+.delete-btns {
+  color: #ff0000 !important;
 }
 
 .public-btns {
