@@ -18,6 +18,7 @@ const addNewMemberModdal = ref();
 const createMemberModdal = ref();
 const createNewGroupModal = ref();
 const updateGruopInfoModal = ref();
+const selectSuperGroupModal = ref();
 
 // 문서관련 데이터
 
@@ -153,31 +154,59 @@ const rules = {
 
 // 🏢 그룹 정보 관련 변수들
 const clickedGroupName = ref();
+const clickedSuperGroupName = ref();
+const BeforeSuperGroupName = ref();
+
+// 생성요청과 수정요청을 보내는 JSON 객체
 const createGroupReq = ref({
+  groupId: 1,
   groupName: "",
   groupType: "DEPARTMENT",
-  supperGroupId: 1
+  superGroupId: 1
 })
 
 // 🏢 그룹 정보 관련 함수들
 const OpenCrateModal = (groupInfo) => {
   createNewGroupModal.value = true;
   clickedGroupName.value = groupInfo.title
-  createGroupReq.value.supperGroupId = groupInfo.id
+  createGroupReq.value.superGroupId = groupInfo.id
 }
-
 const createNewGruopWidhReq = async (groupReqdto) => {
   await group.createNewGroup(groupReqdto)
   createNewGroupModal.value = false;
   createGroupReq.value.groupName = ""
 }
-
 const OpenUpdateGroupModal = (groupInfo) => {
-  updateGruopInfoModal.value = true;
-  clickedGroupName.value = groupInfo.title
-  createGroupReq.value.supperGroupId = groupInfo.id
-  createGroupReq.value.groupType = groupInfo.groupType
+  if (groupInfo.id === 1)
+    alert("최상위 그룹은 수정할 수 없습니다.")
+  else {
+    updateGruopInfoModal.value = true;
+
+    BeforeSuperGroupName.value = groupInfo.superGroupName
+    clickedSuperGroupName.value = groupInfo.superGroupName
+
+    createGroupReq.value.groupId = groupInfo.id
+    clickedGroupName.value = groupInfo.title
+
+    createGroupReq.value.groupName = groupInfo.title
+    createGroupReq.value.groupType = groupInfo.groupType
+    createGroupReq.value.superGroupId = groupInfo.superGroupId
+  }
 }
+const OpenSelectSuperGroupModal = () => {
+  selectSuperGroupModal.value = true
+}
+
+const SetSuperGroupIdAndName = (selectedSuperGruupInfo) => {
+  if (selectedSuperGruupInfo.id === createGroupReq.value.groupId )
+    alert("상위그룹으로 자신을 선택하셨습니다. 다시 선택해 주세요")
+  else {
+    createGroupReq.value.superGroupId = selectedSuperGruupInfo.id
+    clickedSuperGroupName.value = `${BeforeSuperGroupName.value} 👉 ${selectedSuperGruupInfo.title}`
+  }
+}
+
+
 </script>
 <template>
   <v-container fluid>
@@ -431,8 +460,8 @@ const OpenUpdateGroupModal = (groupInfo) => {
 
       <!--          ✏️ 그룹수정을 위한 모달 -->
       <v-dialog
-          class="d-flex justify-center"
-          width="30vw"
+          class="d-flex justify-start ml-16"
+          width="45vw"
           opacity="50%"
           v-model="updateGruopInfoModal">
         <v-sheet
@@ -442,7 +471,18 @@ const OpenUpdateGroupModal = (groupInfo) => {
           <v-form ref="form" style="width: 50vw" @submit.prevent="createNewGruopWidhReq(createGroupReq)">
             <v-row>
               <v-col>
-                <h2>{{ clickedGroupName }} 정보 수정</h2>
+                {{ createGroupReq }}
+                <h1>팀명 : [{{ clickedGroupName }}] 👉 [{{ createGroupReq.groupName }}]</h1>
+
+                <div class="d-flex mt-7">
+                  <h2> 소속 : {{ clickedSuperGroupName }} </h2>
+                  <v-btn
+                      class="ml-4"
+                      icon="mdi-pencil"
+                      variant="tonal"
+                      @click="OpenSelectSuperGroupModal"
+                  />
+                </div>
                 <v-radio-group
                     class="mt-5"
                     v-model="createGroupReq.groupType"
@@ -485,6 +525,38 @@ const OpenUpdateGroupModal = (groupInfo) => {
           </v-form>
         </v-sheet>
       </v-dialog>
+
+      <!--        ☝️ 상위 그룹 선택을 위한 모달 -->
+      <v-dialog
+          class="d-flex justify-end mr-16"
+          width="35vw"
+          opacity="5%"
+          v-model="selectSuperGroupModal">
+        <v-sheet
+            rounded="xl"
+            class="d-flex justify-center flex-wrap pa-10">
+
+          <h1></h1>
+          <v-treeview
+              :items="group.getHierarchyInfo"
+              color="blue">
+            <template v-slot:prepend="{ item }">
+              <v-icon
+                  v-if="item.children"
+                  :icon="`mdi-${item.children.length === 0
+                                ? 'account-group-outline' : 'folder-network'}`"
+                  @click="SetSuperGroupIdAndName(item)"
+              />
+            </template>
+            <template v-slot:title="{ item }">
+              <div @click="SetSuperGroupIdAndName(item)">
+                {{ item.title }} {{ item.groupType === "DEPARTMENT" ? '&nbsp 🏢' : '&nbsp 🚀' }}
+              </div>
+            </template>
+          </v-treeview>
+        </v-sheet>
+      </v-dialog>
+
 
       <!--           🏢 그룹생성을 위한 모달 -->
       <v-dialog

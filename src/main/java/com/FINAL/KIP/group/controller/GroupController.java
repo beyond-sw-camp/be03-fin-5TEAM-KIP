@@ -79,7 +79,7 @@ public class GroupController {
 
     //  Update
     @PatchMapping
-    public ResponseEntity<GroupResDto> updateGroupInfo (
+    public ResponseEntity<GetGroupHierarchyResDto> updateGroupInfo (
             @RequestBody UpdateGroupReqDto dto){
         return ResponseEntity.ok(
                 groupService.updateGroupInfo(dto)
@@ -89,10 +89,9 @@ public class GroupController {
 
     //  Delete
     @DeleteMapping("{groupId}")
-    public ResponseEntity<Void> deleteGroup (
+    public ResponseEntity<GetGroupHierarchyResDto> deleteGroup (
             @PathVariable Long groupId) {
-        groupService.deleteGroup(groupId);
-        return ResponseEntity.noContent().build();
+        return ResponseEntity.ok(groupService.deleteGroup(groupId));
     }
 
 

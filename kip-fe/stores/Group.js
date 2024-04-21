@@ -1,3 +1,5 @@
+import * as console from "console";
+
 const BASE_URL = import.meta.env.VITE_BASE_URL;
 const user = useUser();
 
@@ -28,7 +30,6 @@ export const useGroup = defineStore("group", {
     actions: {
 
         async createNewGroup(createGroupReq) {
-            console.log(createGroupReq,"112323")
             try {
                 const response = await fetch(`${BASE_URL}/group`, {
                     method: 'POST',
@@ -38,7 +39,7 @@ export const useGroup = defineStore("group", {
                     },
                     body: JSON.stringify(createGroupReq),
                 });
-                if (response.ok){
+                if (response.ok) {
                     // 뷰티파이 규칙.
                     const listInfo = [];
                     const objectInfo = await response.json();
@@ -46,9 +47,32 @@ export const useGroup = defineStore("group", {
                     this.HierarchyInfo = listInfo;
                 }
             } catch (e) {
-                console.log(e, "그룹에 새로운 사용자 추가 완료")
+                console.log(e, "신규 그룹 생성 실패")
             }
         },
+
+        async updateGroupInfo(upadeteGroupReq) {
+            try {
+                const response = await fetch(`${BASE_URL}/group`, {
+                    method: 'PATCH',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': 'Bearer ' + user.getAccessToken
+                    },
+                    body: JSON.stringify(upadeteGroupReq),
+                });
+                if (response.ok) {
+                    // 뷰티파이 규칙.
+                    const listInfo = [];
+                    const objectInfo = await response.json();
+                    listInfo.push(objectInfo);
+                    this.HierarchyInfo = listInfo;
+                }
+            } catch (e) {
+                console.log(e, "그룹 정보 업데이트 실패");
+            }
+        },
+
         setTopNaviGroupList(groupId) {
             // 소속된 그룹들 중에 "DEPARTMENT" 부서를 찾음
             let findMyDepartmentGroup = null

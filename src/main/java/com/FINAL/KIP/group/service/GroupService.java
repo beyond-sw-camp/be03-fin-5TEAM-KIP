@@ -26,6 +26,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
@@ -41,14 +42,14 @@ public class GroupService {
 
     @Autowired
     public GroupService(GroupRepository groupRepo, UserService userService,
-		DocumentRepository documentRepository,
+                        DocumentRepository documentRepository,
                         GroupUserRepository groupUserRepo,
-        UserRepository userRepository,
-        VersionRepository versionRepository) {
+                        UserRepository userRepository,
+                        VersionRepository versionRepository) {
         this.userService = userService;
         this.groupRepo = groupRepo;
-		this.documentRepository = documentRepository;
-		this.groupUserRepo = groupUserRepo;
+        this.documentRepository = documentRepository;
+        this.groupUserRepo = groupUserRepo;
         this.userRepository = userRepository;
         this.versionRepository = versionRepository;
     }
@@ -141,17 +142,25 @@ public class GroupService {
 
     //  Update
     @JustAdmin
-    public GroupResDto updateGroupInfo(UpdateGroupReqDto dto) {
+    public GetGroupHierarchyResDto updateGroupInfo(UpdateGroupReqDto dto) {
+
+        if (Objects.equals(dto.getGroupId(), dto.getSuperGroupId()))
+            throw new IllegalArgumentException("자기 자신에게 소속시킬 수 없습니다");
+        
+        // 상위그룹에 null 로 들어오면 1번(root) 그룹 아래 설정
+        if (dto.getSuperGroupId() == null)
+            dto.setSuperGroupId(1L);
+
         Group group = getGroupById(dto.getGroupId());
         group.setGroupName(dto.getGroupName());
         group.setGroupType(dto.getGroupType());
 
         // 상위그룹을 null 로 처리할 때 실행되는 함수 .
-        Optional.ofNullable(dto.getSupperGroupId())
+        Optional.ofNullable(dto.getSuperGroupId())
                 .map(this::getGroupById)
                 .ifPresent(group::setSuperGroup);
 
-        return new GroupResDto(groupRepo.save(group));
+        return new GetGroupHierarchyResDto(getGroupById(1L));
     }
 
     @JustAdmin
@@ -166,13 +175,15 @@ public class GroupService {
 
     //  Delete
     @JustAdmin
-    public void deleteGroup(Long groupId) {
+    public GetGroupHierarchyResDto deleteGroup(Long groupId) {
         Group targetGroup = getGroupById(groupId);
         if (!targetGroup.getChildGroups().isEmpty())
             throw new IllegalStateException("그룹에 하위 그룹이 존재하여 삭제할 수 없습니다.");
         if (targetGroup.getDocuments().size() > 1)
             throw new IllegalStateException("그룹에 최상단문서 1개만 남기고 모두 지워야 삭제 가능합니다.");
         groupRepo.delete(targetGroup);
+
+        return new GetGroupHierarchyResDto(getGroupById(1L));
     }
 
 
@@ -185,16 +196,16 @@ public class GroupService {
 
     //  공통함수
     @UserAdmin
-    public Group getGroupById(Long supperGroupId) {
-        return groupRepo.findById(supperGroupId)
+    public Group getGroupById(Long superGroupId) {
+        return groupRepo.findById(superGroupId)
                 .orElseThrow(() -> new EntityNotFoundException(
-                        "그룹 아이디로 검색할 수 있는 그룹이 없습니다. " + supperGroupId));
+                        "그룹 아이디로 검색할 수 있는 그룹이 없습니다. " + superGroupId));
     }
 
     @JustAdmin
     public Group createNewGroup(CreateGroupReqDto dto) {
         Group newGroup = dto.makeAuthorityReqDtoToGroup();
-        Optional.ofNullable(dto.getSupperGroupId())
+        Optional.ofNullable(dto.getSuperGroupId())
                 .map(this::getGroupById)
                 .ifPresent(newGroup::setSuperGroup);
         return newGroup;
@@ -202,7 +213,7 @@ public class GroupService {
 
     @UserAdmin
     public List<GroupUser> getGroupUsers(addUsersToGroupReqDto dto) {
-        System.out.println(dto.getGroupId() +"그룹 아이디");
+        System.out.println(dto.getGroupId() + "그룹 아이디");
         List<GroupUser> addedUsers = new ArrayList<>();
         Group group = getGroupById(dto.getGroupId());
         for (UserIdAndGroupRole user : dto.getGroupUsers()) {
@@ -250,6 +261,6 @@ public class GroupService {
 
     private User findUserByEmployeeId(String employeeId) {
         return userRepository.findByEmployeeId(employeeId)
-            .orElseThrow(() -> new IllegalArgumentException("해당 사번의 회원이 존재하지 않습니다."));
+                .orElseThrow(() -> new IllegalArgumentException("해당 사번의 회원이 존재하지 않습니다."));
     }
 }

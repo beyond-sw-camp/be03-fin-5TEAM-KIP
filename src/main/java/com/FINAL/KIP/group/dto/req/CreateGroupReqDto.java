@@ -12,7 +12,7 @@ public class CreateGroupReqDto {
     private String groupType;
 
     @Getter
-    private Long supperGroupId;
+    private Long superGroupId;
 
     public Group makeAuthorityReqDtoToGroup(){
         return Group.builder()
