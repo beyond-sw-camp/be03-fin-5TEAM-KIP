@@ -49,6 +49,20 @@ export const useDocumentList = defineStore("documentList", {
             }
         },
 
+        async makePublicDocumentFromGroup(documentId) {
+            try {
+                await fetch(`${BASE_URL}/doc/${documentId}/public`, {
+                    method: 'PATCH',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': 'Bearer ' + user.getAccessToken
+                    },
+                });
+            } catch (e) {
+                console.log(e, "문서 전체공개로 변경하기 실패");
+            }
+        },
+
         async setPublicDocumentList(){
             try {
                 const response = await fetch(`${BASE_URL}/doc`,{

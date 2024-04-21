@@ -245,6 +245,17 @@ const DeleteGruopFromDataBase = async () => {
   updateGruopInfoModal.value = false;
 }
 
+// 전체 공개문서로 변경
+const makePublicDocumentFromGroup = async (documentId) => {
+  if (confirm("문서가 전체공개 그룹으로 이동됩니다")){
+    await document.makePublicDocumentFromGroup(documentId)
+    await document.setDocumentList(clickedGroupId.value)
+    alert("전체공개로 이동하였습니다.")
+  }
+
+}
+
+
 </script>
 <template>
 
@@ -274,7 +285,7 @@ const DeleteGruopFromDataBase = async () => {
                 <div @click="setUsersInfoInGroup( item.id)">
                   {{ item.title }}
                   {{ item.groupType === "DEPARTMENT" ? '&nbsp 🏢' : '&nbsp 🚀' }}
-                  {{ item.childrenIdList.length === 0 ? '':  `(${item.childrenIdList.length})` }}
+                  {{ item.childrenIdList.length === 0 ? '' : `(${item.childrenIdList.length})` }}
                 </div>
               </template>
               <template v-slot:append="{ item }">
@@ -730,7 +741,7 @@ const DeleteGruopFromDataBase = async () => {
               <v-card
                   width="100%"
                   v-for="doc in document.getDocumentList"
-                  :key="doc.userId"
+                  :key="doc.documentId"
                   class="mb-4 ml-5 pt-2 px-1 pb-1"
                   rounded="xl"
                   elevation="5"
@@ -749,7 +760,7 @@ const DeleteGruopFromDataBase = async () => {
 
                       <v-btn
                           text="전체공개"
-                          @click="OpenUpdateGroupModal(item)"
+                          @click="makePublicDocumentFromGroup(doc.documentId)"
                           v-bind="props"
                           :class="{
                             'on-hover': isHovering,
