@@ -15,6 +15,7 @@ public class GetGroupHierarchyResDto {
     private final GroupType groupType;
     private final Long superGroupId;
     private final String superGroupName;
+    private final List<Long> childrenIdList;
     private final List<GetGroupHierarchyResDto> children;
 
     public GetGroupHierarchyResDto(Group group) {
@@ -31,7 +32,7 @@ public class GetGroupHierarchyResDto {
             this.superGroupId = null;
             this.superGroupName = null;
         }
-
+        this.childrenIdList = group.getAllChildGroupIds();
         this.children = group.getChildGroups().stream()
                 .map(GetGroupHierarchyResDto::new)
                 .collect(Collectors.toList());

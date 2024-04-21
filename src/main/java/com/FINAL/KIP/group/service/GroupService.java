@@ -2,7 +2,6 @@ package com.FINAL.KIP.group.service;
 
 import com.FINAL.KIP.common.aspect.JustAdmin;
 import com.FINAL.KIP.common.aspect.UserAdmin;
-import com.FINAL.KIP.document.repository.DocumentRepository;
 import com.FINAL.KIP.group.domain.*;
 import com.FINAL.KIP.group.dto.req.CreateGroupReqDto;
 import com.FINAL.KIP.group.dto.req.UpdateGroupReqDto;
@@ -35,20 +34,17 @@ public class GroupService {
 
     private final UserService userService;
     private final GroupRepository groupRepo;
-    private final DocumentRepository documentRepository;
     private final GroupUserRepository groupUserRepo;
     private final UserRepository userRepository;
     private final VersionRepository versionRepository;
 
     @Autowired
     public GroupService(GroupRepository groupRepo, UserService userService,
-                        DocumentRepository documentRepository,
                         GroupUserRepository groupUserRepo,
                         UserRepository userRepository,
                         VersionRepository versionRepository) {
         this.userService = userService;
         this.groupRepo = groupRepo;
-        this.documentRepository = documentRepository;
         this.groupUserRepo = groupUserRepo;
         this.userRepository = userRepository;
         this.versionRepository = versionRepository;
@@ -142,16 +138,22 @@ public class GroupService {
 
     //  Update
     @JustAdmin
+    @Transactional
     public GetGroupHierarchyResDto updateGroupInfo(UpdateGroupReqDto dto) {
 
         if (Objects.equals(dto.getGroupId(), dto.getSuperGroupId()))
             throw new IllegalArgumentException("자기 자신에게 소속시킬 수 없습니다");
-        
+
+        Group group = getGroupById(dto.getGroupId());
+
+        List<Long> childIdList = group.getAllChildGroupIds();
+        if(childIdList.contains(dto.getSuperGroupId()))
+            throw new IllegalArgumentException("자신의 하위 그룹으로 이동시킬 수 없습니다.");
+
         // 상위그룹에 null 로 들어오면 1번(root) 그룹 아래 설정
         if (dto.getSuperGroupId() == null)
             dto.setSuperGroupId(1L);
 
-        Group group = getGroupById(dto.getGroupId());
         group.setGroupName(dto.getGroupName());
         group.setGroupType(dto.getGroupType());
 
@@ -159,6 +161,8 @@ public class GroupService {
         Optional.ofNullable(dto.getSuperGroupId())
                 .map(this::getGroupById)
                 .ifPresent(group::setSuperGroup);
+
+        groupRepo.save(group);
 
         return new GetGroupHierarchyResDto(getGroupById(1L));
     }
