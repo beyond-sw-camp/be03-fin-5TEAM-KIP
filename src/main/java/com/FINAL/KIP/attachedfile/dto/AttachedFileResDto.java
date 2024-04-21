@@ -11,6 +11,7 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 public class AttachedFileResDto {
     private Long id;
+    private Long documentId;
     private String fileName;
     private String fileType;
     private String fileUrl;

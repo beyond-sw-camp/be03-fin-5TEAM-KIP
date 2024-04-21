@@ -101,6 +101,7 @@ public class AttachedFileService {
         List<AttachedFileResDto> fileList = files.stream()
                 .map(attachedFile -> AttachedFileResDto.builder()
                         .id(attachedFile.getId())
+                        .documentId(attachedFile.getDocumentId())
                         .fileName(attachedFile.getFileName())
                         .fileType(attachedFile.getFileType())
                         .fileUrl(attachedFile.getFileUrl())

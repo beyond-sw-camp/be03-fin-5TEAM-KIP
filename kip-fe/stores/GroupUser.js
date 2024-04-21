@@ -83,6 +83,11 @@ export const useGroupuser = defineStore("groupuser", {
             }
         },
 
+        deletUserFromAllUserInfoInKip(employeeId) {
+            this.allUserInfo = this.allUserInfo.filter(user => user.employeeId !== employeeId);
+        },
+
+
         async setAllUserInfoInKip() {
             try {
                 const respons = await fetch(`${BASE_URL}/user`, {
