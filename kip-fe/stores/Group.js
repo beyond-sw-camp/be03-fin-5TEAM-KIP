@@ -61,8 +61,13 @@ export const useGroup = defineStore("group", {
                     },
                     body: JSON.stringify(upadeteGroupReq),
                 });
-                if (response.ok)
-                    return "ok"
+                if (response.ok) {
+                    // 뷰티파이 규칙.
+                    const listInfo = [];
+                    const objectInfo = await response.json();
+                    listInfo.push(objectInfo);
+                    this.HierarchyInfo = listInfo;
+                }
             } catch (e) {
                 console.log(e, "그룹 정보 업데이트 실패");
             }

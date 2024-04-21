@@ -76,14 +76,13 @@ public class GroupController {
         );
     }
 
-
     //  Update
     @PatchMapping
-    public ResponseEntity<GroupResDto> updateGroupInfo (
+    public ResponseEntity<GetGroupHierarchyResDto> updateGroupInfo (
             @RequestBody UpdateGroupReqDto dto){
-        return ResponseEntity.ok(
-                groupService.updateGroupInfo(dto)
-        );
+        groupService.updateGroupInfo(dto);
+        // 업데이트 이후 그룹의 하이라키 정보를 리턴
+        return ResponseEntity.ok(groupService.getGroupHierarchy(1L));
     }
 
 

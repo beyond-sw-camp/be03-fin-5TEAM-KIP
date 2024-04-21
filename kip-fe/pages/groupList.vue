@@ -166,8 +166,10 @@ const createGroupReq = ref({
 // 🏢 그룹 정보 관련 함수들
 const OpenCrateModal = (groupInfo) => {
   createNewGroupModal.value = true;
-  clickedGroupName.value = groupInfo.title
-  createGroupReq.value.superGroupId = groupInfo.id
+
+  clickedGroupName.value = groupInfo.title;
+  createGroupReq.value.groupName = "";
+  createGroupReq.value.superGroupId = groupInfo.id;
 }
 const createNewGruopWidhReq = async (event) => {
   loading.value = true
@@ -209,6 +211,8 @@ const OpenSelectSuperGroupModal = () => {
 const SetSuperGroupIdAndName = (selectedSuperGruupInfo) => {
   if (selectedSuperGruupInfo.id === createGroupReq.value.groupId)
     alert("상위그룹으로 자신을 선택하셨습니다. 다시 선택해 주세요")
+  else if (GroupChildrenIdList.value.includes(selectedSuperGruupInfo.id))
+    alert("자신의 하위 그룹으로 이동시킬 수 없습니다. 다시 선택해 주세요.")
   else {
     createGroupReq.value.superGroupId = selectedSuperGruupInfo.id
     clickedSuperGroupName.value = `${BeforeSuperGroupName.value} 👉 ${selectedSuperGruupInfo.title}`
@@ -219,9 +223,12 @@ const UpdateGroupInfoReq = async (event) => {
   const results = await event
   await wait(500); // 0.5초 대기
   if (results.valid) {
-    await group.updateGroupInfo(createGroupReq.value)
-    await group.setHierarchyInfo()
-    updateGruopInfoModal.value = false;
+    if (GroupChildrenIdList.value.includes(createGroupReq.value.superGroupId))
+      alert("자신의 하위 그룹으로 이동시킬 수 없습니다. 다시 선택해 주세요.")
+    else {
+      await group.updateGroupInfo(createGroupReq.value)
+      updateGruopInfoModal.value = false;
+    }
   }
   loading.value = false
 }
@@ -233,14 +240,11 @@ const DeleteGruopFromDataBase = async () => {
     alert("하위그룹이 있는 그룹은 삭제할 수 없습니다.")
   else if (documentsCount.value > 1)
     alert("문서가 2개이상인 그룹은 삭제할 수 없습니다. 그룹 문서를 확인하세요")
-  else
-  {
-    if (confirm(`${createGroupReq.value.groupName} 그룹이 영구 삭제됩니다.`)) {
-      await group.DeleteGruopFromDataBase(createGroupReq.value.groupId)
-      updateGruopInfoModal.value = false;
-      alert(`${createGroupReq.value.groupName} 그룹이 영구 삭제 되었습니다.`)
-    }
+  else if (confirm(`${createGroupReq.value.groupName} 그룹이 영구 삭제됩니다.`)) {
+    await group.DeleteGruopFromDataBase(createGroupReq.value.groupId)
+    alert(`${createGroupReq.value.groupName} 그룹이 영구 삭제 되었습니다.`)
   }
+  updateGruopInfoModal.value = false;
 }
 
 </script>
@@ -496,7 +500,7 @@ const DeleteGruopFromDataBase = async () => {
 
       <!--          ✏️ 그룹수정을 위한 모달 -->
       <v-dialog
-          class="d-flex justify-start ml-16"
+          class="d-flex justify-end mr-16"
           width="45vw"
           opacity="50%"
           v-model="updateGruopInfoModal">
@@ -507,7 +511,6 @@ const DeleteGruopFromDataBase = async () => {
           <v-form ref="form" style="width: 50vw" @submit.prevent="UpdateGroupInfoReq">
             <v-row>
               <v-col>
-                {{ createGroupReq }}
                 <h1>팀명 : [{{ clickedGroupName }}] 👉 [{{ createGroupReq.groupName }}]</h1>
 
                 <div class="d-flex mt-7">
@@ -564,9 +567,9 @@ const DeleteGruopFromDataBase = async () => {
 
       <!--        ☝️ 상위 그룹 선택을 위한 모달 -->
       <v-dialog
-          class="d-flex justify-end mr-16"
+          class="d-flex justify-start ml-16"
           width="35vw"
-          opacity="5%"
+          opacity="75%"
           v-model="selectSuperGroupModal">
         <v-sheet
             rounded="xl"
