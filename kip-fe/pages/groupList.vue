@@ -272,7 +272,9 @@ const DeleteGruopFromDataBase = async () => {
               </template>
               <template v-slot:title="{ item }">
                 <div @click="setUsersInfoInGroup( item.id)">
-                  {{ item.title }} {{ item.groupType === "DEPARTMENT" ? '&nbsp 🏢' : '&nbsp 🚀' }}
+                  {{ item.title }}
+                  {{ item.groupType === "DEPARTMENT" ? '&nbsp 🏢' : '&nbsp 🚀' }}
+                  {{ item.childrenIdList.length === 0 ? '':  `(${item.childrenIdList.length})` }}
                 </div>
               </template>
               <template v-slot:append="{ item }">
@@ -785,6 +787,7 @@ const DeleteGruopFromDataBase = async () => {
 .show-btns {
   color: var(--primary-color) !important;
 }
+
 .public-btns {
   color: #e16e6e !important;
 }
