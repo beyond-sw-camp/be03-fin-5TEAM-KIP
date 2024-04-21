@@ -147,7 +147,6 @@ const rules = {
   employedDayRule: value => /^(19\d{2}|20\d{2})년 (\d{1,2})월 (\d{1,2})일 [월화수목금토일]요일$/.test(value) || '오른쪽 달력을 클릭하여 입력해 주세요',
 };
 
-
 // 🏢 그룹 정보 관련 변수들
 const clickedGroupName = ref();
 const clickedSuperGroupName = ref();
@@ -232,7 +231,6 @@ const UpdateGroupInfoReq = async (event) => {
   }
   loading.value = false
 }
-
 const DeleteGruopFromDataBase = async () => {
   if (String(createGroupReq.value.groupId) === "1")
     alert("기본 최상단 그룹은 삭제할 수 없습니다.")
@@ -249,406 +247,224 @@ const DeleteGruopFromDataBase = async () => {
 
 </script>
 <template>
+
+  <!--            ☎️ 실제 본문 -->
   <v-container fluid>
-
-    <!--      ✅ 그룹에 사원 추가를 위한 다이얼로그 -->
-    <v-dialog
-        width="80vw"
-        opacity="15%"
-        v-model="addNewMemberModdal">
-      <v-sheet
-          rounded="xl"
-          class="d-flex justify-center flex-wrap pa-10">
-        <v-card
-            width="100%"
-            class="mb-5 ml-5"
-            min-width="100"
-            max-width="240"
-            rounded="xl"
-            elevation="5">
-          <v-img
-              class="align-end text-white"
-              height="200"
-              :src="`/images/profile/user${Math.ceil((Math.random() * 14))}.jpg`"
-              cover
-          >
-          </v-img>
-          <v-card-title
-              v-text="`❤️ ${groupUser.getGroupName}`"/>
-          <v-card-subtitle
-              v-text="groupUser.getGroupType === 'DEPARTMENT' ? '🏢 부서조직': '🚀 NewBiz팀' "/>
-
-          <v-card-actions class="d-flex justify-center">
-            <!--              신규 팀원 추가 버튼-->
-            <v-btn
-                @click="createMemberModdal=true"
-                variant="elevated"
-                color="blue-lighten-1"
-                class="ma-2 px-4"
-                text="신규계정생성"/>
-          </v-card-actions>
-        </v-card>
-
-        <!--           그룹에 소속된 회원 리스트-->
-        <v-card
-            width="100%"
-            v-for="userIn in groupUser.getAllUserInfoInKip"
-            :key="userIn.userId"
-            class="mb-5 ml-5"
-            min-width="100"
-            max-width="240"
-            rounded="xl"
-            elevation="5">
-          <v-img
-              class="align-end text-white"
-              height="200"
-              :src="userIn.profileImageUrl"
-              cover>
-          </v-img>
-          <v-card-title v-text="`🐋 ${userIn.name} `"/>
-          <v-card-subtitle v-text="`📞 ${userIn.phoneNumber}`"/>
-
-          <v-card-actions class="d-flex justify-center">
-            <v-btn
-                @Click="addUserToGroup(userIn.userId)"
-                variant="elevated"
-                color="deep-purple-lighten-1"
-                class="ma-2 px-3"
-                :text="`팀원 추가`"/>
-            <v-btn
-                @Click="deletUserFromDataBaese(userIn.employeeId, userIn.name)"
-                variant="elevated"
-                color="red"
-                class="ma-2 px-3"
-                :text="`영구 삭제`"/>
-          </v-card-actions>
-        </v-card>
-      </v-sheet>
-    </v-dialog>
-
-
-    <!--   🥩 신규 회원 생성을 위한 다이얼로그 -->
-    <v-dialog
-        class="d-flex justify-center"
-        width="70vw"
-        opacity="50%"
-        v-model="createMemberModdal">
-      <v-sheet
-          rounded="xl"
-          class="d-flex justify-center flex-wrap pa-10">
-
-        <!--           ❤️ 그룹에 소속된 회원 리스트-->
-        <v-form ref="form" style="width: 75vw" @submit.prevent="CreateNewUser">
-          <v-row>
-            <v-col>
-              <v-text-field
-                  label="사번"
-                  placeholder="k-1234567890"
-                  v-model="data.employeeId"
-                  :rules="[rules.employeeIdRule, rules.employeeIdDupulicateCheck]"
-                  clearable
-                  maxlength="12"
-                  required
-                  counter
-              />
-              <v-text-field
-                  label="비밀번호"
-                  placeholder="1234"
-                  v-model="data.password"
-                  :append-icon="showPassword ? 'mdi-eye' : 'mdi-eye-off'"
-                  :rules="[rules.passwordRule]"
-                  :type="showPassword ? 'text' : 'password'"
-                  hint="4자리 숫자"
-                  maxlength="4"
-                  name="input-10-1"
-                  clearable
-                  counter
-                  @click:append="showPassword = !showPassword"
-              />
-              <v-text-field
-                  label="비밀번호 확인"
-                  placeholder="1234"
-                  v-model="passwordConfirm"
-                  :append-icon="showPasswordConfirm ? 'mdi-eye' : 'mdi-eye-off'"
-                  :rules="[rules.passwordRule, rules.passwordConfim]"
-                  :type="showPasswordConfirm ? 'text' : 'password'"
-                  maxlength="4"
-                  hint="4자리 숫자"
-                  name="input-10-1"
-                  clearable
-                  counter
-                  @click:append="showPasswordConfirm = !showPasswordConfirm"
-              />
-              <v-text-field
-                  label="이름"
-                  placeholder="홍길동"
-                  v-model="data.name"
-                  :rules="[rules.nameRule]"
-                  clearable
-                  required
-              />
-              <v-text-field
-                  label="연락처"
-                  placeholder="010-1234-5678"
-                  v-model="data.phoneNumber"
-                  :rules="[rules.phoneNumberRule, rules.phoneNumberDupulicateCheck]"
-                  clearable
-                  maxlength="13"
-                  required
-                  counter
-              />
-              <v-text-field
-                  label="이메일"
-                  placeholder="admin@kip.com"
-                  v-model="data.email"
-                  :rules="[rules.emailRule, rules.emailDupulicateCheck]"
-                  clearable
-                  required
-              />
-              <v-text-field
-                  v-model="data.employedDay"
-                  label="입사일"
-                  :rules="[rules.employedDayRule]"
-                  required
-                  clearable
-              />
-            </v-col>
-            <v-col>
-              <v-date-picker
-                  v-model="employedDay"
-                  width="100%"
-                  @click="formattedDate"
-                  show-adjacent-months
-              />
-              <v-btn
-                  class="mt-4"
-                  color="success"
-                  :loading="loading"
-                  text="신규 계정 생성하기"
-                  type="submit"
-                  block
-              />
-            </v-col>
-          </v-row>
-        </v-form>
-      </v-sheet>
-    </v-dialog>
-
-    <!--    ☎️ 실제 본문 -->
     <v-row justify="center">
 
-      <!--          👈 왼쪽 조직 리스트 -->
+      <!-- 👈👈👈👈👈👈👈👈👈 왼쪽 조직 리스트 -->
       <v-col cols="4" class="pl-8">
 
-        <v-sheet>
-          <v-card
-              elevation="5"
-              rounded="xl">
-            <v-card-text>
-              <v-treeview
-                  :items="group.getHierarchyInfo"
-                  color="blue">
-                <template v-slot:prepend="{ item }">
-                  <v-icon
-                      v-if="item.children"
-                      :icon="`mdi-${item.children.length === 0
+        <v-card
+            elevation="5"
+            rounded="xl">
+          <v-card-text>
+            <v-treeview
+                :items="group.getHierarchyInfo"
+                color="blue">
+              <template v-slot:prepend="{ item }">
+                <v-icon
+                    v-if="item.children"
+                    :icon="`mdi-${item.children.length === 0
                                 ? 'account-group-outline' : 'folder-network'}`"
-                      @click="setUsersInfoInGroup( item.id)"
+                    @click="setUsersInfoInGroup( item.id)"
+                />
+              </template>
+              <template v-slot:title="{ item }">
+                <div @click="setUsersInfoInGroup( item.id)">
+                  {{ item.title }} {{ item.groupType === "DEPARTMENT" ? '&nbsp 🏢' : '&nbsp 🚀' }}
+                </div>
+              </template>
+              <template v-slot:append="{ item }">
+
+                <!--                  🖱️ 마우스 올렸을 때 -->
+                <v-hover v-slot="{ isHovering, props }">
+
+                  <!--                   ✏️ 수정버튼 -->
+                  <v-btn
+                      icon="mdi-pencil"
+                      v-bind="props"
+                      :class="{
+                            'on-hover': isHovering,
+                            'show-btns': isHovering
+                          }"
+                      color="rgba(255, 255, 255, 0)"
+                      variant="plain"
+                      @click="OpenUpdateGroupModal(item)"
                   />
-                </template>
-                <template v-slot:title="{ item }">
-                  <div @click="setUsersInfoInGroup( item.id)">
-                    {{ item.title }} {{ item.groupType === "DEPARTMENT" ? '&nbsp 🏢' : '&nbsp 🚀' }}
-                  </div>
-                </template>
-                <template v-slot:append="{ item }">
 
-                  <!--                  🖱️ 마우스 올렸을 때 -->
-                  <v-hover v-slot="{ isHovering, props }">
+                  <!--                  ➕ 생성버튼 -->
+                  <v-btn
+                      icon="mdi-plus-circle"
+                      v-bind="props"
+                      :class="{
+                            'on-hover': isHovering,
+                            'show-btns': isHovering
+                          }"
+                      color="rgba(255, 255, 255, 0)"
+                      variant="plain"
+                      @click="OpenCrateModal(item)"
+                  />
 
-                    <!--                   ✏️ 수정버튼 -->
+                </v-hover>
+              </template>
+            </v-treeview>
+          </v-card-text>
+        </v-card>
+
+        <!--           ✏️ 그룹수정을 위한 모달 -->
+        <v-dialog
+            class="d-flex justify-end mr-16"
+            width="45vw"
+            opacity="50%"
+            v-model="updateGruopInfoModal">
+          <v-sheet
+              rounded="xl"
+              class="d-flex justify-center flex-wrap pa-10">
+
+            <v-form ref="form" style="width: 50vw" @submit.prevent="UpdateGroupInfoReq">
+              <v-row>
+                <v-col>
+                  <h1>팀명 : [{{ clickedGroupName }}] 👉 [{{ createGroupReq.groupName }}]</h1>
+
+                  <div class="d-flex mt-7">
+                    <h2> 소속 : {{ clickedSuperGroupName }} </h2>
                     <v-btn
+                        class="ml-4"
                         icon="mdi-pencil"
-                        v-bind="props"
-                        :class="{
-                            'on-hover': isHovering,
-                            'show-btns': isHovering
-                          }"
-                        color="rgba(255, 255, 255, 0)"
-                        variant="plain"
-                        @click="OpenUpdateGroupModal(item)"
+                        variant="tonal"
+                        @click="OpenSelectSuperGroupModal"
                     />
-                    <!--                  ➕ 생성버튼 -->
-                    <v-btn
-                        icon="mdi-plus-circle"
-                        v-bind="props"
-                        :class="{
-                            'on-hover': isHovering,
-                            'show-btns': isHovering
-                          }"
-                        color="rgba(255, 255, 255, 0)"
-                        variant="plain"
-                        @click="OpenCrateModal(item)"
-                    />
-                  </v-hover>
-                </template>
-              </v-treeview>
-            </v-card-text>
-          </v-card>
-        </v-sheet>
+                  </div>
+                  <v-radio-group
+                      class="mt-5"
+                      v-model="createGroupReq.groupType"
+                      :color="color.kipMainColor"
+                      inline>
+                    <v-radio
+                        label="🏢 부서조직"
+                        value="DEPARTMENT"/>
+                    <v-radio
+                        label="🚀 NewBiz팀"
+                        value="BUSINESS"/>
+                  </v-radio-group>
+                  <v-text-field
+                      label="신규 그룹 이름"
+                      placeholder="한화시스템"
+                      v-model="createGroupReq.groupName"
+                      :rules="[rules.nameRule]"
+                      counter
+                      clearable
+                      required
+                  />
+                  <v-btn
+                      class="mt-7"
+                      color="info"
+                      :loading="loading"
+                      text="수정"
+                      type="submit"
+                      block
+                  />
+
+                </v-col>
+              </v-row>
+            </v-form>
+            <v-btn
+                class="mt-7"
+                color="error"
+                text="영구 삭제"
+                @click="DeleteGruopFromDataBase"
+                block
+            />
+          </v-sheet>
+        </v-dialog>
+
+        <!--           ☝️ 상위 그룹 선택을 위한 모달 -->
+        <v-dialog
+            class="d-flex justify-start ml-16"
+            width="35vw"
+            opacity="75%"
+            v-model="selectSuperGroupModal">
+          <v-sheet
+              rounded="xl"
+              class="d-flex justify-center flex-wrap pa-10">
+
+            <h1></h1>
+            <v-treeview
+                :items="group.getHierarchyInfo"
+                color="blue">
+              <template v-slot:prepend="{ item }">
+                <v-icon
+                    v-if="item.children"
+                    :icon="`mdi-${item.children.length === 0
+                                ? 'account-group-outline' : 'folder-network'}`"
+                    @click="SetSuperGroupIdAndName(item)"
+                />
+              </template>
+              <template v-slot:title="{ item }">
+                <div @click="SetSuperGroupIdAndName(item)">
+                  {{ item.title }} {{ item.groupType === "DEPARTMENT" ? '&nbsp 🏢' : '&nbsp 🚀' }}
+                </div>
+              </template>
+            </v-treeview>
+          </v-sheet>
+        </v-dialog>
+
+        <!--           🏢 그룹생성을 위한 모달 -->
+        <v-dialog
+            class="d-flex justify-center"
+            width="30vw"
+            opacity="50%"
+            v-model="createNewGroupModal">
+          <v-sheet
+              rounded="xl"
+              class="d-flex justify-center flex-wrap pa-10">
+
+            <v-form ref="form" style="width: 50vw" @submit.prevent="createNewGruopWidhReq">
+              <v-row>
+                <v-col>
+                  <h2>{{ clickedGroupName }} 소속</h2>
+                  <v-radio-group
+                      class="mt-5"
+                      v-model="createGroupReq.groupType"
+                      :color="color.kipMainColor"
+                      inline>
+                    <v-radio
+                        label="🏢 부서조직"
+                        value="DEPARTMENT"/>
+                    <v-radio
+                        label="🚀 NewBiz팀"
+                        value="BUSINESS"/>
+                  </v-radio-group>
+                  <v-text-field
+                      label="신규 그룹 이름"
+                      placeholder="한화시스템"
+                      v-model="createGroupReq.groupName"
+                      :rules="[rules.nameRule]"
+                      clearable
+                      required
+                  />
+
+                  <v-btn
+                      class="mt-7"
+                      color="success"
+                      :loading="loading"
+                      text="신규 그룹 생성하기"
+                      type="submit"
+                      block
+                  />
+                </v-col>
+              </v-row>
+            </v-form>
+          </v-sheet>
+        </v-dialog>
+
       </v-col>
 
-      <!--          ✏️ 그룹수정을 위한 모달 -->
-      <v-dialog
-          class="d-flex justify-end mr-16"
-          width="45vw"
-          opacity="50%"
-          v-model="updateGruopInfoModal">
-        <v-sheet
-            rounded="xl"
-            class="d-flex justify-center flex-wrap pa-10">
-
-          <v-form ref="form" style="width: 50vw" @submit.prevent="UpdateGroupInfoReq">
-            <v-row>
-              <v-col>
-                <h1>팀명 : [{{ clickedGroupName }}] 👉 [{{ createGroupReq.groupName }}]</h1>
-
-                <div class="d-flex mt-7">
-                  <h2> 소속 : {{ clickedSuperGroupName }} </h2>
-                  <v-btn
-                      class="ml-4"
-                      icon="mdi-pencil"
-                      variant="tonal"
-                      @click="OpenSelectSuperGroupModal"
-                  />
-                </div>
-                <v-radio-group
-                    class="mt-5"
-                    v-model="createGroupReq.groupType"
-                    :color="color.kipMainColor"
-                    inline>
-                  <v-radio
-                      label="🏢 부서조직"
-                      value="DEPARTMENT"/>
-                  <v-radio
-                      label="🚀 NewBiz팀"
-                      value="BUSINESS"/>
-                </v-radio-group>
-                <v-text-field
-                    label="신규 그룹 이름"
-                    placeholder="한화시스템"
-                    v-model="createGroupReq.groupName"
-                    :rules="[rules.nameRule]"
-                    counter
-                    clearable
-                    required
-                />
-                <v-btn
-                    class="mt-7"
-                    color="info"
-                    :loading="loading"
-                    text="수정"
-                    type="submit"
-                    block
-                />
-
-              </v-col>
-            </v-row>
-          </v-form>
-          <v-btn
-              class="mt-7"
-              color="error"
-              text="영구 삭제"
-              @click="DeleteGruopFromDataBase"
-              block
-          />
-        </v-sheet>
-      </v-dialog>
-
-      <!--        ☝️ 상위 그룹 선택을 위한 모달 -->
-      <v-dialog
-          class="d-flex justify-start ml-16"
-          width="35vw"
-          opacity="75%"
-          v-model="selectSuperGroupModal">
-        <v-sheet
-            rounded="xl"
-            class="d-flex justify-center flex-wrap pa-10">
-
-          <h1></h1>
-          <v-treeview
-              :items="group.getHierarchyInfo"
-              color="blue">
-            <template v-slot:prepend="{ item }">
-              <v-icon
-                  v-if="item.children"
-                  :icon="`mdi-${item.children.length === 0
-                                ? 'account-group-outline' : 'folder-network'}`"
-                  @click="SetSuperGroupIdAndName(item)"
-              />
-            </template>
-            <template v-slot:title="{ item }">
-              <div @click="SetSuperGroupIdAndName(item)">
-                {{ item.title }} {{ item.groupType === "DEPARTMENT" ? '&nbsp 🏢' : '&nbsp 🚀' }}
-              </div>
-            </template>
-          </v-treeview>
-        </v-sheet>
-      </v-dialog>
-
-      <!--           🏢 그룹생성을 위한 모달 -->
-      <v-dialog
-          class="d-flex justify-center"
-          width="30vw"
-          opacity="50%"
-          v-model="createNewGroupModal">
-        <v-sheet
-            rounded="xl"
-            class="d-flex justify-center flex-wrap pa-10">
-
-          <v-form ref="form" style="width: 50vw" @submit.prevent="createNewGruopWidhReq">
-            <v-row>
-              <v-col>
-                <h2>{{ clickedGroupName }} 소속</h2>
-                <v-radio-group
-                    class="mt-5"
-                    v-model="createGroupReq.groupType"
-                    :color="color.kipMainColor"
-                    inline>
-                  <v-radio
-                      label="🏢 부서조직"
-                      value="DEPARTMENT"/>
-                  <v-radio
-                      label="🚀 NewBiz팀"
-                      value="BUSINESS"/>
-                </v-radio-group>
-                <v-text-field
-                    label="신규 그룹 이름"
-                    placeholder="한화시스템"
-                    v-model="createGroupReq.groupName"
-                    :rules="[rules.nameRule]"
-                    clearable
-                    required
-                />
-
-                <v-btn
-                    class="mt-7"
-                    color="success"
-                    :loading="loading"
-                    text="신규 그룹 생성하기"
-                    type="submit"
-                    block
-                />
-              </v-col>
-            </v-row>
-          </v-form>
-        </v-sheet>
-      </v-dialog>
-
-      <!--        👉 오른쪽 구성원 리스트-->
+      <!-- 👉👉👉👉👉👉👉👉👉👉 오른쪽 구성원 리스트-->
       <v-col cols="8">
 
-        <!--          🧑‍🦱🧑‍🦱  그룹에 소속된 회원 리스트-->
+        <!--          🧑‍🦱  그룹에 소속된 회원 리스트-->
         <v-row>
           <v-col>
             <v-sheet
@@ -722,7 +538,189 @@ const DeleteGruopFromDataBase = async () => {
           </v-col>
         </v-row>
 
-        <!--          📁📁 그룹에 소속된 문서 리스트-->
+        <!--          ✅ 그룹에 사원 추가를 위한 모달 -->
+        <v-dialog
+            width="80vw"
+            opacity="15%"
+            v-model="addNewMemberModdal">
+          <v-sheet
+              rounded="xl"
+              class="d-flex justify-center flex-wrap pa-10">
+            <v-card
+                width="100%"
+                class="mb-5 ml-5"
+                min-width="100"
+                max-width="240"
+                rounded="xl"
+                elevation="5">
+              <v-img
+                  class="align-end text-white"
+                  height="200"
+                  :src="`/images/profile/user${Math.ceil((Math.random() * 14))}.jpg`"
+                  cover
+              >
+              </v-img>
+              <v-card-title
+                  v-text="`❤️ ${groupUser.getGroupName}`"/>
+              <v-card-subtitle
+                  v-text="groupUser.getGroupType === 'DEPARTMENT' ? '🏢 부서조직': '🚀 NewBiz팀' "/>
+
+              <v-card-actions class="d-flex justify-center">
+                <!--              신규 팀원 추가 버튼-->
+                <v-btn
+                    @click="createMemberModdal=true"
+                    variant="elevated"
+                    color="blue-lighten-1"
+                    class="ma-2 px-4"
+                    text="신규계정생성"/>
+              </v-card-actions>
+            </v-card>
+
+            <!--           그룹에 소속된 회원 리스트-->
+            <v-card
+                width="100%"
+                v-for="userIn in groupUser.getAllUserInfoInKip"
+                :key="userIn.userId"
+                class="mb-5 ml-5"
+                min-width="100"
+                max-width="240"
+                rounded="xl"
+                elevation="5">
+              <v-img
+                  class="align-end text-white"
+                  height="200"
+                  :src="userIn.profileImageUrl"
+                  cover>
+              </v-img>
+              <v-card-title v-text="`🐋 ${userIn.name} `"/>
+              <v-card-subtitle v-text="`📞 ${userIn.phoneNumber}`"/>
+
+              <v-card-actions class="d-flex justify-center">
+                <v-btn
+                    @Click="addUserToGroup(userIn.userId)"
+                    variant="elevated"
+                    color="deep-purple-lighten-1"
+                    class="ma-2 px-3"
+                    :text="`팀원 추가`"/>
+                <v-btn
+                    @Click="deletUserFromDataBaese(userIn.employeeId, userIn.name)"
+                    variant="elevated"
+                    color="red"
+                    class="ma-2 px-3"
+                    :text="`영구 삭제`"/>
+              </v-card-actions>
+            </v-card>
+          </v-sheet>
+        </v-dialog>
+
+        <!--          🥩 신규 회원 생성을 위한 모달 -->
+        <v-dialog
+            class="d-flex justify-center"
+            width="70vw"
+            opacity="50%"
+            v-model="createMemberModdal">
+          <v-sheet
+              rounded="xl"
+              class="d-flex justify-center flex-wrap pa-10">
+
+            <!--           ❤️ 그룹에 소속된 회원 리스트-->
+            <v-form ref="form" style="width: 75vw" @submit.prevent="CreateNewUser">
+              <v-row>
+                <v-col>
+                  <v-text-field
+                      label="사번"
+                      placeholder="k-1234567890"
+                      v-model="data.employeeId"
+                      :rules="[rules.employeeIdRule, rules.employeeIdDupulicateCheck]"
+                      clearable
+                      maxlength="12"
+                      required
+                      counter
+                  />
+                  <v-text-field
+                      label="비밀번호"
+                      placeholder="1234"
+                      v-model="data.password"
+                      :append-icon="showPassword ? 'mdi-eye' : 'mdi-eye-off'"
+                      :rules="[rules.passwordRule]"
+                      :type="showPassword ? 'text' : 'password'"
+                      hint="4자리 숫자"
+                      maxlength="4"
+                      name="input-10-1"
+                      clearable
+                      counter
+                      @click:append="showPassword = !showPassword"
+                  />
+                  <v-text-field
+                      label="비밀번호 확인"
+                      placeholder="1234"
+                      v-model="passwordConfirm"
+                      :append-icon="showPasswordConfirm ? 'mdi-eye' : 'mdi-eye-off'"
+                      :rules="[rules.passwordRule, rules.passwordConfim]"
+                      :type="showPasswordConfirm ? 'text' : 'password'"
+                      maxlength="4"
+                      hint="4자리 숫자"
+                      name="input-10-1"
+                      clearable
+                      counter
+                      @click:append="showPasswordConfirm = !showPasswordConfirm"
+                  />
+                  <v-text-field
+                      label="이름"
+                      placeholder="홍길동"
+                      v-model="data.name"
+                      :rules="[rules.nameRule]"
+                      clearable
+                      required
+                  />
+                  <v-text-field
+                      label="연락처"
+                      placeholder="010-1234-5678"
+                      v-model="data.phoneNumber"
+                      :rules="[rules.phoneNumberRule, rules.phoneNumberDupulicateCheck]"
+                      clearable
+                      maxlength="13"
+                      required
+                      counter
+                  />
+                  <v-text-field
+                      label="이메일"
+                      placeholder="admin@kip.com"
+                      v-model="data.email"
+                      :rules="[rules.emailRule, rules.emailDupulicateCheck]"
+                      clearable
+                      required
+                  />
+                  <v-text-field
+                      v-model="data.employedDay"
+                      label="입사일"
+                      :rules="[rules.employedDayRule]"
+                      required
+                      clearable
+                  />
+                </v-col>
+                <v-col>
+                  <v-date-picker
+                      v-model="employedDay"
+                      width="100%"
+                      @click="formattedDate"
+                      show-adjacent-months
+                  />
+                  <v-btn
+                      class="mt-4"
+                      color="success"
+                      :loading="loading"
+                      text="신규 계정 생성하기"
+                      type="submit"
+                      block
+                  />
+                </v-col>
+              </v-row>
+            </v-form>
+          </v-sheet>
+        </v-dialog>
+
+        <!--          📁 그룹에 소속된 문서 리스트-->
         <v-row>
           <v-col>
             <v-sheet
@@ -731,11 +729,10 @@ const DeleteGruopFromDataBase = async () => {
                   width="100%"
                   v-for="doc in document.getDocumentList"
                   :key="doc.userId"
-                  class="mb-4 ml-5 pa-2"
+                  class="mb-4 ml-5 pt-2 px-1 pb-1"
                   rounded="xl"
                   elevation="5"
-                  clase="d-flex"
-              >
+                  clase="d-flex">
                 <v-spacer v-if="doc.docType !== 'SECTION'"></v-spacer>
                 <div class="d-flex justify-space-between">
                   <v-card-title
@@ -744,14 +741,36 @@ const DeleteGruopFromDataBase = async () => {
                          '&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp'}
                          ${doc.title} [ ${doc.documentId} ]`"/>
                   <v-card-actions class="d-flex justify-space-evenly">
+
+                    <!--           ☝️ 전체 공개 버튼 -->
+                    <v-hover v-slot="{ isHovering, props }">
+
+                      <v-btn
+                          text="전체공개"
+                          @click="OpenUpdateGroupModal(item)"
+                          v-bind="props"
+                          :class="{
+                            'on-hover': isHovering,
+                            'public-btns': isHovering
+                          }"
+                          class="px-3 mr-2 mt-1"
+                          color="rgba(255, 255, 255, 0)"
+                          variant="outlined"
+                          rounded="xl"
+                      />
+
+                    </v-hover>
+
+                    <!--          ➡️ 권한 요청 버튼 -->
                     <v-btn
+                        text="권한요청"
                         @click=""
                         variant="elevated"
                         color="blue-lighten-1"
-                        class="px-4 mr-4"
-                        text="권한요청"
+                        class="px-4 mr-4 mt-1"
                         rounded="xl"
                     />
+
                   </v-card-actions>
                 </div>
               </v-card>
@@ -765,5 +784,8 @@ const DeleteGruopFromDataBase = async () => {
 <style scoped>
 .show-btns {
   color: var(--primary-color) !important;
+}
+.public-btns {
+  color: #e16e6e !important;
 }
 </style>
