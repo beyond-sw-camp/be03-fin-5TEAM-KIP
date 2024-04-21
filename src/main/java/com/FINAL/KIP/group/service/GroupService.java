@@ -139,7 +139,7 @@ public class GroupService {
     //  Update
     @JustAdmin
     @Transactional
-    public GetGroupHierarchyResDto updateGroupInfo(UpdateGroupReqDto dto) {
+    public GroupResDto updateGroupInfo(UpdateGroupReqDto dto) {
 
         if (Objects.equals(dto.getGroupId(), dto.getSuperGroupId()))
             throw new IllegalArgumentException("자기 자신에게 소속시킬 수 없습니다");
@@ -162,9 +162,7 @@ public class GroupService {
                 .map(this::getGroupById)
                 .ifPresent(group::setSuperGroup);
 
-        groupRepo.save(group);
-
-        return new GetGroupHierarchyResDto(getGroupById(1L));
+        return new GroupResDto(groupRepo.save(group));
     }
 
     @JustAdmin

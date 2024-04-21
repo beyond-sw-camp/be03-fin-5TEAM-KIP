@@ -54,8 +54,7 @@ const setAllUserInfoInKip = async () => {
 }
 const deleteUserFromGroup = async (groupId, userId) => {
   await groupUser.deleteUserFromGroup(groupId, userId)
-  await setUsersInfoInGroup(clickedGroupId.value);
-  await groups.setMyGroupsInfo(); // 이게 작동 안함.
+  await group.setMyGroupsInfo();
 }
 const addUserToGroup = async (userId) => {
   await groupUser.addUserToGroup(clickedGroupId.value, userId);
@@ -83,21 +82,19 @@ const data = ref({
 });
 
 // 최종 제출 관련 함수
-const handleSubmit = async (event) => {
+const CreateNewUser = async (event) => {
   loading.value = true
   const results = await event
-  await wait(500); // 1.2초 대기
-  loading.value = false
-
+  await wait(500); // 0.5초 대기
   if (results.valid) {
     await user.createUserAccount(data.value)
     await groupUser.addCreatedUserToAllUsers(user.getCreatedUserData)
     alert(`${user.getCreatedUserData.name}님의 계정이 생성되었습니다.`)
     Object.keys(data.value).forEach(key => data.value[key] = "");
-    passwordConfirm.value = ""
     createMemberModdal.value = false; // 모달창 닫기
+    passwordConfirm.value = ""
   }
-
+  loading.value = false
 }
 
 // 한국말로 입사일 형식 변경하는 함수
@@ -113,7 +110,6 @@ const formattedDate = () => {
   data.value.employedDay = formattedDate
   return formattedDate
 }
-
 
 // 폼데이터 벨리데이션 체크
 const rules = {
@@ -156,6 +152,8 @@ const rules = {
 const clickedGroupName = ref();
 const clickedSuperGroupName = ref();
 const BeforeSuperGroupName = ref();
+const GroupChildrenIdList = ref([]);
+const documentsCount = ref();
 
 // 생성요청과 수정요청을 보내는 JSON 객체
 const createGroupReq = ref({
@@ -171,10 +169,17 @@ const OpenCrateModal = (groupInfo) => {
   clickedGroupName.value = groupInfo.title
   createGroupReq.value.superGroupId = groupInfo.id
 }
-const createNewGruopWidhReq = async (groupReqdto) => {
-  await group.createNewGroup(groupReqdto)
-  createNewGroupModal.value = false;
-  createGroupReq.value.groupName = ""
+const createNewGruopWidhReq = async (event) => {
+  loading.value = true
+  const results = await event
+  await wait(500); // 0.5초 대기
+
+  if (results.valid) {
+    await group.createNewGroup(createGroupReq.value)
+    createNewGroupModal.value = false;
+    createGroupReq.value.groupName = ""
+  }
+  loading.value = false
 }
 const OpenUpdateGroupModal = (groupInfo) => {
   if (groupInfo.id === 1)
@@ -191,21 +196,52 @@ const OpenUpdateGroupModal = (groupInfo) => {
     createGroupReq.value.groupName = groupInfo.title
     createGroupReq.value.groupType = groupInfo.groupType
     createGroupReq.value.superGroupId = groupInfo.superGroupId
+
+    GroupChildrenIdList.value = groupInfo.childrenIdList;
+    documentsCount.value = groupInfo.documentsCount;
   }
 }
 const OpenSelectSuperGroupModal = () => {
   selectSuperGroupModal.value = true
 }
 
+// 그룹 수정 관련 함수
 const SetSuperGroupIdAndName = (selectedSuperGruupInfo) => {
-  if (selectedSuperGruupInfo.id === createGroupReq.value.groupId )
+  if (selectedSuperGruupInfo.id === createGroupReq.value.groupId)
     alert("상위그룹으로 자신을 선택하셨습니다. 다시 선택해 주세요")
   else {
     createGroupReq.value.superGroupId = selectedSuperGruupInfo.id
     clickedSuperGroupName.value = `${BeforeSuperGroupName.value} 👉 ${selectedSuperGruupInfo.title}`
   }
 }
+const UpdateGroupInfoReq = async (event) => {
+  loading.value = true
+  const results = await event
+  await wait(500); // 0.5초 대기
+  if (results.valid) {
+    await group.updateGroupInfo(createGroupReq.value)
+    await group.setHierarchyInfo()
+    updateGruopInfoModal.value = false;
+  }
+  loading.value = false
+}
 
+const DeleteGruopFromDataBase = async () => {
+  if (String(createGroupReq.value.groupId) === "1")
+    alert("기본 최상단 그룹은 삭제할 수 없습니다.")
+  else if (GroupChildrenIdList.value.length !== 0)
+    alert("하위그룹이 있는 그룹은 삭제할 수 없습니다.")
+  else if (documentsCount.value > 1)
+    alert("문서가 2개이상인 그룹은 삭제할 수 없습니다. 그룹 문서를 확인하세요")
+  else
+  {
+    if (confirm(`${createGroupReq.value.groupName} 그룹이 영구 삭제됩니다.`)) {
+      await group.DeleteGruopFromDataBase(createGroupReq.value.groupId)
+      updateGruopInfoModal.value = false;
+      alert(`${createGroupReq.value.groupName} 그룹이 영구 삭제 되었습니다.`)
+    }
+  }
+}
 
 </script>
 <template>
@@ -298,7 +334,7 @@ const SetSuperGroupIdAndName = (selectedSuperGruupInfo) => {
           class="d-flex justify-center flex-wrap pa-10">
 
         <!--           ❤️ 그룹에 소속된 회원 리스트-->
-        <v-form ref="form" style="width: 75vw" @submit.prevent="handleSubmit">
+        <v-form ref="form" style="width: 75vw" @submit.prevent="CreateNewUser">
           <v-row>
             <v-col>
               <v-text-field
@@ -468,7 +504,7 @@ const SetSuperGroupIdAndName = (selectedSuperGruupInfo) => {
             rounded="xl"
             class="d-flex justify-center flex-wrap pa-10">
 
-          <v-form ref="form" style="width: 50vw" @submit.prevent="createNewGruopWidhReq(createGroupReq)">
+          <v-form ref="form" style="width: 50vw" @submit.prevent="UpdateGroupInfoReq">
             <v-row>
               <v-col>
                 {{ createGroupReq }}
@@ -512,17 +548,17 @@ const SetSuperGroupIdAndName = (selectedSuperGruupInfo) => {
                     type="submit"
                     block
                 />
-                <v-btn
-                    class="mt-7"
-                    color="error"
-                    :loading="loading"
-                    text="영구 삭제"
-                    type="submit"
-                    block
-                />
+
               </v-col>
             </v-row>
           </v-form>
+          <v-btn
+              class="mt-7"
+              color="error"
+              text="영구 삭제"
+              @click="DeleteGruopFromDataBase"
+              block
+          />
         </v-sheet>
       </v-dialog>
 
@@ -557,7 +593,6 @@ const SetSuperGroupIdAndName = (selectedSuperGruupInfo) => {
         </v-sheet>
       </v-dialog>
 
-
       <!--           🏢 그룹생성을 위한 모달 -->
       <v-dialog
           class="d-flex justify-center"
@@ -568,7 +603,7 @@ const SetSuperGroupIdAndName = (selectedSuperGruupInfo) => {
             rounded="xl"
             class="d-flex justify-center flex-wrap pa-10">
 
-          <v-form ref="form" style="width: 50vw" @submit.prevent="createNewGruopWidhReq(createGroupReq)">
+          <v-form ref="form" style="width: 50vw" @submit.prevent="createNewGruopWidhReq">
             <v-row>
               <v-col>
                 <h2>{{ clickedGroupName }} 소속</h2>
@@ -589,7 +624,6 @@ const SetSuperGroupIdAndName = (selectedSuperGruupInfo) => {
                     placeholder="한화시스템"
                     v-model="createGroupReq.groupName"
                     :rules="[rules.nameRule]"
-                    counter
                     clearable
                     required
                 />
@@ -607,7 +641,6 @@ const SetSuperGroupIdAndName = (selectedSuperGruupInfo) => {
           </v-form>
         </v-sheet>
       </v-dialog>
-
 
       <!--        👉 오른쪽 구성원 리스트-->
       <v-col cols="8">

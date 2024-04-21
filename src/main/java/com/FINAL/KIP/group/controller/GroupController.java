@@ -79,7 +79,7 @@ public class GroupController {
 
     //  Update
     @PatchMapping
-    public ResponseEntity<GetGroupHierarchyResDto> updateGroupInfo (
+    public ResponseEntity<GroupResDto> updateGroupInfo (
             @RequestBody UpdateGroupReqDto dto){
         return ResponseEntity.ok(
                 groupService.updateGroupInfo(dto)

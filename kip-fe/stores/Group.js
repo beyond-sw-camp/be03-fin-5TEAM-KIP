@@ -61,6 +61,21 @@ export const useGroup = defineStore("group", {
                     },
                     body: JSON.stringify(upadeteGroupReq),
                 });
+                if (response.ok)
+                    return "ok"
+            } catch (e) {
+                console.log(e, "그룹 정보 업데이트 실패");
+            }
+        },
+
+        async DeleteGruopFromDataBase (groupId) {
+            try {
+                const response = await fetch(`${BASE_URL}/group/${groupId}`, {
+                    method: 'DELETE',
+                    headers: {
+                        'Authorization': 'Bearer ' + user.getAccessToken
+                    },
+                });
                 if (response.ok) {
                     // 뷰티파이 규칙.
                     const listInfo = [];
@@ -69,7 +84,7 @@ export const useGroup = defineStore("group", {
                     this.HierarchyInfo = listInfo;
                 }
             } catch (e) {
-                console.log(e, "그룹 정보 업데이트 실패");
+                console.log(e, "그룹 삭제 실패");
             }
         },
 

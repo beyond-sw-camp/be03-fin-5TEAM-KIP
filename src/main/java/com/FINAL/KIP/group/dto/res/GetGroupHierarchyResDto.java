@@ -15,6 +15,7 @@ public class GetGroupHierarchyResDto {
     private final GroupType groupType;
     private final Long superGroupId;
     private final String superGroupName;
+    private final int documentsCount;
     private final List<Long> childrenIdList;
     private final List<GetGroupHierarchyResDto> children;
 
@@ -22,6 +23,8 @@ public class GetGroupHierarchyResDto {
         this.id = group.getId();
         this.title = group.getGroupName();
         this.groupType = group.getGroupType();
+        this.documentsCount = group.getDocuments().size();
+
         Group superGroup = group.getSuperGroup();
 
         if (superGroup != null) {
