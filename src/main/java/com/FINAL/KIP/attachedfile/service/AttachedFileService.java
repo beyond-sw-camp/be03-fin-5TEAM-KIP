@@ -136,9 +136,10 @@ public class AttachedFileService {
     }
 
     //    파일 삭제
-    public void deleteFile(String originName)  {
-        AttachedFile attachedFile = attachedFileRepository.findByFileName(originName);
+    public void deleteFile(Long fileId)  {
+        AttachedFile attachedFile = attachedFileRepository.findAttachedFileById(fileId);
+        System.out.println(attachedFile);
         attachedFileRepository.delete(attachedFile);
-        s3Config.amazonS3Client().deleteObject(bucket, originName);
+        s3Config.amazonS3Client().deleteObject(bucket, attachedFile.getFileName());
     }
 }

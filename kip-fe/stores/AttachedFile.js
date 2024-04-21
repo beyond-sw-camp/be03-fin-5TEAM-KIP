@@ -4,14 +4,14 @@ const user = useUser();
 export const useAttachedFile = defineStore("attachedFile", {
     state() {
         return {
-            attachedFile: [],
+            attachedFileList: [],
         };
     },
     getters: {
         // getter를 업데이트하여 모든 정보를 반환
         // 문서 첨부파일 조회
-        getAttachedFile(state){
-            return state.attachedFile.map(file => ({
+        getAttachedFileList(state){
+            return state.attachedFileList.map(file => ({
                 id: file.id,  // 첨부파일 ID
                 documentId: file.document,     // 문서 ID
                 fileName: file.fileName,      //문서 타입
@@ -22,25 +22,56 @@ export const useAttachedFile = defineStore("attachedFile", {
     },
 
     actions: {
-        async setAttachedFile(documentId) {
+        async setAttachedFileList(documentId){
             try {
                 const response = await fetch(`${BASE_URL}/doc/${documentId}/fileList`, {
                     method: 'GET',
                     headers: {'Authorization': 'Bearer ' + user.getAccessToken},
                 });
                 if (!response.ok) {throw new Error('Failed to fetch attachedFile');}
-                this.attachedFile = await response.json();
+                this.attachedFileList = await response.json();
             } catch (error) {
                 console.error('Error fetching attachedFile:', error.message);
-                this.attachedFile = []; // 에러가 발생한 경우 첨부파일 목록을 초기화
+                this.attachedFileList = []; // 에러가 발생한 경우 첨부파일 목록을 초기화
             }
         },
 
-        async setFirstDocAttachedFile(){
-            if (this.attachedFile.length > 0) {
-                const firstDocAttachedFile = this.attachedFile[0].documentId;
-                await this.setAttachedFile(firstDocAttachedFile);
+        async setAttachedFileUpload(documentId, fileData) {
+            try {
+                const formData = new FormData();
+                formData.append('file', fileData);
+
+                const response = await fetch(`${BASE_URL}/doc/${documentId}/fileUpload`, {
+                    method: 'POST',
+                    headers: {'Authorization': 'Bearer ' + user.getAccessToken},
+                    body: formData,
+                });
+                if (!response.ok) { // HTTP 상태 코드가 200-299를 벗어났을 때
+                    throw new Error(`Failed to upload file: ${response.statusText}`);
+                }
+
+                const result = await response.json(); // 응답 본문을 JSON으로 파싱
+                console.log('File uploaded successfully:', result);
+                return result; // 업로드 성공 결과를 반환
+
+            } catch (error) {
+                console.error('Error uploading file:', error.message);
+                throw error; // 오류를 상위 호출자에게 전파
             }
-        }
+        },
+
+        async setAttachedFileDelete(fileId) {
+            try {
+                const response = await fetch(`${BASE_URL}/doc/file/${fileId}`, {
+                    method: 'DELETE',
+                    headers: {'Authorization': 'Bearer ' + user.getAccessToken},
+                });
+                if (!response.ok) {throw new Error('Failed to DELETE attachedFile');}
+                console.log('File deleted successfully:', fileId);
+            } catch (error) {
+                console.error('Error DELETE attachedFile:', error.message);
+            }
+        },
+
     }
 });
