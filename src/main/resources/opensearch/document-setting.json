@@ -1,0 +1,72 @@
+{
+  "similarity": {
+    "less_length_norm_BM25": {
+      "type": "BM25",
+      "b": 0.25
+    },
+    "max_ngram_diff": 10,
+    "analysis": {
+      "analyzer": {
+        "document_title_analyzer": {
+          "type": "custom",
+          "tokenizer": "my_nori_tokenizer",
+          "filter": [
+            "ngram",
+            "nori_number",
+            "nori_readingform",
+            "lowercase"
+          ]
+        },
+        "document_content_analyzer": {
+          "type": "custom",
+          "char_filter": [
+            "html_strip"
+          ],
+          "tokenizer": "my_nori_tokenizer",
+          "filter": [
+            "nori_part_of_speech",
+            "nori_number",
+            "nori_readingform",
+            "lowercase",
+            "stop"
+          ]
+        },
+        "document_search_analyzer": {
+          "type": "custom",
+          "char_filter": [
+            "html_strip"
+          ],
+          "tokenizer": "my_nori_tokenizer",
+          "filter": [
+            "trim",
+            "nori_part_of_speech",
+            "nori_number",
+            "nori_readingform",
+            "lowercase",
+            "stop"
+          ]
+        }
+      },
+      "tokenizer": {
+        "my_nori_tokenizer": {
+          "type": "nori_tokenizer",
+          "decompound_mode": "mixed",
+          "discard_punctuation": "false"
+        }
+      },
+      "filter": {
+        "ngram": {
+          "type": "ngram",
+          "min_gram": 1,
+          "max_gram": 10,
+          "token_chars": [
+            "letter",
+            "digit",
+            "punctuation",
+            "symbol"
+          ]
+        }
+      }
+    }
+  }
+}

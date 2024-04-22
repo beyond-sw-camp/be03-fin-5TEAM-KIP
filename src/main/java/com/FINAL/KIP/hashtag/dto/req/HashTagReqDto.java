@@ -1,7 +1,6 @@
 package com.FINAL.KIP.hashtag.dto.req;
 
 
-import com.FINAL.KIP.hashtag.domain.HashTag;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -10,9 +9,9 @@ import lombok.Setter;
 public class HashTagReqDto {
     private String tagName;
 
-    public HashTag makeHashTagFromTagReqDto(){
-        HashTag hashTag = new HashTag();
-        hashTag.setTagName(this.tagName);
-        return hashTag;
-    }
+//    public HashTag makeHashTagFromTagReqDto(){
+//        HashTag hashTag = new HashTag();
+//        hashTag.setTagName(this.tagName);
+//        return hashTag;
+//    }
 }

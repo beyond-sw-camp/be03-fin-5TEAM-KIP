@@ -24,7 +24,7 @@ public class HashTagController {
 
     //  Create
     @PostMapping
-    public ResponseEntity<List<HashTagResDto>> createHashTags(@RequestBody List<HashTagReqDto> dtos) {
+    public ResponseEntity<List<HashTagResDto>> createHashTags(@RequestBody List<String> dtos) {
         return ResponseEntity.ok(hashTagService.createHashTags(dtos));
     }
 
