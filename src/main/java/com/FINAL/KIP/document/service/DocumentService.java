@@ -19,6 +19,7 @@ import com.FINAL.KIP.version.domain.Version;
 import com.FINAL.KIP.version.dto.response.VersionDetailResDto;
 import com.FINAL.KIP.version.dto.response.VersionReplaceResDto;
 import com.FINAL.KIP.version.repository.VersionRepository;
+import java.util.UUID;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -80,6 +81,14 @@ public class DocumentService {
             }
 		}
 		Document savedDocument = documentRepo.save(newDocument);
+
+		User tryUser = userService.getUserFromAuthentication();
+		Version newVersion = Version.builder()
+			.content(dto.getContent())
+			.writer(tryUser)
+			.document(savedDocument)
+			.build();
+		versionRepository.save(newVersion);
 		// 해시서비스로 공통화 시킴
         if (dto.getHashTags() != null && !dto.getHashTags().isEmpty()) {
             hashTagService.generateDocHashTags(dto.getHashTags(), savedDocument);

@@ -1,4 +1,6 @@
 <script setup>
+import {ref} from "vue";
+import {toastViewerInstance} from "~/useToastViewer";
 
 const color = useColor();
 const route = useRoute();
@@ -6,11 +8,40 @@ const groupId = route.params.groupId;
 const groupName = useGroup();
 const documentList = useDocumentList();
 const attachedFile = useAttachedFile();
+const createDocument = useCreateDocument();
+const postForm = ref();
+const hover = ref(null);
+const dialog = ref(false);
+const upLinkId = ref();
+
+const viewer = ref();
 
 await documentList.$reset();
 await documentList.setDocumentList(groupId);
 await groupName.setGroupUsersInfo(groupId);
 await documentList.setFirstDocumentDetails();
+
+// onMounted(() => {
+//   viewer.value = toastViewerInstance(
+//       viewer.value,
+//       documentList.selectedDocumentDetails.content
+//   );
+// });
+const openCreateNewDocument = (docId) => {
+  upLinkId.value = docId;
+  dialog.value = true;
+  console.log(upLinkId.value)
+}
+const handleData = async (form) => {
+  form.groupId = groupId;
+  form.upLinkId = upLinkId.value
+
+  const temp = await createDocument.createNewDocument(form)
+  dialog.value = false;
+  await documentList.$reset();
+  await documentList.setDocumentList(groupId);
+  await selectDocument(temp.documentId);
+}
 
 await attachedFile.$reset();
 await attachedFile.setAttachedFile(documentList.getFirstDocId);
@@ -23,7 +54,12 @@ const selectDocument = async (documentId) => {
   // 문서의 상세 정보를 가져옴
   await documentList.setDocumentDetails(documentId);
   await attachedFile.setAttachedFile(documentId);
+  viewer.value = toastViewerInstance(
+      viewer.value,
+      documentList.selectedDocumentDetails.content
+  );
 };
+
 </script>
 
 <template>
@@ -43,38 +79,56 @@ const selectDocument = async (documentId) => {
             </v-list-item-content>
           </v-list-item>
           <v-divider></v-divider>
-
           <!-- 그룹 문서 title 출력 -->
           <v-tabs color="primary" direction="vertical">
             <v-tab
                 v-for="doc in documentList.getDocumentList"
                 :key="doc.documentId"
                 @click="selectDocument(doc.documentId)"
+                @mouseenter="hover = doc.documentId"
+                @mouseleave="hover = null"
             >
               {{ doc.title }}
+              <template v-if="hover === doc.documentId" v-slot:append>
+                <v-btn
+                    :icon="`mdi-plus`"
+                    variant="text"
+                    density="compact"
+                    rounded="lg"
+                    @click.stop = "openCreateNewDocument(doc.documentId)"
+                />
+              </template>
             </v-tab>
           </v-tabs>
         </v-list>
+        <v-dialog v-model="dialog" fullscreen>
+          <v-card>
+            <PostForm ref="postForm" @submit="handleData"></PostForm>
+            <v-card-actions>
+              <v-spacer></v-spacer>
+              <v-btn text @click=postForm.submit()>작성 완료</v-btn>
+              <v-btn text @click="dialog = false">닫기</v-btn>
+            </v-card-actions>
+          </v-card>
+        </v-dialog>
       </v-col>
 
       <!-- 세로선 -->
       <v-divider class="divider-container" vertical></v-divider>
 
       <!-- 가운데 문서제목 부분 -->
-      <v-col class="text-center">
+      <v-col>
         <v-list class="pa-4">
           <v-card flat>
-            <v-card-title class="headline">
+            <v-card-title class="headline text-center">
               {{ documentList.selectedDocumentDetails.title }}
             </v-card-title>
           </v-card>
         <!-- 가로 선 추가 -->
         <v-divider></v-divider>
         </v-list>
-
         <v-card flat class="mt-4 mx-auto" width="800">
-            <!-- 문서의 내용 -->
-            {{ documentList.selectedDocumentDetails.content }}
+          <div ref="viewer">{{ documentList.selectedDocumentDetails.content }}</div>
         </v-card>
       </v-col>
 

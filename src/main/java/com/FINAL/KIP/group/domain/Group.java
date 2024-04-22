@@ -8,10 +8,10 @@ import jakarta.persistence.*;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
-
-
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 @Getter
 @Entity
@@ -65,6 +65,17 @@ public class Group extends BaseEntity {
                         .group(this)
                         .build()
         );
+    }
+
+    // 그룹 이동시 하위그룹 아이디를 피하기위한 정보를 제공하는 함수
+    public List<Long> getAllChildGroupIds() {
+        return getChildGroups().stream()
+                .flatMap(child -> Stream.concat(
+                        Stream.of(
+                                child.getId()),
+                        child.getAllChildGroupIds().stream())
+                )
+                .collect(Collectors.toList());
     }
 
 }

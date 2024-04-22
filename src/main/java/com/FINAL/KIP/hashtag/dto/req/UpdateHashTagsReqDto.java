@@ -10,6 +10,6 @@ import java.util.List;
 public class UpdateHashTagsReqDto {
 
     private Long documentId;
-    private List<HashTagReqDto> hashTags;
+    private List<String> hashTags;
 
 }

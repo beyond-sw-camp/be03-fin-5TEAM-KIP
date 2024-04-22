@@ -18,7 +18,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@RequestMapping("doc")
+@RequestMapping("/doc")
 public class DocumentController {
 
     private final DocumentService documentService;
@@ -36,7 +36,6 @@ public class DocumentController {
 
     //    Read
     @GetMapping
-
     public ResponseEntity<List<DocumentResDto>> getPublicDocuments(){
         return ResponseEntity.ok(documentService.getPublicDocuments());
     }
