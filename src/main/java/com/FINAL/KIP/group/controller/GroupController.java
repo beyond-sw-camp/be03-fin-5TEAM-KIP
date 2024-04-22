@@ -29,10 +29,10 @@ public class GroupController {
 
     // Create
     @PostMapping
-    public ResponseEntity<GroupResDto> createGroup(
+    public ResponseEntity<GetGroupHierarchyResDto> createGroup(
             @RequestBody CreateGroupReqDto dto) {
         return ResponseEntity.ok(
-                groupService.createGroup(dto)
+                groupService.createGroupAndReturnHierrachy(dto)
         );
     }
 
@@ -76,23 +76,21 @@ public class GroupController {
         );
     }
 
-
     //  Update
     @PatchMapping
-    public ResponseEntity<GroupResDto> updateGroupInfo (
+    public ResponseEntity<GetGroupHierarchyResDto> updateGroupInfo (
             @RequestBody UpdateGroupReqDto dto){
-        return ResponseEntity.ok(
-                groupService.updateGroupInfo(dto)
-        );
+        groupService.updateGroupInfo(dto);
+        // 업데이트 이후 그룹의 하이라키 정보를 리턴
+        return ResponseEntity.ok(groupService.getGroupHierarchy(1L));
     }
 
 
     //  Delete
     @DeleteMapping("{groupId}")
-    public ResponseEntity<Void> deleteGroup (
+    public ResponseEntity<GetGroupHierarchyResDto> deleteGroup (
             @PathVariable Long groupId) {
-        groupService.deleteGroup(groupId);
-        return ResponseEntity.noContent().build();
+        return ResponseEntity.ok(groupService.deleteGroup(groupId));
     }
 
 

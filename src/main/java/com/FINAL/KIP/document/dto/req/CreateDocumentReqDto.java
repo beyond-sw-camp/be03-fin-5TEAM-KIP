@@ -16,7 +16,7 @@ public class CreateDocumentReqDto {
     private String content;
     private Long upLinkId;
     private Long groupId;
-    private List<HashTagReqDto> hashTags;
+    private List<String> hashTags;
 
     public Document makeDocDtoToDocument(){
         return Document.builder()

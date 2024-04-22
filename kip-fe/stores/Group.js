@@ -26,18 +26,82 @@ export const useGroup = defineStore("group", {
         }
     },
     actions: {
+
+        async createNewGroup(createGroupReq) {
+            try {
+                const response = await fetch(`${BASE_URL}/group`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': 'Bearer ' + user.getAccessToken
+                    },
+                    body: JSON.stringify(createGroupReq),
+                });
+                if (response.ok) {
+                    // 뷰티파이 규칙.
+                    const listInfo = [];
+                    const objectInfo = await response.json();
+                    listInfo.push(objectInfo);
+                    this.HierarchyInfo = listInfo;
+                }
+            } catch (e) {
+                console.log(e, "신규 그룹 생성 실패")
+            }
+        },
+
+        async updateGroupInfo(upadeteGroupReq) {
+            try {
+                const response = await fetch(`${BASE_URL}/group`, {
+                    method: 'PATCH',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': 'Bearer ' + user.getAccessToken
+                    },
+                    body: JSON.stringify(upadeteGroupReq),
+                });
+                if (response.ok) {
+                    // 뷰티파이 규칙.
+                    const listInfo = [];
+                    const objectInfo = await response.json();
+                    listInfo.push(objectInfo);
+                    this.HierarchyInfo = listInfo;
+                }
+            } catch (e) {
+                console.log(e, "그룹 정보 업데이트 실패");
+            }
+        },
+
+        async DeleteGruopFromDataBase (groupId) {
+            try {
+                const response = await fetch(`${BASE_URL}/group/${groupId}`, {
+                    method: 'DELETE',
+                    headers: {
+                        'Authorization': 'Bearer ' + user.getAccessToken
+                    },
+                });
+                if (response.ok) {
+                    // 뷰티파이 규칙.
+                    const listInfo = [];
+                    const objectInfo = await response.json();
+                    listInfo.push(objectInfo);
+                    this.HierarchyInfo = listInfo;
+                }
+            } catch (e) {
+                console.log(e, "그룹 삭제 실패");
+            }
+        },
+
         setTopNaviGroupList(groupId) {
-            console.log(groupId, "셋 탑 네비")
             // 소속된 그룹들 중에 "DEPARTMENT" 부서를 찾음
             let findMyDepartmentGroup = null
 
             // 최초 그룹 리스트 불러오기 (최상단 조직부서)
-            if (groupId === 0) 
+            if (groupId === 0)
                 findMyDepartmentGroup = this.myGroupsInfo
                     .find(group => group.groupType === "DEPARTMENT")
             else // 그룹아이디가 주어지면 해당 그룹 정보 불러오기
                 findMyDepartmentGroup = this.myGroupsInfo
-                        .find(group =>  String(group.groupId) === String(groupId))
+                    .find(group => String(group.groupId) === String(groupId))
 
             // 1개의 부서도 소속이 안된 사원은 소속 부서 없음 나옴.
             if (findMyDepartmentGroup === undefined) return ["소속된 부서없음"];
@@ -65,12 +129,14 @@ export const useGroup = defineStore("group", {
                     headers: {'Authorization': 'Bearer ' + user.getAccessToken},
                 });
 
-            // 객체를 리스트로 한 번 감쌈 (뷰티파이 규칙)
-            const listInfo = [];
-            const objectInfo = await response.json();
-            listInfo.push(objectInfo);
+            if (response.ok) {
+                // 객체를 리스트로 한 번 감쌈 (뷰티파이 규칙)
+                const listInfo = [];
+                const objectInfo = await response.json();
+                listInfo.push(objectInfo);
 
-            this.HierarchyInfo = listInfo;
+                this.HierarchyInfo = listInfo;
+            }
         },
         async setGroupUsersInfo(groupId) {
             const response =

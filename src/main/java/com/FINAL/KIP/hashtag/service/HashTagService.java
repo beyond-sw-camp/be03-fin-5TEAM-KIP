@@ -39,10 +39,13 @@ public class HashTagService {
 
     // Create
     @UserAdmin
-    public List<HashTagResDto> createHashTags(List<HashTagReqDto> dtos) {
+    public List<HashTagResDto> createHashTags(List<String> dtos) {
         List<HashTag> hashTags = new ArrayList<>();
-        for (HashTagReqDto tagDto : dtos)
-            hashTags.add(tagDto.makeHashTagFromTagReqDto());
+        for (String tagDto : dtos){
+            HashTag newHashTag = HashTag.builder()
+                .tagName(tagDto).build();
+            hashTags.add(newHashTag);
+        }
 
         List<HashTag> distinctTags = hashTags.stream()  // 중복제거
                 .filter(tag -> hashTagRepo
@@ -101,10 +104,10 @@ public class HashTagService {
                 ()-> new NoSuchElementException("해당 태그 Id가 존재하지 않습니다. "));
     }
 
-    public void generateDocHashTags(List<HashTagReqDto> hashTags, Document document) {
+    public void generateDocHashTags(List<String> hashTags, Document document) {
         createHashTags(hashTags);  // 중복빼고 저장.
         List<DocHashTag> docHashTags = hashTags.stream()
-                .map(req -> getHashTagByTagName(req.getTagName()))
+                .map(req -> getHashTagByTagName(req))
                 .map(hashTag -> new DocHashTag(document, hashTag))
                 .toList();
         document.addAllDocHashTags(docHashTags);

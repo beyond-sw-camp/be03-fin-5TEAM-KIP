@@ -10,5 +10,5 @@ public class UpdateGroupReqDto {
     private Long groupId;
     private String groupName;
     private GroupType groupType;
-    private Long supperGroupId;
+    private Long superGroupId;
 }

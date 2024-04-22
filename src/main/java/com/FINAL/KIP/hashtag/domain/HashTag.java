@@ -2,6 +2,7 @@ package com.FINAL.KIP.hashtag.domain;
 
 import com.FINAL.KIP.common.domain.BaseEntity;
 import jakarta.persistence.*;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -22,5 +23,12 @@ public class HashTag extends BaseEntity {
 
     @OneToMany(mappedBy = "hashTag", cascade = CascadeType.REMOVE)
     private final List<DocHashTag> docHashTags = new ArrayList<>();
+
+    public HashTag() {
+    }
+    @Builder
+    public HashTag(String tagName) {
+        this.tagName = tagName;
+    }
 
 }
