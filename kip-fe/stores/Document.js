@@ -89,9 +89,23 @@ export const useDocumentList = defineStore("documentList", {
             }
         },
 
+        async filterPublicDocByHashTag(hashTagId) {
+            try {
+                const response = await fetch(`${BASE_URL}/hashtag/${hashTagId}/docs/public`,{
+                    method: 'GET',
+                    headers: {'Authorization': 'Bearer ' + user.getAccessToken},
+                });
+                if (response.ok)
+                    this.publicDocumentList = await response.json();
+
+            } catch (e){
+                console.log(e.message, "해시태그 문서 조회 실패 ")
+            }
+        },
+
         async setPublicDocumentList(){
             try {
-                const response = await fetch(`${BASE_URL}/doc`,{
+                const response = await fetch(`${BASE_URL}/doc/public`,{
                     method: 'GET',
                     headers: {'Authorization': 'Bearer ' + user.getAccessToken},
                 });
