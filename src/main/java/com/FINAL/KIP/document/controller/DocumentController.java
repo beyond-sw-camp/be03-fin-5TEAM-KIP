@@ -36,7 +36,6 @@ public class DocumentController {
 
     //    Read
     @GetMapping
-
     public ResponseEntity<List<DocumentResDto>> getPublicDocuments(){
         return ResponseEntity.ok(documentService.getPublicDocuments());
     }
