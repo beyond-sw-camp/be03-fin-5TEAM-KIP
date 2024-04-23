@@ -64,10 +64,10 @@ public class AttachedFileController {
     }
 
     // 파일 삭제
-    @DeleteMapping("/file/{originName}")
-    public String deleteFile(@PathVariable String originName){
-        attachedFileService.deleteFile(originName);
+    @DeleteMapping("/file/{fileId}")
+    public String deleteFile(@PathVariable Long fileId){
+        attachedFileService.deleteFile(fileId);
 
-        return originName + " 파일이 삭제 되었습니다.";
+        return fileId + " 파일이 삭제 되었습니다.";
     }
 }

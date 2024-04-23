@@ -45,7 +45,7 @@ async function removeBookmark(documentId) {
               :height="500"
           >
             <template v-slot:item.title="{ item }">
-              <NuxtLink :to="`/user/book/${item.documentId}`">{{ item.title }}</NuxtLink>
+              <NuxtLink :to="`/group/4`">{{ item.title }}</NuxtLink>
             </template>
             <template v-slot:item.groupName="{ item }">
               {{ item.groupName }}

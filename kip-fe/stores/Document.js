@@ -1,5 +1,8 @@
+import {useBookMarks} from "~/stores/BookMarks.js";
+
 const BASE_URL = import.meta.env.VITE_BASE_URL;
 const user = useUser();
+const bookmarks = useBookMarks();
 
 export const useDocumentList = defineStore("documentList", {
     state() {
@@ -131,5 +134,13 @@ export const useDocumentList = defineStore("documentList", {
                 await this.setDocumentDetails(firstPublicDocumentId);
             }
         },
+
+        // 북마크 첫번째 문서의 상세정보
+        async setFirstBookDetails(){
+            if (bookmarks.myBookMarks.length > 0){
+                const firstBookId = bookmarks.myBookMarks[0].documentId;
+                await this.setDocumentDetails(firstBookId)
+            }
+        }
     }
 });

@@ -1,6 +1,7 @@
 <script setup>
 import {ref} from "vue";
 import {toastViewerInstance} from "~/useToastViewer";
+import {useBookMarks} from "~/stores/BookMarks.js";
 
 const color = useColor();
 const route = useRoute();
@@ -20,23 +21,29 @@ const files = ref([]);
 const fileHover = ref(null);
 const fileDialog = ref(false);
 
+// 북마크 관련
 const selection = ref([]);
+const bookmarks = useBookMarks();
+
+await bookmarks.$reset();
+await bookmarks.setMyBookMarks();
 
 await documentList.$reset();
 await documentList.setDocumentList(groupId);
-await groupName.setGroupUsersInfo(groupId);
-await documentList.setFirstDocumentDetails()
+// await groupName.setGroupUsersInfo(groupId);
+await documentList.setFirstBookDetails()
 
 await attachedFile.$reset();
-await attachedFile.setAttachedFileList(documentList.getFirstDocId);
+await attachedFile.setAttachedFileList(bookmarks.myBookMarks[0].documentId);
 
 groupName.setTopNaviGroupList(groupId);
 
-const openCreateNewDocument = (docId) => {
-  upLinkId.value = docId;
-  dialog.value = true;
-  console.log(upLinkId.value)
-};
+// 북마크에서는 문서 생성 X
+// const openCreateNewDocument = (docId) => {
+//   upLinkId.value = docId;
+//   dialog.value = true;
+//   console.log(upLinkId.value)
+// };
 
 const handleData = async (form) => {
   form.groupId = groupId;
@@ -98,11 +105,8 @@ const AttachedFileDelete = async (fileId) => {
         <v-list class="pa-4">
           <v-list-item>
             <v-list-item-content>
-              <v-list-item-title class="font-weight-bold headline text-center"
-                                 v-for="group in groupName"
-                                 :key="group.groupId"
-              >
-                {{ group.groupName }}
+              <v-list-item-title class="font-weight-bold headline text-center">
+                북마크
               </v-list-item-title>
             </v-list-item-content>
           </v-list-item>
@@ -110,22 +114,13 @@ const AttachedFileDelete = async (fileId) => {
           <!-- 그룹 문서 title 출력 -->
           <v-tabs color="primary" direction="vertical">
             <v-tab
-                v-for="doc in documentList.getDocumentList"
-                :key="doc.documentId"
-                @click="selectDocument(doc.documentId)"
-                @mouseenter="hover = doc.documentId"
+                v-for="book in bookmarks.getMyBookMarksDetails"
+                :key="book.title"
+                @click="selectDocument(book.documentId)"
+                @mouseenter="hover = book.documentId"
                 @mouseleave="hover = null"
             >
-              {{ doc.title }} {{doc.documentId}}
-              <template v-if="hover === doc.documentId" v-slot:append>
-                <v-btn
-                    :icon="`mdi-plus`"
-                    variant="text"
-                    density="compact"
-                    rounded="lg"
-                    @click.stop="openCreateNewDocument(doc.documentId)"
-                />
-              </template>
+              {{ book.title }} {{book.groupName}}
             </v-tab>
           </v-tabs>
         </v-list>
@@ -175,21 +170,6 @@ const AttachedFileDelete = async (fileId) => {
 
       <!-- 오른쪽 영역 -->
       <v-col cols="2">
-        <!-- 'On This Page' 섹션 -->
-        <v-card flat>
-          <v-card-title class="headline text-center">On This Page</v-card-title>
-          <v-card-text>
-            <v-list dense>
-              <v-list-item v-for="item in rightSideItems" :key="item">
-                <v-list-item-content>
-                  <v-list-item-title>{{ item.title }}</v-list-item-title>
-                  <v-list-item-subtitle v-if="item.subtitle">{{ item.subtitle }}</v-list-item-subtitle>
-                </v-list-item-content>
-              </v-list-item>
-            </v-list>
-          </v-card-text>
-        </v-card>
-
         <!-- 첨부 파일 섹션 -->
         <div class="attached-files">
           <v-card flat>
@@ -238,12 +218,11 @@ const AttachedFileDelete = async (fileId) => {
             <!-- 첨부파일 목록 -->
             <v-card-text>
               <v-btn text color="primary"
-                 v-for="file in attachedFile.getAttachedFileList"
-                 :key="file.fileName"
-                 @click="handleFileClick(file.fileUrl)"
-                 @mouseenter="fileHover = file.fileName"
-                 @mouseleave="fileHover = null">
-
+                     v-for="file in attachedFile.getAttachedFileList"
+                     :key="file.fileName"
+                     @click="handleFileClick(file.fileUrl)"
+                     @mouseenter="fileHover = file.fileName"
+                     @mouseleave="fileHover = null">
                 {{ file.fileName }}
 
                 <v-dialog max-width="500">
