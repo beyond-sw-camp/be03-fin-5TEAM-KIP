@@ -95,6 +95,19 @@ public class DocumentService {
 		return new DocumentResDto(documentRepo.save(savedDocument), true);
 	}
 
+	// 최초 공개문서 하나 만드는 함수
+	@Transactional
+	public void createInitialPublicDoc(CreateDocumentReqDto dto) {
+		Document newDocument = dto.makeDocDtoToDocument();
+		Document savedDocument = documentRepo.save(newDocument);
+		Version newVersion = Version.builder()
+				.content(dto.getContent())
+				.document(savedDocument)
+				.build();
+		versionRepository.save(newVersion);
+		documentRepo.save(savedDocument);
+	}
+
 	//    Read
 	public List<JustDocTitleResDto> getPublicDocuments() {
 		return documentRepo.findByGroupIsNull().stream()
@@ -136,10 +149,10 @@ public class DocumentService {
 
 
 	//    Update
-	public DocumentResDto updateDocumentTitle(updateDocTitleReqDto dto) {
+	public JustDocTitleResDto updateDocumentTitle(updateDocTitleReqDto dto) {
 		Document targetDocument = getDocumentById(dto.getTargetDocumentId());
 		targetDocument.setTitle(dto.getNewTitle());
-		return new DocumentResDto(documentRepo.save(targetDocument), true);
+		return new JustDocTitleResDto(documentRepo.save(targetDocument));
 	}
 
 	@Transactional
