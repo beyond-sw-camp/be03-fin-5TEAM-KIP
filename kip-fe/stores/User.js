@@ -194,7 +194,7 @@ export const useUser = defineStore("user", {
                         method: 'DELETE',
                         headers: {'Authorization': 'Bearer ' + this.accessToken}
                     })
-                if(response.ok)
+                if (response.ok)
                     alert(`${name}님의 아이디가 영구 삭제되었습니다.`)
             } catch (e) {
                 console.log(e, '사용자 삭제')
@@ -257,36 +257,52 @@ export const useUser = defineStore("user", {
             }
         },
 
-        async changePassword(employeeId, currentPassword, newPassword) {
+        async validateCurrentPassword(currentPassword) {
             try {
-                const body = JSON.stringify({
-                    findByEmployeeId: employeeId, // 추가된 필드
-                    currentPassword: currentPassword,
-                    newPassword: newPassword
+                const response = await fetch(`${BASE_URL}/user/validate-current-password`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${this.accessToken}`,
+                    },
+                    body: JSON.stringify({ password: currentPassword })
                 });
+                const data = await response.json();
+                return data.isValid; // 서버에서 isValid라는 필드를 보내주는지 확인
+            } catch (error) {
+                console.error('Failed to validate password:', error);
+                return false;
+            }
+        },
 
+        async changePassword(currentPassword, newPassword) {
+            try {
                 const response = await fetch(`${BASE_URL}/user/change-password`, {
                     method: 'PATCH',
                     headers: {
                         'Authorization': `Bearer ${this.accessToken}`,
-                        'Content-Type': 'application/json',
+                        'Content-Type': 'application/json'
                     },
-                    body: body
+                    body: JSON.stringify({
+                        findByEmployeeId: this.userInfo.employeeId,
+                        currentPassword,
+                        newPassword
+                    })
                 });
 
                 if (!response.ok) {
-                    const errorText = await response.text();
-                    throw new Error(errorText || 'Password change failed');
+                    const errorData = await response.json();
+                    throw new Error(errorData.message || 'Failed to change password');
                 }
 
-                const data = await response.json();
-                alert('Password successfully updated.');
+                // 비밀번호 변경 성공 시
+                return true;
             } catch (error) {
-                console.error('Failed to change password:', error);
-                alert(error.message || 'Error changing password');
+                console.error('Error changing password:', error);
+                throw error; // 컴포넌트에서 에러 처리를 할 수 있도록 에러를 다시 던집니다.
             }
         }
-        },
+    },
 
     setup() {
         const accessToken = ref('');
