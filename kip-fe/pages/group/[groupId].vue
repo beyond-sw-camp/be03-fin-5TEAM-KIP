@@ -168,9 +168,11 @@ const AttachedFileDelete = async (fileId) => {
           <!-- 가로 선 추가 -->
           <v-divider></v-divider>
         </v-list>
+
         <v-card flat class="mt-4 mx-auto" width="800">
           <div ref="viewer">{{ documentList.selectedDocumentDetails.content }}</div>
         </v-card>
+
       </v-col>
 
       <!-- 오른쪽 영역 -->

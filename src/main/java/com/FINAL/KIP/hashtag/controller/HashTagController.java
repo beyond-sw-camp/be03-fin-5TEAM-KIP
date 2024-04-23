@@ -1,7 +1,6 @@
 package com.FINAL.KIP.hashtag.controller;
 
 import com.FINAL.KIP.document.dto.res.JustDocTitleResDto;
-import com.FINAL.KIP.hashtag.dto.req.HashTagReqDto;
 import com.FINAL.KIP.hashtag.dto.req.UpdateHashTagsReqDto;
 import com.FINAL.KIP.hashtag.dto.res.HashTagResDto;
 import com.FINAL.KIP.hashtag.service.HashTagService;
@@ -34,9 +33,9 @@ public class HashTagController {
         return ResponseEntity.ok(hashTagService.getAllHashTags());
     }
 
-    @GetMapping("{HashTagId}/docs")
-    public ResponseEntity<List<JustDocTitleResDto>> getDocumentsByHashTag(@PathVariable Long HashTagId){
-        return ResponseEntity.ok(hashTagService.getDocumentsByHashTag(HashTagId));
+    @GetMapping("{HashTagId}/docs/public")
+    public ResponseEntity<List<JustDocTitleResDto>> getPublicDocumentsByHashTag(@PathVariable Long HashTagId){
+        return ResponseEntity.ok(hashTagService.getPublicDocumentsByHashTag(HashTagId));
     }
 
     // Update

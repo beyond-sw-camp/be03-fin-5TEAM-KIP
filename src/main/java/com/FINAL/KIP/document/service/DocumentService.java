@@ -19,7 +19,6 @@ import com.FINAL.KIP.version.domain.Version;
 import com.FINAL.KIP.version.dto.response.VersionDetailResDto;
 import com.FINAL.KIP.version.dto.response.VersionReplaceResDto;
 import com.FINAL.KIP.version.repository.VersionRepository;
-import java.util.UUID;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -97,11 +96,10 @@ public class DocumentService {
 	}
 
 	//    Read
-	public List<DocumentResDto> getPublicDocuments() {
-		return documentRepo.findAll().stream()
-			.filter(document -> document.getGroup() == null)
-			.map(doc -> new DocumentResDto(doc, true))
-			.collect(Collectors.toList());
+	public List<JustDocTitleResDto> getPublicDocuments() {
+		return documentRepo.findByGroupIsNull().stream()
+				.map(JustDocTitleResDto::new)
+				.collect(Collectors.toList());
 	}
 
 	public DocumentResDto getIsAccessibleDoc(Long documentId) {
