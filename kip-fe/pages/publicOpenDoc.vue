@@ -41,6 +41,15 @@ await documentList.$reset();
 await documentList.setPublicDocumentList();
 await documentList.setFirstPublicDocumentDetails();
 
+// 문서 삭제 관련 코드.
+const deleteDocModalOpen = ref();
+const deleteDocumentReq = async (documentId) => {
+ deleteDocModalOpen.value = true;
+
+ await documentList.deleteDocument(documentId)
+}
+
+
 // 문서 선택 시 상세 정보를 가져오는 함수
 const selectDocument = async (documentId) => {
   // 문서의 상세 정보를 가져옴
@@ -61,7 +70,9 @@ const handleData = async (form) => {
   const temp = await createDocument.createNewDocument(form)
   await documentList.$reset();
   await documentList.setPublicDocumentList();
-  await selectDocument(temp.documentId);
+  // 순환참조 발생한 부분
+  await documentList.setDocumentDetails(temp.documentId);
+  dialog.value = false;
 }
 </script>
 
@@ -92,11 +103,42 @@ const handleData = async (form) => {
                 v-for="doc in documentList.getPublicDocumentList"
                 :key="doc.documentId"
                 @click="selectDocument(doc.documentId)">
-              <span>{{ doc.title }} / {{ doc.documentId }}</span>
 
+                <div>{{ doc.title }} / {{ doc.documentId }}</div>
+              <v-spacer></v-spacer>
+                <v-hover v-slot="{ isHovering, props }">
+
+                  <!--                   ✏️ 삭제버튼 -->
+                  <v-btn
+                      icon="mdi-trash-can"
+                      v-bind="props"
+                      class="ml-5"
+                      :class="{
+                            'on-hover': isHovering,
+                            'show-btns': isHovering
+                          }"
+                      color="rgba(255, 255, 255, 0)"
+                      variant="plain"
+                      @click="deleteDocModalOpen=true"
+                  />
+                  <!--                  ➕ 생성버튼 -->
+                  <v-btn
+                      icon="mdi-location-exit"
+                      v-bind="props"
+                      :class="{
+                            'on-hover': isHovering,
+                            'show-btns': isHovering
+                          }"
+                      color="rgba(255, 255, 255, 0)"
+                      variant="plain"
+                      @click="OpenCrateModal(item)"
+                  />
+                </v-hover>
             </v-tab>
           </v-tabs>
         </v-list>
+
+
         <v-dialog v-model="dialog" fullscreen>
           <v-card>
             <PostForm ref="postForm" @submit="handleData"></PostForm>
@@ -107,7 +149,6 @@ const handleData = async (form) => {
             </v-card-actions>
           </v-card>
         </v-dialog>
-
       </v-col>
 
       <v-divider class="divider-container" vertical/>
@@ -176,7 +217,7 @@ const handleData = async (form) => {
               :key="index"
               prepend-icon="mdi-pound"
               @click="documentList.filterPublicDocByHashTag(hashTag['hashTagId'])">
-            {{ hashTag.tagName }} ({{ hashTag['docsCounts'] }}) / {{ hashTag['hashTagId'] }}
+            {{ hashTag.tagName }} ({{ hashTag['docsCounts'] }})
           </v-chip>
         </v-chip-group>
         <div v-else class="pa-4">해시태그가 없습니다.</div>
@@ -225,5 +266,9 @@ const handleData = async (form) => {
 
 .divider-container {
   min-height: calc(97vh - 1.6vw - 90px);
+}
+
+.show-btns {
+  color: var(--primary-color) !important;
 }
 </style>
