@@ -12,8 +12,14 @@ const handleRailClick = () => {
 const group = useGroup();
 const color = useColor();
 
+const documentList = useDocumentList();
+
+
 await group.$reset(); // 그룹정보 리셋 후 다시 세팅
 await group.setMyGroupsInfo();  // (awit) 그룹정보를 모두 가지고 온뒤 넘어감
+
+await documentList.$reset();
+await documentList.setFirstDocumentDetails();
 
 </script>
 
@@ -94,6 +100,18 @@ await group.setMyGroupsInfo();  // (awit) 그룹정보를 모두 가지고 온�
           rounded="xl"
           variant="text"
           class="group__list"/>
+
+      <v-list-item
+          title="bookmarks2"
+          value="bookmarks2"
+          to="/bookmarks2"
+          prepend-icon="mdi-list-box-outline"
+          :color="color.kipMainColor"
+          rounded="xl"
+          variant="text"
+          class="group__list"/>
+
+
 
       <v-divider class="group__list"/>
 
