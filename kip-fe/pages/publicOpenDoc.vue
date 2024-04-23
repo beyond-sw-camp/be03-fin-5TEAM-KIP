@@ -147,19 +147,20 @@ const handleData = async (form) => {
         <!--    ⏩⏩⏩⏩⏩  해시태그 -->
 
         <div class="pa-4">
-          <v-responsive>
             <v-chip-group column>
+              <v-chip prepend-icon="mdi-refresh"
+                      @click=documentList.setPublicDocumentList
+              >초기화</v-chip>
               <v-chip
                   v-for="(hashTag, index) in documentList.selectedDocumentDetails.hashTags"
                   :key="index"
                   @click="documentList.filterPublicDocByHashTag(hashTag['hashTagId'])"
                   prepend-icon="mdi-pound"
                   v-if="documentList.selectedDocumentDetails && documentList.selectedDocumentDetails.hashTags.length > 0">
-                {{ hashTag.tagName }} ({{ hashTag['docsCounts'] }}) {{hashTag['hashTagId']}}
+                {{ hashTag.tagName }} ({{ hashTag['docsCounts'] }}) / {{hashTag['hashTagId']}}
               </v-chip>
               <div v-else>해시태그가 없습니다.</div>
             </v-chip-group>
-          </v-responsive>
         </div>
 
       </v-col>

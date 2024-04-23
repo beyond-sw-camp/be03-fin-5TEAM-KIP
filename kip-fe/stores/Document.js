@@ -88,7 +88,6 @@ export const useDocumentList = defineStore("documentList", {
                 console.log(e, "문서 삭제 실패");
             }
         },
-
         async filterPublicDocByHashTag(hashTagId) {
             try {
                 const response = await fetch(`${BASE_URL}/hashtag/${hashTagId}/docs/public`,{
@@ -102,7 +101,6 @@ export const useDocumentList = defineStore("documentList", {
                 console.log(e.message, "해시태그 문서 조회 실패 ")
             }
         },
-
         async setPublicDocumentList(){
             try {
                 const response = await fetch(`${BASE_URL}/doc/public`,{
