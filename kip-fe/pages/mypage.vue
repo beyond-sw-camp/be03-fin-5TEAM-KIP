@@ -1,13 +1,5 @@
 <template>
   <v-container fluid>
-    <v-row>
-      <v-col>
-        <v-tabs centered>
-          <v-tab>Account</v-tab>
-          <v-tab>BookMark</v-tab>
-        </v-tabs>
-      </v-col>
-    </v-row>
 
     <v-row justify="center" class="my-5">
       <v-col cols="12" md="10" lg="8">
