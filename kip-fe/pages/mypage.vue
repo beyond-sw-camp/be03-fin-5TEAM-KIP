@@ -1,14 +1,5 @@
 <template>
   <v-container fluid>
-    <v-row>
-      <v-col>
-        <v-tabs centered>
-          <v-tab>Account</v-tab>
-          <v-tab>BookMark</v-tab>
-        </v-tabs>
-      </v-col>
-    </v-row>
-
     <!-- Profile, Password, and Personal Details Sections -->
     <v-row justify="center" class="my-5">
       <v-col cols="12" md="10" lg="8">
@@ -85,6 +76,8 @@
                     dense
                     append-icon="mdi-eye"
                 ></v-text-field>
+              </v-card-text>
+              <v-card-actions class="justify-end">
                 <!-- Change Password Button -->
                 <v-btn
                     :disabled="!canChangePassword"
@@ -93,8 +86,6 @@
                 >
                   Change Password
                 </v-btn>
-              </v-card-text>
-              <v-card-actions class="justify-end mt-auto">
                 <!-- Cancel Button -->
                 <v-btn color="grey" @click="cancelEdit">Cancel</v-btn>
               </v-card-actions>
@@ -140,7 +131,7 @@ import { ref, computed } from 'vue';
 import { useUser } from "@/stores/user";
 
 const userStore = useUser();
-const userInfo = ref({...userStore.userInfo});
+const userInfo = ref({ ...userStore.userInfo });
 const profilePhotoUrl = ref(userStore.getProfileImageUrl);
 const password = ref({
   current: '',
@@ -233,7 +224,7 @@ const updateUserDetails = async () => {
 
 const cancelEdit = () => {
   // Reset changes
-  userInfo.value = {...userStore.userInfo};
+  userInfo.value = { ...userStore.userInfo };
   password.value.current = '';
   password.value.new = '';
   password.value.confirm = '';
