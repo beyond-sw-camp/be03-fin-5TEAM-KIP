@@ -16,7 +16,7 @@ export const useDocumentList = defineStore("documentList", {
     getters: {
         // getter를 업데이트하여 모든 정보를 반환
         // 그룹문서 title 조회
-        getDocumentList(state){
+        getDocumentList(state) {
             return state.documentList.map(document => ({
                 documentId: document.documentId,  // 문서 ID
                 docType: document.docType,      //문서 타입
@@ -31,15 +31,17 @@ export const useDocumentList = defineStore("documentList", {
         getSelectedDocId(state) {
             return state.selectedDocumentDetails.documentId;
         },
-        // 전체공개문서 title 조회
-        getPublicDocumentList(state){
+        getSelectedDocTitle(state){
+            return state.selectedDocumentDetails.title;
+        },
+        getPublicDocumentList(state) {
             return state.publicDocumentList.map(publicDocument => ({
                 documentId: publicDocument.documentId,
                 title: publicDocument.title
             }))
         },
         //
-        getFirstDocId(state){
+        getFirstDocId(state) {
             return state.firstDocumentId
         }
     },
@@ -100,64 +102,77 @@ export const useDocumentList = defineStore("documentList", {
         },
         async filterPublicDocByHashTag(hashTagId) {
             try {
-                const response = await fetch(`${BASE_URL}/hashtag/${hashTagId}/docs/public`,{
+                const response = await fetch(`${BASE_URL}/hashtag/${hashTagId}/docs/public`, {
                     method: 'GET',
                     headers: {'Authorization': 'Bearer ' + user.getAccessToken},
                 });
                 if (response.ok)
                     this.publicDocumentList = await response.json();
 
-            } catch (e){
+            } catch (e) {
                 console.log(e.message, "해시태그 문서 조회 실패 ")
             }
         },
         async updateHashTags(hashTagReq) {
             try {
+                const response = await fetch(`${BASE_URL}/hashtag`, {
+                    method: 'PATCH',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': 'Bearer ' + user.getAccessToken
+                    },
+                    body: JSON.stringify(hashTagReq)
+                });
+                if (response.ok)
+                    this.selectedDocumentDetails.hashTags = await response.json();
 
-            const response = await fetch(`${BASE_URL}/hashtag`, {
-                method: 'PATCH',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'Authorization': 'Bearer ' + user.getAccessToken
-                },
-                body: JSON.stringify(hashTagReq)
-            });
-            if (response.ok)
-                this.selectedDocumentDetails.hashTags = await response.json();
-
-            } catch (e){
-                console.log(e.message,"해시태그 수정 실패")
+            } catch (e) {
+                console.log(e.message, "해시태그 수정 실패")
+            }
+        },
+        async updateDocumentTitle(newTitleReq) {
+            try {
+                await fetch(`${BASE_URL}/doc/title`, {
+                    method: 'PATCH',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': 'Bearer ' + user.getAccessToken
+                    },
+                    body: JSON.stringify(newTitleReq)
+                });
+            } catch (e) {
+                console.log(e.message, "문서 제목 수정 실패")
             }
         },
 
-        async setPublicDocumentList(){
+        async setPublicDocumentList() {
             try {
-                const response = await fetch(`${BASE_URL}/doc/public`,{
+                const response = await fetch(`${BASE_URL}/doc/public`, {
                     method: 'GET',
                     headers: {'Authorization': 'Bearer ' + user.getAccessToken},
                 });
                 if (!response.ok) throw new Error('Failed to fetch publicDocumentList');
                 this.publicDocumentList = await response.json();
-            } catch (error){
+            } catch (error) {
                 console.error('Error fetching publicDocumentList:', error.message);
                 this.publicDocumentList = []; // 에러가 발생한 경우 북마크 목록을 초기화
             }
         },
         async setDocumentDetails(documentId) {
             try {
-                const response = await fetch(`${BASE_URL}/doc/${documentId}`,{
+                const response = await fetch(`${BASE_URL}/doc/${documentId}`, {
                     method: 'GET',
                     headers: {'Authorization': 'Bearer ' + user.getAccessToken},
                 });
                 if (!response.ok) throw new Error('Failed to fetch document details');
                 this.selectedDocumentDetails = await response.json();
-            } catch (error){
+            } catch (error) {
                 console.error('Error fetching document details:', error.message);
             }
         },
 
         // 첫번째 그룹문서의 상세정보를 가져오기
-        async setFirstDocumentDetails(){
+        async setFirstDocumentDetails() {
             if (this.documentList.length > 0) {
                 const firstDocumentId = this.documentList[0].documentId;
                 this.firstDocumentId = firstDocumentId
@@ -166,7 +181,7 @@ export const useDocumentList = defineStore("documentList", {
         },
 
         // 첫번째 전체공개문서의 상세정보를 가져오기
-        async setFirstPublicDocumentDetails(){
+        async setFirstPublicDocumentDetails() {
             if (this.publicDocumentList.length > 0) {
                 const firstPublicDocumentId = this.publicDocumentList[0].documentId;
                 await this.setDocumentDetails(firstPublicDocumentId);
@@ -174,8 +189,8 @@ export const useDocumentList = defineStore("documentList", {
         },
 
         // 북마크 첫번째 문서의 상세정보
-        async setFirstBookDetails(){
-            if (bookmarks.myBookMarks.length > 0){
+        async setFirstBookDetails() {
+            if (bookmarks.myBookMarks.length > 0) {
                 const firstBookId = bookmarks.myBookMarks[0].documentId;
                 await this.setDocumentDetails(firstBookId)
             }

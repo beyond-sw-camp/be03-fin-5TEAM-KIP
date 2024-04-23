@@ -53,7 +53,7 @@ public class DocumentController {
 
     //  Update
     @PatchMapping("title")
-    public ResponseEntity<DocumentResDto> updateDocumentTitle(
+    public ResponseEntity<JustDocTitleResDto> updateDocumentTitle(
         @RequestBody updateDocTitleReqDto dto) {
         return ResponseEntity.ok(documentService.updateDocumentTitle(dto));
     }
