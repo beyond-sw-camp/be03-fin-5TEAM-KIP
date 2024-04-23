@@ -18,6 +18,22 @@ const viewer = ref();
 const upLinkId = ref();
 
 
+// 해시태그 관련
+const hashTagUpdateModal = ref(false);
+const hashTagsUpdateReqDto = ref({
+  documentId: "",
+  hashTags: []
+});
+const hashTagUpdateModalOpen = () => {
+  hashTagUpdateModal.value = true
+  hashTagsUpdateReqDto.value.documentId = documentList.getSelectedDocId
+  hashTagsUpdateReqDto.value.hashTags = documentList.getHashTagsInSelectedDoc
+}
+const hashTagUpdateReq = () => {
+  documentList.updateHashTags(hashTagsUpdateReqDto.value)
+  hashTagUpdateModal.value = false;
+}
+
 const color = useColor();
 const documentList = useDocumentList();
 
@@ -42,9 +58,7 @@ const openCreateNewDocument = () => {
 const handleData = async (form) => {
   form.groupId = null;
   form.upLinkId = null;
-
   const temp = await createDocument.createNewDocument(form)
-  dialog.value = false;
   await documentList.$reset();
   await documentList.setPublicDocumentList();
   await selectDocument(temp.documentId);
@@ -99,10 +113,10 @@ const handleData = async (form) => {
       <v-divider class="divider-container" vertical/>
 
       <!-- ☝️☝️☝️☝️☝️☝️☝️ 가운데 문서제목 부분 -->
-      <v-col cols="7" >
+      <v-col cols="7">
         <v-list class="pa-4 mb-4">
           <v-card flat>
-            <v-card-title class="headline text-center" >
+            <v-card-title class="headline text-center">
               {{ documentList.selectedDocumentDetails.title }}
             </v-card-title>
           </v-card>
@@ -145,30 +159,60 @@ const handleData = async (form) => {
         </v-card>
 
         <!--    ⏩⏩⏩⏩⏩  해시태그 -->
+        <v-chip prepend-icon="mdi-pencil"
+                color="blue"
+                class="mx-4 mb-0 mt-5"
+                @click="hashTagUpdateModalOpen"> 해시 태그 수정
+        </v-chip>
 
-        <div class="pa-4">
-            <v-chip-group column>
-              <v-chip prepend-icon="mdi-refresh"
-                      @click=documentList.setPublicDocumentList
-              >초기화</v-chip>
-              <v-chip
-                  v-for="(hashTag, index) in documentList.selectedDocumentDetails.hashTags"
-                  :key="index"
-                  @click="documentList.filterPublicDocByHashTag(hashTag['hashTagId'])"
-                  prepend-icon="mdi-pound"
-                  v-if="documentList.selectedDocumentDetails && documentList.selectedDocumentDetails.hashTags.length > 0">
-                {{ hashTag.tagName }} ({{ hashTag['docsCounts'] }}) / {{hashTag['hashTagId']}}
-              </v-chip>
-              <div v-else>해시태그가 없습니다.</div>
-            </v-chip-group>
-        </div>
+        <v-chip-group column class="px-4"
+                      v-if="documentList.selectedDocumentDetails
+                      && documentList.selectedDocumentDetails.hashTags.length > 0">
+          <v-chip prepend-icon="mdi-refresh"
+                  @click=documentList.setPublicDocumentList> 초기화
+          </v-chip>
+          <v-chip
+              v-for="(hashTag, index) in documentList.selectedDocumentDetails.hashTags"
+              :key="index"
+              prepend-icon="mdi-pound"
+              @click="documentList.filterPublicDocByHashTag(hashTag['hashTagId'])">
+            {{ hashTag.tagName }} ({{ hashTag['docsCounts'] }}) / {{ hashTag['hashTagId'] }}
+          </v-chip>
+        </v-chip-group>
+        <div v-else class="pa-4">해시태그가 없습니다.</div>
 
       </v-col>
 
+      <!--           ❤️ 해시태그 수정을 위한 모달-->
+      <v-dialog
+          class="d-flex justify-center"
+          width="40vw"
+          opacity="40%"
+          v-model="hashTagUpdateModal">
+        <v-sheet
+            rounded="xl"
+            class="d-flex justify-center flex-wrap pa-10">
+          <v-combobox
+              variant="underlined"
+              v-model="hashTagsUpdateReqDto.hashTags"
+              multiple
+              chips
+              placeholder="태그를 입력하세요."
+              persistent-placeholder
+              hint="여러 태그를 엔터로 구분하여 입력하세요."/>
+          <v-btn
+              class="mt-4"
+              color="success"
+              text="해시태그 수정하기"
+              @click="hashTagUpdateReq"
+              block
+          />
+
+        </v-sheet>
+      </v-dialog>
     </v-row>
   </v-container>
 </template>
-
 <style scoped>
 .font-weight-bold {
   font-weight: bold;

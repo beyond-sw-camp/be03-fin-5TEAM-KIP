@@ -21,6 +21,13 @@ export const useDocumentList = defineStore("documentList", {
             }))
         },
 
+        getHashTagsInSelectedDoc(state) {
+            return state.selectedDocumentDetails.hashTags.map(tag => tag.tagName);
+
+        },
+        getSelectedDocId(state) {
+            return state.selectedDocumentDetails.documentId;
+        },
         // 전체공개문서 title 조회
         getPublicDocumentList(state){
             return state.publicDocumentList.map(publicDocument => ({
@@ -101,6 +108,25 @@ export const useDocumentList = defineStore("documentList", {
                 console.log(e.message, "해시태그 문서 조회 실패 ")
             }
         },
+        async updateHashTags(hashTagReq) {
+            try {
+
+            const response = await fetch(`${BASE_URL}/hashtag`, {
+                method: 'PATCH',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': 'Bearer ' + user.getAccessToken
+                },
+                body: JSON.stringify(hashTagReq)
+            });
+            if (response.ok)
+                this.selectedDocumentDetails.hashTags = await response.json();
+
+            } catch (e){
+                console.log(e.message,"해시태그 수정 실패")
+            }
+        },
+
         async setPublicDocumentList(){
             try {
                 const response = await fetch(`${BASE_URL}/doc/public`,{
