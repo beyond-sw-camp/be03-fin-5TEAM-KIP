@@ -20,7 +20,12 @@ const files = ref([]);
 const fileHover = ref(null);
 const fileDialog = ref(false);
 
+// 북마크 관련
 const selection = ref([]);
+const bookmarks = useBookMarks();
+
+await bookmarks.$reset();
+await bookmarks.setMyBookMarks();
 
 await documentList.$reset();
 await documentList.setDocumentList(groupId);
@@ -86,6 +91,24 @@ const AttachedFileDelete = async (fileId) => {
   await wait(2000); // 1.2초 대기
   // 첨부파일 삭제 후 첨부파일 목록 다시 불러오기
   await attachedFile.setAttachedFileList(documentList.selectedDocumentDetails.documentId);
+};
+
+// 선택한 문서 ID가 북마크 목록에 있는지 확인
+const isBookmarked = computed(() =>
+    bookmarks.myBookMarks.some(book => book.documentId === documentList.selectedDocumentDetails.documentId)
+);
+
+// 북마크 버튼 클릭 핸들러
+const handleBookmarkClick = async () => {
+  // 만약 현재 문서가 북마크되어 있다면, 북마크를 제거하는 액션을 실행합니다.
+  if (isBookmarked.value) {
+    await bookmarks.removeMyBookmark(documentList.selectedDocumentDetails.documentId);
+  } else {
+    await bookmarks.removeMyBookmark(documentList.selectedDocumentDetails.documentId);
+  }
+
+  // 북마크 상태를 갱신합니다.
+  await bookmarks.setMyBookMarks();
 };
 
 </script>
@@ -154,11 +177,11 @@ const AttachedFileDelete = async (fileId) => {
               </v-card-title>
 
               <v-item-group v-model="selection">
-                <v-item v-slot="{ isSelected, toggle }">
+                <v-item>
                   <v-btn
                       density="comfortable"
-                      @click="toggle"
-                      :icon="isSelected ? 'mdi-heart' : 'mdi-heart-outline'"
+                      @click="handleBookmarkClick"
+                      :icon="isBookmarked ? 'mdi-star' : 'mdi-star-outline'"
                   ></v-btn>
                 </v-item>
               </v-item-group>

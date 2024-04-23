@@ -7,6 +7,8 @@ const color = useColor();
 const route = useRoute();
 const groupId = route.params.groupId;
 const groupName = useGroup();
+groupName.TopNaviGroupList = ["Knowledge is Power","북마크"];
+
 const documentList = useDocumentList();
 const attachedFile = useAttachedFile();
 const createDocument = useCreateDocument();
@@ -95,6 +97,24 @@ const AttachedFileDelete = async (fileId) => {
   await attachedFile.setAttachedFileList(documentList.selectedDocumentDetails.documentId);
 };
 
+// 선택한 문서 ID가 북마크 목록에 있는지 확인
+const isBookmarked = computed(() =>
+    bookmarks.myBookMarks.some(book => book.documentId === documentList.selectedDocumentDetails.documentId)
+);
+
+// 북마크 버튼 클릭 핸들러
+const handleBookmarkClick = async () => {
+  // 만약 현재 문서가 북마크되어 있다면, 북마크를 제거하는 액션을 실행합니다.
+  if (isBookmarked.value) {
+    await bookmarks.removeMyBookmark(documentList.selectedDocumentDetails.documentId);
+  } else {
+    await bookmarks.removeMyBookmark(documentList.selectedDocumentDetails.documentId);
+  }
+
+  // 북마크 상태를 갱신합니다.
+  await bookmarks.setMyBookMarks();
+};
+
 </script>
 
 <template>
@@ -149,11 +169,11 @@ const AttachedFileDelete = async (fileId) => {
               </v-card-title>
 
               <v-item-group v-model="selection">
-                <v-item v-slot="{ isSelected, toggle }">
+                <v-item>
                   <v-btn
                       density="comfortable"
-                      @click="toggle"
-                      :icon="isSelected ? 'mdi-heart' : 'mdi-heart-outline'"
+                      @click="handleBookmarkClick"
+                      :icon="isBookmarked ? 'mdi-star' : 'mdi-star-outline'"
                   ></v-btn>
                 </v-item>
               </v-item-group>
