@@ -1,5 +1,8 @@
+import {useBookMarks} from "~/stores/BookMarks.js";
+
 const BASE_URL = import.meta.env.VITE_BASE_URL;
 const user = useUser();
+const bookmarks = useBookMarks();
 
 export const useDocumentList = defineStore("documentList", {
     state() {
@@ -21,6 +24,13 @@ export const useDocumentList = defineStore("documentList", {
             }))
         },
 
+        getHashTagsInSelectedDoc(state) {
+            return state.selectedDocumentDetails.hashTags.map(tag => tag.tagName);
+
+        },
+        getSelectedDocId(state) {
+            return state.selectedDocumentDetails.documentId;
+        },
         // 전체공개문서 title 조회
         getPublicDocumentList(state){
             return state.publicDocumentList.map(publicDocument => ({
@@ -88,10 +98,41 @@ export const useDocumentList = defineStore("documentList", {
                 console.log(e, "문서 삭제 실패");
             }
         },
+        async filterPublicDocByHashTag(hashTagId) {
+            try {
+                const response = await fetch(`${BASE_URL}/hashtag/${hashTagId}/docs/public`,{
+                    method: 'GET',
+                    headers: {'Authorization': 'Bearer ' + user.getAccessToken},
+                });
+                if (response.ok)
+                    this.publicDocumentList = await response.json();
+
+            } catch (e){
+                console.log(e.message, "해시태그 문서 조회 실패 ")
+            }
+        },
+        async updateHashTags(hashTagReq) {
+            try {
+
+            const response = await fetch(`${BASE_URL}/hashtag`, {
+                method: 'PATCH',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': 'Bearer ' + user.getAccessToken
+                },
+                body: JSON.stringify(hashTagReq)
+            });
+            if (response.ok)
+                this.selectedDocumentDetails.hashTags = await response.json();
+
+            } catch (e){
+                console.log(e.message,"해시태그 수정 실패")
+            }
+        },
 
         async setPublicDocumentList(){
             try {
-                const response = await fetch(`${BASE_URL}/doc`,{
+                const response = await fetch(`${BASE_URL}/doc/public`,{
                     method: 'GET',
                     headers: {'Authorization': 'Bearer ' + user.getAccessToken},
                 });
@@ -131,5 +172,13 @@ export const useDocumentList = defineStore("documentList", {
                 await this.setDocumentDetails(firstPublicDocumentId);
             }
         },
+
+        // 북마크 첫번째 문서의 상세정보
+        async setFirstBookDetails(){
+            if (bookmarks.myBookMarks.length > 0){
+                const firstBookId = bookmarks.myBookMarks[0].documentId;
+                await this.setDocumentDetails(firstBookId)
+            }
+        }
     }
 });

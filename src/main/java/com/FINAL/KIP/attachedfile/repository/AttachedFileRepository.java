@@ -9,6 +9,5 @@ import java.util.List;
 @Repository
 public interface AttachedFileRepository extends JpaRepository<AttachedFile, Long> {
     List<AttachedFile> findByDocumentId(Long documentId);
-
-    AttachedFile findByFileName(String originName);
+    AttachedFile findAttachedFileById(Long id);
 }
