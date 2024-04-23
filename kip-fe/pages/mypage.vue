@@ -1,6 +1,5 @@
 <template>
   <v-container fluid>
-    <!-- Profile, Password, and Personal Details Sections -->
     <v-row justify="center" class="my-5">
       <v-col cols="12" md="10" lg="8">
         <v-row>
@@ -48,16 +47,9 @@
                     dense
                     append-icon="mdi-eye"
                     @click:append="toggleShowPassword"
-                    @blur="validateCurrentPassword"
+                    @input="validateCurrentPassword"
+                    :error-messages="passwordErrors.current"
                 ></v-text-field>
-                <!-- Error Alert for Current Password -->
-                <v-alert
-                    type="error"
-                    v-if="!isCurrentPasswordValid && password.current !== ''"
-                    class="mt-2"
-                >
-                  Current password does not match.
-                </v-alert>
                 <!-- New Password Field -->
                 <v-text-field
                     v-model="password.new"
@@ -66,6 +58,9 @@
                     outlined
                     dense
                     append-icon="mdi-eye"
+                    @input="validateNewPassword"
+                    :error-messages="passwordErrors.new"
+                    required
                 ></v-text-field>
                 <!-- Confirm New Password Field -->
                 <v-text-field
@@ -75,6 +70,9 @@
                     outlined
                     dense
                     append-icon="mdi-eye"
+                    @input="validateConfirmPassword"
+                    :error-messages="passwordErrors.confirm"
+                    required
                 ></v-text-field>
               </v-card-text>
               <v-card-actions class="justify-end">
@@ -111,6 +109,18 @@
                     <v-text-field label="Phone" outlined dense v-model="userInfo.phoneNumber"></v-text-field>
                   </v-col>
                 </v-row>
+                <!-- Employed Day Field -->
+                <v-row>
+                  <v-col cols="12" md="6">
+                    <v-text-field
+                        label="Employed Day"
+                        outlined
+                        dense
+                        v-model="userInfo.employedDay"
+                        readonly
+                    ></v-text-field>
+                  </v-col>
+                </v-row>
               </v-card-text>
               <v-card-actions class="justify-end">
                 <!-- Save Button -->
@@ -127,13 +137,13 @@
 </template>
 
 <script setup>
-import { ref, computed } from 'vue';
+import { ref, reactive, watch, computed } from 'vue';
 import { useUser } from "@/stores/user";
 
 const userStore = useUser();
 const userInfo = ref({ ...userStore.userInfo });
 const profilePhotoUrl = ref(userStore.getProfileImageUrl);
-const password = ref({
+const password = reactive({
   current: '',
   new: '',
   confirm: ''
@@ -143,6 +153,11 @@ const isCurrentPasswordValid = ref(false);
 const file = ref(null);
 const passwordMatch = ref(false);
 const passwordStatusMessage = ref('');
+const passwordErrors = reactive({
+  current: [],
+  new: [],
+  confirm: []
+});
 
 const updateProfile = async () => {
   await uploadPhoto();
@@ -166,37 +181,49 @@ const resetPhoto = () => {
 };
 
 const validateCurrentPassword = async () => {
-  if (password.value.current) {
-    try {
-      const isValid = await userStore.validateCurrentPassword(password.value.current);
-      isCurrentPasswordValid.value = isValid;
-      passwordMatch.value = isValid;
-      passwordStatusMessage.value = isValid
-          ? 'Current password is correct. You can now enter a new password.'
-          : 'Current password does not match. Please try again.';
-    } catch (e) {
-      console.error("Error validating password", e);
-      passwordStatusMessage.value = 'Error during password validation.';
-      isCurrentPasswordValid.value = false;
-    }
+  passwordErrors.current = [];
+  if (!password.current) {
+    passwordErrors.current.push("Current password is required.");
   } else {
-    passwordStatusMessage.value = 'Please enter your current password.';
+    const isValid = await userStore.validateCurrentPassword(password.current);
+    isCurrentPasswordValid.value = isValid;
+    passwordMatch.value = isValid;
+    passwordStatusMessage.value = isValid
+        ? 'Current password is correct. You can now enter a new password.'
+        : 'Current password does not match. Please try again.';
+    if (!isValid) {
+      passwordErrors.current.push("Current password is incorrect.");
+    }
+  }
+};
+
+const validateNewPassword = () => {
+  passwordErrors.new = [];
+  if (password.new.length < 8) {
+    passwordErrors.new.push("New password must be at least 8 characters long.");
+  }
+};
+
+const validateConfirmPassword = () => {
+  passwordErrors.confirm = [];
+  if (password.new !== password.confirm) {
+    passwordErrors.confirm.push("Passwords do not match.");
   }
 };
 
 const canChangePassword = computed(() => {
-  return passwordMatch.value && password.value.new && password.value.confirm && (password.value.new === password.value.confirm);
+  return password.current && password.new && password.confirm && (password.new === password.confirm) && passwordErrors.current.length === 0;
 });
 
 const changePassword = async () => {
   if (canChangePassword.value) {
     try {
-      const success = await userStore.changePassword(password.value.current, password.value.new);
+      const success = await userStore.changePassword(password.current, password.new);
       if (success) {
         alert('Password changed successfully.');
-        password.value.current = '';
-        password.value.new = '';
-        password.value.confirm = '';
+        password.current = '';
+        password.new = '';
+        password.confirm = '';
         passwordStatusMessage.value = '';
       } else {
         alert('Failed to change password.');
@@ -213,7 +240,8 @@ const updateUserDetails = async () => {
     await userStore.updateUserInfo({
       name: userInfo.value.name,
       email: userInfo.value.email,
-      phoneNumber: userInfo.value.phoneNumber
+      phoneNumber: userInfo.value.phoneNumber,
+      employedDay: userInfo.value.employedDay
     });
     alert('User details updated successfully.');
   } catch (error) {
@@ -225,14 +253,31 @@ const updateUserDetails = async () => {
 const cancelEdit = () => {
   // Reset changes
   userInfo.value = { ...userStore.userInfo };
-  password.value.current = '';
-  password.value.new = '';
-  password.value.confirm = '';
+  password.current = '';
+  password.new = '';
+  password.confirm = '';
   file.value = null;
   passwordStatusMessage.value = '';
+  passwordErrors.current = [];
+  passwordErrors.new = [];
+  passwordErrors.confirm = [];
 };
 
 const toggleShowPassword = () => {
   showPassword.value = !showPassword.value;
 };
+
+watch(password, () => {
+  if (password.new !== password.confirm) {
+    passwordErrors.confirm = ["Passwords do not match."];
+  } else {
+    passwordErrors.confirm = [];
+  }
+
+  if (password.new && password.new.length < 8) {
+    passwordErrors.new = ["New password must be at least 8 characters long."];
+  } else {
+    passwordErrors.new = [];
+  }
+}, { deep: true });
 </script>
