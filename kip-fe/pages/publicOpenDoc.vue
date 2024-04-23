@@ -14,13 +14,14 @@ const createDocument = useCreateDocument();
 
 const hover = ref(null);
 const loading = ref(false);
+const titleLoding = ref(false)
 const snackbar = ref(false);
 const dialog = ref(false);
 const viewer = ref();
 const upLinkId = ref();
 
 
-// 해시태그 관련
+// 해시태그 업데이트 관련
 const hashTagUpdateModal = ref(false);
 const hashTagsUpdateReqDto = ref({
   documentId: "",
@@ -47,11 +48,15 @@ await documentList.setFirstPublicDocumentDetails();
 const deleteDocModalOpen = ref();
 const selectedDeleteDocTitle = ref();
 const selectedDeleteDocId = ref();
-const OpendeleteDocumentModal = async (documenetTitle, documentId) => {
+const OpenDeleteDocumentModal = async (documenetTitle, documentId) => {
   loading.value = false;
-  deleteDocModalOpen.value = true;
-  selectedDeleteDocTitle.value = documenetTitle;
-  selectedDeleteDocId.value = documentId;
+  if (documentList.getPublicDocumentList.length > 1) {
+    deleteDocModalOpen.value = true;
+    selectedDeleteDocTitle.value = documenetTitle;
+    selectedDeleteDocId.value = documentId;
+  } else {
+    alert("전체공개문서를 모두 삭제할 수 없습니다.")
+  }
 }
 const realDeleteSelectedDoc = async () => {
   loading.value = true;
@@ -61,6 +66,34 @@ const realDeleteSelectedDoc = async () => {
   deleteDocModalOpen.value = false;
   snackbar.value = true;
 }
+
+// 문서 제목 업데이트 관련
+const handlerForUpdateModal = ref(false);
+const updateDocumentTitleReq = ref({
+  targetDocumentId: "",
+  newTitle: ""
+})
+const OpenTitleUpdateModal = () => {
+  handlerForUpdateModal.value = true
+  updateDocumentTitleReq.value.targetDocumentId = documentList.getSelectedDocId
+  updateDocumentTitleReq.value.newTitle = documentList.getSelectedDocTitle
+}
+const realUpdateDocumentTitle = async (event) => {
+  titleLoding.value = true
+  const results = await event
+  await wait(500); // 0.5초 대기
+
+  if (results.valid) {
+    await documentList.updateDocumentTitle(updateDocumentTitleReq.value)
+    await documentList.setPublicDocumentList();
+    await documentList.setDocumentDetails(
+        updateDocumentTitleReq.value.targetDocumentId)
+    handlerForUpdateModal.value = false
+  }
+  titleLoding.value = false
+}
+
+
 
 
 // 문서 선택 시 상세 정보를 가져오는 함수
@@ -119,7 +152,7 @@ const handleData = async (form) => {
               <v-spacer></v-spacer>
               <v-hover v-slot="{ isHovering, props }">
 
-                <!--                   ✏️ 삭제버튼 -->
+                <!--                  ❌️ 삭제버튼 -->
                 <v-btn
                     icon="mdi-trash-can"
                     v-bind="props"
@@ -130,9 +163,9 @@ const handleData = async (form) => {
                           }"
                     color="rgba(255, 255, 255, 0)"
                     variant="plain"
-                    @click="OpendeleteDocumentModal(doc.title, doc.documentId)"
+                    @click="OpenDeleteDocumentModal(doc.title, doc.documentId)"
                 />
-                <!--                  ➕ 생성버튼 -->
+                <!--                 ⏩⏩ 그룹으로 이동 버튼  -->
                 <v-btn
                     icon="mdi-location-exit"
                     v-bind="props"
@@ -142,18 +175,18 @@ const handleData = async (form) => {
                           }"
                     color="rgba(255, 255, 255, 0)"
                     variant="plain"
-                    @click="OpenCrateModal(item)"
+                    @click=""
                 />
               </v-hover>
             </v-tab>
           </v-tabs>
         </v-list>
 
-<!--        모달 세팅 -->
+        <!--        삭제 확인 모달 --->
         <v-dialog
             v-model="deleteDocModalOpen"
             max-width="500">
-          <v-card title="공개 문서 삭제">
+          <v-card title="문서 삭제">
             <v-card-text>
               {{ selectedDeleteDocTitle }} 문서를 삭제하시겠습니까?
             </v-card-text>
@@ -185,7 +218,6 @@ const handleData = async (form) => {
           <div class="text-center">{{ selectedDeleteDocTitle }} 문서가 삭제되었습니다.</div>
         </v-snackbar>
 
-
         <v-dialog v-model="dialog" fullscreen>
           <v-card>
             <PostForm ref="postForm" @submit="handleData"></PostForm>
@@ -204,11 +236,60 @@ const handleData = async (form) => {
       <v-col cols="7">
         <v-list class="pa-4 mb-4">
           <v-card flat>
-            <v-card-title class="headline text-center">
-              {{ documentList.selectedDocumentDetails.title }}
-            </v-card-title>
+            <v-row>
+              <v-col cols="8" offset="2">
+                <v-card-title class="headline text-center">
+                  {{ documentList.selectedDocumentDetails.title }}
+                </v-card-title>
+              </v-col>
+              <v-col cols="2">
+                <v-btn
+                    :icon="`mdi-pencil`"
+                    variant="elevated"
+                    rounded="lg"
+                    class="mb-2 ml-2"
+                    @click.stop="OpenTitleUpdateModal"
+                />
+              </v-col>
+            </v-row>
           </v-card>
 
+          <!--           📜 문서 제목수정을 위한 모달. -->
+          <v-dialog
+              class="d-flex justify-center"
+              width="40vw"
+              opacity="50%"
+              v-model="handlerForUpdateModal">
+            <v-sheet
+                rounded="xl"
+                class="d-flex justify-center flex-wrap pa-10">
+
+              <v-form ref="form" style="width: 50vw" @submit.prevent="realUpdateDocumentTitle">
+                <v-row>
+                  <v-col>
+
+                    <v-text-field
+                        label="문서 제목 입력"
+                        placeholder="변경할 문서명을 적어주세요."
+                        v-model="updateDocumentTitleReq.newTitle"
+                        :rules="[value => !!value || '이름 입력이 필요합니다.']"
+                        clearable
+                        required
+                    />
+
+                    <v-btn
+                        class="mt-7"
+                        color="success"
+                        :loading="titleLoding"
+                        text="문서 제목 변경"
+                        type="submit"
+                        block
+                    />
+                  </v-col>
+                </v-row>
+              </v-form>
+            </v-sheet>
+          </v-dialog>
           <!-- 가로 선 추가 -->
           <v-divider></v-divider>
         </v-list>

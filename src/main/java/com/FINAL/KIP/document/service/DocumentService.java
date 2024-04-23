@@ -149,10 +149,10 @@ public class DocumentService {
 
 
 	//    Update
-	public DocumentResDto updateDocumentTitle(updateDocTitleReqDto dto) {
+	public JustDocTitleResDto updateDocumentTitle(updateDocTitleReqDto dto) {
 		Document targetDocument = getDocumentById(dto.getTargetDocumentId());
 		targetDocument.setTitle(dto.getNewTitle());
-		return new DocumentResDto(documentRepo.save(targetDocument), true);
+		return new JustDocTitleResDto(documentRepo.save(targetDocument));
 	}
 
 	@Transactional
