@@ -178,17 +178,33 @@ public class UserController {
         }
     }
 
+    @PostMapping("/validate-current-password")
+    public ResponseEntity<?> validateCurrentPassword(@RequestBody Map<String, String> payload) {
+        try {
+            boolean isValid = userService.validateCurrentPassword(payload.get("password"));
+            return ResponseEntity.ok(Map.of("isValid", isValid));
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(Map.of("error", "Validation failed"));
+        }
+    }
+
     // 비밀번호 변경
     @PatchMapping("/change-password")
     public ResponseEntity<?> changePassword(@RequestBody PasswordChangeRequest request) {
         try {
-            boolean passwordChanged = userService.changePassword(request.getFindByEmployeeId(), request.getCurrentPassword(), request.getNewPassword());
-            if (!passwordChanged) {
-                throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Current password is incorrect.");
-            }
-            return ResponseEntity.ok("Password successfully updated.");
+            boolean passwordChanged = userService.changePassword(
+                    request.getFindByEmployeeId(),
+                    request.getCurrentPassword(),
+                    request.getNewPassword());
+            return ResponseEntity.ok(Map.of("message", "Password successfully updated."));
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity
+                    .status(HttpStatus.BAD_REQUEST)
+                    .body(Map.of("error", e.getMessage()));
         } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Failed to change password: " + e.getMessage());
+            return ResponseEntity
+                    .status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(Map.of("error", "Failed to change password due to an unexpected error."));
         }
     }
 }

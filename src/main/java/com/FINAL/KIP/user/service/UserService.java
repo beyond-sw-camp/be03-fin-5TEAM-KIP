@@ -136,22 +136,27 @@ public class UserService {
                 userInfoUpdateReqDto.getPhoneNumber());
     }
 
-// 비밀번호 체크
-    public boolean checkCurrentPassword(Long userId, String currentPassword) {
-        User user = userRepo.findById(userId).orElseThrow(() -> new RuntimeException("User not found."));
-        return passwordEncoder.matches(currentPassword, user.getPassword());
+    // 백엔드에서 비밀번호 검증 로직
+    public boolean validateCurrentPassword(String inputPassword) {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        String employeeId = authentication.getName();
+        User user = userRepository.findByEmployeeId(employeeId)
+                .orElseThrow(() -> new EntityNotFoundException("User not found."));
+        return passwordEncoder.matches(inputPassword, user.getPassword());
     }
-// 비밀번호 변경
-public boolean changePassword(String employeeId, String currentPassword, String newPassword) {
-    User user = userRepository.findByEmployeeId(employeeId)
-            .orElseThrow(() -> new EntityNotFoundException("User not found"));
-    if (!passwordEncoder.matches(currentPassword, user.getPassword())) {
-        return false;
+
+    // 비밀번호 변경
+    @Transactional
+    public boolean changePassword(String employeeId, String currentPassword, String newPassword) {
+        User user = userRepository.findByEmployeeId(employeeId)
+                .orElseThrow(() -> new EntityNotFoundException("User not found"));
+        if (!passwordEncoder.matches(currentPassword, user.getPassword())) {
+            throw new IllegalArgumentException("Current password is incorrect.");
+        }
+        user.setPassword(passwordEncoder.encode(newPassword));
+        userRepository.save(user);
+        return true;
     }
-    user.setPassword(passwordEncoder.encode(newPassword));
-    userRepository.save(user);
-    return true;
-}
 
     @Transactional
     @UserAdmin
