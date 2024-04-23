@@ -290,7 +290,6 @@ const AttachedFileDelete = async (fileId) => {
                       </v-card-actions>
                     </v-card>
                   </template>
-
                 </v-dialog>
               </v-btn>
             </v-card-text>

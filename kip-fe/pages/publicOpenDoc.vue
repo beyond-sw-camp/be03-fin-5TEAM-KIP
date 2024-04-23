@@ -13,6 +13,8 @@ const createDocument = useCreateDocument();
 
 
 const hover = ref(null);
+const loading = ref(false);
+const snackbar = ref(false);
 const dialog = ref(false);
 const viewer = ref();
 const upLinkId = ref();
@@ -43,10 +45,21 @@ await documentList.setFirstPublicDocumentDetails();
 
 // 문서 삭제 관련 코드.
 const deleteDocModalOpen = ref();
-const deleteDocumentReq = async (documentId) => {
- deleteDocModalOpen.value = true;
-
- await documentList.deleteDocument(documentId)
+const selectedDeleteDocTitle = ref();
+const selectedDeleteDocId = ref();
+const OpendeleteDocumentModal = async (documenetTitle, documentId) => {
+  loading.value = false;
+  deleteDocModalOpen.value = true;
+  selectedDeleteDocTitle.value = documenetTitle;
+  selectedDeleteDocId.value = documentId;
+}
+const realDeleteSelectedDoc = async () => {
+  loading.value = true;
+  await documentList.deleteDocument(selectedDeleteDocId.value)
+  await documentList.setPublicDocumentList();
+  await wait(800);
+  deleteDocModalOpen.value = false;
+  snackbar.value = true;
 }
 
 
@@ -70,8 +83,6 @@ const handleData = async (form) => {
   const temp = await createDocument.createNewDocument(form)
   await documentList.$reset();
   await documentList.setPublicDocumentList();
-  // 순환참조 발생한 부분
-  await documentList.setDocumentDetails(temp.documentId);
   dialog.value = false;
 }
 </script>
@@ -104,39 +115,75 @@ const handleData = async (form) => {
                 :key="doc.documentId"
                 @click="selectDocument(doc.documentId)">
 
-                <div>{{ doc.title }} / {{ doc.documentId }}</div>
+              <div>{{ doc.title }} / {{ doc.documentId }}</div>
               <v-spacer></v-spacer>
-                <v-hover v-slot="{ isHovering, props }">
+              <v-hover v-slot="{ isHovering, props }">
 
-                  <!--                   ✏️ 삭제버튼 -->
-                  <v-btn
-                      icon="mdi-trash-can"
-                      v-bind="props"
-                      class="ml-5"
-                      :class="{
+                <!--                   ✏️ 삭제버튼 -->
+                <v-btn
+                    icon="mdi-trash-can"
+                    v-bind="props"
+                    class="ml-5"
+                    :class="{
                             'on-hover': isHovering,
                             'show-btns': isHovering
                           }"
-                      color="rgba(255, 255, 255, 0)"
-                      variant="plain"
-                      @click="deleteDocModalOpen=true"
-                  />
-                  <!--                  ➕ 생성버튼 -->
-                  <v-btn
-                      icon="mdi-location-exit"
-                      v-bind="props"
-                      :class="{
+                    color="rgba(255, 255, 255, 0)"
+                    variant="plain"
+                    @click="OpendeleteDocumentModal(doc.title, doc.documentId)"
+                />
+                <!--                  ➕ 생성버튼 -->
+                <v-btn
+                    icon="mdi-location-exit"
+                    v-bind="props"
+                    :class="{
                             'on-hover': isHovering,
                             'show-btns': isHovering
                           }"
-                      color="rgba(255, 255, 255, 0)"
-                      variant="plain"
-                      @click="OpenCrateModal(item)"
-                  />
-                </v-hover>
+                    color="rgba(255, 255, 255, 0)"
+                    variant="plain"
+                    @click="OpenCrateModal(item)"
+                />
+              </v-hover>
             </v-tab>
           </v-tabs>
         </v-list>
+
+<!--        모달 세팅 -->
+        <v-dialog
+            v-model="deleteDocModalOpen"
+            max-width="500">
+          <v-card title="공개 문서 삭제">
+            <v-card-text>
+              {{ selectedDeleteDocTitle }} 문서를 삭제하시겠습니까?
+            </v-card-text>
+            <v-card-actions>
+              <v-spacer/>
+              <v-btn
+                  v-if="!loading"
+                  text="Yes"
+                  @click="realDeleteSelectedDoc"
+              />
+              <v-progress-circular
+                  class="mr-5"
+                  v-if="loading"
+                  color="primary"
+                  indeterminate
+              />
+              <v-btn
+                  text="No"
+                  @click="deleteDocModalOpen = false"/>
+            </v-card-actions>
+          </v-card>
+        </v-dialog>
+        <v-snackbar
+            :color="color.kipMainColor"
+            rounded="pill"
+            elevation="24"
+            v-model="snackbar"
+            :timeout="3000">
+          <div class="text-center">{{ selectedDeleteDocTitle }} 문서가 삭제되었습니다.</div>
+        </v-snackbar>
 
 
         <v-dialog v-model="dialog" fullscreen>
