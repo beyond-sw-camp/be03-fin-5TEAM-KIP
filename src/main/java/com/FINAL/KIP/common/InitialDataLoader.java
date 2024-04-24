@@ -43,12 +43,13 @@ public InitialDataLoader(UserRepository userRepository,
 
             // 어드민 생성
             User adminMember = User.builder()
-                    .name("관리자")
+                    .name("삼성정밀")
                     .email("admin@kip.com")
                     .password(passwordEncoder.encode("1234"))
                     .phoneNumber("01012345678")
                     .profileImageUrl("https://picsum.photos/400") // 임시 프로필
                     .employeeId("k-1234567890")
+                    .employedDay("1977년 8월 1일 월요일")
                     .role(Role.ADMIN)
                     .build();
             userRepository.save(adminMember);

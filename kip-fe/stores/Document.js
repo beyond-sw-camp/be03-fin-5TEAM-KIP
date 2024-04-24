@@ -1,4 +1,5 @@
 import {useBookMarks} from "~/stores/BookMarks.js";
+import * as console from "console";
 
 const BASE_URL = import.meta.env.VITE_BASE_URL;
 const user = useUser();
@@ -144,6 +145,23 @@ export const useDocumentList = defineStore("documentList", {
                 console.log(e.message, "문서 제목 수정 실패")
             }
         },
+
+        async moveDocumentToTargetDoc(moveDocumentReq) {
+            try {
+                await fetch(`${BASE_URL}/doc/move`, {
+                    method: 'PATCH',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': 'Bearer ' + user.getAccessToken
+                    },
+                    body: JSON.stringify(moveDocumentReq)
+                });
+            }catch{
+                console.log(e.message, "문서 이동 실패")
+            }
+
+        },
+
 
         async setPublicDocumentList() {
             try {
