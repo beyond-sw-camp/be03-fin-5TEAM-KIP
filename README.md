@@ -407,37 +407,37 @@
 
 #### 📌 부서목록 - 그룹 수정
 <p align="center">
-  <img src="">
+  <img src="https://github.com/beyond-sw-camp/be03-fin-5TEAM-KIP/assets/148752498/bbbfd3c5-2501-4d28-a2ce-32d4cd9df086">
 </p>
 
 #### 📌 부서목록 - 그룹 삭제
 <p align="center">
-  <img src="">
+  <img src="https://github.com/beyond-sw-camp/be03-fin-5TEAM-KIP/assets/148752498/3590e6e6-1091-4cb7-906e-1f5b42ab0e4b">
 </p>
 
 #### 📌 부서목록 - 그룹 슈퍼유저 지정
 <p align="center">
-  <img src="">
+  <img src="https://github.com/beyond-sw-camp/be03-fin-5TEAM-KIP/assets/148752498/39cffc5b-319c-450e-88eb-4e03def6443b">
 </p>
 
 #### 📌 부서목록 - 문서 섹션 변경
 <p align="center">
-  <img src="">
+  <img src="https://github.com/beyond-sw-camp/be03-fin-5TEAM-KIP/assets/148752498/7b36c5b4-a2fd-4334-885c-945967e35063">
 </p>
 
 #### 📌 부서목록 - 문서 전체 그룹 이동
 <p align="center">
-  <img src="">
+  <img src="https://github.com/beyond-sw-camp/be03-fin-5TEAM-KIP/assets/148752498/44ef1e32-9f9a-4510-81a9-3579c337f065">
 </p>
 
 #### 📌 부서목록 - 문서 영구 삭제
 <p align="center">
-  <img src="">
+  <img src="https://github.com/beyond-sw-camp/be03-fin-5TEAM-KIP/assets/148752498/8dfc24c6-67c5-436d-87f3-8a99c686d952">
 </p>
 
 #### 📌 부서목록 - 부서 하이라키 정보
 <p align="center">
-  <img src="">
+  <img src="https://github.com/beyond-sw-camp/be03-fin-5TEAM-KIP/assets/148752498/01431245-c6ac-4adc-a095-2f0be08b030d">
 </p>
 
 #### 📌 북마크 - 그룹문서
@@ -452,18 +452,19 @@
 
 #### 📌 마이페이지 - 내 정보 변경
 <p align="center">
-  <img src="">
+  <img src="https://github.com/beyond-sw-camp/be03-fin-5TEAM-KIP/assets/148752498/0a5d4af9-0ac1-47b7-b0eb-db6c54a61546">
 </p>
 
 #### 📌 마이페이지 - 비밀번호 변경
 <p align="center">
-  <img src="">
+  <img src="https://github.com/beyond-sw-camp/be03-fin-5TEAM-KIP/assets/148752498/41bed38a-da35-4357-b2b4-c46823157113">
 </p>
 
-#### 📌 마이페이지 - 프로필 이미지 변경
+<!-- #### 📌 마이페이지 - 프로필 이미지 변경
 <p align="center">
   <img src="">
 </p>
+-->
 
 #### 📌 로그아웃
 <p align="center">
