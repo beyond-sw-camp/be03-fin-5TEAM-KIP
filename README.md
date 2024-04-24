@@ -311,7 +311,7 @@
 
 #### 📌 로그인
 <p align="center">
-  <img src="https://github.com/beyond-sw-camp/be03-fin-5TEAM-KIP/assets/148752498/8728d228-b7b6-4ca2-9fa2-1df4dcb406a7">
+  <img src="https://github.com/beyond-sw-camp/be03-fin-5TEAM-KIP/assets/148752498/51900586-4052-44bf-8a90-d3f7ce4e72ef">
 </p>
 
 #### 📌 전체공개문서 - 문서 생성(해시태그 추가)및 삭제
@@ -380,32 +380,62 @@
   <img src="https://github.com/beyond-sw-camp/be03-fin-5TEAM-KIP/assets/148752498/295c787c-9abd-422b-a115-2869c3ae918b">
 </p>
 
-#### 📌 부서목록 - 문서타입 변경
+#### 📌 부서목록 - 그룹생성
 <p align="center">
-  <img src="">
-</p>
-
-#### 📌 부서목록 - 문서전체공개
-<p align="center">
-  <img src="">
-</p>
-
-#### 📌 부서목록 - 문서이동(전체 -> 그룹)
-<p align="center">
-  <img src="">
-</p>
-
-#### 📌 부서목록 - 문서영구삭제
-<p align="center">
-  <img src="">
-</p>
-
-#### 📌 부서목록 - 계단식 부서목록 보여주기 및 팀원추가, 역할변경, 그룹제외
-<p align="center">
-  <img src="">
+  <img src="https://github.com/beyond-sw-camp/be03-fin-5TEAM-KIP/assets/148752498/6c37120b-8017-4fe4-9209-ec665c4b4c4d">
 </p>
 
 #### 📌 부서목록 - 신규계정생성
+<p align="center">
+  <img src="https://github.com/beyond-sw-camp/be03-fin-5TEAM-KIP/assets/148752498/578c8a9b-24ca-44e9-9601-ad49b23b72b6">
+</p>
+
+#### 📌 부서목록 - 그룹에 유저 추가
+<p align="center">
+  <img src="https://github.com/beyond-sw-camp/be03-fin-5TEAM-KIP/assets/148752498/8141176f-e103-44e1-8224-dc035e551a76">
+</p>
+
+#### 📌 부서목록 - 그룹에 유저 제거
+<p align="center">
+  <img src="https://github.com/beyond-sw-camp/be03-fin-5TEAM-KIP/assets/148752498/49c05135-ff7c-49ee-af09-69a11ab2def6">
+</p>
+
+#### 📌 부서목록 - 회원 삭제
+<p align="center">
+  <img src="https://github.com/beyond-sw-camp/be03-fin-5TEAM-KIP/assets/148752498/8d684f91-5b67-46ae-a17b-4074eb698695">
+</p>
+
+#### 📌 부서목록 - 그룹 수정
+<p align="center">
+  <img src="">
+</p>
+
+#### 📌 부서목록 - 그룹 삭제
+<p align="center">
+  <img src="">
+</p>
+
+#### 📌 부서목록 - 그룹 슈퍼유저 지정
+<p align="center">
+  <img src="">
+</p>
+
+#### 📌 부서목록 - 문서 섹션 변경
+<p align="center">
+  <img src="">
+</p>
+
+#### 📌 부서목록 - 문서 전체 그룹 이동
+<p align="center">
+  <img src="">
+</p>
+
+#### 📌 부서목록 - 문서 영구 삭제
+<p align="center">
+  <img src="">
+</p>
+
+#### 📌 부서목록 - 부서 하이라키 정보
 <p align="center">
   <img src="">
 </p>
@@ -417,7 +447,7 @@
 
 #### 📌 북마크 - 첨부파일 기능
 <p align="center">
-  <img src="">
+  <img src="https://github.com/beyond-sw-camp/be03-fin-5TEAM-KIP/assets/148752498/8784726d-8c86-4620-bdad-d02ea85ecfcf">
 </p>
 
 #### 📌 마이페이지 - 내 정보 변경
@@ -437,19 +467,8 @@
 
 #### 📌 로그아웃
 <p align="center">
-  <img src="">
+  <img src="https://github.com/beyond-sw-camp/be03-fin-5TEAM-KIP/assets/148752498/cbacc674-5584-4a6a-bc36-42b4e6a9563f">
 </p>
-
-
-
-
-
-
-
-
-
-
-
 
 ---
 
