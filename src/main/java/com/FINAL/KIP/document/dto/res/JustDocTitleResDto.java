@@ -8,12 +8,14 @@ import lombok.Getter;
 public class JustDocTitleResDto {
 
     private final Long documentId;
+    private final String documentUUID;
     private final KmsDocType docType;
     private final String title;
 
     public JustDocTitleResDto(Document document){
         this.documentId = document.getId();
+        this.documentUUID = document.getUuid().toString();
         this.docType = document.getKmsDocType();
         this.title = document.getTitle();
-    }
+	}
 }

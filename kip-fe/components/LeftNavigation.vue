@@ -1,5 +1,6 @@
 <script setup>
-// 왼쪽 네비게이션 오른쪽으로 확장 축소 하는 코드.
+import {useFirebaseApp} from "~/useFireBase.ts";
+import {useFirebaseMessaging} from "~/useFireBaseMessaging.ts";
 
 const rail = ref(true);
 const emit = defineEmits(["railEvent"]);
@@ -21,6 +22,10 @@ await group.setMyGroupsInfo();  // (awit) 그룹정보를 모두 가지고 온�
 await documentList.$reset();
 await documentList.setFirstDocumentDetails();
 
+const firebaseApp = useFirebaseApp();
+const {onForegroundMessage} = useFirebaseMessaging(firebaseApp);
+
+onForegroundMessage()
 </script>
 
 <template>
@@ -96,6 +101,16 @@ await documentList.setFirstDocumentDetails();
           value="bookmarks"
           to="/bookmarks"
           prepend-icon="mdi-list-box-outline"
+          :color="color.kipMainColor"
+          rounded="xl"
+          variant="text"
+          class="group__list"/>
+
+      <v-list-item
+          title="요청"
+          value="requests"
+          to="/requests"
+          prepend-icon="mdi-message-outline"
           :color="color.kipMainColor"
           rounded="xl"
           variant="text"

@@ -1,5 +1,6 @@
 <script setup>
 import {VTreeview} from 'vuetify/labs/VTreeview'
+import {useRequest} from "~/stores/Request.js";
 
 // 피니아
 const user = useUser();
@@ -7,6 +8,7 @@ const group = useGroup();
 const color = useColor();
 const groupUser = useGroupuser();
 const document = useDocumentList()
+const request = useRequest();
 
 // 맴버 관련 데이터
 const loading = ref(false);
@@ -19,6 +21,7 @@ const createMemberModdal = ref();
 const createNewGroupModal = ref();
 const updateGruopInfoModal = ref();
 const selectSuperGroupModal = ref();
+const sendRequestModal = ref(false);
 
 // 상단 네비 제목 설정
 group.TopNaviGroupList = [
@@ -288,6 +291,17 @@ const deleteDocument = async (title, documentId) => {
     await document.setDocumentList(clickedGroupId.value)
     alert(`${title} 문서가 삭제 되었습니다.`)
   }
+}
+const requestDays = ref();
+const docUUID = ref();
+const sendRequest = async (documentUUID) => {
+  sendRequestModal.value = true;
+  docUUID.value = documentUUID;
+}
+
+const confirmRequest = async () => {
+  await request.sendRequest(docUUID.value, requestDays.value);
+  sendRequestModal.value = false;
 }
 
 </script>
@@ -864,7 +878,7 @@ const deleteDocument = async (title, documentId) => {
                     />
                     <v-btn
                         text="권한요청"
-                        @click=""
+                        @click="sendRequest(doc.documentUUID)"
                         variant="elevated"
                         color="blue-lighten-1"
                         class="px-4 mr-4 mt-1"
@@ -879,6 +893,26 @@ const deleteDocument = async (title, documentId) => {
         </v-row>
       </v-col>
     </v-row>
+    <v-dialog v-model="sendRequestModal" persistent max-width="350">
+      <v-card>
+        <v-card-title class="text-h5">권한 요청</v-card-title>
+        <v-card-text>해당 글에 권한 요청을 하시겠습니까?
+          <v-text-field
+              v-model="requestDays"
+              label="요청 일수"
+              type="number"
+              min="1"
+              max="30"
+              step="1"
+          ></v-text-field>
+        </v-card-text>
+        <v-card-actions>
+          <v-spacer></v-spacer>
+          <v-btn color="blue darken-1" @click="sendRequestModal = false">취소</v-btn>
+          <v-btn color="blue darken-1" @click="confirmRequest">요청</v-btn>
+        </v-card-actions>
+      </v-card>
+    </v-dialog>
   </v-container>
 </template>
 <style scoped>

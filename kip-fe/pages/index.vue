@@ -1,4 +1,7 @@
 <script setup>
+import {useFirebaseApp} from "~/useFireBase.ts";
+import {useFirebaseMessaging} from "~/useFireBaseMessaging.ts";
+
 definePageMeta({
   layout: "plain"
 })
@@ -6,13 +9,22 @@ definePageMeta({
 const visible = ref(false);
 const empolyeeIdInput = ref("");
 const passwordInput = ref("");
+let FCMToken = ref();
 
 // Stores
 const user = useUser();
 const color = useColor();
 
+onMounted(async () => {
+  const firebaseApp = useFirebaseApp();
+  const { fetchFCMToken} = useFirebaseMessaging(firebaseApp);
+  await fetchFCMToken().then(result => FCMToken.value = result);
+})
+
+
+
 async function handleSubmit(data) {
-  user.login(data.empolymentId, data.password)
+  user.login(data.empolymentId, data.password, FCMToken.value)
   await wait(1200); // 1.2초 대기
   await useRouter().push('/publicOpenDoc');
 }
