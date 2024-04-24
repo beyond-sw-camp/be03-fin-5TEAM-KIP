@@ -5,6 +5,7 @@ import com.FINAL.KIP.common.CommonResponse;
 import com.FINAL.KIP.common.aspect.JustAdmin;
 import com.FINAL.KIP.common.aspect.UserAdmin;
 import com.FINAL.KIP.common.s3.S3Config;
+import com.FINAL.KIP.common.firebase.FCMTokenDao;
 import com.FINAL.KIP.securities.JwtTokenProvider;
 import com.FINAL.KIP.securities.refresh.UserRefreshToken;
 import com.FINAL.KIP.securities.refresh.UserRefreshTokenRepository;
@@ -40,6 +41,7 @@ public class UserService {
     private final UserRefreshTokenRepository userRefreshTokenRepository;
     private final BookRepository bookRepository;
     private final UserRepository userRepository;
+    private final FCMTokenDao fcmTokenDao;
 
     //s3 연결 config
     private final S3Config s3Config;
@@ -49,15 +51,17 @@ public class UserService {
     private String bucket;
 
     @Autowired
-    public UserService(UserRepository userRepo, PasswordEncoder passwordEncoder, JwtTokenProvider jwtTokenProvider, UserRefreshTokenRepository userRefreshTokenRepository, BookRepository bookRepository, UserRepository userRepository, S3Config s3Config) {
+    public UserService(UserRepository userRepo, PasswordEncoder passwordEncoder, JwtTokenProvider jwtTokenProvider, UserRefreshTokenRepository userRefreshTokenRepository, BookRepository bookRepository, UserRepository userRepository,
+		FCMTokenDao fcmTokenDao, S3Config s3Config) {
         this.userRepo = userRepo;
         this.passwordEncoder = passwordEncoder;
         this.jwtTokenProvider = jwtTokenProvider;
         this.userRefreshTokenRepository = userRefreshTokenRepository;
         this.bookRepository = bookRepository;
         this.userRepository = userRepository;
-        this.s3Config = s3Config;
-    }
+		this.fcmTokenDao = fcmTokenDao;
+		this.s3Config = s3Config;
+	}
 
 //    Create
     @JustAdmin
@@ -121,6 +125,7 @@ public class UserService {
     public CommonResponse logout() {
         User user = getUserFromAuthentication();
         userRefreshTokenRepository.deleteById(user.getId());
+        fcmTokenDao.deleteToken(user.getEmployeeId());
         return new CommonResponse(HttpStatus.OK, "User Logout SUCCESS!", new UserResDto(user));
     }
 

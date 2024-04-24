@@ -129,14 +129,14 @@ export const useUser = defineStore("user", {
             }
         },
 
-        async login(employeeId, password) {
+        async login(employeeId, password, token) {
             try {
                 // 로그인 하고
                 const response =
                     await fetch(`${BASE_URL}/user/login`, {
                         method: 'POST',  // BODY 타입 'Content-Type' 설정
                         headers: {'Content-Type': 'application/json'},
-                        body: JSON.stringify({employeeId, password}),
+                        body: JSON.stringify({employeeId, password, token}),
                     });
                 const tokenRes = await response.json()
                 const tokenData = tokenRes.result.access_token;
