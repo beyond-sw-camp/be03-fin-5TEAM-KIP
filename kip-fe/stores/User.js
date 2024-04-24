@@ -301,7 +301,10 @@ export const useUser = defineStore("user", {
                 console.error('Error changing password:', error);
                 throw error; // 컴포넌트에서 에러 처리를 할 수 있도록 에러를 다시 던집니다.
             }
-        }
+        },
+
+
+
     },
 
     setup() {
