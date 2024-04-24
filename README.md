@@ -306,12 +306,48 @@
 
 
 <details>
-<summary><b>⭐ 주요 단위 테스트 결과서</b></summary>
+<summary><b>⭐ UI / UX 단위 테스트결과서</b></summary>
 <div markdown="1">
 
 #### 📌 북마크 - 그룹문서
 <p align="center">
   <img src="https://github.com/beyond-sw-camp/be03-fin-5TEAM-KIP/assets/148752498/452d84f8-65f5-4179-8834-5602afa96139">
+</p>
+
+#### 📌 그룹문서 - 문서 생성(해시태그 추가)
+<p align="center">
+  <img src="https://github.com/beyond-sw-camp/be03-fin-5TEAM-KIP/assets/148752498/40a3d5fe-74a8-4c02-914e-9b73d034478a">
+</p>
+
+#### 📌 전체공개문서 - 해시태그 CRUD, 해시태그 검색
+<p align="center">
+  <img src="https://github.com/beyond-sw-camp/be03-fin-5TEAM-KIP/assets/148752498/48f5830a-84aa-4889-97a1-ed659478d45a">
+</p>
+
+#### 📌 그룹문서 - 첨부파일 기능
+<p align="center">
+  <img src="https://github.com/beyond-sw-camp/be03-fin-5TEAM-KIP/assets/148752498/2609a4a2-59c7-452b-8f91-590608172240">
+</p>
+
+#### 📌 전체공개문서 - 제목 수정
+<p align="center">
+  <img src="https://github.com/beyond-sw-camp/be03-fin-5TEAM-KIP/assets/148752498/8e628b1d-87a2-48fe-ba8e-524911313054">
+</p>
+
+#### 📌 전체공개문서 - 문서 생성(해시태그 추가)및 삭제
+<p align="center">
+  <img src="https://github.com/beyond-sw-camp/be03-fin-5TEAM-KIP/assets/148752498/8728d228-b7b6-4ca2-9fa2-1df4dcb406a7">
+</p>
+
+
+#### 📌 북마크 - 첨부파일 기능
+<p align="center">
+  <img src="">
+</p>
+
+#### 📌 전체공개문서 - 첨부파일 CRUD_장준혁
+<p align="center">
+  <img src="">
 </p>
 
 
