@@ -72,7 +72,7 @@ public InitialDataLoader(UserRepository userRepository,
             publicDoc.setTitle("공지사항");
             publicDoc.setContent("공지사항 입니다.");
             publicDoc.setGroupId(null);
-            documentService.createDocument(publicDoc);
+            documentService.createInitialPublicDoc(publicDoc);
         }
     }
 }

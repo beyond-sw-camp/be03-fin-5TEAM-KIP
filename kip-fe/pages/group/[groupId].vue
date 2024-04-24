@@ -310,7 +310,6 @@ const handleBookmarkClick = async () => {
                               text="No"
                               @click="isActive.value = false"
                           ></v-btn>
-
                         </v-card-actions>
                       </v-card>
                     </template>
@@ -319,7 +318,6 @@ const handleBookmarkClick = async () => {
                 </v-btn>
               </div>
               <div v-else>첨부파일이 없습니다.</div>
-
             </v-card-text>
           </v-card>
         </div>

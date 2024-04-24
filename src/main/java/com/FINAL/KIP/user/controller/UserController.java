@@ -16,6 +16,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.server.ResponseStatusException;
 
 import java.io.IOException;
 import java.util.List;
@@ -127,16 +128,21 @@ public class UserController {
     // 비밀번호 변경
     @PatchMapping("/change-password")
     public ResponseEntity<?> changePassword(@RequestBody PasswordChangeRequest request) {
-        // UserService의 changePassword 메소드를 호출하여 비밀번호 변경 시도
-        boolean passwordChanged = userService.changePassword(request.getFindByEmployeeId(), request.getCurrentPassword(), request.getNewPassword());
-
-        // 비밀번호 변경이 실패했다면, 즉 현재 비밀번호가 틀렸을때
-        if (!passwordChanged) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Current password is incorrect.");
+        try {
+            boolean passwordChanged = userService.changePassword(
+                    request.getFindByEmployeeId(),
+                    request.getCurrentPassword(),
+                    request.getNewPassword());
+            return ResponseEntity.ok(Map.of("message", "Password successfully updated."));
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity
+                    .status(HttpStatus.BAD_REQUEST)
+                    .body(Map.of("error", e.getMessage()));
+        } catch (Exception e) {
+            return ResponseEntity
+                    .status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(Map.of("error", "Failed to change password due to an unexpected error."));
         }
-
-        // 비밀번호 변경 성공
-        return ResponseEntity.ok("Password successfully updated.");
     }
 
     // 프로필이미지 업로드
