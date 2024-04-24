@@ -35,7 +35,11 @@ public class Request extends BaseEntity {
 	private String isOk = "P";
 
 	@Builder.Default
+	private String requesterDelYn = "N";
+
+	@Builder.Default
 	private String delYn = "N";
+
 
 	private int days;
 
@@ -60,5 +64,8 @@ public class Request extends BaseEntity {
 	}
 	public void deleteRequest() {
 		this.delYn = "Y";
+	}
+	public void deleteRequesterDelYn() {
+		this.requesterDelYn = "Y";
 	}
 }

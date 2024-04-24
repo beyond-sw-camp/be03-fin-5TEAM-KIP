@@ -31,7 +31,7 @@ await bookmarks.$reset();
 await bookmarks.setMyBookMarks();
 
 await documentList.$reset();
-await documentList.setDocumentList(groupId);
+// await documentList.setDocumentList(groupId);
 // await groupName.setGroupUsersInfo(groupId);
 await documentList.setFirstBookDetails()
 
