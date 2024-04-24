@@ -115,20 +115,61 @@ const handleBookmarkClick = async () => {
   await bookmarks.setMyBookMarks();
 };
 
+// 해시태그 업데이트 관련
+const hashTagUpdateModal = ref(false);
+const hashTagsUpdateReqDto = ref({
+  documentId: "",
+  hashTags: []
+});
+const hashTagUpdateModalOpen = () => {
+  hashTagUpdateModal.value = true
+  hashTagsUpdateReqDto.value.documentId = documentList.getSelectedDocId
+  hashTagsUpdateReqDto.value.hashTags = documentList.getHashTagsInSelectedDoc
+}
+const hashTagUpdateReq = () => {
+  documentList.updateHashTags(hashTagsUpdateReqDto.value)
+  hashTagUpdateModal.value = false;
+}
+
+// 문서 제목 업데이트 관련
+const handlerForUpdateModal = ref(false);
+const updateDocumentTitleReq = ref({
+  targetDocumentId: "",
+  newTitle: ""
+})
+const OpenTitleUpdateModal = () => {
+  handlerForUpdateModal.value = true
+  updateDocumentTitleReq.value.targetDocumentId = documentList.getSelectedDocId
+  updateDocumentTitleReq.value.newTitle = documentList.getSelectedDocTitle
+}
+const realUpdateDocumentTitle = async (event) => {
+  titleLoding.value = true
+  const results = await event
+  await wait(500); // 0.5초 대기
+
+  if (results.valid) {
+    await documentList.updateDocumentTitle(updateDocumentTitleReq.value)
+    await documentList.setPublicDocumentList();
+    await documentList.setDocumentDetails(
+        updateDocumentTitleReq.value.targetDocumentId)
+    handlerForUpdateModal.value = false
+  }
+  titleLoding.value = false
+}
+
+
 </script>
 
 <template>
   <v-container fluid>
     <v-row no-gutters>
-      <!-- 왼쪽 사이드바 -->
+      <!-- 👈👈👈👈👈👈👈👈 왼쪽 사이드바 -->
       <v-col cols="3">
         <v-list class="pa-4">
           <v-list-item>
-            <v-list-item-content>
               <v-list-item-title class="font-weight-bold headline text-center">
-                북마크
+                북마크 ⭐
               </v-list-item-title>
-            </v-list-item-content>
           </v-list-item>
           <v-divider></v-divider>
           <!-- 그룹 문서 title 출력 -->
@@ -140,7 +181,7 @@ const handleBookmarkClick = async () => {
                 @mouseenter="hover = book.documentId"
                 @mouseleave="hover = null"
             >
-              {{ book.title }} {{ book.groupName }}
+             ⭐ {{book.groupName}} ➡️ {{ book.title }}
             </v-tab>
           </v-tabs>
         </v-list>
@@ -159,7 +200,7 @@ const handleBookmarkClick = async () => {
       <!-- 세로선 -->
       <v-divider class="divider-container" vertical></v-divider>
 
-      <!-- 가운데 문서제목 부분 -->
+      <!-- ☝️☝️☝️☝️☝️☝️☝️ 가운데 문서제목 부분 -->
       <v-col cols="7">
         <v-list class="pa-4">
           <v-card flat>
@@ -188,7 +229,7 @@ const handleBookmarkClick = async () => {
         </v-card>
       </v-col>
 
-      <!-- 오른쪽 영역 -->
+      <!-- 👉👉👉👉👉👉👉👉👉 오른쪽 영역 -->
       <v-col cols="2">
         <!-- 첨부 파일 섹션 -->
         <div class="attached-files">
@@ -298,23 +339,58 @@ const handleBookmarkClick = async () => {
           </v-card>
         </div>
 
-        <div class="pa-4">
-          <v-card-title class="headline text-center">해시 태그</v-card-title>
-          <v-responsive>
-            <v-chip-group column>
-              <v-chip
-                  v-for="(hashTag, index) in documentList.selectedDocumentDetails.hashTags"
-                  :key="index"
-                  prepend-icon="mdi mdi-pound"
-                  v-if="documentList.selectedDocumentDetails && documentList.selectedDocumentDetails.hashTags.length > 0">
-                {{ hashTag.tagName }}
-              </v-chip>
-              <div v-else>해시태그가 없습니다.</div>
-            </v-chip-group>
-          </v-responsive>
-        </div>
+        <!--    ⏩⏩⏩⏩⏩  해시태그 -->
+        <v-chip prepend-icon="mdi-pencil"
+                color="blue"
+                class="mx-4 mb-0 mt-5"
+                @click="hashTagUpdateModalOpen"> 해시 태그 수정
+        </v-chip>
 
+        <v-chip-group column class="px-4"
+                      v-if="documentList.selectedDocumentDetails
+                      && documentList.selectedDocumentDetails.hashTags.length > 0">
+          <v-chip prepend-icon="mdi-refresh"
+                  @click=documentList.setPublicDocumentList> 초기화
+          </v-chip>
+          <v-chip
+              v-for="(hashTag, index) in documentList.selectedDocumentDetails.hashTags"
+              :key="index"
+              prepend-icon="mdi-pound"
+              @click="documentList.filterPublicDocByHashTag(hashTag['hashTagId'])">
+            {{ hashTag.tagName }} ({{ hashTag['docsCounts'] }})
+          </v-chip>
+        </v-chip-group>
+        <div v-else class="pa-4">해시태그가 없습니다.</div>
       </v-col>
+
+      <!--           ❤️ 해시태그 수정을 위한 모달-->
+      <v-dialog
+          class="d-flex justify-center"
+          width="40vw"
+          opacity="40%"
+          v-model="hashTagUpdateModal">
+        <v-sheet
+            rounded="xl"
+            class="d-flex justify-center flex-wrap pa-10">
+          <v-combobox
+              variant="underlined"
+              v-model="hashTagsUpdateReqDto.hashTags"
+              multiple
+              chips
+              placeholder="태그를 입력하세요."
+              persistent-placeholder
+              hint="여러 태그를 엔터로 구분하여 입력하세요."/>
+          <v-btn
+              class="mt-4"
+              color="success"
+              text="해시태그 수정하기"
+              @click="hashTagUpdateReq"
+              block
+          />
+        </v-sheet>
+      </v-dialog>
+
+
     </v-row>
   </v-container>
 </template>
