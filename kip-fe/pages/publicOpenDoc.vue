@@ -5,7 +5,6 @@ import {toastViewerInstance} from "~/useToastViewer";
 import postForm from "~/components/PostForm.vue";
 import {VTreeview} from 'vuetify/labs/VTreeview'
 
-
 // 상단 네비 제목 설정
 const group = useGroup();
 group.TopNaviGroupList = ["Knowledge is Power", "전체공개문서", "해시태그로 검색해 주세요.🏷️"];
@@ -14,7 +13,7 @@ group.TopNaviGroupList = ["Knowledge is Power", "전체공개문서", "해시태
 const createDocument = useCreateDocument();
 const documentList = useDocumentList();
 const color = useColor();
-
+const attachedFile = useAttachedFile();
 
 const loading = ref(false);
 const titleLoding = ref(false)
@@ -23,6 +22,20 @@ const dialog = ref(false);
 const viewer = ref();
 const upLinkId = ref();
 
+// 첨부파일 관련
+const files = ref([]);
+const fileHover = ref(null);
+const fileDialog = ref(false);
+
+await attachedFile.$reset();
+await attachedFile.setAttachedFileList(documentList.getFirstDocId);
+
+// 북마크 관련
+const selection = ref([]);
+const bookmarks = useBookMarks();
+
+await bookmarks.$reset();
+await bookmarks.setMyBookMarks();
 
 // 해시태그 업데이트 관련
 const hashTagUpdateModal = ref(false);
@@ -126,7 +139,7 @@ const moveDocToGroupReq = ref({
   targetDocumentId: "",
   targetGroupId: "1"
 })
-const realShowGroupModalForSelect = async (documenetTitle, documentId ) => {
+const realShowGroupModalForSelect = async (documenetTitle, documentId) => {
   await group.setHierarchyInfo();
   selectedTargetGroupName.value = "한화시스템"
   handlerMoveDocToGroup.value = true
@@ -138,14 +151,59 @@ const SetTargetGroupIdAndName = (selectedGroupInfo) => {
   selectedTargetGroupName.value = selectedGroupInfo.title
 }
 const RealMoveDocToTargetGroup = async () => {
-  if (confirm(`${selectedTargetDocumentTitle.value} 문서를 이동하시겠습니까?`)){
+  if (confirm(`${selectedTargetDocumentTitle.value} 문서를 이동하시겠습니까?`)) {
     handlerMoveDocToGroup.value = false
     await documentList.moveDocumentToTargetGroup(moveDocToGroupReq.value)
     await documentList.setPublicDocumentList();
     alert("문서가 정상적으로 이동하였습니다.")
   }
-
 }
+
+// 파일 업로드 핸들러
+const handleFileUpload = async () => {
+  await wait(1200); // 1.2초 대기
+  fileDialog.value = false; // 다이얼로그 닫기
+  // 각 파일에 대해 업로드 로직 실행
+  for (let file of files.value) {
+    console.log(file)
+    await attachedFile.setAttachedFileUpload(documentList.selectedDocumentDetails.documentId, file);
+  }
+  files.value = []; // 파일 목록 초기화
+
+  // 파일 업로드 후 첨부파일 목록 다시 불러오기
+  await attachedFile.setAttachedFileList(documentList.selectedDocumentDetails.documentId);
+};
+
+// 파일 클릭 핸들러
+const handleFileClick = (url) => {
+  window.open(url, '_blank');
+};
+
+// 첨부파일 삭제 로직
+const AttachedFileDelete = async (fileId) => {
+  await attachedFile.setAttachedFileDelete(fileId);
+  await wait(2000); // 1.2초 대기
+  // 첨부파일 삭제 후 첨부파일 목록 다시 불러오기
+  await attachedFile.setAttachedFileList(documentList.selectedDocumentDetails.documentId);
+};
+
+// 선택한 문서 ID가 북마크 목록에 있는지 확인
+const isBookmarked = computed(() =>
+    bookmarks.myBookMarks.some(book => book.documentId === documentList.getSelectedDocId)
+);
+
+// 북마크 버튼 클릭 핸들러
+const handleBookmarkClick = async () => {
+  // 만약 현재 문서가 북마크되어 있다면, 북마크를 제거하는 액션을 실행합니다.
+  if (isBookmarked.value) {
+    await bookmarks.removeMyBookmark(documentList.getSelectedDocId);
+  } else {
+    await bookmarks.removeMyBookmark(documentList.getSelectedDocId);
+  }
+
+  // 북마크 상태를 갱신합니다.
+  await bookmarks.setMyBookMarks();
+};
 
 </script>
 
@@ -222,14 +280,15 @@ const RealMoveDocToTargetGroup = async () => {
               rounded="xl"
               class="pa-10">
             <div class="d-flex justify-space-between">
-            <h2 class="mb-4 text-center">{{`${selectedTargetDocumentTitle} 문서 👉 ${selectedTargetGroupName} 그룹으로`}}</h2>
-            <v-btn
-                color="info"
-                :loading="titleLoding"
-                text="이동하기 🚀"
-                type="submit"
-                @click="RealMoveDocToTargetGroup"
-            />
+              <h2 class="mb-4 text-center">
+                {{ `${selectedTargetDocumentTitle} 문서 👉 ${selectedTargetGroupName} 그룹으로` }}</h2>
+              <v-btn
+                  color="info"
+                  :loading="titleLoding"
+                  text="이동하기 🚀"
+                  type="submit"
+                  @click="RealMoveDocToTargetGroup"
+              />
             </div>
             <v-treeview
                 :items="group.getHierarchyInfo"
@@ -308,9 +367,20 @@ const RealMoveDocToTargetGroup = async () => {
           <v-card flat>
             <v-row>
               <v-col cols="8" offset="2">
-                <v-card-title class="headline text-center">
+                <v-card-title class="headline d-flex justify-center">
                   {{ documentList.selectedDocumentDetails.title }}
+                  <v-item-group v-model="selection">
+                    <v-item>
+                      <v-btn
+                          density="comfortable"
+                          @click="handleBookmarkClick"
+                          :icon="isBookmarked ? 'mdi-star' : 'mdi-star-outline'"
+                      ></v-btn>
+                    </v-item>
+                  </v-item-group>
                 </v-card-title>
+
+
               </v-col>
               <v-col cols="2">
                 <v-btn
@@ -374,28 +444,112 @@ const RealMoveDocToTargetGroup = async () => {
 
       <!-- 👉👉👉👉👉👉👉👉👉 오른쪽 영역 -->
       <v-col cols="2">
-        <!-- 'On This Page' 섹션 -->
-        <v-card flat>
-          <v-card-title class="headline text-center">On This Page</v-card-title>
-          <v-card-text>
-            <v-list dense>
-              <v-list-item v-for="item in rightSideItems" :key="item">
-                <v-list-item-title>{{ item.title }}</v-list-item-title>
-                <v-list-item-subtitle v-if="item.subtitle">{{ item.subtitle }}</v-list-item-subtitle>
-              </v-list-item>
-            </v-list>
-          </v-card-text>
-        </v-card>
-
         <!-- 첨부 파일 섹션 -->
-        <v-card flat>
-          <v-card-title class="headline text-center">첨부 파일</v-card-title>
-          <v-card-text>
-            <v-btn color="primary">service-task.pdf</v-btn>
-            <v-btn color="primary">work-project.zip</v-btn>
-            <!-- 더 많은 파일들... -->
-          </v-card-text>
-        </v-card>
+        <div class="attached-files">
+          <v-card flat>
+            <v-card-title class="headline text-center">첨부 파일
+
+              <!-- 첨부파일 업로드 로직 부분 -->
+              <v-dialog v-model="fileDialog" max-width="800">
+                <template v-slot:activator="{ props: activatorProps }">
+                  <v-btn
+                      v-bind="activatorProps"
+                      density="compact"
+                      variant="flat"
+                      icon="mdi-plus"
+                  >
+                  </v-btn>
+                </template>
+
+                <v-card>
+                  <v-card-title class="headline">첨부파일 업로드</v-card-title>
+                  <v-card-text>
+                    <v-file-input
+                        v-model="files"
+                        label="Select files"
+                        placeholder="Upload your documents"
+                        prepend-icon="mdi-paperclip"
+                        multiple
+                    >
+                      <template v-slot:selection="{ fileNames }">
+                        <template v-for="fileName in fileNames" :key="fileName">
+                          <v-chip class="me-2" color="primary" size="small" label>
+                            {{ fileName }}
+                          </v-chip>
+                        </template>
+                      </template>
+                    </v-file-input>
+                  </v-card-text>
+                  <v-card-actions>
+                    <v-spacer></v-spacer>
+                    <v-btn color="green darken-1" text @click="handleFileUpload">업로드 완료</v-btn>
+                  </v-card-actions>
+                </v-card>
+              </v-dialog>
+            </v-card-title>
+
+
+            <!-- 첨부파일 목록 -->
+            <v-card-text>
+              <div v-if="attachedFile.getAttachedFileList.length > 0">
+                <v-btn text color="primary"
+                       v-for="file in attachedFile.getAttachedFileList"
+                       :key="file.fileName"
+                       @click="handleFileClick(file.fileUrl)"
+                       @mouseenter="fileHover = file.fileName"
+                       @mouseleave="fileHover = null">
+
+                  {{ file.fileName }}
+
+                  <v-dialog max-width="500">
+                    <template v-slot:activator="{ props: activatorProps }" v-if="fileHover === file.fileName">
+                      <v-btn
+                          v-bind="activatorProps"
+                          :icon="`mdi-minus`"
+                          variant="text"
+                          density="compact"
+                          rounded="lg"
+                      />
+                    </template>
+
+                    <template v-slot:default="{ isActive }">
+                      <v-card title="첨부파일 삭제">
+                        <v-card-text>
+                          첨부파일을 삭제하시겠습니까?
+                        </v-card-text>
+
+                        <v-card-actions>
+                          <v-spacer></v-spacer>
+
+                          <v-snackbar
+                              :timeout="2000"
+                          >
+                            <template v-slot:activator="{ props }">
+                              <v-btn
+                                  v-bind="props"
+                                  @click="AttachedFileDelete(file.id)"
+
+                              >Yes
+                              </v-btn>
+                            </template>
+                            첨부파일이 삭제되었습니다.
+                          </v-snackbar>
+
+                          <v-btn
+                              text="No"
+                              @click="isActive.value = false"
+                          ></v-btn>
+                        </v-card-actions>
+                      </v-card>
+                    </template>
+
+                  </v-dialog>
+                </v-btn>
+              </div>
+              <div v-else>첨부파일이 없습니다.</div>
+            </v-card-text>
+          </v-card>
+        </div>
 
         <!--    ⏩⏩⏩⏩⏩  해시태그 -->
         <v-chip prepend-icon="mdi-pencil"

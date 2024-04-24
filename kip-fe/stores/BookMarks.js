@@ -35,8 +35,9 @@ export const useBookMarks = defineStore("bookmarks", {
 
         // 북마크 삭제 함수 정의
         async removeMyBookmark(documentId) {
+            console.log(documentId)
             try {
-                const response = await fetch(`${BASE_URL}/doc/${documentId}/book`, {
+                const response = await fetch(`${BASE_URL}/doc/35/book`, {
                     method: 'POST',
                     headers: { 'Authorization': 'Bearer ' + user.getAccessToken },
                 });

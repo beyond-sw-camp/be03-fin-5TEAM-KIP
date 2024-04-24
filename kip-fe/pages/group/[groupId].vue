@@ -200,21 +200,6 @@ const handleBookmarkClick = async () => {
 
       <!-- 오른쪽 영역 -->
       <v-col cols="2">
-        <!-- 'On This Page' 섹션 -->
-        <v-card flat>
-          <v-card-title class="headline text-center">On This Page</v-card-title>
-          <v-card-text>
-            <v-list dense>
-              <v-list-item v-for="item in rightSideItems" :key="item">
-                <v-list-item-content>
-                  <v-list-item-title>{{ item.title }}</v-list-item-title>
-                  <v-list-item-subtitle v-if="item.subtitle">{{ item.subtitle }}</v-list-item-subtitle>
-                </v-list-item-content>
-              </v-list-item>
-            </v-list>
-          </v-card-text>
-        </v-card>
-
         <!-- 첨부 파일 섹션 -->
         <div class="attached-files">
           <v-card flat>
