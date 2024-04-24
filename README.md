@@ -309,6 +309,11 @@
 <summary><b>⭐ UI / UX 단위 테스트결과서</b></summary>
 <div markdown="1">
 
+#### 📌 로그인
+<p align="center">
+  <img src="https://github.com/beyond-sw-camp/be03-fin-5TEAM-KIP/assets/148752498/8728d228-b7b6-4ca2-9fa2-1df4dcb406a7">
+</p>
+
 #### 📌 전체공개문서 - 문서 생성(해시태그 추가)및 삭제
 <p align="center">
   <img src="https://github.com/beyond-sw-camp/be03-fin-5TEAM-KIP/assets/148752498/8728d228-b7b6-4ca2-9fa2-1df4dcb406a7">
@@ -323,7 +328,6 @@
 <p align="center">
   <img src="https://github.com/beyond-sw-camp/be03-fin-5TEAM-KIP/assets/148752498/00b01d93-a0ad-4fe1-8a6a-28e2c504b604">
 </p>
-
 
 #### 📌 전체공개문서 - 해시태그 CRUD, 해시태그 검색
 <p align="center">
@@ -342,17 +346,38 @@
 
 #### 📌 문서검색기능
 <p align="center">
-  <img src="">
+  <img src="https://github.com/beyond-sw-camp/be03-fin-5TEAM-KIP/assets/148752498/121a655e-27a9-452f-af99-69db8dec8a17">
 </p>
 
-#### 📌 권한요청(부서목록) - 문서권한요청(알람)
+<!-- #### 📌 권한요청- 문서권한요청(알람)(보류)
 <p align="center">
   <img src="">
 </p>
 
-#### 📌 권한요청 - 권한 수락된 문서 보기 기능
+#### 📌 권한요청 - 권한 수락된 문서 보기 기능(보류)
 <p align="center">
   <img src="">
+</p>
+-->
+
+#### 📌 문서권한요청 - 알림 확인 및 클릭
+<p align="center">
+  <img src="https://github.com/beyond-sw-camp/be03-fin-5TEAM-KIP/assets/148752498/b4fdf432-1b6e-4dc9-96e7-a164f67552b1">
+</p>
+
+#### 📌 문서권한요청 - 요청 수락 및 거절
+<p align="center">
+  <img src="https://github.com/beyond-sw-camp/be03-fin-5TEAM-KIP/assets/148752498/7eabf38a-e1f4-449f-bd92-0427bc8d5687">
+</p>
+
+#### 📌 문서권한요청 - 요청 삭제
+<p align="center">
+  <img src="https://github.com/beyond-sw-camp/be03-fin-5TEAM-KIP/assets/148752498/07012c21-a3ac-4a41-8a7e-fad433e98a15">
+</p>
+
+#### 📌 문서권한요청 - 알림 삭제
+<p align="center">
+  <img src="https://github.com/beyond-sw-camp/be03-fin-5TEAM-KIP/assets/148752498/295c787c-9abd-422b-a115-2869c3ae918b">
 </p>
 
 #### 📌 부서목록 - 문서타입 변경
