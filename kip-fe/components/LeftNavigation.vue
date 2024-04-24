@@ -51,15 +51,15 @@ await documentList.setFirstDocumentDetails();
           variant="text"
           class="group__list"/>
 
-      <v-list-item
-          title="문서목록테스트"
-          value="publicDoc"
-          to="/publicDoc"
-          prepend-icon="mdi-web"
-          :color="color.kipMainColor"
-          rounded="xl"
-          variant="text"
-          class="group__list"/>
+<!--      <v-list-item-->
+<!--          title="문서목록테스트"-->
+<!--          value="publicDoc"-->
+<!--          to="/publicDoc"-->
+<!--          prepend-icon="mdi-web"-->
+<!--          :color="color.kipMainColor"-->
+<!--          rounded="xl"-->
+<!--          variant="text"-->
+<!--          class="group__list"/>-->
 
       <v-list-item
           title="부서목록"
@@ -71,25 +71,25 @@ await documentList.setFirstDocumentDetails();
           variant="text"
           class="group__list"/>
 
-      <v-list-item
-          to="/kip"
-          title="KIP"
-          value="KIP"
-          prepend-icon="mdi-store-cog"
-          :color="color.kipMainColor"
-          rounded="xl"
-          variant="text"
-          class="group__list"/>
+<!--      <v-list-item-->
+<!--          to="/kip"-->
+<!--          title="KIP"-->
+<!--          value="KIP"-->
+<!--          prepend-icon="mdi-store-cog"-->
+<!--          :color="color.kipMainColor"-->
+<!--          rounded="xl"-->
+<!--          variant="text"-->
+<!--          class="group__list"/>-->
 
-      <v-list-item
-          title="main-test"
-          value="main-test"
-          to="/main-test"
-          prepend-icon="mdi-arm-flex"
-          :color="color.kipMainColor"
-          rounded="xl"
-          variant="text"
-          class="group__list"/>
+<!--      <v-list-item-->
+<!--          title="main-test"-->
+<!--          value="main-test"-->
+<!--          to="/main-test"-->
+<!--          prepend-icon="mdi-arm-flex"-->
+<!--          :color="color.kipMainColor"-->
+<!--          rounded="xl"-->
+<!--          variant="text"-->
+<!--          class="group__list"/>-->
 
       <v-list-item
           title="bookmarks"
@@ -100,18 +100,6 @@ await documentList.setFirstDocumentDetails();
           rounded="xl"
           variant="text"
           class="group__list"/>
-
-      <v-list-item
-          title="bookmarks2"
-          value="bookmarks2"
-          to="/bookmarks2"
-          prepend-icon="mdi-list-box-outline"
-          :color="color.kipMainColor"
-          rounded="xl"
-          variant="text"
-          class="group__list"/>
-
-
 
       <v-divider class="group__list"/>
 
