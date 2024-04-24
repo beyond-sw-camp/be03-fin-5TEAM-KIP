@@ -171,17 +171,9 @@
   <img src="https://github.com/beyond-sw-camp/be03-fin-5TEAM-KIP/assets/148752498/e78374c8-e5e5-43d2-b53a-85d6c2b3c179">
 </p>
 
-<<<<<<< HEAD
-<<<<<<< HEAD
-=======
 #### 📌 [KIP 화면설계 피그마 링크](https://www.figma.com/file/7uzpyZLpNiRnG6SaqKPq0G/KIP_FrontPage?type=design&node-id=0%3A1&mode=design&t=bmqXufLzF1sSbCEr-1)
 
-***
-=======
 ---
->>>>>>> 12753b14a7b4c5e238e563f46a1f87501cd0f2a1
-
->>>>>>> 389045864b680aec1dd174a4e0c6d5b169888380
 ### ⭐ 시스템 아키텍처 설계서
 <p align="center">
   <img src="https://github.com/beyond-sw-camp/be03-fin-5TEAM-KIP/assets/148752498/e2421311-a56b-4d0a-8e98-e5e083122482">
@@ -308,6 +300,22 @@
 <p align="center">
   <img src="https://github.com/beyond-sw-camp/be03-fin-5TEAM-KIP/assets/148752498/8aa3141f-58d7-46c2-bcfc-358cb4c4b969">
 </p>
+
+</div>
+</details>
+
+
+<details>
+<summary><b>⭐ 주요 단위 테스트 결과서</b></summary>
+<div markdown="1">
+
+#### 📌 북마크 - 그룹문서
+<p align="center">
+  <img src="https://github.com/beyond-sw-camp/be03-fin-5TEAM-KIP/assets/148752498/452d84f8-65f5-4179-8834-5602afa96139">
+</p>
+
+
+---
 
 </div>
 </details>
