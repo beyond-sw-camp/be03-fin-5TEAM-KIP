@@ -321,8 +321,9 @@
 
 #### 📌 전체공개문서 - 첨부파일 CRUD
 <p align="center">
-  <img src="">
+  <img src="https://github.com/beyond-sw-camp/be03-fin-5TEAM-KIP/assets/148752498/00b01d93-a0ad-4fe1-8a6a-28e2c504b604">
 </p>
+
 
 #### 📌 전체공개문서 - 해시태그 CRUD, 해시태그 검색
 <p align="center">
@@ -338,7 +339,6 @@
 <p align="center">
   <img src="https://github.com/beyond-sw-camp/be03-fin-5TEAM-KIP/assets/148752498/2609a4a2-59c7-452b-8f91-590608172240">
 </p>
-
 
 #### 📌 문서검색기능
 <p align="center">
