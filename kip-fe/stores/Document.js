@@ -161,8 +161,20 @@ export const useDocumentList = defineStore("documentList", {
             }
 
         },
-
-
+        async moveDocumentToTargetGroup(moveDocToGroupReq) {
+            try {
+                await fetch(`${BASE_URL}/doc/group`, {
+                    method: 'PATCH',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': 'Bearer ' + user.getAccessToken
+                    },
+                    body: JSON.stringify(moveDocToGroupReq)
+                });
+            }catch{
+                console.log(e.message, "문서를 그룹으로 이동 실패")
+            }
+        },
         async setPublicDocumentList() {
             try {
                 const response = await fetch(`${BASE_URL}/doc/public`, {
