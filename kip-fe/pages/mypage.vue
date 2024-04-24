@@ -109,11 +109,11 @@
                     <v-text-field label="전화번호" outlined dense v-model="userInfo.phoneNumber"></v-text-field>
                   </v-col>
                 </v-row>
-                <!-- 입사 날짜 입력 필드 -->
+                <!-- 고용된 날짜 입력 필드 -->
                 <v-row>
                   <v-col cols="12" md="6">
                     <v-text-field
-                        label="입사 날짜"
+                        label="고용된 날짜"
                         outlined
                         dense
                         v-model="userInfo.employedDay"
@@ -188,25 +188,32 @@ const validateCurrentPassword = async () => {
   passwordErrors.current = [];
   if (!password.current) {
     passwordErrors.current.push("현재 비밀번호를 입력하세요.");
-  } else {
+    return; // 입력이 없으면 여기서 함수 종료
+  }
+
+  try {
     const isValid = await userStore.validateCurrentPassword(password.current);
-    if (isValid) {
-      isCurrentPasswordValid.value = true;
-      passwordStatusMessage.value = '현재 비밀번호가 일치합니다. 새로운 비밀번호를 입력할 수 있습니다.';
-      passwordErrors.current = [];
-    } else {
-      isCurrentPasswordValid.value = false;
+    isCurrentPasswordValid.value = isValid; // 비동기 검증 결과를 상태에 반영
+
+    if (!isValid) { // 유효하지 않은 경우 오류 메시지 추가
       passwordStatusMessage.value = '비밀번호가 일치하지 않습니다. 다시 시도해주세요.';
       passwordErrors.current.push("현재 비밀번호가 올바르지 않습니다.");
+    } else {
+      passwordStatusMessage.value = '현재 비밀번호가 일치합니다. 새로운 비밀번호를 입력할 수 있습니다.';
     }
+  } catch (error) {
+    console.error('비밀번호 검증 중 오류 발생:', error);
+    alert('비밀번호 검증 중 문제가 발생했습니다.');
   }
 };
 
 // 새로운 비밀번호 유효성 검사 함수
 const validateNewPassword = () => {
   passwordErrors.new = [];
-  if (password.new.length < 4) {
-    passwordErrors.new.push("비밀번호는 최소 4자 이상이어야 합니다.");
+  // 새 비밀번호가 4자리 숫자인지 확인
+  const isNumeric = /^\d+$/.test(password.new);
+  if (!isNumeric || password.new.length !== 4) {
+    passwordErrors.new.push("비밀번호는 4자리 숫자여야 합니다.");
   }
 };
 
@@ -222,7 +229,14 @@ const validateConfirmPassword = () => {
 
 // 비밀번호 변경 가능 여부 계산
 const canChangePassword = computed(() => {
-  return password.current && password.new && password.confirm && (password.new === password.confirm) && passwordErrors.current.length === 0;
+  return isCurrentPasswordValid.value &&
+      password.current &&
+      password.new &&
+      password.confirm &&
+      password.new === password.confirm &&
+      passwordErrors.current.length === 0 &&
+      passwordErrors.new.length === 0 &&
+      passwordErrors.confirm.length === 0;
 });
 
 // 비밀번호 변경 함수
@@ -289,10 +303,10 @@ watch(password, () => {
     passwordErrors.confirm = [];
   }
 
-  if (password.new && password.new.length < 4) {
-    passwordErrors.new = ["비밀번호는 최소 4자 이상이어야 합니다."];
+  if (password.new && password.new.length !== 4) {
+    passwordErrors.new = ["비밀번호는 4자리 숫자여야 합니다."];
   } else {
     passwordErrors.new = [];
   }
-}, {deep: true});
+}, { deep: true });
 </script>
