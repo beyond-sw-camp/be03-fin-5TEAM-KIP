@@ -1,5 +1,4 @@
 import {useBookMarks} from "~/stores/BookMarks.js";
-import * as console from "console";
 
 const BASE_URL = import.meta.env.VITE_BASE_URL;
 const user = useUser();

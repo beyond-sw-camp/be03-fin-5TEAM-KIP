@@ -26,7 +26,7 @@ onMounted(async () => {
 async function handleSubmit(data) {
   user.login(data.empolymentId, data.password, FCMToken.value)
   await wait(1200); // 1.2초 대기
-  await useRouter().push('/publicDoc');
+  await useRouter().push('/publicOpenDoc');
 }
 
 // DB에 존재하는 ID 인지 검사.
