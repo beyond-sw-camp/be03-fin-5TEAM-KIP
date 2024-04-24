@@ -8,6 +8,7 @@ export const useGroup = defineStore("group", {
             HierarchyInfo: [],
             GroupUsersInfo: {},
             TopNaviGroupList: [],
+            selectedGroupInfo: {},
         };
     },
     getters: {
@@ -23,6 +24,9 @@ export const useGroup = defineStore("group", {
         },
         getHierarchyInfo(state) {
             return state.HierarchyInfo;
+        },
+        getSelectedGroupInfo(state){
+            return state.selectedGroupInfo;
         }
     },
     actions: {
@@ -47,6 +51,11 @@ export const useGroup = defineStore("group", {
             } catch (e) {
                 console.log(e, "신규 그룹 생성 실패")
             }
+        },
+
+        async setSelectedGroupInfo(groupId){
+            this.selectedGroupInfo = this.myGroupsInfo
+                .filter(group => String(group.groupId) === String(groupId))
         },
 
         async updateGroupInfo(upadeteGroupReq) {
