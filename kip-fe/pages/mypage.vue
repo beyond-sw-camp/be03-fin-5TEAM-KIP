@@ -186,12 +186,13 @@ const validateCurrentPassword = async () => {
     passwordErrors.current.push("Current password is required.");
   } else {
     const isValid = await userStore.validateCurrentPassword(password.current);
-    isCurrentPasswordValid.value = isValid;
-    passwordMatch.value = isValid;
-    passwordStatusMessage.value = isValid
-        ? 'Current password is correct. You can now enter a new password.'
-        : 'Current password does not match. Please try again.';
-    if (!isValid) {
+    if (isValid) {
+      isCurrentPasswordValid.value = true; // 올바른 비밀번호일 때 상태 업데이트
+      passwordStatusMessage.value = 'Current password is correct. You can now enter a new password.';
+      passwordErrors.current = [];
+    } else {
+      isCurrentPasswordValid.value = false; // 잘못된 비밀번호일 때 상태 업데이트
+      passwordStatusMessage.value = 'Current password does not match. Please try again.';
       passwordErrors.current.push("Current password is incorrect.");
     }
   }
