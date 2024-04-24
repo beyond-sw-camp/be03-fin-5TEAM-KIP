@@ -121,7 +121,7 @@ await documentList.setFirstDocumentDetails();
           :to="`/group/${item.groupId}`"
           :prepend-icon="item.groupType === 'DEPARTMENT'
           ? 'mdi-file-account-outline' : 'mdi-alpha-b-box-outline'"
-          :title="item.groupName"
+          :title="`${item.groupName} ${item.groupType === 'DEPARTMENT' ? '&nbsp 🏢' : '&nbsp 🚀'}`"
           :value="item.groupName"
           :color="color.kipMainColor"
           rounded="xl"

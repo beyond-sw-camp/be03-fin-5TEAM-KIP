@@ -255,6 +255,23 @@ const makePublicDocument = async (title, documentId) => {
   }
 }
 
+// 문서이동
+const handlerTargetButtonForMove = ref(false)
+const moveDocumentReq = ref({
+  startDocId: "",
+  endDocId: "",
+})
+const realShowTargetButton = (startDoctId) => {
+  handlerTargetButtonForMove.value = true
+  moveDocumentReq.value.startDocId = startDoctId
+}
+const RealMoveDocumnet = async (targetDocId) => {
+  moveDocumentReq.value.endDocId = targetDocId
+  await document.moveDocumentToTargetDoc(moveDocumentReq.value);
+  await document.setDocumentList(clickedGroupId.value)
+  handlerTargetButtonForMove.value = false
+}
+
 // 문서 타입 변경
 const ChangeDocumentType = async (documentId) => {
   await document.ChangeDocumentType(documentId)
@@ -776,6 +793,7 @@ const deleteDocument = async (title, documentId) => {
                     <v-hover v-slot="{ isHovering, props }">
 
                       <v-btn
+                          v-if="!handlerTargetButtonForMove"
                           text="타입변경"
                           @click="ChangeDocumentType(doc.documentId)"
                           v-bind="props"
@@ -789,6 +807,7 @@ const deleteDocument = async (title, documentId) => {
                           rounded="xl"
                       />
                       <v-btn
+                          v-if="!handlerTargetButtonForMove"
                           text="전체공개"
                           @click="makePublicDocument(doc.title, doc.documentId)"
                           v-bind="props"
@@ -802,6 +821,7 @@ const deleteDocument = async (title, documentId) => {
                           rounded="xl"
                       />
                       <v-btn
+                          v-if="!handlerTargetButtonForMove"
                           text="영구삭제"
                           @click="deleteDocument(doc.title, doc.documentId)"
                           v-bind="props"
@@ -814,10 +834,34 @@ const deleteDocument = async (title, documentId) => {
                           variant="outlined"
                           rounded="xl"
                       />
+                      <v-btn
+                          v-if="!handlerTargetButtonForMove"
+                          text="문서이동"
+                          @click="realShowTargetButton(doc.documentId)"
+                          v-bind="props"
+                          :class="{
+                            'on-hover': isHovering,
+                            'move-btns': isHovering
+                          }"
+                          class="px-3 mr-2 mt-1"
+                          color="rgba(255, 255, 255, 0)"
+                          variant="outlined"
+                          rounded="xl"
+                      />
 
                     </v-hover>
 
                     <!--          ➡️ 권한 요청 버튼 -->
+                    <v-btn
+                        v-if="handlerTargetButtonForMove
+                        && doc.documentId !== moveDocumentReq.startDocId"
+                        text="이동할곳"
+                        variant="elevated"
+                        color="red-lighten-1"
+                        class="px-4 mr-4 mt-1"
+                        rounded="xl"
+                        @click="RealMoveDocumnet(doc.documentId)"
+                    />
                     <v-btn
                         text="권한요청"
                         @click=""
@@ -846,8 +890,12 @@ const deleteDocument = async (title, documentId) => {
   color: #ff0000 !important;
 }
 
+.move-btns {
+  color: #0066ff !important;
+}
+
 .public-btns {
-  color: #e16e6e !important;
+  color: #ff7500 !important;
 }
 
 .type-btns {
