@@ -304,6 +304,7 @@
 </div>
 </details>
 
+---
 
 <details>
 <summary><b>⭐ UI / UX 단위 테스트결과서</b></summary>
