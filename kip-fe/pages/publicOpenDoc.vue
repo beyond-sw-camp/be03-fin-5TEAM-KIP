@@ -3,16 +3,19 @@
 import {ref} from "vue";
 import {toastViewerInstance} from "~/useToastViewer";
 import postForm from "~/components/PostForm.vue";
+import {VTreeview} from 'vuetify/labs/VTreeview'
 
-const group = useGroup();
+
 // 상단 네비 제목 설정
+const group = useGroup();
 group.TopNaviGroupList = ["Knowledge is Power", "전체공개문서", "해시태그로 검색해 주세요.🏷️"];
 
 // 피니아.
 const createDocument = useCreateDocument();
+const documentList = useDocumentList();
+const color = useColor();
 
 
-const hover = ref(null);
 const loading = ref(false);
 const titleLoding = ref(false)
 const snackbar = ref(false);
@@ -37,9 +40,7 @@ const hashTagUpdateReq = () => {
   hashTagUpdateModal.value = false;
 }
 
-const color = useColor();
-const documentList = useDocumentList();
-
+// 초기 문서 세팅
 await documentList.$reset();
 await documentList.setPublicDocumentList();
 await documentList.setFirstPublicDocumentDetails();
@@ -93,9 +94,6 @@ const realUpdateDocumentTitle = async (event) => {
   titleLoding.value = false
 }
 
-
-
-
 // 문서 선택 시 상세 정보를 가져오는 함수
 const selectDocument = async (documentId) => {
   // 문서의 상세 정보를 가져옴
@@ -106,6 +104,7 @@ const selectDocument = async (documentId) => {
   );
 };
 
+// 에디터 관련 코드.
 const openCreateNewDocument = () => {
   upLinkId.value = null;
   dialog.value = true;
@@ -118,6 +117,36 @@ const handleData = async (form) => {
   await documentList.setPublicDocumentList();
   dialog.value = false;
 }
+
+// 전체공개문서 기존그룹으로 이동
+const handlerMoveDocToGroup = ref(false)
+const selectedTargetGroupName = ref("한화시스템")
+const selectedTargetDocumentTitle = ref("")
+const moveDocToGroupReq = ref({
+  targetDocumentId: "",
+  targetGroupId: "1"
+})
+const realShowGroupModalForSelect = async (documenetTitle, documentId ) => {
+  await group.setHierarchyInfo();
+  selectedTargetGroupName.value = "한화시스템"
+  handlerMoveDocToGroup.value = true
+  moveDocToGroupReq.value.targetDocumentId = documentId
+  selectedTargetDocumentTitle.value = documenetTitle
+}
+const SetTargetGroupIdAndName = (selectedGroupInfo) => {
+  moveDocToGroupReq.value.targetGroupId = selectedGroupInfo.id
+  selectedTargetGroupName.value = selectedGroupInfo.title
+}
+const RealMoveDocToTargetGroup = async () => {
+  if (confirm(`${selectedTargetDocumentTitle.value} 문서를 이동하시겠습니까?`)){
+    handlerMoveDocToGroup.value = false
+    await documentList.moveDocumentToTargetGroup(moveDocToGroupReq.value)
+    await documentList.setPublicDocumentList();
+    alert("문서가 정상적으로 이동하였습니다.")
+  }
+
+}
+
 </script>
 
 <template>
@@ -165,6 +194,8 @@ const handleData = async (form) => {
                     variant="plain"
                     @click="OpenDeleteDocumentModal(doc.title, doc.documentId)"
                 />
+
+
                 <!--                 ⏩⏩ 그룹으로 이동 버튼  -->
                 <v-btn
                     icon="mdi-location-exit"
@@ -175,14 +206,53 @@ const handleData = async (form) => {
                           }"
                     color="rgba(255, 255, 255, 0)"
                     variant="plain"
-                    @click=""
+                    @click="realShowGroupModalForSelect(doc.title, doc.documentId)"
                 />
               </v-hover>
             </v-tab>
           </v-tabs>
         </v-list>
+        <!--            ⏩⏩  그룹 이동을 위한 모달 -->
+        <v-dialog
+            class="d-flex"
+            width="45vw"
+            opacity="10%"
+            v-model="handlerMoveDocToGroup">
+          <v-sheet
+              rounded="xl"
+              class="pa-10">
+            <div class="d-flex justify-space-between">
+            <h2 class="mb-4 text-center">{{`${selectedTargetDocumentTitle} 문서 👉 ${selectedTargetGroupName} 그룹으로`}}</h2>
+            <v-btn
+                color="info"
+                :loading="titleLoding"
+                text="이동하기 🚀"
+                type="submit"
+                @click="RealMoveDocToTargetGroup"
+            />
+            </div>
+            <v-treeview
+                :items="group.getHierarchyInfo"
+                color="blue">
+              <template v-slot:prepend="{ item }">
+                <v-icon
+                    v-if="item.children"
+                    :icon="`mdi-${item.children.length === 0
+                                ? 'account-group-outline' : 'folder-network'}`"
+                    @click="SetTargetGroupIdAndName(item)"
+                />
+              </template>
+              <template v-slot:title="{ item }">
+                <div @click="SetTargetGroupIdAndName(item)">
+                  {{ item.title }} {{ item.groupType === "DEPARTMENT" ? '&nbsp 🏢' : '&nbsp 🚀' }}
+                </div>
+              </template>
+            </v-treeview>
+          </v-sheet>
+        </v-dialog>
 
-        <!--        삭제 확인 모달 --->
+
+        <!--        ❌삭제 확인 모달 --->
         <v-dialog
             v-model="deleteDocModalOpen"
             max-width="500">
