@@ -40,9 +40,9 @@ public class AttachedFileController {
 
     // 파일 조회
     @GetMapping("{documentId}/fileList")
-    public ResponseEntity<?> fileList(@PathVariable Long documentId){
+    public ResponseEntity<?> fileList(@PathVariable Long documentId) {
         try {
-            List<AttachedFileResDto> files = attachedFileService.fileList( documentId);
+            List<AttachedFileResDto> files = attachedFileService.fileList(documentId);
             return ResponseEntity.ok(files);
 
         } catch (IOException e) {
@@ -54,7 +54,7 @@ public class AttachedFileController {
 
     // 파일 다운로드
     @GetMapping("/download/{originName}")
-    public ResponseEntity<byte[]> downloadFile(@PathVariable String originName) throws IOException{
+    public ResponseEntity<byte[]> downloadFile(@PathVariable String originName) throws IOException {
         try {
             return attachedFileService.downloadFile(originName);
         } catch (IOException e) {
@@ -65,7 +65,7 @@ public class AttachedFileController {
 
     // 파일 삭제
     @DeleteMapping("/file/{fileId}")
-    public String deleteFile(@PathVariable Long fileId){
+    public String deleteFile(@PathVariable Long fileId) {
         attachedFileService.deleteFile(fileId);
 
         return fileId + " 파일이 삭제 되었습니다.";

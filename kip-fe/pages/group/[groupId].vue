@@ -20,7 +20,12 @@ const files = ref([]);
 const fileHover = ref(null);
 const fileDialog = ref(false);
 
+// 북마크 관련
 const selection = ref([]);
+const bookmarks = useBookMarks();
+
+await bookmarks.$reset();
+await bookmarks.setMyBookMarks();
 
 await documentList.$reset();
 await documentList.setDocumentList(groupId);
@@ -88,6 +93,24 @@ const AttachedFileDelete = async (fileId) => {
   await attachedFile.setAttachedFileList(documentList.selectedDocumentDetails.documentId);
 };
 
+// 선택한 문서 ID가 북마크 목록에 있는지 확인
+const isBookmarked = computed(() =>
+    bookmarks.myBookMarks.some(book => book.documentId === documentList.selectedDocumentDetails.documentId)
+);
+
+// 북마크 버튼 클릭 핸들러
+const handleBookmarkClick = async () => {
+  // 만약 현재 문서가 북마크되어 있다면, 북마크를 제거하는 액션을 실행합니다.
+  if (isBookmarked.value) {
+    await bookmarks.removeMyBookmark(documentList.selectedDocumentDetails.documentId);
+  } else {
+    await bookmarks.removeMyBookmark(documentList.selectedDocumentDetails.documentId);
+  }
+
+  // 북마크 상태를 갱신합니다.
+  await bookmarks.setMyBookMarks();
+};
+
 </script>
 
 <template>
@@ -116,7 +139,7 @@ const AttachedFileDelete = async (fileId) => {
                 @mouseenter="hover = doc.documentId"
                 @mouseleave="hover = null"
             >
-              {{ doc.title }} {{doc.documentId}}
+              {{ doc.title }} {{ doc.documentId }}
               <template v-if="hover === doc.documentId" v-slot:append>
                 <v-btn
                     :icon="`mdi-plus`"
@@ -154,11 +177,11 @@ const AttachedFileDelete = async (fileId) => {
               </v-card-title>
 
               <v-item-group v-model="selection">
-                <v-item v-slot="{ isSelected, toggle }">
+                <v-item>
                   <v-btn
                       density="comfortable"
-                      @click="toggle"
-                      :icon="isSelected ? 'mdi-heart' : 'mdi-heart-outline'"
+                      @click="handleBookmarkClick"
+                      :icon="isBookmarked ? 'mdi-star' : 'mdi-star-outline'"
                   ></v-btn>
                 </v-item>
               </v-item-group>
@@ -239,59 +262,62 @@ const AttachedFileDelete = async (fileId) => {
 
             <!-- 첨부파일 목록 -->
             <v-card-text>
-              <v-btn text color="primary"
-                 v-for="file in attachedFile.getAttachedFileList"
-                 :key="file.fileName"
-                 @click="handleFileClick(file.fileUrl)"
-                 @mouseenter="fileHover = file.fileName"
-                 @mouseleave="fileHover = null">
+              <div v-if="attachedFile.getAttachedFileList.length > 0">
+                <v-btn text color="primary"
+                       v-for="file in attachedFile.getAttachedFileList"
+                       :key="file.fileName"
+                       @click="handleFileClick(file.fileUrl)"
+                       @mouseenter="fileHover = file.fileName"
+                       @mouseleave="fileHover = null">
 
-                {{ file.fileName }}
+                  {{ file.fileName }}
 
-                <v-dialog max-width="500">
-                  <template v-slot:activator="{ props: activatorProps }" v-if="fileHover === file.fileName">
-                    <v-btn
-                        v-bind="activatorProps"
-                        :icon="`mdi-minus`"
-                        variant="text"
-                        density="compact"
-                        rounded="lg"
-                    />
-                  </template>
+                  <v-dialog max-width="500">
+                    <template v-slot:activator="{ props: activatorProps }" v-if="fileHover === file.fileName">
+                      <v-btn
+                          v-bind="activatorProps"
+                          :icon="`mdi-minus`"
+                          variant="text"
+                          density="compact"
+                          rounded="lg"
+                      />
+                    </template>
 
-                  <template v-slot:default="{ isActive }">
-                    <v-card title="첨부파일 삭제">
-                      <v-card-text>
-                        첨부파일을 삭제하시겠습니까?
-                      </v-card-text>
+                    <template v-slot:default="{ isActive }">
+                      <v-card title="첨부파일 삭제">
+                        <v-card-text>
+                          첨부파일을 삭제하시겠습니까?
+                        </v-card-text>
 
-                      <v-card-actions>
-                        <v-spacer></v-spacer>
+                        <v-card-actions>
+                          <v-spacer></v-spacer>
 
-                        <v-snackbar
-                            :timeout="2000"
-                        >
-                          <template v-slot:activator="{ props }">
-                            <v-btn
-                                v-bind="props"
-                                @click="AttachedFileDelete(file.id)"
+                          <v-snackbar
+                              :timeout="2000"
+                          >
+                            <template v-slot:activator="{ props }">
+                              <v-btn
+                                  v-bind="props"
+                                  @click="AttachedFileDelete(file.id)"
 
-                            >Yes
-                            </v-btn>
-                          </template>
-                          첨부파일이 삭제되었습니다.
-                        </v-snackbar>
+                              >Yes
+                              </v-btn>
+                            </template>
+                            첨부파일이 삭제되었습니다.
+                          </v-snackbar>
 
-                        <v-btn
-                            text="No"
-                            @click="isActive.value = false"
-                        ></v-btn>
+                          <v-btn
+                              text="No"
+                              @click="isActive.value = false"
+                          ></v-btn>
+                        </v-card-actions>
+                      </v-card>
+                    </template>
 
-                      </v-card-actions>
-                    </v-card>
-                  </template>
-                </v-dialog>
-              </v-btn>
+                  </v-dialog>
+                </v-btn>
+              </div>
+              <div v-else>첨부파일이 없습니다.</div>
             </v-card-text>
           </v-card>
         </div>
@@ -303,7 +329,7 @@ const AttachedFileDelete = async (fileId) => {
               <v-chip
                   v-for="(hashTag, index) in documentList.selectedDocumentDetails.hashTags"
                   :key="index"
-                  prepend-icon="mdi mdi-pound"
+                  prepend-icon="mdi-pound"
                   v-if="documentList.selectedDocumentDetails && documentList.selectedDocumentDetails.hashTags.length > 0">
                 {{ hashTag.tagName }}
               </v-chip>

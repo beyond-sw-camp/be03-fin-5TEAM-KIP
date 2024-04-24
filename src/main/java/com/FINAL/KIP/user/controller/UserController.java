@@ -8,7 +8,6 @@ import com.FINAL.KIP.user.dto.req.LoginReqDto;
 import com.FINAL.KIP.user.dto.req.PasswordChangeRequest;
 import com.FINAL.KIP.user.dto.req.UserInfoUpdateReqDto;
 import com.FINAL.KIP.user.dto.res.BookResDto;
-import com.FINAL.KIP.user.dto.res.ProfileImageResDto;
 import com.FINAL.KIP.user.dto.res.UserResDto;
 import com.FINAL.KIP.user.service.UserService;
 import jakarta.persistence.EntityNotFoundException;
@@ -126,68 +125,6 @@ public class UserController {
         return new ResponseEntity<>(bookResDto, HttpStatus.OK);
     }
 
-    // 프로필 이미지 업로드
-    @PostMapping("/profile/upload")
-    public ResponseEntity<?> uploadProfileImage(@RequestParam("file") MultipartFile file) {
-        if (file.isEmpty()) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(Map.of("error", "프로필 이미지 업로드에 오류가 발생하였습니다: 이미지가 존재하지 않습니다."));
-        }
-        try {
-            ProfileImageResDto profileImageResDto = userService.uploadProfileImage(file);
-            return ResponseEntity.ok(Map.of("message", "프로필 이미지가 성공적으로 업로드 되었습니다.", "profileImageUrl", profileImageResDto.getProfileImageUrl()));
-        } catch (IOException e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(Map.of("error", "이미지 업로드에 실패했습니다: " + e.getMessage()));
-        }
-    }
-
-    // 프로필 이미지 조회
-    @GetMapping("/profile/view")
-    public ResponseEntity<?> viewProfileImage() {
-        try {
-            String profileImageUrl = userService.getProfileImageUrl();
-            return ResponseEntity.ok(Map.of("message", "프로필 이미지 URL 조회 성공", "profileImageUrl", profileImageUrl));
-        } catch (EntityNotFoundException e) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(Map.of("error", e.getMessage()));
-        }
-    }
-
-    // 프로필 이미지 삭제
-    @DeleteMapping("/profile/delete")
-    public ResponseEntity<?> deleteProfileImage() {
-        String message = userService.deleteProfileImage();
-        if (message.equals("프로필 이미지가 성공적으로 삭제되었습니다.")) {
-            return ResponseEntity.ok(Map.of("message", message));
-        } else {
-            return ResponseEntity.badRequest().body(Map.of("message", message));
-        }
-    }
-
-    // 프로필 이미지 업데이트
-    @PatchMapping("/profile/updateImage")
-    public ResponseEntity<?> updateProfileImage(@RequestParam("file") MultipartFile file) {
-        if (file.isEmpty()) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(Map.of("error", "프로필 이미지 변경에 오류가 발생하였습니다: 이미지가 존재하지 않습니다."));
-        }
-        try {
-            ProfileImageResDto profileImageResDto = userService.updateProfileImage(file);
-            return ResponseEntity.ok(Map.of("message", "프로필 이미지가 성공적으로 업데이트 되었습니다.", "profileImageUrl", profileImageResDto.getProfileImageUrl()));
-        } catch (EntityNotFoundException e) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(Map.of("error", e.getMessage()));
-        } catch (IOException e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(Map.of("error", "프로필 이미지 업데이트에 실패했습니다: " + e.getMessage()));
-        }
-    }
-
-    @PostMapping("/validate-current-password")
-    public ResponseEntity<?> validateCurrentPassword(@RequestBody Map<String, String> payload) {
-        try {
-            boolean isValid = userService.validateCurrentPassword(payload.get("password"));
-            return ResponseEntity.ok(Map.of("isValid", isValid));
-        } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(Map.of("error", "Validation failed"));
-        }
-    }
-
     // 비밀번호 변경
     @PatchMapping("/change-password")
     public ResponseEntity<?> changePassword(@RequestBody PasswordChangeRequest request) {
@@ -207,4 +144,85 @@ public class UserController {
                     .body(Map.of("error", "Failed to change password due to an unexpected error."));
         }
     }
+
+    // 프로필이미지 업로드
+    @PostMapping("/profile/upload")
+    public ResponseEntity<?> uploadImage(@RequestParam("file") MultipartFile file) {
+        try {
+            String originName = file.getOriginalFilename();
+            String fileUrl = userService.uploadImage(file);
+            return ResponseEntity.ok(Map.of(
+                    "uploaded", true,
+                    "originName", originName,
+                    "url", fileUrl));
+        } catch (IOException e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("파일 업로드 중 오류가 발생했습니다: " + e.getMessage());
+        }
+    }
+
+    // 프로필이미지 조회
+    @GetMapping("/profile/view")
+    public ResponseEntity<?> viewProfileImage() {
+        try {
+            String profileImageUrl = userService.getProfileImageUrl();
+            return ResponseEntity.ok(Map.of("message", "프로필 이미지 URL 조회 성공", "profileImageUrl", profileImageUrl));
+        } catch (EntityNotFoundException e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(Map.of("error", e.getMessage()));
+        }
+    }
+
+
+//    // 프로필 이미지 업로드
+//    @PostMapping("/profile/upload")
+//    public ResponseEntity<?> uploadProfileImage(@RequestParam("file") MultipartFile file) {
+//        if (file.isEmpty()) {
+//            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(Map.of("error", "프로필 이미지 업로드에 오류가 발생하였습니다: 이미지가 존재하지 않습니다."));
+//        }
+//        try {
+//            ProfileImageResDto profileImageResDto = userService.uploadProfileImage(file);
+//            return ResponseEntity.ok(Map.of("message", "프로필 이미지가 성공적으로 업로드 되었습니다.", "profileImageUrl", profileImageResDto.getProfileImageUrl()));
+//        } catch (IOException e) {
+//            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(Map.of("error", "이미지 업로드에 실패했습니다: " + e.getMessage()));
+//        }
+//    }
+//
+//    // 프로필 이미지 조회
+//    @GetMapping("/profile/view")
+//    public ResponseEntity<?> viewProfileImage() {
+//        try {
+//            String profileImageUrl = userService.getProfileImageUrl();
+//            return ResponseEntity.ok(Map.of("message", "프로필 이미지 URL 조회 성공", "profileImageUrl", profileImageUrl));
+//        } catch (EntityNotFoundException e) {
+//            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(Map.of("error", e.getMessage()));
+//        }
+//    }
+//
+//    // 프로필 이미지 삭제
+//    @DeleteMapping("/profile/delete")
+//    public ResponseEntity<?> deleteProfileImage() {
+//        String message = userService.deleteProfileImage();
+//        if (message.equals("프로필 이미지가 성공적으로 삭제되었습니다.")) {
+//            return ResponseEntity.ok(Map.of("message", message));
+//        } else {
+//            return ResponseEntity.badRequest().body(Map.of("message", message));
+//        }
+//    }
+//
+//    // 프로필 이미지 업데이트
+//    @PatchMapping("/profile/updateImage")
+//    public ResponseEntity<?> updateProfileImage(@RequestParam("file") MultipartFile file) {
+//        if (file.isEmpty()) {
+//            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(Map.of("error", "프로필 이미지 변경에 오류가 발생하였습니다: 이미지가 존재하지 않습니다."));
+//        }
+//        try {
+//            ProfileImageResDto profileImageResDto = userService.updateProfileImage(file);
+//            return ResponseEntity.ok(Map.of("message", "프로필 이미지가 성공적으로 업데이트 되었습니다.", "profileImageUrl", profileImageResDto.getProfileImageUrl()));
+//        } catch (EntityNotFoundException e) {
+//            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(Map.of("error", e.getMessage()));
+//        } catch (IOException e) {
+//            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(Map.of("error", "프로필 이미지 업데이트에 실패했습니다: " + e.getMessage()));
+//        }
+//    }
+
+
 }
