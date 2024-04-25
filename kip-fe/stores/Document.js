@@ -57,8 +57,9 @@ export const useDocumentList = defineStore("documentList", {
             }
         },
 
-        // async filterGroupDocByHashTag(hashTagId)
-
+        async filterGroupDocByHashTag(hashTagId) {
+            this.documentList = this.documentList.filter(doc => doc.hashTagIds.includes(hashTagId))
+        },
 
         async setAdminDocumentList(groupId) {
             try {

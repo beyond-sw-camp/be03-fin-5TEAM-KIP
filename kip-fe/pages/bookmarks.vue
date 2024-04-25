@@ -156,13 +156,13 @@ const realUpdateDocumentTitle = async (event) => {
       <v-col cols="3">
         <v-list class="pa-4">
           <v-list-item>
-              <v-list-item-title class="font-weight-bold headline text-center">
+              <v-list-item-title class="font-weight-bold headline text-center mt-2 mb-6" >
                 북마크 ⭐
               </v-list-item-title>
           </v-list-item>
           <v-divider></v-divider>
           <!-- 그룹 문서 title 출력 -->
-          <v-tabs color="primary" direction="vertical">
+          <v-tabs color="primary" direction="vertical" class="mt-4">
             <v-tab
                 v-for="book in bookmarks.getMyBookMarksDetails"
                 :key="book.title"
@@ -198,7 +198,7 @@ const realUpdateDocumentTitle = async (event) => {
             <v-row>
               <v-col cols="8" offset="2">
                 <div class="d-flex justify-center">
-                  <v-card-title class="headline text-center">
+                  <v-card-title class="headline text-center mb-4" >
                     {{ documentList.selectedDocumentDetails.title }}
                   </v-card-title>
 
@@ -274,6 +274,7 @@ const realUpdateDocumentTitle = async (event) => {
       </v-col>
 
       <!-- 👉👉👉👉👉👉👉👉👉 오른쪽 영역 -->
+      <v-divider class="divider-container" vertical></v-divider>
       <v-col cols="2">
         <!-- 첨부 파일 섹션 -->
         <div class="attached-files">

@@ -160,14 +160,15 @@ const realUpdateDocumentTitle = async (event) => {
       <v-col cols="3">
         <v-list class="pa-4">
           <v-list-item>
-            <v-list-item-title class="font-weight-bold headline text-center">
+            <v-list-item-title class="font-weight-bold headline text-center mt-2 mb-6">
               {{ groupName.getSelectedGroupInfo[0].groupName }}
               {{ `${groupName.getSelectedGroupInfo[0].groupType === 'DEPARTMENT' ? '🏢' : '🚀'}` }}
             </v-list-item-title>
           </v-list-item>
           <v-divider></v-divider>
           <!-- 그룹 문서 title 출력 -->
-          <v-tabs color="primary" direction="vertical">
+
+          <v-tabs color="primary" direction="vertical" class="mt-4">
             <v-tab
                 v-for="doc in documentList.getDocumentList"
                 :key="doc.documentId"
@@ -175,7 +176,16 @@ const realUpdateDocumentTitle = async (event) => {
                 @mouseenter="hover = doc.documentId"
                 @mouseleave="hover = null"
             >
-              {{ doc.title }}
+
+              <h3 v-if="doc.docType === 'SECTION'">
+              {{ doc.docType === 'SECTION' ? '' : '&nbsp;&nbsp;&nbsp;' }}
+              {{ doc.title }} </h3>
+
+              <div v-else>
+                  {{ doc.docType === 'SECTION' ? '' : '&nbsp;&nbsp;&nbsp;' }}
+                  {{ doc.title }}
+              </div>
+
               <template v-if="hover === doc.documentId" v-slot:append>
                 <v-btn
                     :icon="`mdi-plus`"
@@ -206,12 +216,12 @@ const realUpdateDocumentTitle = async (event) => {
       <!-- ☝️☝️☝️☝️☝️☝️☝️ 가운데 문서제목 부분 -->
       <v-col cols="7">
 
-        <v-list class="pa-4 mb-4">
+        <v-list class="pa-4 mb-4" >
           <v-card flat>
             <v-row>
               <v-col cols="8" offset="2">
                 <div class="d-flex justify-center">
-                  <v-card-title class="headline text-center">
+                  <v-card-title class="headline text-center mb-4">
                     {{ documentList.selectedDocumentDetails.title }}
                   </v-card-title>
 
@@ -285,6 +295,8 @@ const realUpdateDocumentTitle = async (event) => {
       </v-col>
 
       <!-- 👉👉👉👉👉👉👉👉👉 오른쪽 영역 -->
+      <v-divider class="divider-container" vertical></v-divider>
+
       <v-col cols="2">
         <!-- 첨부 파일 섹션 -->
         <div class="attached-files">
@@ -404,13 +416,13 @@ const realUpdateDocumentTitle = async (event) => {
                       v-if="documentList.selectedDocumentDetails
                       && documentList.selectedDocumentDetails.hashTags.length > 0">
           <v-chip prepend-icon="mdi-refresh"
-                  @click=documentList.setPublicDocumentList> 초기화
+                  @click=documentList.setDocumentList(groupName.getSelectedGroupInfo[0].groupId)> 초기화
           </v-chip>
           <v-chip
               v-for="(hashTag, index) in documentList.selectedDocumentDetails.hashTags"
               :key="index"
               prepend-icon="mdi-pound"
-              @click="documentList.filterPublicDocByHashTag(hashTag['hashTagId'])">
+              @click="documentList.filterGroupDocByHashTag(hashTag['hashTagId'])">
             {{ hashTag.tagName }} ({{ hashTag['docsCounts'] }})
           </v-chip>
         </v-chip-group>
