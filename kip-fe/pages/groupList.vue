@@ -42,7 +42,7 @@ const passwordConfirm = ref('');
 const setUsersInfoInGroup = async (groupId) => {
   clickedGroupId.value = groupId
   await groupUser.setUsersInfoInGroup(groupId);
-  await document.getAdminDocumentList(groupId);
+  await document.setAdminDocumentList(groupId);
 }
 const setAllUserInfoInKip = async () => {
   // 모달창 열고
@@ -248,7 +248,7 @@ const DeleteGruopFromDataBase = async () => {
 const makePublicDocument = async (title, documentId) => {
   if (confirm(`${title} 문서가 전체공개 그룹으로 이동됩니다`)) {
     await document.makePublicDocumentFromGroup(documentId)
-    await document.setDocumentList(clickedGroupId.value)
+    await document.setAdminDocumentList(clickedGroupId.value)
     alert(`${title} 문서가 전체공개로 이동하였습니다.`)
   }
 }
@@ -266,14 +266,14 @@ const realShowTargetButton = (startDoctId) => {
 const RealMoveDocumnet = async (targetDocId) => {
   moveDocumentReq.value.endDocId = targetDocId
   await document.moveDocumentToTargetDoc(moveDocumentReq.value);
-  await document.setDocumentList(clickedGroupId.value)
+  await document.setAdminDocumentList(clickedGroupId.value)
   handlerTargetButtonForMove.value = false
 }
 
 // 문서 타입 변경
 const ChangeDocumentType = async (documentId) => {
   await document.ChangeDocumentType(documentId)
-  await document.setDocumentList(clickedGroupId.value)
+  await document.setAdminDocumentList(clickedGroupId.value)
 }
 
 // 문서 삭제
@@ -283,7 +283,7 @@ const deleteDocument = async (title, documentId) => {
     alert("최상단 문서는 삭제할 수 없습니다.")
   else if (confirm(`${title} 문서가 영구 삭제됩니다`)) {
     await document.deleteDocument(documentId)
-    await document.setDocumentList(clickedGroupId.value)
+    await document.setAdminDocumentList(clickedGroupId.value)
     alert(`${title} 문서가 삭제 되었습니다.`)
   }
 }

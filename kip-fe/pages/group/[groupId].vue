@@ -176,13 +176,9 @@ const realUpdateDocumentTitle = async (event) => {
                 @mouseleave="hover = null"
             >
 
-              <h3 v-if="doc.docType === 'SECTION'">
-              {{ doc.docType === 'SECTION' ? '' : '&nbsp;&nbsp;&nbsp;' }}
-              {{ doc.title }} </h3>
-
+              <h3 v-if="doc.docType === 'SECTION'">🔹️ {{ doc.title }} </h3>
               <div v-else>
-                  {{ doc.docType === 'SECTION' ? '' : '&nbsp;&nbsp;&nbsp;' }}
-                  {{ doc.title }}
+                  {{ '&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;' }} {{ doc.title }}
               </div>
 
               <template v-if="hover === doc.documentId" v-slot:append>

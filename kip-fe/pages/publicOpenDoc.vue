@@ -49,13 +49,12 @@ const selectedDeleteDocTitle = ref();
 const selectedDeleteDocId = ref();
 const OpenDeleteDocumentModal = async (documenetTitle, documentId) => {
   loading.value = false;
-  if (documentList.getPublicDocumentList.length > 1) {
+  if (documentList.getPublicDocumentList.length > 1 && documentId !== 2) {
     deleteDocModalOpen.value = true;
     selectedDeleteDocTitle.value = documenetTitle;
     selectedDeleteDocId.value = documentId;
-  } else {
-    alert("전체공개문서를 모두 삭제할 수 없습니다.")
-  }
+  } else if (documentId === 2) alert("공지사항 문서는 삭제할 수 없습니다.")
+  else alert("전체공개문서는 1개이상 있어야 합니다.");
 }
 const realDeleteSelectedDoc = async () => {
   loading.value = true;
@@ -124,19 +123,22 @@ const moveDocToGroupReq = ref({
   targetDocumentId: "",
   targetGroupId: "1"
 })
-const realShowGroupModalForSelect = async (documenetTitle, documentId ) => {
-  await group.setHierarchyInfo();
-  selectedTargetGroupName.value = "한화시스템"
-  handlerMoveDocToGroup.value = true
-  moveDocToGroupReq.value.targetDocumentId = documentId
-  selectedTargetDocumentTitle.value = documenetTitle
+const realShowGroupModalForSelect = async (documenetTitle, documentId) => {
+  if (documentList.getPublicDocumentList.length > 1 && documentId !== 2) {
+    await group.setHierarchyInfo();
+    selectedTargetGroupName.value = "한화시스템"
+    handlerMoveDocToGroup.value = true
+    moveDocToGroupReq.value.targetDocumentId = documentId
+    selectedTargetDocumentTitle.value = documenetTitle
+  } else if (documentId === 2) alert("공지사항 문서는 이동할 수 없습니다.")
+  else alert("전체공개문서는 1개이상 있어야 합니다.");
 }
 const SetTargetGroupIdAndName = (selectedGroupInfo) => {
   moveDocToGroupReq.value.targetGroupId = selectedGroupInfo.id
   selectedTargetGroupName.value = selectedGroupInfo.title
 }
 const RealMoveDocToTargetGroup = async () => {
-  if (confirm(`${selectedTargetDocumentTitle.value} 문서를 이동하시겠습니까?`)){
+  if (confirm(`${selectedTargetDocumentTitle.value} 문서를 이동하시겠습니까?`)) {
     handlerMoveDocToGroup.value = false
     await documentList.moveDocumentToTargetGroup(moveDocToGroupReq.value)
     await documentList.setPublicDocumentList();
@@ -220,14 +222,15 @@ const RealMoveDocToTargetGroup = async () => {
               rounded="xl"
               class="pa-10">
             <div class="d-flex justify-space-between">
-            <h2 class="mb-4 text-center">{{`${selectedTargetDocumentTitle} 문서 👉 ${selectedTargetGroupName} 그룹으로`}}</h2>
-            <v-btn
-                color="info"
-                :loading="titleLoding"
-                text="이동하기 🚀"
-                type="submit"
-                @click="RealMoveDocToTargetGroup"
-            />
+              <h2 class="mb-4 text-center">
+                {{ `${selectedTargetDocumentTitle} 문서 👉 ${selectedTargetGroupName} 그룹으로` }}</h2>
+              <v-btn
+                  color="info"
+                  :loading="titleLoding"
+                  text="이동하기 🚀"
+                  type="submit"
+                  @click="RealMoveDocToTargetGroup"
+              />
             </div>
             <v-treeview
                 :items="group.getHierarchyInfo"
