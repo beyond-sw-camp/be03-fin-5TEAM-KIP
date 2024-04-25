@@ -4,8 +4,8 @@ import com.FINAL.KIP.bookmark.repository.BookRepository;
 import com.FINAL.KIP.common.CommonResponse;
 import com.FINAL.KIP.common.aspect.JustAdmin;
 import com.FINAL.KIP.common.aspect.UserAdmin;
-import com.FINAL.KIP.common.s3.S3Config;
 import com.FINAL.KIP.common.firebase.FCMTokenDao;
+import com.FINAL.KIP.common.s3.S3Config;
 import com.FINAL.KIP.securities.JwtTokenProvider;
 import com.FINAL.KIP.securities.refresh.UserRefreshToken;
 import com.FINAL.KIP.securities.refresh.UserRefreshTokenRepository;
@@ -13,7 +13,6 @@ import com.FINAL.KIP.user.domain.User;
 import com.FINAL.KIP.user.dto.req.CreateUserReqDto;
 import com.FINAL.KIP.user.dto.req.LoginReqDto;
 import com.FINAL.KIP.user.dto.req.UserInfoUpdateReqDto;
-import com.FINAL.KIP.user.dto.res.BookResDto;
 import com.FINAL.KIP.user.dto.res.UserResDto;
 import com.FINAL.KIP.user.repository.UserRepository;
 import com.amazonaws.services.s3.model.ObjectMetadata;
@@ -52,7 +51,7 @@ public class UserService {
 
     @Autowired
     public UserService(UserRepository userRepo, PasswordEncoder passwordEncoder, JwtTokenProvider jwtTokenProvider, UserRefreshTokenRepository userRefreshTokenRepository, BookRepository bookRepository, UserRepository userRepository,
-		FCMTokenDao fcmTokenDao, S3Config s3Config) {
+                       FCMTokenDao fcmTokenDao, S3Config s3Config) {
         this.userRepo = userRepo;
         this.passwordEncoder = passwordEncoder;
         this.jwtTokenProvider = jwtTokenProvider;
@@ -175,24 +174,6 @@ public class UserService {
         userRepo.delete(userInfo);
     }
 
-//    사용자 북마크 목록 조회
-    public List<BookResDto> userBookList(){
-        User userInfo = getUserFromAuthentication();
-        String employeeId = userInfo.getEmployeeId();
-
-        List<Object[]> bookInfoList = bookRepository.findDocumentIdAndTitleByEmployeeId(employeeId);
-        List<String> groupNames = bookRepository.findGroupNameByEmployeeId(employeeId);
-
-        List<BookResDto> bookResDtos = new ArrayList<>();
-        for (int i = 0; i < bookInfoList.size(); i++) { // 조회된 정보 리스트를 반복
-            Object[] bookInfo = bookInfoList.get(i); // 현재 북마크의 문서 ID와 제목
-            // bookInfoList 4개 와 groupNames 3개라면 마지막 bookInfoList groupNames와 짝이 맞지 않기(그룹이름 X) 때문에 "No Group Name"을 저장
-            String groupName = groupNames.size() > i ? groupNames.get(i) : "No Group Name"; // 그룹 이름이 없으면 "No Group Name"으로 설정
-            bookResDtos.add(new BookResDto((Long) bookInfo[0], (String) bookInfo[1], groupName)); // BookResDto 객체를 생성하고 리스트에 추가
-        }
-        return bookResDtos;
-    }
-
 //    ===== 함수 공통화 =====
     @UserAdmin
     public User getUserFromAuthentication() {
@@ -238,8 +219,6 @@ public class UserService {
         return Optional.ofNullable(user.getProfileImageUrl())
                 .orElseThrow(() -> new EntityNotFoundException("프로필 이미지가 설정되지 않았습니다."));
     }
-
-
 
 
 

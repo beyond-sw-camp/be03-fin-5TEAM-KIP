@@ -7,7 +7,7 @@ const color = useColor();
 const route = useRoute();
 const groupId = route.params.groupId;
 const groupName = useGroup();
-groupName.TopNaviGroupList = ["Knowledge is Power","📖북마크"];
+groupName.TopNaviGroupList = ["Knowledge is Power", "📖북마크"];
 
 const documentList = useDocumentList();
 const attachedFile = useAttachedFile();
@@ -323,59 +323,63 @@ const realUpdateDocumentTitle = async (event) => {
 
             <!-- 첨부파일 목록 -->
             <v-card-text>
-              <v-btn text color="primary"
-                     v-for="file in attachedFile.getAttachedFileList"
-                     :key="file.fileName"
-                     @click="handleFileClick(file.fileUrl)"
-                     @mouseenter="fileHover = file.fileName"
-                     @mouseleave="fileHover = null">
-                {{ file.fileName }}
+              <div v-if="attachedFile.getAttachedFileList.length > 0">
+                <v-btn text color="primary"
+                       v-for="file in attachedFile.getAttachedFileList"
+                       :key="file.fileName"
+                       @click="handleFileClick(file.fileUrl)"
+                       @mouseenter="fileHover = file.fileName"
+                       @mouseleave="fileHover = null">
 
-                <v-dialog max-width="500">
-                  <template v-slot:activator="{ props: activatorProps }" v-if="fileHover === file.fileName">
-                    <v-btn
-                        v-bind="activatorProps"
-                        :icon="`mdi-minus`"
-                        variant="text"
-                        density="compact"
-                        rounded="lg"
-                    />
-                  </template>
+                  {{ file.fileName }}
 
-                  <template v-slot:default="{ isActive }">
-                    <v-card title="첨부파일 삭제">
-                      <v-card-text>
-                        첨부파일을 삭제하시겠습니까?
-                      </v-card-text>
+                  <v-dialog max-width="500">
+                    <template v-slot:activator="{ props: activatorProps }" v-if="fileHover === file.fileName">
+                      <v-btn
+                          v-bind="activatorProps"
+                          :icon="`mdi-minus`"
+                          variant="text"
+                          density="compact"
+                          rounded="lg"
+                      />
+                    </template>
 
-                      <v-card-actions>
-                        <v-spacer></v-spacer>
+                    <template v-slot:default="{ isActive }">
+                      <v-card title="첨부파일 삭제">
+                        <v-card-text>
+                          첨부파일을 삭제하시겠습니까?
+                        </v-card-text>
 
-                        <v-snackbar
-                            :timeout="2000"
-                        >
-                          <template v-slot:activator="{ props }">
-                            <v-btn
-                                v-bind="props"
-                                @click="AttachedFileDelete(file.id)"
+                        <v-card-actions>
+                          <v-spacer></v-spacer>
 
-                            >Yes
-                            </v-btn>
-                          </template>
-                          첨부파일이 삭제되었습니다.
-                        </v-snackbar>
+                          <v-snackbar
+                              :timeout="2000"
+                          >
+                            <template v-slot:activator="{ props }">
+                              <v-btn
+                                  v-bind="props"
+                                  @click="AttachedFileDelete(file.id)"
 
-                        <v-btn
-                            text="No"
-                            @click="isActive.value = false"
-                        ></v-btn>
+                              >Yes
+                              </v-btn>
+                            </template>
+                            첨부파일이 삭제되었습니다.
+                          </v-snackbar>
 
-                      </v-card-actions>
-                    </v-card>
-                  </template>
+                          <v-btn
+                              text="No"
+                              @click="isActive.value = false"
+                          ></v-btn>
 
-                </v-dialog>
-              </v-btn>
+                        </v-card-actions>
+                      </v-card>
+                    </template>
+
+                  </v-dialog>
+                </v-btn>
+              </div>
+              <div v-else>첨부파일이 없습니다.</div>
             </v-card-text>
           </v-card>
         </div>
