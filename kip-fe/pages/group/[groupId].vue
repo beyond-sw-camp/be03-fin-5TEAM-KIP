@@ -43,10 +43,9 @@ const handleData = async (form) => {
   form.upLinkId = upLinkId.value
 
   const temp = await createDocument.createNewDocument(form)
-  dialog.value = false;
-  await documentList.$reset();
-  await documentList.setDocumentList(groupId);
+  await documentList.setDocumentList(groupName.getSelectedGroupInfo[0].groupId);
   await selectDocument(temp.documentId);
+  dialog.value = false;
 };
 
 // 문서 선택 시 상세 정보를 가져오는 함수

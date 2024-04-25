@@ -111,8 +111,8 @@ const handleData = async (form) => {
   form.groupId = null;
   form.upLinkId = null;
   const temp = await createDocument.createNewDocument(form)
-  await documentList.$reset();
   await documentList.setPublicDocumentList();
+  await selectDocument(temp.documentId);
   dialog.value = false;
 }
 
