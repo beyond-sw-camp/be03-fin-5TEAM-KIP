@@ -19,6 +19,7 @@ const viewer = ref();
 const files = ref([]);
 const fileHover = ref(null);
 const fileDialog = ref(false);
+const fileLoading = ref(false);
 
 // 북마크 관련
 const selection = ref([]);
@@ -68,8 +69,8 @@ const selectDocument = async (documentId) => {
 
 // 파일 업로드 핸들러
 const handleFileUpload = async () => {
+  fileLoading.value = true; // 빙글이 시작
   await wait(1200); // 1.2초 대기
-  fileDialog.value = false; // 다이얼로그 닫기
   // 각 파일에 대해 업로드 로직 실행
   for (let file of files.value) {
     console.log(file)
@@ -79,6 +80,9 @@ const handleFileUpload = async () => {
 
   // 파일 업로드 후 첨부파일 목록 다시 불러오기
   await attachedFile.setAttachedFileList(documentList.selectedDocumentDetails.documentId);
+
+  fileLoading.value = false; // 빙글이 끝내기
+  fileDialog.value = false; // 다이얼로그 닫기
 };
 
 // 파일 클릭 핸들러
@@ -246,10 +250,15 @@ const realUpdateDocumentTitle = async (event) => {
           <v-card flat>
             <v-card-title class="headline text-center">첨부 파일
 
-                                                       <!-- 첨부파일 업로드 로직 부분 -->
-              <v-dialog v-model="fileDialog" max-width="800">
+              <!-- 첨부파일 업로드 로직 부분 -->
+              <v-dialog
+                  class="d-flex justify-center"
+                  width="40vw"
+                  opacity="50%"
+                  v-model="fileDialog">
                 <template v-slot:activator="{ props: activatorProps }">
                   <v-btn
+                      class="mb-2 ml-2"
                       v-bind="activatorProps"
                       density="compact"
                       variant="flat"
@@ -258,9 +267,11 @@ const realUpdateDocumentTitle = async (event) => {
                   </v-btn>
                 </template>
 
-                <v-card>
-                  <v-card-title class="headline">첨부파일 업로드</v-card-title>
-                  <v-card-text>
+                <v-sheet
+                    rounded="xl"
+                    class="d-flex justify-center flex-wrap pa-10">
+
+                  <v-form ref="form" style="width: 50vw">
                     <v-file-input
                         v-model="files"
                         label="Select files"
@@ -276,12 +287,17 @@ const realUpdateDocumentTitle = async (event) => {
                         </template>
                       </template>
                     </v-file-input>
-                  </v-card-text>
-                  <v-card-actions>
-                    <v-spacer></v-spacer>
-                    <v-btn color="green darken-1" text @click="handleFileUpload">업로드 완료</v-btn>
-                  </v-card-actions>
-                </v-card>
+
+                    <v-btn
+                        class="mt-7"
+                        :color="color.kipMainColor"
+                        :loading="fileLoading"
+                        text="업로드 완료"
+                        @click="handleFileUpload"
+                        block
+                    />
+                  </v-form>
+                </v-sheet>
               </v-dialog>
             </v-card-title>
 
