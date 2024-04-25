@@ -60,19 +60,21 @@ const hashTagUpdateReq = () => {
   hashTagUpdateModal.value = false;
 }
 
+await documentList.setPublicDocumentList();
+await documentList.setFirstPublicDocumentDetails();
+
 // 문서 삭제 관련 코드.
 const deleteDocModalOpen = ref();
 const selectedDeleteDocTitle = ref();
 const selectedDeleteDocId = ref();
 const OpenDeleteDocumentModal = async (documenetTitle, documentId) => {
   loading.value = false;
-  if (documentList.getPublicDocumentList.length > 1) {
+  if (documentList.getPublicDocumentList.length > 1 && documentId !== 2) {
     deleteDocModalOpen.value = true;
     selectedDeleteDocTitle.value = documenetTitle;
     selectedDeleteDocId.value = documentId;
-  } else {
-    alert("전체공개문서를 모두 삭제할 수 없습니다.")
-  }
+  } else if (documentId === 2) alert("공지사항 문서는 삭제할 수 없습니다.")
+  else alert("전체공개문서는 1개이상 있어야 합니다.");
 }
 const realDeleteSelectedDoc = async () => {
   loading.value = true;
@@ -129,8 +131,8 @@ const handleData = async (form) => {
   form.groupId = null;
   form.upLinkId = null;
   const temp = await createDocument.createNewDocument(form)
-  await documentList.$reset();
   await documentList.setPublicDocumentList();
+  await selectDocument(temp.documentId);
   dialog.value = false;
 }
 
@@ -143,11 +145,14 @@ const moveDocToGroupReq = ref({
   targetGroupId: "1"
 })
 const realShowGroupModalForSelect = async (documenetTitle, documentId) => {
-  await group.setHierarchyInfo();
-  selectedTargetGroupName.value = "한화시스템"
-  handlerMoveDocToGroup.value = true
-  moveDocToGroupReq.value.targetDocumentId = documentId
-  selectedTargetDocumentTitle.value = documenetTitle
+  if (documentList.getPublicDocumentList.length > 1 && documentId !== 2) {
+    await group.setHierarchyInfo();
+    selectedTargetGroupName.value = "한화시스템"
+    handlerMoveDocToGroup.value = true
+    moveDocToGroupReq.value.targetDocumentId = documentId
+    selectedTargetDocumentTitle.value = documenetTitle
+  } else if (documentId === 2) alert("공지사항 문서는 이동할 수 없습니다.")
+  else alert("전체공개문서는 1개이상 있어야 합니다.");
 }
 const SetTargetGroupIdAndName = (selectedGroupInfo) => {
   moveDocToGroupReq.value.targetGroupId = selectedGroupInfo.id
@@ -368,6 +373,7 @@ const handleBookmarkClick = async () => {
 
       <!-- ☝️☝️☝️☝️☝️☝️☝️ 가운데 문서제목 부분 -->
       <v-col cols="7">
+
         <v-list class="pa-4 mb-4">
           <v-card flat>
             <v-row>

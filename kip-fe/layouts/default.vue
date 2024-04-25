@@ -17,6 +17,9 @@ const user = useUser();
 const cart = useCart()
 const color = useColor();
 const group = useGroup();
+const groupUser = useGroupuser();
+const document = useDocumentList()
+
 const notification = useNotification();
 await notification.setMyNotification();
 notification.value = notification.getNotification;
@@ -27,6 +30,15 @@ const unreadNotificationsCount = computed(() => {
 const handleRailClick = () => {
   rail.value = !rail.value;
 }
+
+// 기본데이터 로그인 후 불러오기. (최초 그룹 로딩속도 향상)
+onMounted(async () => {
+  await group.setHierarchyInfo();
+  groupUser.$reset();
+  await groupUser.setUsersInfoInGroup(1);
+  await document.setAdminDocumentList(1);
+  await document.setPublicDocumentList();
+})
 
 </script>
 
