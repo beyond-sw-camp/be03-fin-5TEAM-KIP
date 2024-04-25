@@ -52,18 +52,18 @@ public class UserService {
 
     @Autowired
     public UserService(UserRepository userRepo, PasswordEncoder passwordEncoder, JwtTokenProvider jwtTokenProvider, UserRefreshTokenRepository userRefreshTokenRepository, BookRepository bookRepository, UserRepository userRepository,
-		FCMTokenDao fcmTokenDao, S3Config s3Config) {
+                       FCMTokenDao fcmTokenDao, S3Config s3Config) {
         this.userRepo = userRepo;
         this.passwordEncoder = passwordEncoder;
         this.jwtTokenProvider = jwtTokenProvider;
         this.userRefreshTokenRepository = userRefreshTokenRepository;
         this.bookRepository = bookRepository;
         this.userRepository = userRepository;
-		this.fcmTokenDao = fcmTokenDao;
-		this.s3Config = s3Config;
-	}
+        this.fcmTokenDao = fcmTokenDao;
+        this.s3Config = s3Config;
+    }
 
-//    Create
+    //    Create
     @JustAdmin
     public UserResDto createUser(CreateUserReqDto dto) {
         dto.setPassword(passwordEncoder.encode(dto.makeUserReqDtoToUser().getPassword())); // 비밀번호 암호화
@@ -76,16 +76,16 @@ public class UserService {
     public List<UserResDto> createUsers(List<CreateUserReqDto> dtos) {
         for (CreateUserReqDto createUserReqDto : dtos) {
             createUserReqDto.setPassword(
-                passwordEncoder.encode(createUserReqDto.makeUserReqDtoToUser().getPassword()));
+                    passwordEncoder.encode(createUserReqDto.makeUserReqDtoToUser().getPassword()));
         }
         return dtos.stream()
-            .map(CreateUserReqDto::makeUserReqDtoToUser)
-            .map(userRepo::save)
-            .map(UserResDto::new)
-            .collect(Collectors.toList());
+                .map(CreateUserReqDto::makeUserReqDtoToUser)
+                .map(userRepo::save)
+                .map(UserResDto::new)
+                .collect(Collectors.toList());
     }
 
-//    Read
+    //    Read
     @UserAdmin
     public List<UserResDto> getAllUsers() {
         List<User> users = userRepo.findAll();
@@ -175,7 +175,7 @@ public class UserService {
         userRepo.delete(userInfo);
     }
 
-//    사용자 북마크 목록 조회
+    //    사용자 북마크 목록 조회
     public List<BookResDto> userBookList(){
         User userInfo = getUserFromAuthentication();
         String employeeId = userInfo.getEmployeeId();
@@ -193,7 +193,7 @@ public class UserService {
         return bookResDtos;
     }
 
-//    ===== 함수 공통화 =====
+    //    ===== 함수 공통화 =====
     @UserAdmin
     public User getUserFromAuthentication() {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
@@ -241,10 +241,7 @@ public class UserService {
 
 
 
-
-
-
-//    public String uploadImage(MultipartFile file) throws IOException {
+    //    public String uploadImage(MultipartFile file) throws IOException {
 //        String originalFilename = StringUtils.cleanPath(Objects.requireNonNull(file.getOriginalFilename()));
 //        String fileExtension = StringUtils.getFilenameExtension(originalFilename);
 //
