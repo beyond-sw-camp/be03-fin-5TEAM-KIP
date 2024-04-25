@@ -97,10 +97,10 @@ onForegroundMessage()
 <!--          class="group__list"/>-->
 
       <v-list-item
-          title="bookmarks"
+          title="즐겨찾기"
           value="bookmarks"
           to="/bookmarks"
-          prepend-icon="mdi-list-box-outline"
+          prepend-icon="mdi-star"
           :color="color.kipMainColor"
           rounded="xl"
           variant="text"
