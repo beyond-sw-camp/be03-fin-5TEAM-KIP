@@ -43,5 +43,7 @@ public class Note extends BaseEntity {
 	@JoinColumn(nullable = false)
 	private Document document;
 
-
+	public void readNote() {
+		this.isRead = "Y";
+	}
 }

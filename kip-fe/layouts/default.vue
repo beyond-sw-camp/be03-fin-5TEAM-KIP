@@ -17,7 +17,12 @@ const user = useUser();
 const cart = useCart()
 const color = useColor();
 const group = useGroup();
-
+const notification = useNotification();
+await notification.setMyNotification();
+notification.value = notification.getNotification;
+const unreadNotificationsCount = computed(() => {
+  return notification.value.filter(notif => notif.isRead === 'N').length;
+});
 // function
 const handleRailClick = () => {
   rail.value = !rail.value;
@@ -88,18 +93,18 @@ const handleRailClick = () => {
               class="text-none"
               stacked>
             <v-badge
-                v-if="!cart.isEmpty"
+                v-if="unreadNotificationsCount > 0"
                 color="error"
-                :content="cart.count">
+                :content="unreadNotificationsCount">
               <v-icon
-                  icon="mdi-bell-ring"
+                  icon="mdi-bell-outline"
                   size="x-large"
               />
 
             </v-badge>
             <v-icon
                 v-else
-                icon="mdi-bell"
+                icon="mdi-bell-outline"
                 size="x-large"
             />
           </v-btn>

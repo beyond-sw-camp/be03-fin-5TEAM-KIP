@@ -1,5 +1,4 @@
 import {useBookMarks} from "~/stores/BookMarks.js";
-import * as console from "console";
 
 const BASE_URL = import.meta.env.VITE_BASE_URL;
 const user = useUser();
@@ -21,7 +20,8 @@ export const useDocumentList = defineStore("documentList", {
             return state.documentList.map(document => ({
                 documentId: document.documentId,  // 문서 ID
                 docType: document.docType,      //문서 타입
-                title: document.title     // 제목
+                title: document.title,     // 제목
+                documentUUID: document.documentUUID
             }))
         },
 

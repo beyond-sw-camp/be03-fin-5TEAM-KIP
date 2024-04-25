@@ -4,6 +4,8 @@ import com.FINAL.KIP.bookmark.repository.BookRepository;
 import com.FINAL.KIP.common.CommonResponse;
 import com.FINAL.KIP.common.aspect.JustAdmin;
 import com.FINAL.KIP.common.aspect.UserAdmin;
+import com.FINAL.KIP.common.s3.S3Config;
+import com.FINAL.KIP.common.firebase.FCMTokenDao;
 import com.FINAL.KIP.securities.JwtTokenProvider;
 import com.FINAL.KIP.securities.refresh.UserRefreshToken;
 import com.FINAL.KIP.securities.refresh.UserRefreshTokenRepository;
@@ -12,11 +14,12 @@ import com.FINAL.KIP.user.dto.req.CreateUserReqDto;
 import com.FINAL.KIP.user.dto.req.LoginReqDto;
 import com.FINAL.KIP.user.dto.req.UserInfoUpdateReqDto;
 import com.FINAL.KIP.user.dto.res.BookResDto;
-import com.FINAL.KIP.user.dto.res.ProfileImageResDto;
 import com.FINAL.KIP.user.dto.res.UserResDto;
 import com.FINAL.KIP.user.repository.UserRepository;
+import com.amazonaws.services.s3.model.ObjectMetadata;
 import jakarta.persistence.EntityNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -26,10 +29,6 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.nio.file.StandardCopyOption;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -41,20 +40,28 @@ public class UserService {
     private final JwtTokenProvider jwtTokenProvider;
     private final UserRefreshTokenRepository userRefreshTokenRepository;
     private final BookRepository bookRepository;
-
-    private final String uploadDir = "uploads/profiles"; // 프로필 이미지를 저장할 디렉토리 경로
     private final UserRepository userRepository;
+    private final FCMTokenDao fcmTokenDao;
 
+    //s3 연결 config
+    private final S3Config s3Config;
+
+    // s3 bucket 이름
+    @Value("${cloud.aws.s3.bucket}")
+    private String bucket;
 
     @Autowired
-    public UserService(UserRepository userRepo, PasswordEncoder passwordEncoder, JwtTokenProvider jwtTokenProvider, UserRefreshTokenRepository userRefreshTokenRepository, BookRepository bookRepository, UserRepository userRepository) {
+    public UserService(UserRepository userRepo, PasswordEncoder passwordEncoder, JwtTokenProvider jwtTokenProvider, UserRefreshTokenRepository userRefreshTokenRepository, BookRepository bookRepository, UserRepository userRepository,
+		FCMTokenDao fcmTokenDao, S3Config s3Config) {
         this.userRepo = userRepo;
         this.passwordEncoder = passwordEncoder;
         this.jwtTokenProvider = jwtTokenProvider;
         this.userRefreshTokenRepository = userRefreshTokenRepository;
         this.bookRepository = bookRepository;
         this.userRepository = userRepository;
-    }
+		this.fcmTokenDao = fcmTokenDao;
+		this.s3Config = s3Config;
+	}
 
 //    Create
     @JustAdmin
@@ -118,6 +125,7 @@ public class UserService {
     public CommonResponse logout() {
         User user = getUserFromAuthentication();
         userRefreshTokenRepository.deleteById(user.getId());
+        fcmTokenDao.deleteToken(user.getEmployeeId());
         return new CommonResponse(HttpStatus.OK, "User Logout SUCCESS!", new UserResDto(user));
     }
 
@@ -206,24 +214,22 @@ public class UserService {
     }
 
 //    ===== 프로필 이미지 =====
-    // 프로필 이미지 업로드
-    @Transactional
-    public ProfileImageResDto uploadProfileImage(MultipartFile file) throws IOException {
+
+    // 프로필 이미지 업로드 S3
+    public String uploadImage(MultipartFile file) throws IOException {
         User user = getAuthenticatedUser();
-
         String originalFilename = file.getOriginalFilename();
-        String fileExtension = Objects.requireNonNull(originalFilename).substring(originalFilename.lastIndexOf("."));
-        String storedFileName = UUID.randomUUID().toString() + fileExtension;
 
-        Path destinationFile = Paths.get(uploadDir, originalFilename).toAbsolutePath().normalize();
-        Files.createDirectories(destinationFile.getParent());
+        ObjectMetadata metadata = new ObjectMetadata();
+        metadata.setContentLength(file.getSize());
+        metadata.setContentType(file.getContentType());
 
-        Files.copy(file.getInputStream(), destinationFile, StandardCopyOption.REPLACE_EXISTING);
+        user.setProfileImageUrl(s3Config.amazonS3Client().getUrl(bucket, originalFilename).toString());
 
-        user.setProfileImageUrl(destinationFile.toString());
         userRepo.save(user);
 
-        return new ProfileImageResDto(user.getId(), user.getProfileImageUrl());
+        s3Config.amazonS3Client().putObject(bucket, originalFilename, file.getInputStream(), metadata);
+        return s3Config.amazonS3Client().getUrl(bucket, originalFilename).toString();
     }
 
     // 프로필 이미지 조회
@@ -233,52 +239,105 @@ public class UserService {
                 .orElseThrow(() -> new EntityNotFoundException("프로필 이미지가 설정되지 않았습니다."));
     }
 
-    // 프로필 이미지 삭제
-    @Transactional
-    public String deleteProfileImage() {
-        User user = getAuthenticatedUser();
-        if (user.getProfileImageUrl() == null || user.getProfileImageUrl().isEmpty()) {
-            return "프로필 이미지가 없습니다!";
-        } else {
-            try {
-                Path path = Paths.get(user.getProfileImageUrl());
-                Files.deleteIfExists(path);
-                user.setProfileImageUrl(null);
-                userRepo.save(user);
-                return "프로필 이미지가 성공적으로 삭제되었습니다.";
-            } catch (IOException e) {
-                return "프로필 이미지 삭제에 실패했습니다.";
-            }
-        }
-    }
 
-    // 프로필 이미지 업데이트
-    @Transactional
-    public ProfileImageResDto updateProfileImage(MultipartFile file) throws IOException {
-        User user = getAuthenticatedUser();
 
-        if (user.getProfileImageUrl() == null || user.getProfileImageUrl().isEmpty()) {
-            throw new EntityNotFoundException("수정할 프로필 이미지가 없습니다. 프로필 이미지를 먼저 올려 주세요.");
-        }
 
-        // 기존 이미지 삭제
-        Path oldImagePath = Paths.get(user.getProfileImageUrl());
-        Files.deleteIfExists(oldImagePath);
 
-        // 새 이미지 저장
-        String originalFilename = file.getOriginalFilename();
-        String fileExtension = Objects.requireNonNull(originalFilename).substring(originalFilename.lastIndexOf("."));
-        String storedFileName = UUID.randomUUID() + fileExtension;
 
-        Path destinationFile = Paths.get(uploadDir, originalFilename).toAbsolutePath().normalize();
-        Files.createDirectories(destinationFile.getParent());
-        Files.copy(file.getInputStream(), destinationFile, StandardCopyOption.REPLACE_EXISTING);
+//    public String uploadImage(MultipartFile file) throws IOException {
+//        String originalFilename = StringUtils.cleanPath(Objects.requireNonNull(file.getOriginalFilename()));
+//        String fileExtension = StringUtils.getFilenameExtension(originalFilename);
+//
+//        // S3 버킷 내 파일명 중복을 방지하기 위한 UUID 추가
+//        String fileName = UUID.randomUUID().toString() + "." + fileExtension;
+//
+//        ObjectMetadata metadata = new ObjectMetadata();
+//        metadata.setContentLength(file.getSize());
+//        metadata.setContentType(file.getContentType());
+//
+//        // 파일을 S3에 업로드
+//        s3Config.amazonS3Client().putObject(bucket, originalFilename, file.getInputStream(), metadata);
+////        s3Config.amazonS3Client().putObject(new PutObjectRequest(bucket, fileName, file.getInputStream(), metadata)
+////                .withCannedAcl(CannedAccessControlList.PublicRead)); // 파일을 public으로 설정
+//
+//        // 업로드된 파일의 URL을 반환
+//        return s3Config.amazonS3Client().getUrl(bucket, fileName).toString();
+//    }
 
-        user.setProfileImageUrl(destinationFile.toString());
-        userRepo.save(user);
 
-        return new ProfileImageResDto(user.getId(), user.getProfileImageUrl());
-    }
+//    // 프로필 이미지 업로드
+//    @Transactional
+//    public ProfileImageResDto uploadProfileImage(MultipartFile file) throws IOException {
+//        User user = getAuthenticatedUser();
+//
+//        String originalFilename = file.getOriginalFilename();
+//        String fileExtension = Objects.requireNonNull(originalFilename).substring(originalFilename.lastIndexOf("."));
+//        String storedFileName = UUID.randomUUID().toString() + fileExtension;
+//
+//        Path destinationFile = Paths.get(uploadDir, originalFilename).toAbsolutePath().normalize();
+//        Files.createDirectories(destinationFile.getParent());
+//
+//        Files.copy(file.getInputStream(), destinationFile, StandardCopyOption.REPLACE_EXISTING);
+//
+//        user.setProfileImageUrl(destinationFile.toString());
+//        userRepo.save(user);
+//
+//        return new ProfileImageResDto(user.getId(), user.getProfileImageUrl());
+//    }
+//
+//    // 프로필 이미지 조회
+//    public String getProfileImageUrl() {
+//        User user = getAuthenticatedUser();
+//        return Optional.ofNullable(user.getProfileImageUrl())
+//                .orElseThrow(() -> new EntityNotFoundException("프로필 이미지가 설정되지 않았습니다."));
+//    }
+//
+//    // 프로필 이미지 삭제
+//    @Transactional
+//    public String deleteProfileImage() {
+//        User user = getAuthenticatedUser();
+//        if (user.getProfileImageUrl() == null || user.getProfileImageUrl().isEmpty()) {
+//            return "프로필 이미지가 없습니다!";
+//        } else {
+//            try {
+//                Path path = Paths.get(user.getProfileImageUrl());
+//                Files.deleteIfExists(path);
+//                user.setProfileImageUrl(null);
+//                userRepo.save(user);
+//                return "프로필 이미지가 성공적으로 삭제되었습니다.";
+//            } catch (IOException e) {
+//                return "프로필 이미지 삭제에 실패했습니다.";
+//            }
+//        }
+//    }
+//
+//    // 프로필 이미지 업데이트
+//    @Transactional
+//    public ProfileImageResDto updateProfileImage(MultipartFile file) throws IOException {
+//        User user = getAuthenticatedUser();
+//
+//        if (user.getProfileImageUrl() == null || user.getProfileImageUrl().isEmpty()) {
+//            throw new EntityNotFoundException("수정할 프로필 이미지가 없습니다. 프로필 이미지를 먼저 올려 주세요.");
+//        }
+//
+//        // 기존 이미지 삭제
+//        Path oldImagePath = Paths.get(user.getProfileImageUrl());
+//        Files.deleteIfExists(oldImagePath);
+//
+//        // 새 이미지 저장
+//        String originalFilename = file.getOriginalFilename();
+//        String fileExtension = Objects.requireNonNull(originalFilename).substring(originalFilename.lastIndexOf("."));
+//        String storedFileName = UUID.randomUUID() + fileExtension;
+//
+//        Path destinationFile = Paths.get(uploadDir, originalFilename).toAbsolutePath().normalize();
+//        Files.createDirectories(destinationFile.getParent());
+//        Files.copy(file.getInputStream(), destinationFile, StandardCopyOption.REPLACE_EXISTING);
+//
+//        user.setProfileImageUrl(destinationFile.toString());
+//        userRepo.save(user);
+//
+//        return new ProfileImageResDto(user.getId(), user.getProfileImageUrl());
+//    }
 
 
     // 로그인 이전에 기본 정보 체크하는 함수들
