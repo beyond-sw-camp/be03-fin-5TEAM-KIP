@@ -40,8 +40,6 @@ const hashTagUpdateReq = () => {
   hashTagUpdateModal.value = false;
 }
 
-// 초기 문서 세팅
-await documentList.$reset();
 await documentList.setPublicDocumentList();
 await documentList.setFirstPublicDocumentDetails();
 

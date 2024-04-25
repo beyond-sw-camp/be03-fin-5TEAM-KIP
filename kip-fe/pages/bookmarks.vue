@@ -27,15 +27,12 @@ const fileDialog = ref(false);
 const selection = ref([]);
 const bookmarks = useBookMarks();
 
-await bookmarks.$reset();
 await bookmarks.setMyBookMarks();
 
-await documentList.$reset();
 // await documentList.setDocumentList(groupId);
 // await groupName.setGroupUsersInfo(groupId);
 await documentList.setFirstBookDetails()
 
-await attachedFile.$reset();
 await attachedFile.setAttachedFileList(bookmarks.myBookMarks[0].documentId);
 
 groupName.setTopNaviGroupList(groupId);

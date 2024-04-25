@@ -10,11 +10,7 @@ export const useBookMarks = defineStore("bookmarks", {
     getters: {
         // getter를 업데이트하여 모든 정보를 반환
         getMyBookMarksDetails(state){
-            return state.myBookMarks.map(book => ({
-                documentId: book.documentId,  // 문서 ID
-                title: book.title,            // 제목
-                groupName: book.groupName     // 그룹 이름
-            }))
+            return state.myBookMarks
         },
     },
 

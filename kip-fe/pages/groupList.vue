@@ -30,24 +30,19 @@ group.TopNaviGroupList = [
   "타 부서 문서와 구성원을 조회할 수 있습니다. 🥩️"
 ];
 
-// 데이터 세팅
-await group.setHierarchyInfo();
-
 // 신규계정 데이터 관련
 const showPassword = ref(false)
 const showPasswordConfirm = ref(false);
 const passwordConfirm = ref('');
 
 // 그릅 유저 정보 초기화
-groupUser.$reset();
-await groupUser.setUsersInfoInGroup(clickedGroupId.value);
-await document.setDocumentList(clickedGroupId.value);
+
 
 // ❤️ 유저들의 정보를 세팅하는 함수들
 const setUsersInfoInGroup = async (groupId) => {
   clickedGroupId.value = groupId
   await groupUser.setUsersInfoInGroup(groupId);
-  await document.setDocumentList(groupId);
+  await document.getAdminDocumentList(groupId);
 }
 const setAllUserInfoInKip = async () => {
   // 모달창 열고
@@ -284,7 +279,7 @@ const ChangeDocumentType = async (documentId) => {
 // 문서 삭제
 const deleteDocument = async (title, documentId) => {
   // 최상단 문서 검사
-  if (document.getDocumentList[0].documentId === documentId)
+  if (document.getAdminDocumentList[0].documentId === documentId)
     alert("최상단 문서는 삭제할 수 없습니다.")
   else if (confirm(`${title} 문서가 영구 삭제됩니다`)) {
     await document.deleteDocument(documentId)
@@ -788,7 +783,7 @@ const confirmRequest = async () => {
                 class="d-flex flex-wrap">
               <v-card
                   width="100%"
-                  v-for="doc in document.getDocumentList"
+                  v-for="doc in document.getAdminDocumentList"
                   :key="doc.documentId"
                   class="mb-4 ml-5 pt-2 px-1 pb-1"
                   rounded="xl"
