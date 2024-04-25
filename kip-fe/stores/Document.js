@@ -56,6 +56,10 @@ export const useDocumentList = defineStore("documentList", {
                 this.documentList = []; // 에러가 발생한 경우 북마크 목록을 초기화
             }
         },
+
+        // async filterGroupDocByHashTag(hashTagId)
+
+
         async setAdminDocumentList(groupId) {
             try {
                 const response = await fetch(`${BASE_URL}/doc/${groupId}/linked`, {

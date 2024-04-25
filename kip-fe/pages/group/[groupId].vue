@@ -123,6 +123,7 @@ const hashTagUpdateReq = () => {
 }
 
 // 문서 제목 업데이트 관련
+const titleLoding = ref(false)
 const handlerForUpdateModal = ref(false);
 const updateDocumentTitleReq = ref({
   targetDocumentId: "",
@@ -140,7 +141,7 @@ const realUpdateDocumentTitle = async (event) => {
 
   if (results.valid) {
     await documentList.updateDocumentTitle(updateDocumentTitleReq.value)
-    await documentList.setPublicDocumentList();
+    await documentList.setDocumentList(groupName.getSelectedGroupInfo[0].groupId);
     await documentList.setDocumentDetails(
         updateDocumentTitleReq.value.targetDocumentId)
     handlerForUpdateModal.value = false
@@ -204,30 +205,80 @@ const realUpdateDocumentTitle = async (event) => {
 
       <!-- ☝️☝️☝️☝️☝️☝️☝️ 가운데 문서제목 부분 -->
       <v-col cols="7">
-        <v-list class="pa-4">
+
+        <v-list class="pa-4 mb-4">
           <v-card flat>
-            <div class="d-flex justify-center">
-              <v-card-title class="headline text-center">
-                {{ documentList.selectedDocumentDetails.title }}
-              </v-card-title>
+            <v-row>
+              <v-col cols="8" offset="2">
+                <div class="d-flex justify-center">
+                  <v-card-title class="headline text-center">
+                    {{ documentList.selectedDocumentDetails.title }}
+                  </v-card-title>
 
-              <v-item-group v-model="selection">
-                <v-item>
-                  <v-btn
-                      density="comfortable"
-                      @click="handleBookmarkClick"
-                      :icon="isBookmarked ? 'mdi-star' : 'mdi-star-outline'"
-                  ></v-btn>
-                </v-item>
-              </v-item-group>
-
-            </div>
+                  <v-item-group v-model="selection">
+                    <v-item>
+                      <v-btn
+                          density="comfortable"
+                          @click="handleBookmarkClick"
+                          :icon="isBookmarked ? 'mdi-star' : 'mdi-star-outline'"
+                      ></v-btn>
+                    </v-item>
+                  </v-item-group>
+                </div>
+              </v-col>
+              <v-col cols="2">
+                <v-btn
+                    :icon="`mdi-pencil`"
+                    variant="elevated"
+                    rounded="lg"
+                    class="mb-2 ml-2"
+                    @click.stop="OpenTitleUpdateModal"
+                />
+              </v-col>
+            </v-row>
           </v-card>
+
+          <!--           📜 문서 제목수정을 위한 모달. -->
+          <v-dialog
+              class="d-flex justify-center"
+              width="40vw"
+              opacity="50%"
+              v-model="handlerForUpdateModal">
+            <v-sheet
+                rounded="xl"
+                class="d-flex justify-center flex-wrap pa-10">
+
+              <v-form ref="form" style="width: 50vw" @submit.prevent="realUpdateDocumentTitle">
+                <v-row>
+                  <v-col>
+
+                    <v-text-field
+                        label="문서 제목 입력"
+                        placeholder="변경할 문서명을 적어주세요."
+                        v-model="updateDocumentTitleReq.newTitle"
+                        :rules="[value => !!value || '이름 입력이 필요합니다.']"
+                        clearable
+                        required
+                    />
+
+                    <v-btn
+                        class="mt-7"
+                        color="success"
+                        :loading="titleLoding"
+                        text="문서 제목 변경"
+                        type="submit"
+                        block
+                    />
+                  </v-col>
+                </v-row>
+              </v-form>
+            </v-sheet>
+          </v-dialog>
           <!-- 가로 선 추가 -->
           <v-divider></v-divider>
         </v-list>
 
-        <v-card flat class="mt-4 mx-auto" width="800">
+        <v-card flat class="px-6 mt-4 mx-auto">
           <div ref="viewer">{{ documentList.selectedDocumentDetails.content }}</div>
         </v-card>
 

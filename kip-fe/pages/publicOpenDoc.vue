@@ -302,6 +302,7 @@ const RealMoveDocToTargetGroup = async () => {
 
       <!-- ☝️☝️☝️☝️☝️☝️☝️ 가운데 문서제목 부분 -->
       <v-col cols="7">
+
         <v-list class="pa-4 mb-4">
           <v-card flat>
             <v-row>
