@@ -395,13 +395,13 @@ const realUpdateDocumentTitle = async (event) => {
                       v-if="documentList.selectedDocumentDetails
                       && documentList.selectedDocumentDetails.hashTags.length > 0">
           <v-chip prepend-icon="mdi-refresh"
-                  @click=documentList.setPublicDocumentList> 초기화
+                  @click=bookmarks.setMyBookMarks> 초기화
           </v-chip>
           <v-chip
               v-for="(hashTag, index) in documentList.selectedDocumentDetails.hashTags"
               :key="index"
               prepend-icon="mdi-pound"
-              @click="documentList.filterPublicDocByHashTag(hashTag['hashTagId'])">
+              @click="bookmarks.filterBookMarkDocByHashTag(hashTag['hashTagId'])">
             {{ hashTag.tagName }} ({{ hashTag['docsCounts'] }})
           </v-chip>
         </v-chip-group>

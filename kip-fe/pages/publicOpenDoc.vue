@@ -32,16 +32,13 @@ const fileLoading = ref(false);
 const selection = ref([]);
 const bookmarks = useBookMarks();
 
-await bookmarks.$reset();
 await bookmarks.setMyBookMarks();
 
 // 초기 문서 세팅
-await documentList.$reset();
 await documentList.setPublicDocumentList();
 await documentList.setFirstPublicDocumentDetails();
 
 // 첨부 파일
-await attachedFile.$reset();
 await attachedFile.setAttachedFileList(documentList.getFirstPublicDocId);
 
 // 해시태그 업데이트 관련
