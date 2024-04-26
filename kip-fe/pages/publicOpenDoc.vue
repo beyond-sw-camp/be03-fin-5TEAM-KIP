@@ -167,9 +167,11 @@ const RealMoveDocToTargetGroup = async () => {
   }
 }
 
+// 파일 업로드 핸들러
 const handleFileUpload = async () => {
   fileLoading.value = true; // 빙글이 시작
   await wait(1200); // 1.2초 대기
+
   // 각 파일에 대해 업로드 로직 실행
   for (let file of files.value) {
     console.log(file)
