@@ -7,6 +7,7 @@ import com.FINAL.KIP.user.dto.req.CreateUserReqDto;
 import com.FINAL.KIP.user.dto.req.LoginReqDto;
 import com.FINAL.KIP.user.dto.req.PasswordChangeRequest;
 import com.FINAL.KIP.user.dto.req.UserInfoUpdateReqDto;
+import com.FINAL.KIP.user.dto.res.BookResDto;
 import com.FINAL.KIP.user.dto.res.UserResDto;
 import com.FINAL.KIP.user.service.UserService;
 import jakarta.persistence.EntityNotFoundException;
@@ -15,6 +16,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.server.ResponseStatusException;
 
 import java.io.IOException;
 import java.util.List;
@@ -115,6 +117,14 @@ public class UserController {
     public ResponseEntity<CommonResponse> userDelete(@PathVariable(value = "employeeId") String employeeId) {
         userService.delete(employeeId);
         return new ResponseEntity<>(new CommonResponse(HttpStatus.OK, "User deleted successfully", employeeId), HttpStatus.OK);
+    }
+
+    // 현재 비밀번호 유효성 검증 엔드포인트
+    @PostMapping("/validate-current-password")
+    public ResponseEntity<Boolean> validateCurrentPassword(@RequestBody Map<String, String> payload) {
+        String inputPassword = payload.get("password");
+        boolean isValid = userService.validateCurrentPassword(inputPassword);
+        return ResponseEntity.ok(isValid);
     }
 
     // 비밀번호 변경
