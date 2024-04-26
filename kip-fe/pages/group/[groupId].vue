@@ -14,6 +14,8 @@ const hover = ref(null);
 const dialog = ref(false);
 const upLinkId = ref();
 const viewer = ref();
+const titleEditing = ref(false);
+const newTitle = ref();
 
 // 첨부파일 관련
 const files = ref([]);
@@ -124,13 +126,14 @@ const hashTagUpdateReq = () => {
   documentList.updateHashTags(hashTagsUpdateReqDto.value)
   hashTagUpdateModal.value = false;
 }
-// 문서 제목 업데이트 관련
-const titleLoding = ref(false)
-const handlerForUpdateModal = ref(false);
-const updateDocumentTitleReq = ref({
-  targetDocumentId: "",
-  newTitle: ""
-})
+
+const updateDocumentTitle = async () => {
+  titleEditing.value = false
+  documentList.selectedDocumentDetails.title = newTitle.value
+  await documentList.updateDocumentTitle(documentList.selectedDocumentDetails.documentId, documentList.selectedDocumentDetails.title)
+  newTitle.value =  ""
+}
+
 const OpenTitleUpdateModal = () => {
   handlerForUpdateModal.value = true
   updateDocumentTitleReq.value.targetDocumentId = documentList.getSelectedDocId
@@ -156,6 +159,7 @@ const realUpdateDocumentTitle = async (event) => {
 <template>
   <v-container fluid>
     <v-row no-gutters>
+
 
       <!-- 👈👈👈👈👈👈👈👈 왼쪽 사이드바 -->
       <v-col cols="3">
@@ -211,38 +215,41 @@ const realUpdateDocumentTitle = async (event) => {
       <v-divider class="divider-container" vertical></v-divider>
 
       <!-- ☝️☝️☝️☝️☝️☝️☝️ 가운데 문서제목 부분 -->
-      <v-col cols="7">
-
-        <v-list class="pa-4 mb-4" >
+      <v-col cols="7" class="position-relative">
+        <v-list class="pa-4">
           <v-card flat>
-            <v-row>
-              <v-col cols="8" offset="2">
-                <div class="d-flex justify-center">
-                  <v-card-title class="headline text-center mb-4">
-                    {{ documentList.selectedDocumentDetails.title }}
-                  </v-card-title>
+            <div class="d-flex justify-center">
+              <v-card-title v-if="titleEditing" class="headline text-center">
+                <v-text-field
+                    v-model="newTitle"
+                    @blur="titleEditing = false"
+                    @keyup.enter="updateDocumentTitle"
+                    autofocus
+                    persistent-placeholder
+                    persistent-hint
+                    append-inner-icon="mdi-keyboard-return"
+                    hint="변경할 제목을 입력하시고 엔터를 입력하세요."
+                    placeholder="변경할 제목을 입력하세요."
+                    style="min-width: 300px;"
+                    variant="underlined"
+                ></v-text-field>
+              </v-card-title>
 
-                  <v-item-group v-model="selection">
-                    <v-item>
-                      <v-btn
-                          density="comfortable"
-                          @click="handleBookmarkClick"
-                          :icon="isBookmarked ? 'mdi-star' : 'mdi-star-outline'"
-                      ></v-btn>
-                    </v-item>
-                  </v-item-group>
-                </div>
-              </v-col>
-              <v-col cols="2">
-                <v-btn
-                    :icon="`mdi-pencil`"
-                    variant="elevated"
-                    rounded="lg"
-                    class="mb-2 ml-2"
-                    @click.stop="OpenTitleUpdateModal"
-                />
-              </v-col>
-            </v-row>
+              <!-- 제목 표시 -->
+              <v-card-title v-else class="headline text-center">
+                {{ documentList.selectedDocumentDetails.title }}
+              </v-card-title>
+
+              <v-item-group v-model="selection">
+                <v-item>
+                  <v-btn
+                      density="comfortable"
+                      @click="handleBookmarkClick"
+                      :icon="isBookmarked ? 'mdi-star' : 'mdi-star-outline'"
+                  ></v-btn>
+                </v-item>
+              </v-item-group>
+            </div>
           </v-card>
 
           <!--           📜 문서 제목수정을 위한 모달. -->
@@ -288,6 +295,31 @@ const realUpdateDocumentTitle = async (event) => {
         <v-card flat class="px-6 mt-4 mx-auto">
           <div ref="viewer">{{ documentList.selectedDocumentDetails.content }}</div>
         </v-card>
+        <div class="fab_div">
+          <v-container class="d-flex justify-end" style="margin: 30px;">
+            <v-speed-dial location="top center" transition="fade-transition">
+              <template v-slot:activator="{ props: activatorProps }">
+                <v-btn
+                    rounded="circle"
+                    v-bind="activatorProps"
+                    size="large"
+                    stacked
+                >
+                  <v-img
+                      width="36px"
+                      src="/images/logos/kiplogo.svg"/>
+                </v-btn>
+              </template>
+
+              <v-btn key="1" size="large" prepend-icon="mdi-format-title" @click="titleEditing = true"
+              hint>제목 수정</v-btn>
+              <v-btn key="2" size="large" prepend-icon="mdi-pencil" @click="">내용 수정</v-btn>
+              <v-btn key="3" size="large" prepend-icon="mdi-history" @click="">수정 이력</v-btn>
+              <v-btn key="4" size="large" v-if="isBookmarked" prepend-icon="mdi-star" @click="handleBookmarkClick">북마크 해제</v-btn>
+              <v-btn key="5" size="large" v-else prepend-icon="mdi-star-outline" @click="handleBookmarkClick">북마크 추가</v-btn>
+            </v-speed-dial>
+          </v-container>
+        </div>
 
       </v-col>
 
@@ -480,5 +512,17 @@ const realUpdateDocumentTitle = async (event) => {
 
 .divider-container {
   min-height: calc(97vh - 1.6vw - 90px);
+}
+.fab_div {
+  justify-content: flex-end;
+  display: flex;
+  align-items: flex-end;
+  bottom: 0px;
+  z-index: 1004;
+  transform: translateY(0%);
+  position: fixed;
+  height: 80px;
+  left: 0px;
+  width: calc(100% + 0px);
 }
 </style>

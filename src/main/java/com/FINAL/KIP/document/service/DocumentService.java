@@ -13,6 +13,7 @@ import com.FINAL.KIP.document.repository.DocumentRepository;
 import com.FINAL.KIP.group.domain.Group;
 import com.FINAL.KIP.group.service.GroupService;
 import com.FINAL.KIP.hashtag.service.HashTagService;
+import com.FINAL.KIP.request.repository.RequestRepository;
 import com.FINAL.KIP.user.domain.User;
 import com.FINAL.KIP.user.service.UserService;
 import com.FINAL.KIP.version.domain.Version;
@@ -36,6 +37,7 @@ public class DocumentService {
 	private final UserService userService;
 	private final HashTagService hashTagService;
 	private final VersionRepository versionRepository;
+	private final RequestRepository requestRepository;
 
 
 	@Autowired
@@ -43,12 +45,13 @@ public class DocumentService {
 		GroupService groupService,
 		UserService userService,
 		HashTagService hashTagService,
-		VersionRepository versionRepository) {
+		VersionRepository versionRepository, RequestRepository requestRepository) {
 		this.documentRepo = documentRepo;
 		this.groupService = groupService;
 		this.userService = userService;
 		this.hashTagService = hashTagService;
 		this.versionRepository = versionRepository;
+		this.requestRepository = requestRepository;
 	}
 
 	//    Create
@@ -126,6 +129,8 @@ public class DocumentService {
 			/* 추후 파일별 접근 가능한 맴버 추가 로직 삽입 */
 			isAccessible = accessibleUsers.stream() // 접근 가능 유저 체크
 					.anyMatch(user -> user.equals(tryUser));
+			if(!isAccessible)
+				isAccessible = requestRepository.availableDocument(tryUser, tryDocument);
 		}
 		return new DocumentResDto(tryDocument, isAccessible);
 	}

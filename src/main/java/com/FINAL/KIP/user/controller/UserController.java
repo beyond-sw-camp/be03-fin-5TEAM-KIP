@@ -2,6 +2,7 @@ package com.FINAL.KIP.user.controller;
 
 import com.FINAL.KIP.common.CommonResponse;
 import com.FINAL.KIP.common.firebase.service.FCMService;
+import com.FINAL.KIP.document.dto.res.AgreeDocResDto;
 import com.FINAL.KIP.securities.JwtTokenProvider;
 import com.FINAL.KIP.user.dto.req.CreateUserReqDto;
 import com.FINAL.KIP.user.dto.req.LoginReqDto;
@@ -171,6 +172,11 @@ public class UserController {
         } catch (EntityNotFoundException e) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(Map.of("error", e.getMessage()));
         }
+    }
+    //유저의 허용 문서 목록
+    @GetMapping("/agree")
+    public ResponseEntity<List<AgreeDocResDto>> getAgreeDocs() {
+        return userService.getAgreeDocs();
     }
 
 
