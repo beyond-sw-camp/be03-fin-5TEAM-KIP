@@ -11,13 +11,7 @@ export const useAttachedFile = defineStore("attachedFile", {
         // getter를 업데이트하여 모든 정보를 반환
         // 문서 첨부파일 조회
         getAttachedFileList(state){
-            return state.attachedFileList.map(file => ({
-                id: file.id,  // 첨부파일 ID
-                documentId: file.document,     // 문서 ID
-                fileName: file.fileName,      //문서 타입
-                fileType: file.fileType,     // 제목
-                fileUrl: file.fileUrl     // 제목
-            }))
+            return state.attachedFileList
         },
     },
 

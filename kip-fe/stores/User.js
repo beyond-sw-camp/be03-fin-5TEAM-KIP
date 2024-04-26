@@ -268,7 +268,7 @@ export const useUser = defineStore("user", {
                     body: JSON.stringify({ password: currentPassword })
                 });
                 const data = await response.json();
-                return data.isValid; // 서버에서 isValid라는 필드를 보내주는지 확인
+                return data; // 서버에서 true/false 값을 직접 반환하도록 수정
             } catch (error) {
                 console.error('Failed to validate password:', error);
                 return false;

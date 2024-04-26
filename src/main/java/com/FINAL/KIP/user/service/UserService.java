@@ -4,6 +4,7 @@ import com.FINAL.KIP.bookmark.repository.BookRepository;
 import com.FINAL.KIP.common.CommonResponse;
 import com.FINAL.KIP.common.aspect.JustAdmin;
 import com.FINAL.KIP.common.aspect.UserAdmin;
+import com.FINAL.KIP.common.s3.S3Config;
 import com.FINAL.KIP.common.firebase.FCMTokenDao;
 import com.FINAL.KIP.common.s3.S3Config;
 import com.FINAL.KIP.securities.JwtTokenProvider;
@@ -13,6 +14,7 @@ import com.FINAL.KIP.user.domain.User;
 import com.FINAL.KIP.user.dto.req.CreateUserReqDto;
 import com.FINAL.KIP.user.dto.req.LoginReqDto;
 import com.FINAL.KIP.user.dto.req.UserInfoUpdateReqDto;
+import com.FINAL.KIP.user.dto.res.BookResDto;
 import com.FINAL.KIP.user.dto.res.UserResDto;
 import com.FINAL.KIP.user.repository.UserRepository;
 import com.amazonaws.services.s3.model.ObjectMetadata;
@@ -51,7 +53,7 @@ public class UserService {
 
     @Autowired
     public UserService(UserRepository userRepo, PasswordEncoder passwordEncoder, JwtTokenProvider jwtTokenProvider, UserRefreshTokenRepository userRefreshTokenRepository, BookRepository bookRepository, UserRepository userRepository,
-                       FCMTokenDao fcmTokenDao, S3Config s3Config) {
+		FCMTokenDao fcmTokenDao, S3Config s3Config) {
         this.userRepo = userRepo;
         this.passwordEncoder = passwordEncoder;
         this.jwtTokenProvider = jwtTokenProvider;
@@ -219,9 +221,6 @@ public class UserService {
         return Optional.ofNullable(user.getProfileImageUrl())
                 .orElseThrow(() -> new EntityNotFoundException("프로필 이미지가 설정되지 않았습니다."));
     }
-
-
-
 
 //    public String uploadImage(MultipartFile file) throws IOException {
 //        String originalFilename = StringUtils.cleanPath(Objects.requireNonNull(file.getOriginalFilename()));
