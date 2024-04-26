@@ -26,6 +26,7 @@ const files = ref([]);
 const fileHover = ref(null);
 const fileDialog = ref(false);
 const fileLoading = ref(false);
+const attachedFileModal = ref(false);
 
 // 북마크 관련
 const selection = ref([]);
@@ -445,18 +446,17 @@ const handleBookmarkClick = async () => {
                                                        <!-- 첨부파일 업로드 로직 부분 -->
               <v-dialog
                   class="d-flex justify-center"
-                  width="40vw"
+                  width="45vw"
                   opacity="50%"
                   v-model="fileDialog">
                 <template v-slot:activator="{ props: activatorProps }">
                   <v-btn
-                      class="mb-2 ml-2"
+                      class="mb-2"
                       v-bind="activatorProps"
                       density="compact"
                       variant="flat"
                       icon="mdi-plus"
-                  >
-                  </v-btn>
+                  />
                 </template>
 
                 <v-sheet
@@ -466,14 +466,20 @@ const handleBookmarkClick = async () => {
                   <v-form ref="form" style="width: 50vw">
                     <v-file-input
                         v-model="files"
-                        label="Select files"
-                        placeholder="Upload your documents"
+                        :color="color.kipMainColor"
+                        label="업로드할 파일을 선택해 주세요"
+                        placeholder="업로드할 파일을 선택해 주세요"
                         prepend-icon="mdi-paperclip"
+                        counter
+                        :show-size="1000"
                         multiple
                     >
                       <template v-slot:selection="{ fileNames }">
                         <template v-for="fileName in fileNames" :key="fileName">
-                          <v-chip class="me-2" color="primary" size="small" label>
+                          <v-chip
+                              class="ma-1 pa-5"
+                              :color="color.kipMainColor"
+                          >
                             {{ fileName }}
                           </v-chip>
                         </template>
@@ -497,61 +503,80 @@ const handleBookmarkClick = async () => {
             <!-- 첨부파일 목록 -->
             <v-card-text>
               <div v-if="attachedFile.getAttachedFileList.length > 0">
-                <v-btn text color="primary"
-                       v-for="file in attachedFile.getAttachedFileList"
-                       :key="file.fileName"
-                       @click="handleFileClick(file.fileUrl)"
-                       @mouseenter="fileHover = file.fileName"
-                       @mouseleave="fileHover = null">
+                <v-card
+                    v-for="file in attachedFile.getAttachedFileList"
+                    :key="file.fileName"
+                    class="my-3"
+                    variant="elevated"
+                    elevation="2"
+                    rounded="xl">
 
-                  {{ file.fileName }}
-
-                  <v-dialog max-width="500">
-                    <template v-slot:activator="{ props: activatorProps }" v-if="fileHover === file.fileName">
+                  <v-row>
+                    <v-col cols="3" class="d-flex justify-center align-center">
                       <v-btn
-                          v-bind="activatorProps"
-                          :icon="`mdi-minus`"
+                          class="ml-4"
+                          @click="handleFileClick(file.fileUrl)"
+                          icon="mdi-image-outline"
                           variant="text"
-                          density="compact"
-                          rounded="lg"
                       />
-                    </template>
 
-                    <template v-slot:default="{ isActive }">
-                      <v-card title="첨부파일 삭제">
-                        <v-card-text>
-                          첨부파일을 삭제하시겠습니까?
-                        </v-card-text>
+                    </v-col>
+                    <v-col cols="6" class="d-flex justify-start align-center" style="width: 70%">
 
-                        <v-card-actions>
-                          <v-spacer></v-spacer>
+                      <div
+                          @click="handleFileClick(file.fileUrl)"
+                          class="cursor-pointer ellipsis" style="width:100%">
+                        {{ file.fileName }}
+                      </div>
+                    </v-col>
 
-                          <v-snackbar
-                              :timeout="2000"
-                          >
-                            <template v-slot:activator="{ props }">
-                              <v-btn
-                                  v-bind="props"
-                                  @click="AttachedFileDelete(file.id)"
+                    <v-col cols="3">
 
-                              >Yes
-                              </v-btn>
-                            </template>
-                            첨부파일이 삭제되었습니다.
-                          </v-snackbar>
+                      <v-btn
+                          class="mr-4"
+                          @click="attachedFileModal=true"
+                          icon="mdi-close"
+                          color="grey"
+                          variant="text"
+                          rounded="xl"
+                      />
+                    </v-col>
+                  </v-row>
+                  <!--                  첨부파일 삭제를 위한 모달-->
+                  <v-dialog
+                      v-model="attachedFileModal"
+                      max-width="500">
 
-                          <v-btn
-                              text="No"
-                              @click="isActive.value = false"
-                          ></v-btn>
-                        </v-card-actions>
-                      </v-card>
-                    </template>
+                    <v-card title="첨부파일 삭제">
+                      <v-card-text>
+                        첨부파일을 삭제하시겠습니까?
+                      </v-card-text>
+                      <v-card-actions>
+                        <v-spacer></v-spacer>
 
+                        <v-snackbar
+                            :timeout="2000"
+                        >
+                          <template v-slot:activator="{ props }">
+                            <v-btn
+                                v-bind="props"
+                                @click="AttachedFileDelete(file.id)"
+
+                            >Yes
+                            </v-btn>
+                          </template>
+                          첨부파일이 삭제되었습니다.
+                        </v-snackbar>
+                        <v-btn
+                            text="No"
+                            @click="attachedFileModal = false"
+                        ></v-btn>
+                      </v-card-actions>
+                    </v-card>
                   </v-dialog>
-                </v-btn>
+                </v-card>
               </div>
-              <div v-else>첨부파일이 없습니다.</div>
+              <div v-else> 첨부파일이 없습니다.</div>
             </v-card-text>
           </v-card>
         </div>
@@ -640,5 +665,11 @@ const handleBookmarkClick = async () => {
   height: 80px;
   left: 0px;
   width: calc(100% + 0px);
+}
+
+.ellipsis {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 </style>
