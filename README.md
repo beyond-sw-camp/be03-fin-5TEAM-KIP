@@ -540,12 +540,13 @@
 
 <summary><b>⭐ CI/CD 계획서</b></summary>
 <div markdown="1">
+  
+### Terraform으로 코드형인프라(Infrastructure as Code, IaC) 구축(AWS CI/CD)
 
 <p align="center">
   <img src="https://github.com/beyond-sw-camp/be03-fin-5TEAM-KIP/assets/148752498/7efd8cda-a727-49a3-b020-828c0d3fed02">
 </p>
 
-### Terraform으로 코드형인프라(Infrastructure as Code, IaC) 구축(AWS CI/CD)
 #### 📌 IaC & Terraform 선택이유
 - <b>자동화</b> : 자동화된 프로세스로 인프라를 구축해 작업의 일관성을 유지하고 휴먼 에러를 방지해 안정성을 높인다.
 - <b>속도 향상</b> : 리소스를 배포 및/또는 연결해야 할 때 자동화는 GUI를 통해 수동적으로 인프라 탐색하는 것보다 빠르다.
@@ -553,6 +554,22 @@
 - <b>테스트 및 최적화 지원</b> : 코드형 인프라를 사용하면 새 인프라를 훨씬 빠르고 쉽게 프로비저닝할 수 있으므로 많은 시간과 리소스를 투자하지 않고도 실험적으로 변경하고 테스트할 수 있으며, 결과가 마음에 들면 프로덕션을 위해 새 인프라를 빠르게 확장할 수 있다.
 
 #### 📌 CI/CD 1차 목표
+<p align="center">
+  <img src="https://github.com/beyond-sw-camp/be03-fin-5TEAM-KIP/assets/148752498/2008171b-f393-47f2-a874-f44f54ad844f">
+</p>
+- <b>Terraform으로 EKS Cluster 생성</b>
 
+#### 📌 CI/CD 최종 목표
+<p align="center">
+  <img src="https://github.com/beyond-sw-camp/be03-fin-5TEAM-KIP/assets/148752498/d7780c6c-2dda-44a1-8457-2531f15e614a">
+</p>
+- <b>Terraform으로 백엔드 AWS CI/CD 구축완료(OpenSearch, ElastiCache 제외)</b>
+- <b>Terraform으로 프론트엔드 AWS CI/CD 구축완료</b>
+
+#### 📌 백엔드 배포과정
+- git push -> git action -> AWS ECR 백엔드 빌드 이미지 업로드 -> POD 최신이미지 업로드
+
+#### 📌 프론트엔드 배포과정
+- git push -> git action -> AWS S3 프론트엔드 빌드 리소스 업로드
 </div>
 
