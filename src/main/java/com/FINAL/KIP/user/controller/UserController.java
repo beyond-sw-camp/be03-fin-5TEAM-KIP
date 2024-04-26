@@ -119,12 +119,6 @@ public class UserController {
         return new ResponseEntity<>(new CommonResponse(HttpStatus.OK, "User deleted successfully", employeeId), HttpStatus.OK);
     }
 
-    @GetMapping("/book/list")
-    public ResponseEntity<List<BookResDto>> userBookList() {
-        List<BookResDto> bookResDto = userService.userBookList();
-        return new ResponseEntity<>(bookResDto, HttpStatus.OK);
-    }
-
     // 현재 비밀번호 유효성 검증 엔드포인트
     @PostMapping("/validate-current-password")
     public ResponseEntity<Boolean> validateCurrentPassword(@RequestBody Map<String, String> payload) {
