@@ -411,13 +411,13 @@ const realUpdateDocumentTitle = async (event) => {
                       v-if="documentList.selectedDocumentDetails
                       && documentList.selectedDocumentDetails.hashTags.length > 0">
           <v-chip prepend-icon="mdi-refresh"
-                  @click=documentList.setPublicDocumentList> 초기화
+                  @click=bookmarks.setMyBookMarks> 초기화
           </v-chip>
           <v-chip
               v-for="(hashTag, index) in documentList.selectedDocumentDetails.hashTags"
               :key="index"
               prepend-icon="mdi-pound"
-              @click="documentList.filterPublicDocByHashTag(hashTag['hashTagId'])">
+              @click="bookmarks.filterBookMarkDocByHashTag(hashTag['hashTagId'])">
             {{ hashTag.tagName }} ({{ hashTag['docsCounts'] }})
           </v-chip>
         </v-chip-group>
@@ -443,7 +443,7 @@ const realUpdateDocumentTitle = async (event) => {
               hint="여러 태그를 엔터로 구분하여 입력하세요."/>
           <v-btn
               class="mt-4"
-              color="success"
+              :color="color.kipMainColor"
               text="해시태그 수정하기"
               @click="hashTagUpdateReq"
               block

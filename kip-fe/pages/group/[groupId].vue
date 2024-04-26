@@ -124,7 +124,6 @@ const hashTagUpdateReq = () => {
   documentList.updateHashTags(hashTagsUpdateReqDto.value)
   hashTagUpdateModal.value = false;
 }
-
 // 문서 제목 업데이트 관련
 const titleLoding = ref(false)
 const handlerForUpdateModal = ref(false);
@@ -151,7 +150,6 @@ const realUpdateDocumentTitle = async (event) => {
   }
   titleLoding.value = false
 }
-
 
 </script>
 
@@ -202,8 +200,8 @@ const realUpdateDocumentTitle = async (event) => {
             <PostForm ref="postForm" @submit="handleData"></PostForm>
             <v-card-actions>
               <v-spacer></v-spacer>
-              <v-btn text @click=postForm.submit()>작성 완료</v-btn>
-              <v-btn text @click="dialog = false">닫기</v-btn>
+              <v-btn  @click=postForm.submit()>작성 완료</v-btn>
+              <v-btn  @click="dialog = false">닫기</v-btn>
             </v-card-actions>
           </v-card>
         </v-dialog>
@@ -459,7 +457,7 @@ const realUpdateDocumentTitle = async (event) => {
               hint="여러 태그를 엔터로 구분하여 입력하세요."/>
           <v-btn
               class="mt-4"
-              color="success"
+              :color="color.kipMainColor"
               text="해시태그 수정하기"
               @click="hashTagUpdateReq"
               block

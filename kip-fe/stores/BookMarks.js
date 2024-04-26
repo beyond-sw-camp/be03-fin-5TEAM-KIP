@@ -28,7 +28,6 @@ export const useBookMarks = defineStore("bookmarks", {
                 this.myBookMarks = []; // 에러가 발생한 경우 북마크 목록을 초기화
             }
         },
-
         // 북마크 생성 및 삭제 함수 정의
         async removeMyBookmark(documentId) {
             try {
@@ -47,5 +46,8 @@ export const useBookMarks = defineStore("bookmarks", {
                 console.error('Error while deleting the bookmark:', error);
             }
         },
+        async filterBookMarkDocByHashTag(hashTagId) {
+            this.myBookMarks = this.myBookMarks.filter(doc => doc.hashTagIds.includes(hashTagId))
+        }
     }
 });
