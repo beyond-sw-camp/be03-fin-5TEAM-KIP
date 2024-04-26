@@ -107,6 +107,16 @@ onForegroundMessage()
           class="group__list"/>
 
       <v-list-item
+          title="허용된 문서"
+          value="agree"
+          to="/agree"
+          prepend-icon="mdi-file-document-check-outline"
+          :color="color.kipMainColor"
+          rounded="xl"
+          variant="text"
+          class="group__list"/>
+
+      <v-list-item
           title="요청"
           value="requests"
           to="/requests"

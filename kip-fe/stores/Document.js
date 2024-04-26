@@ -1,8 +1,10 @@
 import {useBookMarks} from "~/stores/BookMarks.js";
+import {useAgreeDocument} from "~/stores/AgreeDocument.js";
 
 const BASE_URL = import.meta.env.VITE_BASE_URL;
 const user = useUser();
 const bookmarks = useBookMarks();
+const agreeDocuments = useAgreeDocument()
 
 export const useDocumentList = defineStore("documentList", {
     state() {
@@ -146,16 +148,18 @@ export const useDocumentList = defineStore("documentList", {
                 console.log(e.message, "해시태그 수정 실패")
             }
         },
-        async updateDocumentTitle(newTitleReq) {
+        async updateDocumentTitle(targetDocumentId, newTitle) {
             try {
-                await fetch(`${BASE_URL}/doc/title`, {
+                const response = await fetch(`${BASE_URL}/doc/title`, {
                     method: 'PATCH',
                     headers: {
                         'Content-Type': 'application/json',
                         'Authorization': 'Bearer ' + user.getAccessToken
                     },
-                    body: JSON.stringify(newTitleReq)
+                    body: JSON.stringify({targetDocumentId, newTitle})
                 });
+                if(response.ok)
+                    this.selectedDocumentDetails.title = newTitle;
             } catch (e) {
                 console.log(e.message, "문서 제목 수정 실패")
             }
@@ -240,6 +244,13 @@ export const useDocumentList = defineStore("documentList", {
                 const firstBookId = bookmarks.myBookMarks[0].documentId;
                 await this.setDocumentDetails(firstBookId)
             }
-        }
+        },
+
+        async setAgreeDocumentDetails() {
+            if (agreeDocuments.document.length > 0) {
+                const firstDocument = agreeDocuments.document[0].documentId;
+                await this.setDocumentDetails(firstDocument)
+            }
+        },
     }
 });

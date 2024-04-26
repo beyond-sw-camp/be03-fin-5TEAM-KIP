@@ -6,7 +6,9 @@ import com.FINAL.KIP.common.aspect.JustAdmin;
 import com.FINAL.KIP.common.aspect.UserAdmin;
 import com.FINAL.KIP.common.s3.S3Config;
 import com.FINAL.KIP.common.firebase.FCMTokenDao;
-import com.FINAL.KIP.common.s3.S3Config;
+import com.FINAL.KIP.document.dto.res.AgreeDocResDto;
+import com.FINAL.KIP.request.domain.Request;
+import com.FINAL.KIP.request.repository.RequestRepository;
 import com.FINAL.KIP.securities.JwtTokenProvider;
 import com.FINAL.KIP.securities.refresh.UserRefreshToken;
 import com.FINAL.KIP.securities.refresh.UserRefreshTokenRepository;
@@ -14,7 +16,6 @@ import com.FINAL.KIP.user.domain.User;
 import com.FINAL.KIP.user.dto.req.CreateUserReqDto;
 import com.FINAL.KIP.user.dto.req.LoginReqDto;
 import com.FINAL.KIP.user.dto.req.UserInfoUpdateReqDto;
-import com.FINAL.KIP.user.dto.res.BookResDto;
 import com.FINAL.KIP.user.dto.res.UserResDto;
 import com.FINAL.KIP.user.repository.UserRepository;
 import com.amazonaws.services.s3.model.ObjectMetadata;
@@ -22,6 +23,7 @@ import jakarta.persistence.EntityNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -43,6 +45,7 @@ public class UserService {
     private final BookRepository bookRepository;
     private final UserRepository userRepository;
     private final FCMTokenDao fcmTokenDao;
+    private final RequestRepository requestRepository;
 
     //s3 연결 config
     private final S3Config s3Config;
@@ -53,7 +56,7 @@ public class UserService {
 
     @Autowired
     public UserService(UserRepository userRepo, PasswordEncoder passwordEncoder, JwtTokenProvider jwtTokenProvider, UserRefreshTokenRepository userRefreshTokenRepository, BookRepository bookRepository, UserRepository userRepository,
-		FCMTokenDao fcmTokenDao, S3Config s3Config) {
+		FCMTokenDao fcmTokenDao, RequestRepository requestRepository, S3Config s3Config) {
         this.userRepo = userRepo;
         this.passwordEncoder = passwordEncoder;
         this.jwtTokenProvider = jwtTokenProvider;
@@ -61,6 +64,7 @@ public class UserService {
         this.bookRepository = bookRepository;
         this.userRepository = userRepository;
 		this.fcmTokenDao = fcmTokenDao;
+		this.requestRepository = requestRepository;
 		this.s3Config = s3Config;
 	}
 
@@ -339,5 +343,21 @@ public class UserService {
 
     public Boolean checkIfEmailExists(String email) {
         return userRepo.existsByEmail(email);
+    }
+
+	public ResponseEntity<List<AgreeDocResDto>> getAgreeDocs() {
+        User user = getAuthenticatedUser();
+
+        List<AgreeDocResDto> collect = requestRepository.findAgreedRequest(user).stream()
+            .map(Request::getDocument)
+            .map(document -> {
+                return new AgreeDocResDto(
+                    document.getId(),
+                    document.getTitle(),
+                    document.getGroup().getGroupName()
+                );
+            }).toList();
+
+        return new ResponseEntity<>(collect, HttpStatus.OK);
     }
 }

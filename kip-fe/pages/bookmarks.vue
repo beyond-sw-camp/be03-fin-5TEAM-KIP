@@ -1,5 +1,4 @@
 <script setup>
-import {ref} from "vue";
 import {toastViewerInstance} from "~/useToastViewer";
 import {useBookMarks} from "~/stores/BookMarks.js";
 
