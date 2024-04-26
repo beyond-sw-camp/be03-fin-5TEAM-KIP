@@ -12,7 +12,7 @@
 
 <details>
 <summary>
-  <b>⭐프로젝트 개요</b>
+  <b>⭐ 프로젝트 개요</b>
 </summary>
 <div markdown="1">
 
@@ -35,7 +35,7 @@
 
 <details>
 <summary>
-  <b>⭐기술 스택</b>
+  <b>⭐ 기술 스택</b>
 </summary>
 <div markdown="1">
 
@@ -70,7 +70,7 @@
 
 <details>
 <summary>
-  <b>⭐요구사항 정의서</b>
+  <b>⭐ 요구사항 정의서</b>
 </summary>
 <div markdown="1">
 
@@ -117,7 +117,7 @@
 
 <details>
 <summary>
-  <b>⭐조직의 구성(예시)</b>
+  <b>⭐ 조직의 구성(예시)</b>
 </summary>
 <div markdown="1">
   
@@ -151,21 +151,42 @@
 
 ---
 
-### ⭐ERD
+<details>
+<summary>
+  <b>⭐ ERD</b>
+</summary>
+<div markdown="1">
+  
 <p align="center">
   <img src="https://github.com/beyond-sw-camp/be03-fin-5TEAM-KIP/assets/148752498/1d2009c9-4811-4ed2-9956-97d8e93da44b">
 </p>
+  
+</div>
+</details>
 
 ---
 
-### ⭐ WBS
+<details>
+<summary>
+  <b>⭐ WBS</b>
+</summary>
+<div markdown="1">
+
 <p align="center">
   <img src="https://github.com/beyond-sw-camp/be03-fin-5TEAM-KIP/assets/148752498/b15d6953-c466-446a-89d4-c21e84929911">
 </p>
 
+</div>
+</details>
+
 ---
 
-### ⭐ 화면설계서 ([KIP 화면설계 피그마 링크](https://www.figma.com/file/7uzpyZLpNiRnG6SaqKPq0G/KIP_FrontPage?type=design&node-id=0%3A1&mode=design&t=bmqXufLzF1sSbCEr-1))
+<details>
+<summary>
+  <b>⭐ 화면설계서</b>
+</summary>
+<div markdown="1">
+
 - 메인화면
 <p align="center">
   <img src="https://github.com/beyond-sw-camp/be03-fin-5TEAM-KIP/assets/148752498/e78374c8-e5e5-43d2-b53a-85d6c2b3c179">
@@ -173,15 +194,32 @@
 
 #### 📌 [KIP 화면설계 피그마 링크](https://www.figma.com/file/7uzpyZLpNiRnG6SaqKPq0G/KIP_FrontPage?type=design&node-id=0%3A1&mode=design&t=bmqXufLzF1sSbCEr-1)
 
+</div>
+</details>
+
 ---
-### ⭐ 시스템 아키텍처 설계서
+
+<details>
+<summary>
+  <b>⭐ 시스템 아키텍처 설계서</b>
+</summary>
+<div markdown="1">
+  
 <p align="center">
   <img src="https://github.com/beyond-sw-camp/be03-fin-5TEAM-KIP/assets/148752498/a485d85c-4004-46a6-ac37-6cebe1cef493">
 </p>
 
+</div>
+</details>
+
 ---
 
-### ⭐ 프로그램 사양서 ([KIP 프로그램 사양서 노션 링크](https://elite-bass-0e0.notion.site/API-178a96f9ca5f4a08961d97923dc7c8e8?pvs=4))
+<details>
+<summary>
+  <b>⭐ 프로그램 사양서</b>
+</summary>
+<div markdown="1">
+  
 - API 전체 목록
 <p align="center">
   <img src="https://github.com/beyond-sw-camp/be03-fin-5TEAM-KIP/assets/148752498/7c963ddb-fc8a-4059-888e-05fd8f55bbb9">
@@ -191,6 +229,9 @@
 <p align="center">
   <img src="https://github.com/beyond-sw-camp/be03-fin-5TEAM-KIP/assets/148752498/bef93dea-73ca-4367-9f69-a0b1a5143072">
 </p>
+
+</div>
+</details>
 
 ---
 
@@ -537,7 +578,7 @@
 
 ---
 
-<summary><b>⭐ CI/CD 계획서</b></summary>
+### ⭐ CI/CD 계획서
 <div markdown="1">
   
 ### Terraform으로 코드형인프라(Infrastructure as Code, IaC) 구축(AWS CI/CD)
