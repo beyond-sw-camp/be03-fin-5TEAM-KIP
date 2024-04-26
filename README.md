@@ -348,7 +348,7 @@
 ---
 
 <details>
-<summary><b>⭐ UI / UX 단위 테스트결과서</b></summary>
+<summary><b>⭐ UI/UX 단위 테스트결과서</b></summary>
 <div markdown="1">
 
 #### 📌 로그인
