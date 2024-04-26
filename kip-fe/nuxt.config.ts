@@ -1,9 +1,8 @@
 import vuetify, {transformAssetUrls} from 'vite-plugin-vuetify'
 // https://nuxt.com/docs/api/configuration/nuxt-config
 export default defineNuxtConfig({
-
     devtools: {enabled: true},
-
+    ssr:false, // 서버사이드 렌더링 사용하지 않음, CSR 로 작동하게 하는 코드.
     build: {
         transpile: ['vuetify'],
     },
