@@ -120,7 +120,6 @@ const hashTagUpdateReq = () => {
   hashTagUpdateModal.value = false;
 }
 
-
 // 문서 제목 업데이트 관련
 const titleEditing = ref(false);
 const newTitle = ref();
@@ -132,7 +131,7 @@ const updateDocumentTitle = async () => {
       documentList.selectedDocumentDetails.documentId,
       documentList.selectedDocumentDetails.title)
   await bookmarks.setMyBookMarks();
-  newTitle.value =  ""
+  newTitle.value = ""
 }
 
 
@@ -145,7 +144,7 @@ const updateDocumentTitle = async () => {
       <v-col cols="3">
         <v-list class="pa-4">
           <v-list-item>
-            <v-list-item-title class="font-weight-bold headline text-center mt-2 mb-6">
+            <v-list-item-title class="font-weight-bold headline text-center mb-4 pa-2">
               북마크 ⭐
             </v-list-item-title>
           </v-list-item>
@@ -199,7 +198,7 @@ const updateDocumentTitle = async () => {
               </v-card-title>
 
               <!-- 제목 표시 -->
-              <v-card-title v-else class="headline text-center">
+              <v-card-title v-else class="headline text-center pa-2 mb-4">
                 {{ documentList.selectedDocumentDetails.title }}
               </v-card-title>
 
@@ -240,8 +239,11 @@ const updateDocumentTitle = async () => {
               <v-btn key="1" size="large" prepend-icon="mdi-format-title" @click="titleEditing = true">제목 수정</v-btn>
               <v-btn key="2" size="large" prepend-icon="mdi-pencil" @click="">내용 수정</v-btn>
               <v-btn key="3" size="large" prepend-icon="mdi-history" @click="">수정 이력</v-btn>
-              <v-btn key="4" size="large" v-if="isBookmarked" prepend-icon="mdi-star" @click="handleBookmarkClick">북마크 해제</v-btn>
-              <v-btn key="5" size="large" v-else prepend-icon="mdi-star-outline" @click="handleBookmarkClick">북마크 추가</v-btn>
+              <v-btn key="4" size="large" v-if="isBookmarked" prepend-icon="mdi-star" @click="handleBookmarkClick">북마크
+                                                                                                                   해제
+              </v-btn>
+              <v-btn key="5" size="large" v-else prepend-icon="mdi-star-outline" @click="handleBookmarkClick">북마크 추가
+              </v-btn>
             </v-speed-dial>
           </v-container>
         </div>
@@ -257,7 +259,7 @@ const updateDocumentTitle = async () => {
           <v-card flat>
             <v-card-title class="headline text-center">첨부 파일
 
-              <!-- 첨부파일 업로드 로직 부분 -->
+                                                       <!-- 첨부파일 업로드 로직 부분 -->
               <v-dialog
                   class="d-flex justify-center"
                   width="40vw"

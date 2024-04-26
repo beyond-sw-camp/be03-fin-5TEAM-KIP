@@ -165,7 +165,7 @@ const realUpdateDocumentTitle = async (event) => {
       <v-col cols="3">
         <v-list class="pa-4">
           <v-list-item>
-            <v-list-item-title class="font-weight-bold headline text-center mt-2 mb-6">
+            <v-list-item-title class="font-weight-bold headline text-center mb-4 pa-2">
               {{ groupName.getSelectedGroupInfo[0].groupName }}
               {{ `${groupName.getSelectedGroupInfo[0].groupType === 'DEPARTMENT' ? '🏢' : '🚀'}` }}
             </v-list-item-title>
@@ -235,7 +235,7 @@ const realUpdateDocumentTitle = async (event) => {
               </v-card-title>
 
               <!-- 제목 표시 -->
-              <v-card-title v-else class="headline text-center">
+              <v-card-title v-else class="headline text-centermb-4 pa-2 mb-4">
                 {{ documentList.selectedDocumentDetails.title }}
               </v-card-title>
 

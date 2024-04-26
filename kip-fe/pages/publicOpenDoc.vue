@@ -21,7 +21,6 @@ const viewer = ref();
 const upLinkId = ref();
 
 
-
 // 첨부파일 관련
 const files = ref([]);
 const fileHover = ref(null);
@@ -93,7 +92,7 @@ const updateDocumentTitle = async () => {
       documentList.selectedDocumentDetails.documentId,
       documentList.selectedDocumentDetails.title)
   await documentList.setPublicDocumentList();
-  newTitle.value =  ""
+  newTitle.value = ""
 }
 
 // 문서 선택 시 상세 정보를 가져오는 함수
@@ -212,7 +211,7 @@ const handleBookmarkClick = async () => {
       <v-col cols="3">
         <v-list class="pa-4">
           <v-list-item>
-            <v-list-item-title class="font-weight-bold headline text-center mt-2 mb-6">
+            <v-list-item-title class="font-weight-bold headline text-center mb-4 pa-2">
               전체공개문서 🌐
             </v-list-item-title>
           </v-list-item>
@@ -373,7 +372,7 @@ const handleBookmarkClick = async () => {
               </v-card-title>
 
               <!-- 제목 표시 -->
-              <v-card-title v-else class="headline text-center">
+              <v-card-title v-else class="headline text-center mb-4 pa-2">
                 {{ documentList.selectedDocumentDetails.title }}
               </v-card-title>
 
@@ -422,8 +421,11 @@ const handleBookmarkClick = async () => {
               <v-btn key="1" size="large" prepend-icon="mdi-format-title" @click="titleEditing = true">제목 수정</v-btn>
               <v-btn key="2" size="large" prepend-icon="mdi-pencil" @click="">내용 수정</v-btn>
               <v-btn key="3" size="large" prepend-icon="mdi-history" @click="">수정 이력</v-btn>
-              <v-btn key="4" size="large" v-if="isBookmarked" prepend-icon="mdi-star" @click="handleBookmarkClick">북마크 해제</v-btn>
-              <v-btn key="5" size="large" v-else prepend-icon="mdi-star-outline" @click="handleBookmarkClick">북마크 추가</v-btn>
+              <v-btn key="4" size="large" v-if="isBookmarked" prepend-icon="mdi-star" @click="handleBookmarkClick">북마크
+                                                                                                                   해제
+              </v-btn>
+              <v-btn key="5" size="large" v-else prepend-icon="mdi-star-outline" @click="handleBookmarkClick">북마크 추가
+              </v-btn>
             </v-speed-dial>
           </v-container>
         </div>
