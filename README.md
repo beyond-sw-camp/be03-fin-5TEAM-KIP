@@ -176,7 +176,7 @@
 ---
 ### ⭐ 시스템 아키텍처 설계서
 <p align="center">
-  <img src="https://github.com/beyond-sw-camp/be03-fin-5TEAM-KIP/assets/148752498/e2421311-a56b-4d0a-8e98-e5e083122482">
+  <img src="https://github.com/beyond-sw-camp/be03-fin-5TEAM-KIP/assets/148752498/a485d85c-4004-46a6-ac37-6cebe1cef493">
 </p>
 
 ---
@@ -537,14 +537,13 @@
 
 ---
 
-
 <summary><b>⭐ CI/CD 계획서</b></summary>
 <div markdown="1">
   
 ### Terraform으로 코드형인프라(Infrastructure as Code, IaC) 구축(AWS CI/CD)
 
 <p align="center">
-  <img src="https://github.com/beyond-sw-camp/be03-fin-5TEAM-KIP/assets/148752498/7efd8cda-a727-49a3-b020-828c0d3fed02">
+  <img src="https://github.com/beyond-sw-camp/be03-fin-5TEAM-KIP/assets/148752498/3bdcbff8-c0a2-4a58-b7d3-f2030d04937c">
 </p>
 
 #### 📌 IaC & Terraform 선택이유
@@ -572,4 +571,3 @@
 #### 📌 프론트엔드 배포과정
 - git push -> git action -> AWS S3 프론트엔드 빌드 리소스 업로드
 </div>
-
