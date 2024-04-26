@@ -603,7 +603,7 @@
 <p align="center">
   <img src="https://github.com/beyond-sw-camp/be03-fin-5TEAM-KIP/assets/148752498/d7780c6c-2dda-44a1-8457-2531f15e614a">
 </p>
-- <b>Terraform으로 백엔드 AWS CI/CD 구축완료(OpenSearch, ElastiCache 제외)</b>
+- <b>Terraform으로 백엔드 AWS CI/CD 구축완료(OpenSearch, ElastiCache 제외)</b> </br>
 - <b>Terraform으로 프론트엔드 AWS CI/CD 구축완료</b>
 
 #### 📌 백엔드 배포과정
