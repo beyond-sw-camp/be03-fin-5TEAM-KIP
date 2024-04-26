@@ -171,16 +171,15 @@ const realUpdateDocumentTitle = async (event) => {
             </v-list-item-title>
           </v-list-item>
           <v-divider></v-divider>
-          <!-- 그룹 문서 title 출력 -->
 
+          <!-- 그룹 문서 title 출력 -->
           <v-tabs color="primary" direction="vertical" class="mt-4">
             <v-tab
                 v-for="doc in documentList.getDocumentList"
                 :key="doc.documentId"
                 @click="selectDocument(doc.documentId)"
                 @mouseenter="hover = doc.documentId"
-                @mouseleave="hover = null"
-            >
+                @mouseleave="hover = null">
 
               <h3 v-if="doc.docType === 'SECTION'">🔹️ {{ doc.title }} </h3>
               <div v-else>
