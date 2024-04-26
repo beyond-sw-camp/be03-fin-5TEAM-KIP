@@ -272,7 +272,7 @@ const realUpdateDocumentTitle = async (event) => {
 
                     <v-btn
                         class="mt-7"
-                        color="success"
+                        :color="color.kipMainColor"
                         :loading="titleLoding"
                         text="문서 제목 변경"
                         type="submit"
