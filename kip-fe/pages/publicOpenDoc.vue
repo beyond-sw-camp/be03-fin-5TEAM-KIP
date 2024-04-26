@@ -224,7 +224,7 @@ const handleBookmarkClick = async () => {
       <v-col cols="3">
         <v-list class="pa-4">
           <v-list-item>
-            <v-list-item-title class="font-weight-bold headline text-center mb-4">
+            <v-list-item-title class="font-weight-bold headline text-center mb-4 mb-6">
               전체공개문서
               <v-btn
                   :icon="`mdi-plus`"
@@ -617,7 +617,7 @@ const handleBookmarkClick = async () => {
               hint="여러 태그를 엔터로 구분하여 입력하세요."/>
           <v-btn
               class="mt-4"
-              color="success"
+              :color="color.kipMainColor"
               text="해시태그 수정하기"
               @click="hashTagUpdateReq"
               block

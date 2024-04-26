@@ -443,7 +443,7 @@ const realUpdateDocumentTitle = async (event) => {
               hint="여러 태그를 엔터로 구분하여 입력하세요."/>
           <v-btn
               class="mt-4"
-              color="success"
+              :color="color.kipMainColor"
               text="해시태그 수정하기"
               @click="hashTagUpdateReq"
               block
