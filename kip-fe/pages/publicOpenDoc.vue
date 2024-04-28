@@ -202,6 +202,23 @@ const handleBookmarkClick = async () => {
   await bookmarks.setMyBookMarks();
 };
 
+
+// 드래그
+
+import {useDraggable} from '@vueuse/core'
+
+const el = ref(null)
+
+const {x, y, style} = useDraggable(el, {
+  initialValue: {x: 40, y: 40},
+})
+onMounted(() => {
+  if (typeof window !== 'undefined') { // Check if code is running in Browser
+    x.value = (window.innerWidth / 100) * 35.6
+    y.value = (window.innerHeight / 100) * 64
+  }
+})
+
 </script>
 
 <template>
@@ -396,38 +413,37 @@ const handleBookmarkClick = async () => {
           <div ref="viewer">{{ documentList.selectedDocumentDetails.content }}</div>
         </v-card>
 
-
         <div class="fab_div">
           <v-container class="d-flex justify-end" style="margin: 30px;">
-            <v-speed-dial location="top center" transition="fade-transition">
-              <template v-slot:activator="{ props: activatorProps }">
+              <v-speed-dial location="top center" transition="fade-transition">
+                <template v-slot:activator="{ props: activatorProps }">
+                  <v-btn
+                      rounded="circle"
+                      v-bind="activatorProps"
+                      size="large"
+                      stacked>
+                    <v-img
+                        width="36px"
+                        src="/images/logos/kiplogo.svg"/>
+                  </v-btn>
+                </template>
                 <v-btn
-                    rounded="circle"
-                    v-bind="activatorProps"
-                    size="large"
-                    stacked>
-                  <v-img
-                      width="36px"
-                      src="/images/logos/kiplogo.svg"/>
+                    key="6"
+                    :icon="`mdi-plus`"
+                    variant="elevated"
+                    rounded="lg"
+                    class="mb-2 ml-2"
+                    @click.stop="openCreateNewDocument"
+                />
+                <v-btn key="1" size="large" prepend-icon="mdi-format-title" @click="titleEditing = true">제목 수정</v-btn>
+                <v-btn key="2" size="large" prepend-icon="mdi-pencil" @click="">내용 수정</v-btn>
+                <v-btn key="3" size="large" prepend-icon="mdi-history" @click="">수정 이력</v-btn>
+                <v-btn key="4" size="large" v-if="isBookmarked" prepend-icon="mdi-star" @click="handleBookmarkClick">북마크
+                                                                                                                     해제
                 </v-btn>
-              </template>
-              <v-btn
-                  key="6"
-                  :icon="`mdi-plus`"
-                  variant="elevated"
-                  rounded="lg"
-                  class="mb-2 ml-2"
-                  @click.stop="openCreateNewDocument"
-              />
-              <v-btn key="1" size="large" prepend-icon="mdi-format-title" @click="titleEditing = true">제목 수정</v-btn>
-              <v-btn key="2" size="large" prepend-icon="mdi-pencil" @click="">내용 수정</v-btn>
-              <v-btn key="3" size="large" prepend-icon="mdi-history" @click="">수정 이력</v-btn>
-              <v-btn key="4" size="large" v-if="isBookmarked" prepend-icon="mdi-star" @click="handleBookmarkClick">북마크
-                                                                                                                   해제
-              </v-btn>
-              <v-btn key="5" size="large" v-else prepend-icon="mdi-star-outline" @click="handleBookmarkClick">북마크 추가
-              </v-btn>
-            </v-speed-dial>
+                <v-btn key="5" size="large" v-else prepend-icon="mdi-star-outline" @click="handleBookmarkClick">북마크 추가
+                </v-btn>
+              </v-speed-dial>
           </v-container>
         </div>
 

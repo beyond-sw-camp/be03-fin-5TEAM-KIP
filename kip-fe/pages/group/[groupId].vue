@@ -19,7 +19,6 @@ const titleEditing = ref(false);
 const newTitle = ref();
 
 // 드레그 관련 함수
-const dragging = ref("false");
 const mouseDown = ref("")
 const mouseUp = ref("")
 const moveDocumentReq = ref({
@@ -191,11 +190,10 @@ const realUpdateDocumentTitle = async (event) => {
               {{ `${groupName.getSelectedGroupInfo[0].groupType === 'DEPARTMENT' ? '🏢' : '🚀'}` }}
             </v-list-item-title>
           </v-list-item>
-          {{ dragging }} down{{ moveDocumentReq.startDocId }} / up {{ moveDocumentReq.endDocId }}
           <v-divider></v-divider>
 
           <!-- 그룹 문서 title 출력 -->
-          <v-tabs color="primary" direction="vertical" class="mt-4">
+          <v-tabs color="primary" direction="vertical" class="mt-4 px-0">
 
             <draggable
                 v-model="documentList.fillteredDocList"
@@ -203,35 +201,48 @@ const realUpdateDocumentTitle = async (event) => {
                 :animation="1000"
                 item-key="documentId"
                 @change="handleChange"
-                @start="dragging='start'"
-                @end="dragging = 'end'"
             >
 
               <template #item="{ element: doc }">
-                <v-card
-                    variant="text">
-                  <v-tab
-                      width="100%"
-                      @click="selectDocument(doc.documentId)"
-                      :value="doc.documentId"
-                      @mousedown="mouseDown = doc.documentId"
-                      @mousemove="mouseUp = doc.documentId"
-                  >
-                    <h3 v-if="doc.docType === 'SECTION'">🔹️ {{ doc.title }} </h3>
-                    <div v-else>
-                      {{ '&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;' }} {{ doc.title }} {{ doc.documentId }}
-                    </div>
-
-                    <template v-if="hover === doc.documentId" v-slot:append>
-                      <v-btn
-                          :icon="`mdi-plus`"
-                          variant="text"
-                          density="compact"
-                          rounded="lg"
-                          @click.stop="openCreateNewDocument(doc.documentId)"
-                      />
-                    </template>
-                  </v-tab>
+                <v-card variant="text" class="ma-0">
+                  <v-row>
+                    <v-col cols="10" class="px-0">
+                      <v-tab
+                          width="100%"
+                          @click="selectDocument(doc.documentId)"
+                          :value="doc.documentId"
+                          @mousedown="mouseDown = doc.documentId"
+                          @mousemove="mouseUp = doc.documentId">
+                        <h3
+                            v-if="doc.docType === 'SECTION'"
+                            class="ellipsis"
+                            style="width:17vw; text-align: start"
+                        > 🔹️ {{ doc.title }}</h3>
+                        <div
+                            v-else
+                            class="ellipsis"
+                            style="width:17vw; text-align: start"
+                        >
+                          {{ '&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;' }} {{ doc.title }} {{ doc.documentId }}
+                        </div>
+                      </v-tab>
+                    </v-col>
+                    <v-col cols="2" class="d-flex align-center px-0">
+                      <v-hover v-slot="{ isHovering, props }">
+                        <v-btn
+                            icon="mdi-plus"
+                            v-bind="props"
+                            :class="{
+                            'on-hover': isHovering,
+                            'show-btns': isHovering
+                          }"
+                            color="rgba(255, 255, 255, 0)"
+                            variant="tonal"
+                            @click.stop="openCreateNewDocument(doc.documentId)"
+                        />
+                      </v-hover>
+                    </v-col>
+                  </v-row>
                 </v-card>
               </template>
             </draggable>
@@ -571,10 +582,17 @@ const realUpdateDocumentTitle = async (event) => {
   width: calc(100% + 0px);
 }
 
+.show-btns {
+  color: var(--primary-color) !important;
+}
 
 .sortable-ghost {
   background-color: rgba(0, 51, 255, 0.27);
 }
-
+.ellipsis {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
 
 </style>
