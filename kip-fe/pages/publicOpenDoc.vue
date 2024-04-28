@@ -202,23 +202,6 @@ const handleBookmarkClick = async () => {
   await bookmarks.setMyBookMarks();
 };
 
-
-// 드래그
-
-import {useDraggable} from '@vueuse/core'
-
-const el = ref(null)
-
-const {x, y, style} = useDraggable(el, {
-  initialValue: {x: 40, y: 40},
-})
-onMounted(() => {
-  if (typeof window !== 'undefined') { // Check if code is running in Browser
-    x.value = (window.innerWidth / 100) * 35.6
-    y.value = (window.innerHeight / 100) * 64
-  }
-})
-
 </script>
 
 <template>

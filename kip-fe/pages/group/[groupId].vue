@@ -11,7 +11,7 @@ const documentList = useDocumentList();
 const attachedFile = useAttachedFile();
 const createDocument = useCreateDocument();
 const postForm = ref();
-const hover = ref(null);
+
 const dialog = ref(false);
 const upLinkId = ref();
 const viewer = ref();
@@ -19,8 +19,7 @@ const titleEditing = ref(false);
 const newTitle = ref();
 
 // 드레그 관련 함수
-const mouseDown = ref("")
-const mouseUp = ref("")
+const mouseDown = ref(false);
 const moveDocumentReq = ref({
   startDocId: "",
   endDocId: "",
@@ -36,6 +35,11 @@ const handleChange = async (event) => {
   }
 }
 
+// 문서 타입을 드래그로 변경
+const changeDocumentTypeByScroll = async (documentId) => {
+  await documentList.ChangeDocumentType(documentId)
+  await documentList.setDocumentList(groupId);
+}
 
 // 첨부파일 관련
 const files = ref([]);
@@ -211,8 +215,7 @@ const realUpdateDocumentTitle = async (event) => {
                           width="100%"
                           @click="selectDocument(doc.documentId)"
                           :value="doc.documentId"
-                          @mousedown="mouseDown = doc.documentId"
-                          @mousemove="mouseUp = doc.documentId">
+                          @contextmenu.prevent="changeDocumentTypeByScroll(doc.documentId)">
                         <h3
                             v-if="doc.docType === 'SECTION'"
                             class="ellipsis"
@@ -247,7 +250,6 @@ const realUpdateDocumentTitle = async (event) => {
               </template>
             </draggable>
           </v-tabs>
-
 
         </v-list>
         <v-dialog v-model="dialog" fullscreen>
