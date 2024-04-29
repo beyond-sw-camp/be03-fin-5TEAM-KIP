@@ -4,8 +4,8 @@ build/
 !gradle/wrapper/gradle-wrapper.jar
 !**/src/main/**/build/
 !**/src/test/**/build/
-application.yml
-jwt.yml
+src/main/resources/application.yml
+*.yml
 src/main/resources/kip-fcm-firebase-adminsdk-gm80d-6a9b5bbd58.json
 
 ### STS ###

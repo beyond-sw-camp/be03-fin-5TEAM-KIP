@@ -7,7 +7,6 @@ import com.FINAL.KIP.document.dto.res.JustDocTitleResDto;
 import com.FINAL.KIP.document.repository.DocumentRepository;
 import com.FINAL.KIP.hashtag.domain.DocHashTag;
 import com.FINAL.KIP.hashtag.domain.HashTag;
-import com.FINAL.KIP.hashtag.dto.req.HashTagReqDto;
 import com.FINAL.KIP.hashtag.dto.req.UpdateHashTagsReqDto;
 import com.FINAL.KIP.hashtag.dto.res.HashTagResDto;
 import com.FINAL.KIP.hashtag.repository.DocHashTagRepository;
@@ -39,10 +38,13 @@ public class HashTagService {
 
     // Create
     @UserAdmin
-    public List<HashTagResDto> createHashTags(List<HashTagReqDto> dtos) {
+    public List<HashTagResDto> createHashTags(List<String> dtos) {
         List<HashTag> hashTags = new ArrayList<>();
-        for (HashTagReqDto tagDto : dtos)
-            hashTags.add(tagDto.makeHashTagFromTagReqDto());
+        for (String tagDto : dtos){
+            HashTag newHashTag = HashTag.builder()
+                .tagName(tagDto).build();
+            hashTags.add(newHashTag);
+        }
 
         List<HashTag> distinctTags = hashTags.stream()  // 중복제거
                 .filter(tag -> hashTagRepo
@@ -64,9 +66,10 @@ public class HashTagService {
     }
 
     @UserAdmin
-    public List<JustDocTitleResDto> getDocumentsByHashTag(Long hashTagId) {
+    public List<JustDocTitleResDto> getPublicDocumentsByHashTag(Long hashTagId) {
         return docHashTagRepo.findByHashTag(getHashTagByHashTagId(hashTagId)).stream()
                 .map(DocHashTag::getDocument)
+                .filter(document -> document.getGroup() == null)
                 .map(JustDocTitleResDto::new)
                 .collect(Collectors.toList());
     }
@@ -101,10 +104,10 @@ public class HashTagService {
                 ()-> new NoSuchElementException("해당 태그 Id가 존재하지 않습니다. "));
     }
 
-    public void generateDocHashTags(List<HashTagReqDto> hashTags, Document document) {
+    public void generateDocHashTags(List<String> hashTags, Document document) {
         createHashTags(hashTags);  // 중복빼고 저장.
         List<DocHashTag> docHashTags = hashTags.stream()
-                .map(req -> getHashTagByTagName(req.getTagName()))
+                .map(this::getHashTagByTagName)
                 .map(hashTag -> new DocHashTag(document, hashTag))
                 .toList();
         document.addAllDocHashTags(docHashTags);

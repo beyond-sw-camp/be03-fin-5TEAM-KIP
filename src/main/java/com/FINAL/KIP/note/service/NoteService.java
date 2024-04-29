@@ -9,11 +9,19 @@ import com.FINAL.KIP.note.domain.Note;
 import com.FINAL.KIP.note.dto.request.NoteAgreeReqDto;
 import com.FINAL.KIP.note.dto.request.NoteCreateReqDto;
 import com.FINAL.KIP.note.dto.request.NoteRefuseReqDto;
+import com.FINAL.KIP.note.dto.response.NoteGetReqDto;
 import com.FINAL.KIP.note.repository.NoteRepository;
 import com.FINAL.KIP.user.domain.User;
+import com.FINAL.KIP.user.repository.UserRepository;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -21,13 +29,15 @@ import org.springframework.transaction.annotation.Transactional;
 @Transactional
 public class NoteService {
 
+	private final UserRepository userRepository;
 	private final GroupUserRepository groupUserRepository;
 	private final FCMService fcmService;
 	private final NoteRepository noteRepository;
 
 	@Autowired
-	public NoteService(GroupUserRepository groupUserRepository, FCMService fcmService,
+	public NoteService(UserRepository userRepository, GroupUserRepository groupUserRepository, FCMService fcmService,
 		NoteRepository noteRepository) {
+		this.userRepository = userRepository;
 		this.groupUserRepository = groupUserRepository;
 		this.fcmService = fcmService;
 		this.noteRepository = noteRepository;
@@ -103,5 +113,54 @@ public class NoteService {
 			note.getMessage());
 
 		fcmService.sendAgreeRequestMessage(fcmMessageDto);
+	}
+
+	public ResponseEntity<List<NoteGetReqDto>> getAllNote() {
+		User user = getUserFromAuthentication();
+
+		List<NoteGetReqDto> collect = user.getNotes().stream().map(note -> {
+			return new NoteGetReqDto(
+				note.getMessage(),
+				note.getId(),
+				note.getIsRead(),
+				note.getCreated_at().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"))
+			);
+		}).toList();
+		return new ResponseEntity<>(collect, HttpStatus.OK);
+	}
+
+	public User getUserFromAuthentication() {
+		Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+		return getUserByEmployeeId(authentication.getName());
+	}
+
+	private User getUserByEmployeeId(String name) {
+		return userRepository.findByEmployeeId(name)
+			.orElseThrow(() -> new IllegalArgumentException("예상치 못한 에러가 발생했습니다."));
+	}
+
+	public ResponseEntity<String> removeNote(Long noteId) {
+		User user = getUserFromAuthentication();
+		Note note = findNoteById(noteId);
+		if (!note.getReceiver().equals(user)) {
+			throw new IllegalArgumentException("해당 알림은 삭제할 수 없습니다.");
+		}
+
+		noteRepository.delete(note);
+		return new ResponseEntity<>("remove is complete!", HttpStatus.OK);
+	}
+
+	public Note findNoteById(Long noteId) {
+		return noteRepository.findById(noteId)
+			.orElseThrow(() -> new IllegalArgumentException("해당 알림이 존재하지 않습니다."));
+	}
+	public ResponseEntity<Long> readNote(Long noteId) {
+		User user = getUserFromAuthentication();
+		Note note = findNoteById(noteId);
+		if (!note.getReceiver().equals(user)) {
+			throw new IllegalArgumentException("해당 알림은 읽을 수 없습니다.");
+		}
+		note.readNote();
+		return new ResponseEntity<>(noteId, HttpStatus.OK);
 	}
 }

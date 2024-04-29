@@ -1,0 +1,23 @@
+{
+  "properties": {
+    "title": {
+      "type": "text",
+      "analyzer": "document_title_analyzer",
+      "search_analyzer": "document_search_analyzer"
+    },
+    "content": {
+      "type": "text",
+      "analyzer": "document_content_analyzer",
+      "search_analyzer": "document_search_analyzer",
+      "similarity": "less_length_norm_BM25"
+    },
+    "groupName": {
+      "type": "text",
+      "analyzer": "document_title_analyzer",
+      "search_analyzer": "document_search_analyzer"
+    },
+    "uuid": {
+      "type": "text"
+    }
+  }
+}

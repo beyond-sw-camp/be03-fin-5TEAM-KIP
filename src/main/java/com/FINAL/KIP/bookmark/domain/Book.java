@@ -8,11 +8,8 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.OnDelete;
 import org.hibernate.annotations.OnDeleteAction;
-
-import java.time.LocalDateTime;
 
 @Entity
 @Table(name = "bookmarks")
@@ -30,17 +27,7 @@ public class Book extends BaseEntity {
     @JoinColumn(name = "documentId", nullable = false)
     private Document document;
 
-    @Column(nullable = false)
-    private String title;
-
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id", nullable = false)
     private User user;
-
-    @Column(nullable = false)
-    private String employeeId;
-
-    @Column(nullable = false)
-    @CreationTimestamp
-    private LocalDateTime bookCreatedTime;
 }
