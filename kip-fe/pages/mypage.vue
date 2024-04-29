@@ -268,7 +268,12 @@ watch(password, () => {
   background-color: #FFF;
   border-radius: 16px;
   box-shadow: 0 2px 5px 0 rgba(0, 0, 0, 0.26);
-  margin-bottom: 20px;
+  margin: auto; /* 가로 중앙 정렬 */
+  margin-top: 100px; /* 페이지 상단으로부터의 거리 조정 */
+  margin-bottom: 20px; /* 하단 여백 */
+  max-width: 600px; /* 카드 박스의 최대 너비 */
+  display: flex;
+  flex-direction: column;
 }
 
 .caption {
@@ -278,5 +283,11 @@ watch(password, () => {
 
 .error-text {
   color: red;
+}
+
+.card-actions {
+  margin-top: auto; /* 버튼을 아래로 밀어내기 */
+  display: flex;
+  justify-content: flex-end; /* 버튼을 오른쪽으로 정렬 */
 }
 </style>
