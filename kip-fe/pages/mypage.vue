@@ -80,9 +80,10 @@ const changePassword = async () => {
       const success = await userStore.changePassword(password.current, password.new);
       if (success) {
         alert('비밀번호가 성공적으로 변경되었습니다.');
-        password.current = '';
+        password.current = ''; // 상태 초기화
         password.new = '';
         password.confirm = '';
+        isCurrentPasswordValid.value = false; // 비밀번호 유효성 초기화
       } else {
         alert('비밀번호 변경에 실패했습니다.');
       }
