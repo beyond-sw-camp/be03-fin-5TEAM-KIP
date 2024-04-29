@@ -1,13 +1,15 @@
 import vuetify, {transformAssetUrls} from 'vite-plugin-vuetify'
 // https://nuxt.com/docs/api/configuration/nuxt-config
 export default defineNuxtConfig({
-
     devtools: {enabled: true},
-
+    // ssr:false, // 서버사이드 렌더링 사용하지 않음, CSR 로 작동하게 하는 코드.
+    css: ['~/assets/styles/global.css'],
+    imports: { // stores 폴더에 있는 것들 모두 임포트
+        dirs: ["stores"],
+    },
     build: {
         transpile: ['vuetify'],
     },
-
     modules: [
         (_options, nuxt) => {
             nuxt.hooks.hook('vite:extendConfig', (config) => {
@@ -19,13 +21,8 @@ export default defineNuxtConfig({
             autoImports: ["defineStore", "acceptHMRUpdate"]  // 피니아 생성시 임포트 생략
         }],
         '@formkit/nuxt',
-        'nuxt-lodash'
-
+        '@vueuse/nuxt',
     ],
-    css: ['~/assets/styles/global.css'],
-    imports: { // stores 폴더에 있는 것들 모두 임포트
-        dirs: ["stores"],
-    },
     vite: {
         vue: {
             template: {

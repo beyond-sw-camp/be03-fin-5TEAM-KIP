@@ -1,6 +1,7 @@
 <script setup>
 import {ref} from "vue";
 import {toastViewerInstance} from "~/useToastViewer";
+import draggable from "vuedraggable";
 
 const color = useColor();
 const route = useRoute();
@@ -10,12 +11,35 @@ const documentList = useDocumentList();
 const attachedFile = useAttachedFile();
 const createDocument = useCreateDocument();
 const postForm = ref();
-const hover = ref(null);
+
 const dialog = ref(false);
 const upLinkId = ref();
 const viewer = ref();
 const titleEditing = ref(false);
 const newTitle = ref();
+
+// 드레그 관련 함수
+const mouseDown = ref(false);
+const moveDocumentReq = ref({
+  startDocId: "",
+  endDocId: "",
+})
+const handleChange = async (event) => {
+  if (event.moved.newIndex === 0 || event.moved.oldIndex === 0) {
+    alert("최상단 문서의 순서는 변경할 수 없습니다.")
+    await documentList.setDocumentList(groupId);
+  } else {
+    moveDocumentReq.value.startDocId = event.moved.element.documentId
+    moveDocumentReq.value.endDocId = documentList.fillteredDocList[event.moved.newIndex - 1].documentId
+    await documentList.moveDocumentToTargetDoc(moveDocumentReq.value)
+  }
+}
+
+// 문서 타입을 드래그로 변경
+const changeDocumentTypeByScroll = async (documentId) => {
+  await documentList.ChangeDocumentType(documentId)
+  await documentList.setDocumentList(groupId);
+}
 
 // 첨부파일 관련
 const files = ref([]);
@@ -131,7 +155,7 @@ const updateDocumentTitle = async () => {
   titleEditing.value = false
   documentList.selectedDocumentDetails.title = newTitle.value
   await documentList.updateDocumentTitle(documentList.selectedDocumentDetails.documentId, documentList.selectedDocumentDetails.title)
-  newTitle.value =  ""
+  newTitle.value = ""
 }
 
 const OpenTitleUpdateModal = () => {
@@ -165,47 +189,76 @@ const realUpdateDocumentTitle = async (event) => {
       <v-col cols="3">
         <v-list class="pa-4">
           <v-list-item>
-            <v-list-item-title class="font-weight-bold headline text-center mt-2 mb-6">
+            <v-list-item-title class="font-weight-bold headline text-center mb-4 pa-2">
               {{ groupName.getSelectedGroupInfo[0].groupName }}
               {{ `${groupName.getSelectedGroupInfo[0].groupType === 'DEPARTMENT' ? '🏢' : '🚀'}` }}
             </v-list-item-title>
           </v-list-item>
           <v-divider></v-divider>
-          <!-- 그룹 문서 title 출력 -->
 
-          <v-tabs color="primary" direction="vertical" class="mt-4">
-            <v-tab
-                v-for="doc in documentList.getDocumentList"
-                :key="doc.documentId"
-                @click="selectDocument(doc.documentId)"
-                @mouseenter="hover = doc.documentId"
-                @mouseleave="hover = null"
+          <!-- 그룹 문서 title 출력 -->
+          <v-tabs color="primary" direction="vertical" class="mt-4 px-0">
+
+            <draggable
+                v-model="documentList.fillteredDocList"
+                group="groupDocs"
+                :animation="1000"
+                item-key="documentId"
+                @change="handleChange"
             >
 
-              <h3 v-if="doc.docType === 'SECTION'">🔹️ {{ doc.title }} </h3>
-              <div v-else>
-                  {{ '&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;' }} {{ doc.title }}
-              </div>
-
-              <template v-if="hover === doc.documentId" v-slot:append>
-                <v-btn
-                    :icon="`mdi-plus`"
-                    variant="text"
-                    density="compact"
-                    rounded="lg"
-                    @click.stop="openCreateNewDocument(doc.documentId)"
-                />
+              <template #item="{ element: doc }">
+                <v-card variant="text" class="ma-0">
+                  <v-row>
+                    <v-col cols="10" class="px-0">
+                      <v-tab
+                          width="100%"
+                          @click="selectDocument(doc.documentId)"
+                          :value="doc.documentId"
+                          @contextmenu.prevent="changeDocumentTypeByScroll(doc.documentId)">
+                        <h3
+                            v-if="doc.docType === 'SECTION'"
+                            class="ellipsis"
+                            style="width:17vw; text-align: start"
+                        > 🔹️ {{ doc.title }}</h3>
+                        <div
+                            v-else
+                            class="ellipsis"
+                            style="width:17vw; text-align: start"
+                        >
+                          {{ '&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;' }} {{ doc.title }} {{ doc.documentId }}
+                        </div>
+                      </v-tab>
+                    </v-col>
+                    <v-col cols="2" class="d-flex align-center px-0">
+                      <v-hover v-slot="{ isHovering, props }">
+                        <v-btn
+                            icon="mdi-plus"
+                            v-bind="props"
+                            :class="{
+                            'on-hover': isHovering,
+                            'show-btns': isHovering
+                          }"
+                            color="rgba(255, 255, 255, 0)"
+                            variant="tonal"
+                            @click.stop="openCreateNewDocument(doc.documentId)"
+                        />
+                      </v-hover>
+                    </v-col>
+                  </v-row>
+                </v-card>
               </template>
-            </v-tab>
+            </draggable>
           </v-tabs>
+
         </v-list>
         <v-dialog v-model="dialog" fullscreen>
           <v-card>
             <PostForm ref="postForm" @submit="handleData"></PostForm>
             <v-card-actions>
               <v-spacer></v-spacer>
-              <v-btn  @click=postForm.submit()>작성 완료</v-btn>
-              <v-btn  @click="dialog = false">닫기</v-btn>
+              <v-btn @click=postForm.submit()>작성 완료</v-btn>
+              <v-btn @click="dialog = false">닫기</v-btn>
             </v-card-actions>
           </v-card>
         </v-dialog>
@@ -236,7 +289,7 @@ const realUpdateDocumentTitle = async (event) => {
               </v-card-title>
 
               <!-- 제목 표시 -->
-              <v-card-title v-else class="headline text-center">
+              <v-card-title v-else class="headline text-centermb-4 pa-2 mb-4">
                 {{ documentList.selectedDocumentDetails.title }}
               </v-card-title>
 
@@ -312,11 +365,15 @@ const realUpdateDocumentTitle = async (event) => {
               </template>
 
               <v-btn key="1" size="large" prepend-icon="mdi-format-title" @click="titleEditing = true"
-              hint>제목 수정</v-btn>
+                     hint>제목 수정
+              </v-btn>
               <v-btn key="2" size="large" prepend-icon="mdi-pencil" @click="">내용 수정</v-btn>
               <v-btn key="3" size="large" prepend-icon="mdi-history" @click="">수정 이력</v-btn>
-              <v-btn key="4" size="large" v-if="isBookmarked" prepend-icon="mdi-star" @click="handleBookmarkClick">북마크 해제</v-btn>
-              <v-btn key="5" size="large" v-else prepend-icon="mdi-star-outline" @click="handleBookmarkClick">북마크 추가</v-btn>
+              <v-btn key="4" size="large" v-if="isBookmarked" prepend-icon="mdi-star" @click="handleBookmarkClick">북마크
+                                                                                                                   해제
+              </v-btn>
+              <v-btn key="5" size="large" v-else prepend-icon="mdi-star-outline" @click="handleBookmarkClick">북마크 추가
+              </v-btn>
             </v-speed-dial>
           </v-container>
         </div>
@@ -332,7 +389,7 @@ const realUpdateDocumentTitle = async (event) => {
           <v-card flat>
             <v-card-title class="headline text-center">첨부 파일
 
-              <!-- 첨부파일 업로드 로직 부분 -->
+                                                       <!-- 첨부파일 업로드 로직 부분 -->
               <v-dialog
                   class="d-flex justify-center"
                   width="40vw"
@@ -513,6 +570,7 @@ const realUpdateDocumentTitle = async (event) => {
 .divider-container {
   min-height: calc(97vh - 1.6vw - 90px);
 }
+
 .fab_div {
   justify-content: flex-end;
   display: flex;
@@ -525,4 +583,18 @@ const realUpdateDocumentTitle = async (event) => {
   left: 0px;
   width: calc(100% + 0px);
 }
+
+.show-btns {
+  color: var(--primary-color) !important;
+}
+
+.sortable-ghost {
+  background-color: rgba(0, 51, 255, 0.27);
+}
+.ellipsis {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
 </style>

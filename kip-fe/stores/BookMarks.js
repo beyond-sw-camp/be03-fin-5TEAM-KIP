@@ -5,12 +5,13 @@ export const useBookMarks = defineStore("bookmarks", {
     state() {
         return {
             myBookMarks: [],
+            filteredBookMarks: [],
         };
     },
     getters: {
         // getter를 업데이트하여 모든 정보를 반환
         getMyBookMarksDetails(state){
-            return state.myBookMarks
+            return state.filteredBookMarks
         },
     },
 
@@ -23,6 +24,7 @@ export const useBookMarks = defineStore("bookmarks", {
                 });
                 if (!response.ok) throw new Error('Failed to fetch bookmarks.');
                 this.myBookMarks = await response.json();
+                this.filteredBookMarks = this.myBookMarks
             } catch (error) {
                 console.error('Error fetching bookmarks:', error.message);
                 this.myBookMarks = []; // 에러가 발생한 경우 북마크 목록을 초기화
@@ -47,7 +49,7 @@ export const useBookMarks = defineStore("bookmarks", {
             }
         },
         async filterBookMarkDocByHashTag(hashTagId) {
-            this.myBookMarks = this.myBookMarks.filter(doc => doc.hashTagIds.includes(hashTagId))
+            this.filteredBookMarks = this.myBookMarks.filter(doc => doc.hashTagIds.includes(hashTagId))
         }
     }
 });
