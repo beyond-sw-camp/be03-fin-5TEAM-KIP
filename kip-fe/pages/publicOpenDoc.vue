@@ -3,6 +3,7 @@ import {toastViewerInstance} from "~/useToastViewer";
 import postForm from "~/components/PostForm.vue";
 import {VTreeview} from 'vuetify/labs/VTreeview'
 
+
 // 상단 네비 제목 설정
 const group = useGroup();
 group.TopNaviGroupList = ["Knowledge is Power", "전체공개문서", "해시태그로 검색해 주세요.🏷️"];
@@ -202,6 +203,24 @@ const handleBookmarkClick = async () => {
   await bookmarks.setMyBookMarks();
 };
 
+// 단축키
+import {onKeyStroke} from '@vueuse/core'
+import {useKeyModifier} from '@vueuse/core'
+
+const KipButton = ref(false)
+const alt = useKeyModifier('Alt')
+
+onKeyStroke(['Q', 'q'], () => {
+  if (alt)
+    KipButton.value = !KipButton.value;
+
+})
+
+onKeyStroke(['M', 'm'], () => {
+  if (alt)
+    handleBookmarkClick()
+})
+
 </script>
 
 <template>
@@ -398,35 +417,35 @@ const handleBookmarkClick = async () => {
 
         <div class="fab_div">
           <v-container class="d-flex justify-end" style="margin: 30px;">
-              <v-speed-dial location="top center" transition="fade-transition">
-                <template v-slot:activator="{ props: activatorProps }">
-                  <v-btn
-                      rounded="circle"
-                      v-bind="activatorProps"
-                      size="large"
-                      stacked>
-                    <v-img
-                        width="36px"
-                        src="/images/logos/kiplogo.svg"/>
-                  </v-btn>
-                </template>
+            <v-speed-dial v-model="KipButton" location="top center" transition="fade-transition">
+              <template v-slot:activator="{ props: activatorProps }">
                 <v-btn
-                    key="6"
-                    :icon="`mdi-plus`"
-                    variant="elevated"
-                    rounded="lg"
-                    class="mb-2 ml-2"
-                    @click.stop="openCreateNewDocument"
-                />
-                <v-btn key="1" size="large" prepend-icon="mdi-format-title" @click="titleEditing = true">제목 수정</v-btn>
-                <v-btn key="2" size="large" prepend-icon="mdi-pencil" @click="">내용 수정</v-btn>
-                <v-btn key="3" size="large" prepend-icon="mdi-history" @click="">수정 이력</v-btn>
-                <v-btn key="4" size="large" v-if="isBookmarked" prepend-icon="mdi-star" @click="handleBookmarkClick">북마크
-                                                                                                                     해제
+                    rounded="circle"
+                    v-bind="activatorProps"
+                    size="large"
+                    stacked>
+                  <v-img
+                      width="36px"
+                      src="/images/logos/kiplogo.svg"/>
                 </v-btn>
-                <v-btn key="5" size="large" v-else prepend-icon="mdi-star-outline" @click="handleBookmarkClick">북마크 추가
-                </v-btn>
-              </v-speed-dial>
+              </template>
+              <v-btn
+                  key="6"
+                  :icon="`mdi-plus`"
+                  variant="elevated"
+                  rounded="lg"
+                  class="mb-2 ml-2"
+                  @click.stop="openCreateNewDocument"
+              />
+              <v-btn key="1" size="large" prepend-icon="mdi-format-title" @click="titleEditing = true">제목 수정</v-btn>
+              <v-btn key="2" size="large" prepend-icon="mdi-pencil" @click="">내용 수정</v-btn>
+              <v-btn key="3" size="large" prepend-icon="mdi-history" @click="">수정 이력</v-btn>
+              <v-btn key="4" size="large" v-if="isBookmarked" prepend-icon="mdi-star" @click="handleBookmarkClick">북마크
+                                                                                                                   해제
+              </v-btn>
+              <v-btn key="5" size="large" v-else prepend-icon="mdi-star-outline" @click="handleBookmarkClick">북마크 추가
+              </v-btn>
+            </v-speed-dial>
           </v-container>
         </div>
 
@@ -664,11 +683,5 @@ const handleBookmarkClick = async () => {
   height: 80px;
   left: 0px;
   width: calc(100% + 0px);
-}
-
-.ellipsis {
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
 }
 </style>

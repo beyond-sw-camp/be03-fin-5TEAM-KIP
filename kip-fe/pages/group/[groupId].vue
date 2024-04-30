@@ -197,7 +197,7 @@ const closeVersionHistory = async () => {
           <v-divider></v-divider>
 
           <!-- 그룹 문서 title 출력 -->
-          <v-tabs color="primary" direction="vertical" class="mt-4 px-0">
+          <v-tabs color="primary" direction="vertical" class="mt-4">
 
             <draggable
                 v-model="documentList.fillteredDocList"
@@ -208,9 +208,9 @@ const closeVersionHistory = async () => {
             >
 
               <template #item="{ element: doc }">
-                <v-card variant="text" class="ma-0">
+                <v-card variant="text">
                   <v-row>
-                    <v-col cols="10" class="px-0">
+                    <v-col cols="10" >
                       <v-tab
                           width="100%"
                           @click="selectDocument(doc.documentId)"
@@ -568,10 +568,6 @@ const closeVersionHistory = async () => {
 .sortable-ghost {
   background-color: rgba(0, 51, 255, 0.27);
 }
-.ellipsis {
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-}
+
 
 </style>
