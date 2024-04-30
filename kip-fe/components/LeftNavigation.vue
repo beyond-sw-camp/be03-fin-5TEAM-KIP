@@ -25,7 +25,6 @@ onForegroundMessage()
 import {onKeyStroke} from '@vueuse/core'
 import {useKeyModifier} from '@vueuse/core'
 
-const KipButton = ref(false)
 const alt = useKeyModifier('Alt')
 
 onKeyStroke('1', () => {
@@ -106,7 +105,7 @@ onKeyStroke('1', () => {
           class="group__list"/>
 
       <v-list-item
-          title="rhd"
+          title="권한문서"
           value="agree"
           to="/agree"
           prepend-icon="mdi-file-document-check-outline"
