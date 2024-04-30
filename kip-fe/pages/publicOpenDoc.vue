@@ -211,13 +211,13 @@ const KipButton = ref(false)
 const alt = useKeyModifier('Alt')
 
 onKeyStroke(['Q', 'q'], () => {
-  if (alt)
+  if (alt.value)
     KipButton.value = !KipButton.value;
 
 })
 
 onKeyStroke(['M', 'm'], () => {
-  if (alt)
+  if (alt.value)
     handleBookmarkClick()
 })
 
