@@ -5,7 +5,7 @@ import lombok.Data;
 @Data
 public class VersionPostReqDto {
 
-	Long currentVersionId;
-	String content;
+	private Long documentId;
+	private String content;
 
 }

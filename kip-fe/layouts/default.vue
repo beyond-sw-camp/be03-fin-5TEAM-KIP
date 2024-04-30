@@ -1,5 +1,7 @@
 <script setup>
 import SearchModal from "~/components/SearchModal.vue";
+import {onKeyStroke} from '@vueuse/core'
+import {useKeyModifier} from '@vueuse/core'
 
 definePageMeta({
   middleware: ["login"]
@@ -11,10 +13,10 @@ import NotificationCopo from "~/components/NotificationCompo.vue";
 const drawer = ref(true);
 const rail = ref(true);
 const dialog = ref(false);
+const alert = ref(false)
 
 // 피니아
 const user = useUser();
-const cart = useCart()
 const color = useColor();
 const group = useGroup();
 const groupUser = useGroupuser();
@@ -38,6 +40,21 @@ onMounted(async () => {
   await groupUser.setUsersInfoInGroup(1);
   await document.setAdminDocumentList(1);
   await document.setPublicDocumentList();
+})
+
+// 단축키 관련
+const alt = useKeyModifier('Alt')
+onKeyStroke('2', () => {
+  if (alt)
+    drawer.value = !drawer.value
+})
+onKeyStroke(['k', 'K'], () => {
+  if (alt)
+    dialog.value = !dialog.value
+})
+onKeyStroke(['L', 'l'], () => {
+  if (alt)
+    alert.value = !alert.value
 })
 
 </script>
@@ -77,6 +94,7 @@ onMounted(async () => {
 
       <!--가운데 공간 만듬 -->
       <v-spacer/>
+
       {{ user.getUserInfo.name }}님 환영합니다.
 
       <v-dialog v-model="dialog" max-width="600">
@@ -97,12 +115,13 @@ onMounted(async () => {
           />
         </template>
       </v-dialog>
+
       <!-- 알림 버튼 -->
-      <v-dialog max-width="600">
+      <v-dialog v-model="alert" max-width="600 ">
         <template #activator="{ props: activatorProps }">
           <v-btn
               v-bind="activatorProps"
-              class="text-none"
+              class="text-none mr-3"
               stacked>
             <v-badge
                 v-if="unreadNotificationsCount > 0"
@@ -136,9 +155,9 @@ onMounted(async () => {
             <!-- 아바타 버튼 -->
             <v-avatar
                 :image="user.getProfileImageUrl"
-                size="55"
+                size="54"
                 v-bind="props"
-                class="cursor-pointer"/>
+                class="cursor-pointer ml-1 mr-2"/>
           </template>
           <v-list>
             <v-list-item @click="useRouter().push('/mypage');">
@@ -190,11 +209,10 @@ onMounted(async () => {
 .v-toolbar__content {
   margin: 0.8vw;
   border-radius: 20px !important;
-  width: 98.3% !important;
+  width: 98.4% !important;
   color: var(--primary-color);
   background-color: white;
 }
-
 
 /* 본문 관련 CSS */
 .v-main {

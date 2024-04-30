@@ -18,15 +18,20 @@ const fileHover = ref(null);
 // 북마크 관련
 const agreeDocuments = useAgreeDocument();
 
-await agreeDocuments.$reset();
-await agreeDocuments.setMyDocument();
+
+onMounted(async () => {
+  await agreeDocuments.$reset();
+  await agreeDocuments.setMyDocument();
 
 
-await documentList.$reset();
-await documentList.setAgreeDocumentDetails()
+  await documentList.$reset();
+  await documentList.setAgreeDocumentDetails()
 
-await attachedFile.$reset();
-await attachedFile.setAttachedFileList(agreeDocuments.document[0].documentId);
+  if (agreeDocuments.document.length > 0) {
+    await attachedFile.$reset();
+    await attachedFile.setAttachedFileList(agreeDocuments.document[0].documentId);
+  }
+})
 
 
 

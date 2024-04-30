@@ -1,9 +1,7 @@
 <script setup>
 import {useNotification} from "~/stores/Notification.js";
 
-const user = useUser();
 const notifications = useNotification();
-const color = useColor()
 const notificationAllow = () => {
   let notificationPermission = Notification.permission;
   if (notificationPermission === "granted") {
@@ -22,13 +20,13 @@ const notificationAllow = () => {
 const readNotification = async (noteId) => {
   await notifications.readNotification(noteId)
   await notifications.setMyNotification()
-  notifications.value = await notifications.getNotification
+  notifications.value =  notifications.getNotification
   await navigateTo('/requests')
 }
 const deleteNotification = async (noteId) => {
   await notifications.removeNotification(noteId);
   await notifications.setMyNotification()
-  notifications.value = await notifications.getNotification
+  notifications.value = notifications.getNotification
 }
 </script>
 <template>

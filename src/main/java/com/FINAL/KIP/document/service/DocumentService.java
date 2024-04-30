@@ -1,5 +1,6 @@
 package com.FINAL.KIP.document.service;
 
+import com.FINAL.KIP.common.s3.S3Config;
 import com.FINAL.KIP.document.domain.Document;
 import com.FINAL.KIP.document.domain.KmsDocType;
 import com.FINAL.KIP.document.dto.req.CreateDocumentReqDto;
@@ -20,7 +21,11 @@ import com.FINAL.KIP.version.domain.Version;
 import com.FINAL.KIP.version.dto.response.VersionDetailResDto;
 import com.FINAL.KIP.version.dto.response.VersionReplaceResDto;
 import com.FINAL.KIP.version.repository.VersionRepository;
+import com.amazonaws.services.s3.model.ObjectMetadata;
+import java.io.IOException;
+import java.time.format.DateTimeFormatter;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
@@ -28,6 +33,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.*;
 import java.util.stream.Collectors;
+import org.springframework.web.multipart.MultipartFile;
 
 @Service
 public class DocumentService {
@@ -38,6 +44,10 @@ public class DocumentService {
 	private final HashTagService hashTagService;
 	private final VersionRepository versionRepository;
 	private final RequestRepository requestRepository;
+	private final S3Config s3Config;
+
+	@Value("${cloud.aws.s3.bucket}")
+	private String bucket;
 
 
 	@Autowired
@@ -45,13 +55,14 @@ public class DocumentService {
 		GroupService groupService,
 		UserService userService,
 		HashTagService hashTagService,
-		VersionRepository versionRepository, RequestRepository requestRepository) {
+		VersionRepository versionRepository, RequestRepository requestRepository, S3Config s3Config) {
 		this.documentRepo = documentRepo;
 		this.groupService = groupService;
 		this.userService = userService;
 		this.hashTagService = hashTagService;
 		this.versionRepository = versionRepository;
 		this.requestRepository = requestRepository;
+		this.s3Config = s3Config;
 	}
 
 	//    Create
@@ -299,37 +310,35 @@ public class DocumentService {
 	}
 
 	@Transactional(readOnly = true)
-	public ResponseEntity<List<DocumentVersionResDto>> getAllVersion(String uuid) {
-		Document byUuid = findByUuid(uuid);
+	public ResponseEntity<List<DocumentVersionResDto>> getAllVersion(Long id) {
+		Document document = findDocumentById(id);
 
-		List<Version> versions = byUuid.getVersions();
+		List<Version> versions = document.getVersions();
+		versions.sort((v1, v2) -> v2.getCreated_at().compareTo(v1.getCreated_at()));
 		List<DocumentVersionResDto> list = new ArrayList<>();
 		for (Version version : versions) {
 			list.add(new DocumentVersionResDto(
+				version.getId(),
 				version.getWriter().getName(),
-				version.getCreated_at(),
+				version.getCreated_at().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")),
+				version.getMessage(),
 				version.getIsShow()
 			));
 		}
 		return new ResponseEntity<>(list, HttpStatus.OK);
 	}
 
-	public Document findByUuid(String uuid) {
-		UUID documentUuid = UUID.fromString(uuid);
-		return documentRepo.findByUuid(documentUuid).orElseThrow(
+	public Document findDocumentById(Long documentId) {
+		return documentRepo.findById(documentId).orElseThrow(
 			() -> new IllegalArgumentException("해당 문서가 존재하지 않습니다.")
 		);
 	}
 
 	@Transactional
-	public ResponseEntity<VersionReplaceResDto> replaceVersion(String documentUuid,
-		Long versionId) {
-		Document byUuid = findByUuid(documentUuid);
-		Version showVersion = findShowVersion(byUuid);
+	public ResponseEntity<VersionReplaceResDto> replaceVersion( Long versionId ) {
 		Version updateVersion = findVersionById(versionId);
-		if (!showVersion.getDocument().equals(updateVersion.getDocument())) {
-			throw new IllegalArgumentException("두개의 버젼의 글이 동일하지 않습니다.");
-		}
+		Document document = updateVersion.getDocument();
+		Version showVersion = findShowVersion(document);
 
 		showVersion.updateIsShow();
 		updateVersion.updateIsShow();
@@ -350,13 +359,17 @@ public class DocumentService {
 		);
 	}
 
-	@Transactional(readOnly = true)
-	public ResponseEntity<VersionDetailResDto> detailVersion(String documentUuid, Long versionId) {
-		Document byUuid = findByUuid(documentUuid);
-		Version version = findVersionById(versionId);
+	public String imageSave(MultipartFile image) throws IOException {
+		String orgFilename = image.getOriginalFilename();
+		String uuid = UUID.randomUUID().toString().replaceAll("-", "");
+		String extension = orgFilename.substring(orgFilename.lastIndexOf(".") + 1);
+		String saveFilename = uuid + "." + extension;
 
-		return new ResponseEntity<>(new VersionDetailResDto(byUuid.getTitle(), version.getContent(),
-			version.getWriter().getName(), version.getCreated_at()), HttpStatus.OK);
+		ObjectMetadata metadata = new ObjectMetadata();
+		metadata.setContentLength(image.getSize());
+		metadata.setContentType(image.getContentType());
+
+		s3Config.amazonS3Client().putObject(bucket, "documentImg/" + saveFilename, image.getInputStream(), metadata);
+		return s3Config.amazonS3Client().getUrl(bucket, "documentImg/" + saveFilename).toString();
 	}
-
 }

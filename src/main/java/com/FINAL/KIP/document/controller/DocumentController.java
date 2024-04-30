@@ -11,11 +11,13 @@ import com.FINAL.KIP.document.dto.res.JustDocTitleResDto;
 import com.FINAL.KIP.document.service.DocumentService;
 import com.FINAL.KIP.version.dto.response.VersionDetailResDto;
 import com.FINAL.KIP.version.dto.response.VersionReplaceResDto;
+import java.io.IOException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import org.springframework.web.multipart.MultipartFile;
 
 @RestController
 @RequestMapping("/doc")
@@ -87,23 +89,26 @@ public class DocumentController {
         return ResponseEntity.noContent().build();
     }
 
-    @GetMapping("{documentUuid}/version")
+    @GetMapping("{documentId}/version")
     public ResponseEntity<List<DocumentVersionResDto>> getAllVersion(
-        @PathVariable String documentUuid) {
-        return documentService.getAllVersion(documentUuid);
+        @PathVariable Long documentId) {
+        return documentService.getAllVersion(documentId);
     }
 
-    @PatchMapping("{documentUuid}/version/{versionId}")
-    public ResponseEntity<VersionReplaceResDto> replaceVersion(@PathVariable String documentUuid,
+    @PatchMapping("/{versionId}")
+    public ResponseEntity<VersionReplaceResDto> replaceVersion(
         @PathVariable Long versionId) {
-
-        return documentService.replaceVersion(documentUuid, versionId);
+        return documentService.replaceVersion(versionId);
     }
 
-    @GetMapping("{documentUuid}/version/{versionId}")
-    public ResponseEntity<VersionDetailResDto> detailVersion(@PathVariable String documentUuid,
-        @PathVariable Long versionId) {
+    @PostMapping("/image")
+    @CrossOrigin
+    public String uploadEditorImage(@RequestParam MultipartFile image) {
+		try {
+			return documentService.imageSave(image);
+		} catch (IOException e) {
+            return "Fail to upload image!";
+		}
+	}
 
-        return documentService.detailVersion(documentUuid, versionId);
-    }
 }

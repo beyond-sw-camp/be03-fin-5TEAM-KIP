@@ -13,7 +13,6 @@ let FCMToken = ref();
 
 // Stores
 const user = useUser();
-const color = useColor();
 
 onMounted(async () => {
   const firebaseApp = useFirebaseApp();
@@ -92,12 +91,12 @@ function handleEmptyInput() {
 
           <v-img
               class="login__image"
-              width="20vw"
+              width="19vw"
               src="/images/logos/kiplogo.svg"/>
 
           <v-img
-              class="login__title"
-              width="50vw"
+              class="login__title mt-1 mr-4"
+              width="8vw"
               src="/images/logos/kipTitle.svg"/>
 
           <FormKit
