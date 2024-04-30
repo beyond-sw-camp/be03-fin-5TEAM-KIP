@@ -252,5 +252,18 @@ export const useDocumentList = defineStore("documentList", {
                 await this.setDocumentDetails(firstDocument)
             }
         },
+        async updateVersion(documentId, content, message) {
+            try {
+                const response = await fetch(`${BASE_URL}/version`, {
+                    method: 'POST',
+                    headers: {'Content-Type': 'application/json',
+                        'Authorization': 'Bearer ' + user.getAccessToken},
+                    body: JSON.stringify({documentId, content, message})
+                });
+                this.selectedDocumentDetails.content = content;
+            } catch (error) {
+                console.error('Error update Version:', error.message);
+            }
+        },
     }
 });

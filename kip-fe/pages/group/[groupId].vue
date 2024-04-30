@@ -10,12 +10,15 @@ const documentList = useDocumentList();
 const attachedFile = useAttachedFile();
 const createDocument = useCreateDocument();
 const postForm = ref();
+const updateContent = ref();
 const hover = ref(null);
 const dialog = ref(false);
 const upLinkId = ref();
 const viewer = ref();
 const titleEditing = ref(false);
 const newTitle = ref();
+const updateContentModal = ref(false);
+const versionHistoryModal = ref(false);
 
 // 첨부파일 관련
 const files = ref([]);
@@ -50,6 +53,14 @@ const handleData = async (form) => {
   await selectDocument(temp.documentId);
   dialog.value = false;
 };
+const createNewVersion = async (form) => {
+  await documentList.updateVersion(documentList.selectedDocumentDetails.documentId, form.value.content, form.value.message);
+  viewer.value = toastViewerInstance(
+      viewer.value,
+      documentList.selectedDocumentDetails.content
+  );
+  updateContentModal.value = false;
+}
 
 // 문서 선택 시 상세 정보를 가져오는 함수
 const selectDocument = async (documentId) => {
@@ -131,28 +142,18 @@ const updateDocumentTitle = async () => {
   titleEditing.value = false
   documentList.selectedDocumentDetails.title = newTitle.value
   await documentList.updateDocumentTitle(documentList.selectedDocumentDetails.documentId, documentList.selectedDocumentDetails.title)
+  await documentList.setDocumentList(groupName.getSelectedGroupInfo[0].groupId);
   newTitle.value =  ""
 }
-
-const OpenTitleUpdateModal = () => {
-  handlerForUpdateModal.value = true
-  updateDocumentTitleReq.value.targetDocumentId = documentList.getSelectedDocId
-  updateDocumentTitleReq.value.newTitle = documentList.getSelectedDocTitle
+const closeVersionHistory = async () => {
+  await documentList.setDocumentDetails(documentList.selectedDocumentDetails.documentId);
+  viewer.value = toastViewerInstance(
+      viewer.value,
+      documentList.selectedDocumentDetails.content
+  );
+  versionHistoryModal.value = false
 }
-const realUpdateDocumentTitle = async (event) => {
-  titleLoding.value = true
-  const results = await event
-  await wait(500); // 0.5초 대기
 
-  if (results.valid) {
-    await documentList.updateDocumentTitle(updateDocumentTitleReq.value)
-    await documentList.setDocumentList(groupName.getSelectedGroupInfo[0].groupId);
-    await documentList.setDocumentDetails(
-        updateDocumentTitleReq.value.targetDocumentId)
-    handlerForUpdateModal.value = false
-  }
-  titleLoding.value = false
-}
 
 </script>
 
@@ -251,43 +252,6 @@ const realUpdateDocumentTitle = async (event) => {
               </v-item-group>
             </div>
           </v-card>
-
-          <!--           📜 문서 제목수정을 위한 모달. -->
-          <v-dialog
-              class="d-flex justify-center"
-              width="40vw"
-              opacity="50%"
-              v-model="handlerForUpdateModal">
-            <v-sheet
-                rounded="xl"
-                class="d-flex justify-center flex-wrap pa-10">
-
-              <v-form ref="form" style="width: 50vw" @submit.prevent="realUpdateDocumentTitle">
-                <v-row>
-                  <v-col>
-
-                    <v-text-field
-                        label="문서 제목 입력"
-                        placeholder="변경할 문서명을 적어주세요."
-                        v-model="updateDocumentTitleReq.newTitle"
-                        :rules="[value => !!value || '이름 입력이 필요합니다.']"
-                        clearable
-                        required
-                    />
-
-                    <v-btn
-                        class="mt-7"
-                        :color="color.kipMainColor"
-                        :loading="titleLoding"
-                        text="문서 제목 변경"
-                        type="submit"
-                        block
-                    />
-                  </v-col>
-                </v-row>
-              </v-form>
-            </v-sheet>
-          </v-dialog>
           <!-- 가로 선 추가 -->
           <v-divider></v-divider>
         </v-list>
@@ -313,14 +277,32 @@ const realUpdateDocumentTitle = async (event) => {
 
               <v-btn key="1" size="large" prepend-icon="mdi-format-title" @click="titleEditing = true"
               hint>제목 수정</v-btn>
-              <v-btn key="2" size="large" prepend-icon="mdi-pencil" @click="">내용 수정</v-btn>
-              <v-btn key="3" size="large" prepend-icon="mdi-history" @click="">수정 이력</v-btn>
+              <v-btn key="2" size="large" prepend-icon="mdi-pencil" @click="updateContentModal=true">내용 수정</v-btn>
+              <v-btn key="3" size="large" prepend-icon="mdi-history" @click="versionHistoryModal=true">수정 이력</v-btn>
               <v-btn key="4" size="large" v-if="isBookmarked" prepend-icon="mdi-star" @click="handleBookmarkClick">북마크 해제</v-btn>
               <v-btn key="5" size="large" v-else prepend-icon="mdi-star-outline" @click="handleBookmarkClick">북마크 추가</v-btn>
             </v-speed-dial>
           </v-container>
         </div>
-
+        <v-dialog v-model="updateContentModal" fullscreen>
+          <v-card>
+            <UpdateContent ref="updateContent" @submit="createNewVersion" :dataToPass="documentList.selectedDocumentDetails.content"></UpdateContent>
+            <v-card-actions>
+              <v-spacer></v-spacer>
+              <v-btn  @click=updateContent.submit()>작성 완료</v-btn>
+              <v-btn  @click="updateContentModal = false">닫기</v-btn>
+            </v-card-actions>
+          </v-card>
+        </v-dialog>
+        <v-dialog v-model="versionHistoryModal">
+          <v-card>
+            <VersionHistory :selectDocumentId="documentList.selectedDocumentDetails.documentId"></VersionHistory>
+            <v-card-actions>
+              <v-spacer></v-spacer>
+              <v-btn  @click="closeVersionHistory">닫기</v-btn>
+            </v-card-actions>
+          </v-card>
+        </v-dialog>
       </v-col>
 
       <!-- 👉👉👉👉👉👉👉👉👉 오른쪽 영역 -->
