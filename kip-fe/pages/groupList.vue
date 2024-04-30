@@ -789,9 +789,10 @@ const confirmRequest = async () => {
                   rounded="xl"
                   elevation="5"
                   clase="d-flex">
-                <v-spacer v-if="doc.docType !== 'SECTION'"></v-spacer>
                 <div class="d-flex justify-space-between">
                   <v-card-title
+                      class="ellipsis"
+                      style="width:30vw"
                       v-text="`${doc.docType === 'SECTION' ? '⏩' :
                         '&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp' +
                          '&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp'}

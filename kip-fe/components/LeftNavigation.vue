@@ -11,47 +11,46 @@ const handleRailClick = () => {
 
 // 피니아
 const group = useGroup();
-const color = useColor();
-
 const documentList = useDocumentList();
 
-
-await group.$reset(); // 그룹정보 리셋 후 다시 세팅
 await group.setMyGroupsInfo();  // (awit) 그룹정보를 모두 가지고 온뒤 넘어감
-
-await documentList.$reset();
 await documentList.setFirstDocumentDetails();
 
 const firebaseApp = useFirebaseApp();
 const {onForegroundMessage} = useFirebaseMessaging(firebaseApp);
-
 onForegroundMessage()
+
+
+// 단축키
+import {onKeyStroke} from '@vueuse/core'
+import {useKeyModifier} from '@vueuse/core'
+
+const KipButton = ref(false)
+const alt = useKeyModifier('Alt')
+
+onKeyStroke('1', () => {
+  if (alt) handleRailClick()
+})
+
+
+
 </script>
 
 <template>
   <v-sheet class="left__nav__sheet">
     <v-btn
-        v-if="rail"
-        icon="mdi-chevron-right"
+        :icon="rail ? 'mdi-chevron-right' : 'mdi-chevron-left'"
         variant="text"
         @click="handleRailClick"
         class="group__list"
     />
-    <v-btn
-        v-else
-        icon="mdi-chevron-left"
-        variant="text"
-        @click="handleRailClick"
-        class="group__list"
-    />
-
     <v-list density="comfortable">
       <v-list-item
           title="전체공개문서"
           value="publicOpenDoc"
           to="/publicOpenDoc"
           prepend-icon="mdi-web"
-          :color="color.kipMainColor"
+          color="blue"
           rounded="xl"
           variant="text"
           class="group__list"/>
@@ -71,7 +70,7 @@ onForegroundMessage()
           value="groupList"
           to="/groupList"
           prepend-icon="mdi-account-group"
-          :color="color.kipMainColor"
+          color="green"
           rounded="xl"
           variant="text"
           class="group__list"/>
@@ -101,17 +100,17 @@ onForegroundMessage()
           value="bookmarks"
           to="/bookmarks"
           prepend-icon="mdi-star"
-          :color="color.kipMainColor"
+          color="yellow-darken-2"
           rounded="xl"
           variant="text"
           class="group__list"/>
 
       <v-list-item
-          title="허용된 문서"
+          title="rhd"
           value="agree"
           to="/agree"
           prepend-icon="mdi-file-document-check-outline"
-          :color="color.kipMainColor"
+          color="deep-purple"
           rounded="xl"
           variant="text"
           class="group__list"/>
@@ -121,7 +120,7 @@ onForegroundMessage()
           value="requests"
           to="/requests"
           prepend-icon="mdi-message-outline"
-          :color="color.kipMainColor"
+          color="orange"
           rounded="xl"
           variant="text"
           class="group__list"/>
@@ -136,7 +135,7 @@ onForegroundMessage()
           ? 'mdi-file-account-outline' : 'mdi-alpha-b-box-outline'"
           :title="`${item.groupName} ${item.groupType === 'DEPARTMENT' ? '&nbsp 🏢' : '&nbsp 🚀'}`"
           :value="item.groupName"
-          :color="color.kipMainColor"
+          color="red"
           rounded="xl"
           variant="text"
           class="group__list"/>
