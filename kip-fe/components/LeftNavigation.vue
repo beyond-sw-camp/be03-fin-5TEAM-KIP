@@ -27,8 +27,8 @@ import {useKeyModifier} from '@vueuse/core'
 
 const alt = useKeyModifier('Alt')
 
-onKeyStroke('1', () => {
-  if (alt) handleRailClick()
+onKeyStroke('2', () => {
+  if (alt.value) handleRailClick()
 })
 
 

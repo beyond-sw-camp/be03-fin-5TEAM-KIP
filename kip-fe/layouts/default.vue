@@ -44,16 +44,17 @@ onMounted(async () => {
 
 // 단축키 관련
 const alt = useKeyModifier('Alt')
-onKeyStroke('2', () => {
-  if (alt)
+onKeyStroke('1', () => {
+  if (alt.value) {
     drawer.value = !drawer.value
+  }
 })
 onKeyStroke(['k', 'K'], () => {
-  if (alt)
+  if (alt.value)
     dialog.value = !dialog.value
 })
 onKeyStroke(['L', 'l'], () => {
-  if (alt)
+  if (alt.value)
     alert.value = !alert.value
 })
 
