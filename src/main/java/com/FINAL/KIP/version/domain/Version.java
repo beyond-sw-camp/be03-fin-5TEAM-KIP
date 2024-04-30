@@ -30,6 +30,9 @@ public class Version extends BaseEntity {
 	private String content;
 
 	@Builder.Default
+	private String message ="";
+
+	@Builder.Default
 	private String isShow = "Y";
 
 	@ManyToOne(fetch = FetchType.LAZY)

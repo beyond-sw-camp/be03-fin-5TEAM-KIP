@@ -1,6 +1,6 @@
 import "@toast-ui/editor/dist/toastui-editor.css";
 import Editor from "@toast-ui/editor";
-import "@toast-ui/editor/dist/i18n/ko-kr";
+const BASE_URL = import.meta.env.VITE_BASE_URL;
 
 export const toastEditorInstance = (
     divId: HTMLElement,
@@ -10,6 +10,7 @@ export const toastEditorInstance = (
     height: string,
     placeholder: string,
     previewStyle: string,
+    initialValue: string,
 ) => {
   return new Editor({
     el: divId,
@@ -20,8 +21,24 @@ export const toastEditorInstance = (
     height: height,
     placeholder: placeholder,
     previewStyle: previewStyle,
+    initialValue : initialValue,
     hooks: {
-      // addImageBlobHook: async (blob: Blob, callback) => { }
+      addImageBlobHook: async (blob, callback) => {
+
+        const formData = new FormData();
+        formData.append('image', blob);
+
+        // 2. FileApiController - uploadEditorImage 메서드 호출
+        const response = await fetch(`${BASE_URL}/doc/image`, {
+          method : 'POST',
+          body : formData,
+        })
+        const imageUrl = await response.text()
+        callback(imageUrl, 'image alt attribute');
+      }
+    },
+    linkAttributes: {
+      target: '_blank',
     },
   });
 };
