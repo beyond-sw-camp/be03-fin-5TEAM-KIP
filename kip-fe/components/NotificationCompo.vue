@@ -49,13 +49,13 @@ const deleteNotification = async (noteId) => {
     <v-list two-line>
       <template v-for="(notification, index) in notifications.value" :key="notification.noteId">
         <v-list-item>
-          <v-list-item-content
+          <div
               class="cursor-pointer"
               @click="readNotification(notification.noteId)"
           >
             <v-list-item-title v-text="notification.message"></v-list-item-title>
             <v-list-item-subtitle v-text="notification.createdTime"></v-list-item-subtitle>
-          </v-list-item-content>
+          </div>
           <template v-slot:append>
             <v-btn
                 density="compact"
@@ -79,10 +79,10 @@ const deleteNotification = async (noteId) => {
   </v-card>
 </template>
 <style scoped>
-/deep/ .v-toolbar__content {
+:deep(.v-toolbar__content) {
   margin: 0 !important;
   width: 100% !important;
-  border-radius: 0px !important;
+  border-radius: 0 !important;
   border-bottom: 1px solid #ddd !important;
 }
 </style>

@@ -77,6 +77,8 @@ function handleEmptyInput() {
 </script>
 
 <template>
+
+
   <v-sheet class="login__sheet">
     <v-container class="login__container">
       <v-card
@@ -85,11 +87,18 @@ function handleEmptyInput() {
           min-width="400"
           min-height="500">
 
+
         <div class="login__box">
+
           <v-img
               class="login__image"
               width="20vw"
               src="/images/logos/kiplogo.svg"/>
+
+          <v-img
+              class="login__title"
+              width="50vw"
+              src="/images/logos/kipTitle.svg"/>
 
           <FormKit
               type="form"
@@ -123,6 +132,7 @@ function handleEmptyInput() {
                 name="password"/>
 
           </FormKit>
+
         </div>
       </v-card>
     </v-container>
@@ -169,6 +179,11 @@ function handleEmptyInput() {
   height: 160px;
 }
 .login__image {
-  margin-bottom: 4vw;
+  margin-bottom: 0.1vw;
+}
+
+.login__title {
+  margin-left: 15px;
+  margin-bottom: 2.2vw;
 }
 </style>

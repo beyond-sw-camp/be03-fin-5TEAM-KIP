@@ -10,6 +10,7 @@ export const useDocumentList = defineStore("documentList", {
     state() {
         return {
             documentList: [],
+            fillteredDocList:[],
             adminDocumentList:[],
             publicDocumentList: [],
             selectedDocumentDetails: ref(null), // 선택된 문서의 상세 정보를 저장
@@ -21,7 +22,7 @@ export const useDocumentList = defineStore("documentList", {
         // getter를 업데이트하여 모든 정보를 반환
         // 그룹문서 title 조회
         getDocumentList(state) {
-            return state.documentList
+            return state.fillteredDocList
         },
         getAdminDocumentList(state) {
             return state.adminDocumentList
@@ -58,6 +59,8 @@ export const useDocumentList = defineStore("documentList", {
                 });
                 if (!response.ok) throw new Error('Failed to fetch documentList');
                 this.documentList = await response.json();
+                this.fillteredDocList = this.documentList
+
             } catch (error) {
                 console.error('Error fetching documentList:', error.message);
                 this.documentList = []; // 에러가 발생한 경우 북마크 목록을 초기화
@@ -65,7 +68,7 @@ export const useDocumentList = defineStore("documentList", {
         },
 
         async filterGroupDocByHashTag(hashTagId) {
-            this.documentList = this.documentList.filter(doc => doc.hashTagIds.includes(hashTagId))
+            this.fillteredDocList = this.documentList.filter(doc => doc.hashTagIds.includes(hashTagId))
         },
 
         async setAdminDocumentList(groupId) {

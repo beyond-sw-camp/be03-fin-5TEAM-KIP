@@ -1,6 +1,4 @@
 <script setup>
-
-import {ref} from "vue";
 import {toastViewerInstance} from "~/useToastViewer";
 import postForm from "~/components/PostForm.vue";
 import {VTreeview} from 'vuetify/labs/VTreeview'
@@ -22,11 +20,13 @@ const dialog = ref(false);
 const viewer = ref();
 const upLinkId = ref();
 
+
 // 첨부파일 관련
 const files = ref([]);
 const fileHover = ref(null);
 const fileDialog = ref(false);
 const fileLoading = ref(false);
+const attachedFileModal = ref(false);
 
 // 북마크 관련
 const selection = ref([]);
@@ -83,29 +83,17 @@ const realDeleteSelectedDoc = async () => {
 }
 
 // 문서 제목 업데이트 관련
-const handlerForUpdateModal = ref(false);
-const updateDocumentTitleReq = ref({
-  targetDocumentId: "",
-  newTitle: ""
-})
-const OpenTitleUpdateModal = () => {
-  handlerForUpdateModal.value = true
-  updateDocumentTitleReq.value.targetDocumentId = documentList.getSelectedDocId
-  updateDocumentTitleReq.value.newTitle = documentList.getSelectedDocTitle
-}
-const realUpdateDocumentTitle = async (event) => {
-  titleLoding.value = true
-  const results = await event
-  await wait(500); // 0.5초 대기
+const titleEditing = ref(false);
+const newTitle = ref();
 
-  if (results.valid) {
-    await documentList.updateDocumentTitle(updateDocumentTitleReq.value)
-    await documentList.setPublicDocumentList();
-    await documentList.setDocumentDetails(
-        updateDocumentTitleReq.value.targetDocumentId)
-    handlerForUpdateModal.value = false
-  }
-  titleLoding.value = false
+const updateDocumentTitle = async () => {
+  titleEditing.value = false
+  documentList.selectedDocumentDetails.title = newTitle.value
+  await documentList.updateDocumentTitle(
+      documentList.selectedDocumentDetails.documentId,
+      documentList.selectedDocumentDetails.title)
+  await documentList.setPublicDocumentList();
+  newTitle.value = ""
 }
 
 // 문서 선택 시 상세 정보를 가져오는 함수
@@ -224,21 +212,14 @@ const handleBookmarkClick = async () => {
       <v-col cols="3">
         <v-list class="pa-4">
           <v-list-item>
-            <v-list-item-title class="font-weight-bold headline text-center mb-4 mb-6">
-              전체공개문서
-              <v-btn
-                  :icon="`mdi-plus`"
-                  variant="elevated"
-                  rounded="lg"
-                  class="mb-2 ml-2"
-                  @click.stop="openCreateNewDocument"
-              />
+            <v-list-item-title class="font-weight-bold headline text-center mb-4 pa-2">
+              전체공개문서 🌐
             </v-list-item-title>
           </v-list-item>
           <v-divider></v-divider>
 
           <!-- 전체공개 문서 title 출력 -->
-          <v-tabs color="primary" direction="vertical">
+          <v-tabs color="primary" direction="vertical" class="mt-4">
             <v-tab
                 v-for="doc in documentList.getPublicDocumentList"
                 :key="doc.documentId"
@@ -371,82 +352,84 @@ const handleBookmarkClick = async () => {
       <v-divider class="divider-container" vertical/>
 
       <!-- ☝️☝️☝️☝️☝️☝️☝️ 가운데 문서제목 부분 -->
-      <v-col cols="7">
-
-        <v-list class="pa-4 mb-4">
+      <v-col cols="7" class="position-relative">
+        <v-list class="pa-4">
           <v-card flat>
-            <v-row>
-              <v-col cols="8" offset="2">
-                <v-card-title class="headline d-flex justify-center">
-                  {{ documentList.selectedDocumentDetails.title }}
-                  <v-item-group v-model="selection">
-                    <v-item>
-                      <v-btn
-                          density="comfortable"
-                          @click="handleBookmarkClick"
-                          :icon="isBookmarked ? 'mdi-star' : 'mdi-star-outline'"
-                      ></v-btn>
-                    </v-item>
-                  </v-item-group>
-                </v-card-title>
+            <div class="d-flex justify-center">
+              <v-card-title v-if="titleEditing" class="headline text-center">
+                <v-text-field
+                    v-model="newTitle"
+                    @blur="titleEditing = false"
+                    @keyup.enter="updateDocumentTitle"
+                    autofocus
+                    persistent-placeholder
+                    persistent-hint
+                    append-inner-icon="mdi-keyboard-return"
+                    hint="변경할 제목을 입력하시고 엔터를 입력하세요."
+                    placeholder="변경할 제목을 입력하세요."
+                    style="min-width: 300px;"
+                    variant="underlined"
+                ></v-text-field>
+              </v-card-title>
 
+              <!-- 제목 표시 -->
+              <v-card-title v-else class="headline text-center mb-4 pa-2">
+                {{ documentList.selectedDocumentDetails.title }}
+              </v-card-title>
 
-              </v-col>
-              <v-col cols="2">
-                <v-btn
-                    :icon="`mdi-pencil`"
-                    variant="elevated"
-                    rounded="lg"
-                    class="mb-2 ml-2"
-                    @click.stop="OpenTitleUpdateModal"
-                />
-              </v-col>
-            </v-row>
+              <v-item-group v-model="selection">
+                <v-item>
+                  <v-btn
+                      density="comfortable"
+                      @click="handleBookmarkClick"
+                      :icon="isBookmarked ? 'mdi-star' : 'mdi-star-outline'"
+                  ></v-btn>
+                </v-item>
+              </v-item-group>
+            </div>
           </v-card>
 
-          <!--           📜 문서 제목수정을 위한 모달. -->
-          <v-dialog
-              class="d-flex justify-center"
-              width="40vw"
-              opacity="50%"
-              v-model="handlerForUpdateModal">
-            <v-sheet
-                rounded="xl"
-                class="d-flex justify-center flex-wrap pa-10">
-
-              <v-form ref="form" style="width: 50vw" @submit.prevent="realUpdateDocumentTitle">
-                <v-row>
-                  <v-col>
-
-                    <v-text-field
-                        label="문서 제목 입력"
-                        placeholder="변경할 문서명을 적어주세요."
-                        v-model="updateDocumentTitleReq.newTitle"
-                        :rules="[value => !!value || '이름 입력이 필요합니다.']"
-                        clearable
-                        required
-                    />
-
-                    <v-btn
-                        class="mt-7"
-                        :color="color.kipMainColor"
-                        :loading="titleLoding"
-                        text="문서 제목 변경"
-                        type="submit"
-                        block
-                    />
-                  </v-col>
-                </v-row>
-              </v-form>
-            </v-sheet>
-          </v-dialog>
           <!-- 가로 선 추가 -->
           <v-divider></v-divider>
         </v-list>
-
         <v-card flat class="px-6 mt-4 mx-auto">
           <div ref="viewer">{{ documentList.selectedDocumentDetails.content }}</div>
         </v-card>
+
+        <div class="fab_div">
+          <v-container class="d-flex justify-end" style="margin: 30px;">
+              <v-speed-dial location="top center" transition="fade-transition">
+                <template v-slot:activator="{ props: activatorProps }">
+                  <v-btn
+                      rounded="circle"
+                      v-bind="activatorProps"
+                      size="large"
+                      stacked>
+                    <v-img
+                        width="36px"
+                        src="/images/logos/kiplogo.svg"/>
+                  </v-btn>
+                </template>
+                <v-btn
+                    key="6"
+                    :icon="`mdi-plus`"
+                    variant="elevated"
+                    rounded="lg"
+                    class="mb-2 ml-2"
+                    @click.stop="openCreateNewDocument"
+                />
+                <v-btn key="1" size="large" prepend-icon="mdi-format-title" @click="titleEditing = true">제목 수정</v-btn>
+                <v-btn key="2" size="large" prepend-icon="mdi-pencil" @click="">내용 수정</v-btn>
+                <v-btn key="3" size="large" prepend-icon="mdi-history" @click="">수정 이력</v-btn>
+                <v-btn key="4" size="large" v-if="isBookmarked" prepend-icon="mdi-star" @click="handleBookmarkClick">북마크
+                                                                                                                     해제
+                </v-btn>
+                <v-btn key="5" size="large" v-else prepend-icon="mdi-star-outline" @click="handleBookmarkClick">북마크 추가
+                </v-btn>
+              </v-speed-dial>
+          </v-container>
+        </div>
+
 
       </v-col>
 
@@ -459,21 +442,20 @@ const handleBookmarkClick = async () => {
           <v-card flat>
             <v-card-title class="headline text-center">첨부 파일
 
-              <!-- 첨부파일 업로드 로직 부분 -->
+                                                       <!-- 첨부파일 업로드 로직 부분 -->
               <v-dialog
                   class="d-flex justify-center"
-                  width="40vw"
+                  width="45vw"
                   opacity="50%"
                   v-model="fileDialog">
                 <template v-slot:activator="{ props: activatorProps }">
                   <v-btn
-                      class="mb-2 ml-2"
+                      class="mb-2"
                       v-bind="activatorProps"
                       density="compact"
                       variant="flat"
                       icon="mdi-plus"
-                  >
-                  </v-btn>
+                  />
                 </template>
 
                 <v-sheet
@@ -483,14 +465,20 @@ const handleBookmarkClick = async () => {
                   <v-form ref="form" style="width: 50vw">
                     <v-file-input
                         v-model="files"
-                        label="Select files"
-                        placeholder="Upload your documents"
+                        :color="color.kipMainColor"
+                        label="업로드할 파일을 선택해 주세요"
+                        placeholder="업로드할 파일을 선택해 주세요"
                         prepend-icon="mdi-paperclip"
+                        counter
+                        :show-size="1000"
                         multiple
                     >
                       <template v-slot:selection="{ fileNames }">
                         <template v-for="fileName in fileNames" :key="fileName">
-                          <v-chip class="me-2" color="primary" size="small" label>
+                          <v-chip
+                              class="ma-1 pa-5"
+                              :color="color.kipMainColor"
+                          >
                             {{ fileName }}
                           </v-chip>
                         </template>
@@ -514,61 +502,80 @@ const handleBookmarkClick = async () => {
             <!-- 첨부파일 목록 -->
             <v-card-text>
               <div v-if="attachedFile.getAttachedFileList.length > 0">
-                <v-btn text color="primary"
-                       v-for="file in attachedFile.getAttachedFileList"
-                       :key="file.fileName"
-                       @click="handleFileClick(file.fileUrl)"
-                       @mouseenter="fileHover = file.fileName"
-                       @mouseleave="fileHover = null">
+                <v-card
+                    v-for="file in attachedFile.getAttachedFileList"
+                    :key="file.fileName"
+                    class="my-3"
+                    variant="elevated"
+                    elevation="2"
+                    rounded="xl">
 
-                  {{ file.fileName }}
-
-                  <v-dialog max-width="500">
-                    <template v-slot:activator="{ props: activatorProps }" v-if="fileHover === file.fileName">
+                  <v-row>
+                    <v-col cols="3" class="d-flex justify-center align-center">
                       <v-btn
-                          v-bind="activatorProps"
-                          :icon="`mdi-minus`"
+                          class="ml-4"
+                          @click="handleFileClick(file.fileUrl)"
+                          icon="mdi-image-outline"
                           variant="text"
-                          density="compact"
-                          rounded="lg"
                       />
-                    </template>
 
-                    <template v-slot:default="{ isActive }">
-                      <v-card title="첨부파일 삭제">
-                        <v-card-text>
-                          첨부파일을 삭제하시겠습니까?
-                        </v-card-text>
+                    </v-col>
+                    <v-col cols="6" class="d-flex justify-start align-center" style="width: 70%">
 
-                        <v-card-actions>
-                          <v-spacer></v-spacer>
+                      <div
+                          @click="handleFileClick(file.fileUrl)"
+                          class="cursor-pointer ellipsis" style="width:100%">
+                        {{ file.fileName }}
+                      </div>
+                    </v-col>
 
-                          <v-snackbar
-                              :timeout="2000"
-                          >
-                            <template v-slot:activator="{ props }">
-                              <v-btn
-                                  v-bind="props"
-                                  @click="AttachedFileDelete(file.id)"
+                    <v-col cols="3">
 
-                              >Yes
-                              </v-btn>
-                            </template>
-                            첨부파일이 삭제되었습니다.
-                          </v-snackbar>
+                      <v-btn
+                          class="mr-4"
+                          @click="attachedFileModal=true"
+                          icon="mdi-close"
+                          color="grey"
+                          variant="text"
+                          rounded="xl"
+                      />
+                    </v-col>
+                  </v-row>
+                  <!--                  첨부파일 삭제를 위한 모달-->
+                  <v-dialog
+                      v-model="attachedFileModal"
+                      max-width="500">
 
-                          <v-btn
-                              text="No"
-                              @click="isActive.value = false"
-                          ></v-btn>
-                        </v-card-actions>
-                      </v-card>
-                    </template>
+                    <v-card title="첨부파일 삭제">
+                      <v-card-text>
+                        첨부파일을 삭제하시겠습니까?
+                      </v-card-text>
+                      <v-card-actions>
+                        <v-spacer></v-spacer>
 
+                        <v-snackbar
+                            :timeout="2000"
+                        >
+                          <template v-slot:activator="{ props }">
+                            <v-btn
+                                v-bind="props"
+                                @click="AttachedFileDelete(file.id)"
+
+                            >Yes
+                            </v-btn>
+                          </template>
+                          첨부파일이 삭제되었습니다.
+                        </v-snackbar>
+                        <v-btn
+                            text="No"
+                            @click="attachedFileModal = false"
+                        ></v-btn>
+                      </v-card-actions>
+                    </v-card>
                   </v-dialog>
-                </v-btn>
+                </v-card>
               </div>
-              <div v-else>첨부파일이 없습니다.</div>
+              <div v-else> 첨부파일이 없습니다.</div>
             </v-card-text>
           </v-card>
         </div>
@@ -644,5 +651,24 @@ const handleBookmarkClick = async () => {
 
 .show-btns {
   color: var(--primary-color) !important;
+}
+
+.fab_div {
+  justify-content: flex-end;
+  display: flex;
+  align-items: flex-end;
+  bottom: 0px;
+  z-index: 1004;
+  transform: translateY(0%);
+  position: fixed;
+  height: 80px;
+  left: 0px;
+  width: calc(100% + 0px);
+}
+
+.ellipsis {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 </style>

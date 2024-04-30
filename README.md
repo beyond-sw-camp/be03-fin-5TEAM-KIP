@@ -12,7 +12,7 @@
 
 <details>
 <summary>
-  <b>⭐프로젝트 개요</b>
+  <b>⭐ 프로젝트 개요</b>
 </summary>
 <div markdown="1">
 
@@ -35,7 +35,7 @@
 
 <details>
 <summary>
-  <b>⭐기술 스택</b>
+  <b>⭐ 기술 스택</b>
 </summary>
 <div markdown="1">
 
@@ -70,7 +70,7 @@
 
 <details>
 <summary>
-  <b>⭐요구사항 정의서</b>
+  <b>⭐ 요구사항 정의서</b>
 </summary>
 <div markdown="1">
 
@@ -117,7 +117,7 @@
 
 <details>
 <summary>
-  <b>⭐조직의 구성(예시)</b>
+  <b>⭐ 조직의 구성(예시)</b>
 </summary>
 <div markdown="1">
   
@@ -151,21 +151,42 @@
 
 ---
 
-### ⭐ERD
+<details>
+<summary>
+  <b>⭐ ERD</b>
+</summary>
+<div markdown="1">
+  
 <p align="center">
   <img src="https://github.com/beyond-sw-camp/be03-fin-5TEAM-KIP/assets/148752498/1d2009c9-4811-4ed2-9956-97d8e93da44b">
 </p>
+  
+</div>
+</details>
 
 ---
 
-### ⭐ WBS
+<details>
+<summary>
+  <b>⭐ WBS</b>
+</summary>
+<div markdown="1">
+
 <p align="center">
   <img src="https://github.com/beyond-sw-camp/be03-fin-5TEAM-KIP/assets/148752498/b15d6953-c466-446a-89d4-c21e84929911">
 </p>
 
+</div>
+</details>
+
 ---
 
-### ⭐ 화면설계서 ([KIP 화면설계 피그마 링크](https://www.figma.com/file/7uzpyZLpNiRnG6SaqKPq0G/KIP_FrontPage?type=design&node-id=0%3A1&mode=design&t=bmqXufLzF1sSbCEr-1))
+<details>
+<summary>
+  <b>⭐ 화면설계서</b>
+</summary>
+<div markdown="1">
+
 - 메인화면
 <p align="center">
   <img src="https://github.com/beyond-sw-camp/be03-fin-5TEAM-KIP/assets/148752498/e78374c8-e5e5-43d2-b53a-85d6c2b3c179">
@@ -173,15 +194,32 @@
 
 #### 📌 [KIP 화면설계 피그마 링크](https://www.figma.com/file/7uzpyZLpNiRnG6SaqKPq0G/KIP_FrontPage?type=design&node-id=0%3A1&mode=design&t=bmqXufLzF1sSbCEr-1)
 
+</div>
+</details>
+
 ---
-### ⭐ 시스템 아키텍처 설계서
+
+<details>
+<summary>
+  <b>⭐ 시스템 아키텍처 설계서</b>
+</summary>
+<div markdown="1">
+  
 <p align="center">
-  <img src="https://github.com/beyond-sw-camp/be03-fin-5TEAM-KIP/assets/148752498/e2421311-a56b-4d0a-8e98-e5e083122482">
+  <img src="https://github.com/beyond-sw-camp/be03-fin-5TEAM-KIP/assets/148752498/a485d85c-4004-46a6-ac37-6cebe1cef493">
 </p>
 
+</div>
+</details>
+
 ---
 
-### ⭐ 프로그램 사양서 ([KIP 프로그램 사양서 노션 링크](https://elite-bass-0e0.notion.site/API-178a96f9ca5f4a08961d97923dc7c8e8?pvs=4))
+<details>
+<summary>
+  <b>⭐ 프로그램 사양서</b>
+</summary>
+<div markdown="1">
+  
 - API 전체 목록
 <p align="center">
   <img src="https://github.com/beyond-sw-camp/be03-fin-5TEAM-KIP/assets/148752498/7c963ddb-fc8a-4059-888e-05fd8f55bbb9">
@@ -191,6 +229,9 @@
 <p align="center">
   <img src="https://github.com/beyond-sw-camp/be03-fin-5TEAM-KIP/assets/148752498/bef93dea-73ca-4367-9f69-a0b1a5143072">
 </p>
+
+</div>
+</details>
 
 ---
 
@@ -306,7 +347,8 @@
 
 ---
 
-<b>⭐ UI / UX 단위 테스트결과서</b>
+<details>
+<summary><b>⭐ UI/UX 단위 테스트결과서</b></summary>
 <div markdown="1">
 
 #### 📌 로그인
@@ -314,164 +356,265 @@
   <img src="https://github.com/beyond-sw-camp/be03-fin-5TEAM-KIP/assets/148752498/51900586-4052-44bf-8a90-d3f7ce4e72ef">
 </p>
 
+---
+
 #### 📌 전체공개문서 - 문서 생성(해시태그 추가)및 삭제
 <p align="center">
   <img src="https://github.com/beyond-sw-camp/be03-fin-5TEAM-KIP/assets/148752498/8728d228-b7b6-4ca2-9fa2-1df4dcb406a7">
 </p>
+
+---
 
 #### 📌 전체공개문서 - 제목 수정
 <p align="center">
   <img src="https://github.com/beyond-sw-camp/be03-fin-5TEAM-KIP/assets/148752498/8e628b1d-87a2-48fe-ba8e-524911313054">
 </p>
 
+---
+
 #### 📌 전체공개문서 - 첨부파일 CRUD
 <p align="center">
   <img src="https://github.com/beyond-sw-camp/be03-fin-5TEAM-KIP/assets/148752498/00b01d93-a0ad-4fe1-8a6a-28e2c504b604">
 </p>
+
+---
 
 #### 📌 전체공개문서 - 해시태그 CRUD, 해시태그 검색
 <p align="center">
   <img src="https://github.com/beyond-sw-camp/be03-fin-5TEAM-KIP/assets/148752498/48f5830a-84aa-4889-97a1-ed659478d45a">
 </p>
 
+---
+
 #### 📌 그룹문서 - 문서 생성(해시태그 추가)
 <p align="center">
   <img src="https://github.com/beyond-sw-camp/be03-fin-5TEAM-KIP/assets/148752498/40a3d5fe-74a8-4c02-914e-9b73d034478a">
 </p>
+
+---
 
 #### 📌 그룹문서 - 첨부파일 기능
 <p align="center">
   <img src="https://github.com/beyond-sw-camp/be03-fin-5TEAM-KIP/assets/148752498/2609a4a2-59c7-452b-8f91-590608172240">
 </p>
 
+---
+
 #### 📌 문서검색기능
 <p align="center">
   <img src="https://github.com/beyond-sw-camp/be03-fin-5TEAM-KIP/assets/148752498/121a655e-27a9-452f-af99-69db8dec8a17">
 </p>
+
+---
 
 <!-- #### 📌 권한요청- 문서권한요청(알람)(보류)
 <p align="center">
   <img src="">
 </p>
 
+---
+
 #### 📌 권한요청 - 권한 수락된 문서 보기 기능(보류)
 <p align="center">
   <img src="">
 </p>
--->
 
+---
+-->
 #### 📌 문서권한요청 - 알림 확인 및 클릭
 <p align="center">
   <img src="https://github.com/beyond-sw-camp/be03-fin-5TEAM-KIP/assets/148752498/b4fdf432-1b6e-4dc9-96e7-a164f67552b1">
 </p>
+
+---
 
 #### 📌 문서권한요청 - 요청 수락 및 거절
 <p align="center">
   <img src="https://github.com/beyond-sw-camp/be03-fin-5TEAM-KIP/assets/148752498/7eabf38a-e1f4-449f-bd92-0427bc8d5687">
 </p>
 
+---
+
 #### 📌 문서권한요청 - 요청 삭제
 <p align="center">
   <img src="https://github.com/beyond-sw-camp/be03-fin-5TEAM-KIP/assets/148752498/07012c21-a3ac-4a41-8a7e-fad433e98a15">
 </p>
+
+---
 
 #### 📌 문서권한요청 - 알림 삭제
 <p align="center">
   <img src="https://github.com/beyond-sw-camp/be03-fin-5TEAM-KIP/assets/148752498/295c787c-9abd-422b-a115-2869c3ae918b">
 </p>
 
+---
+
 #### 📌 부서목록 - 그룹생성
 <p align="center">
   <img src="https://github.com/beyond-sw-camp/be03-fin-5TEAM-KIP/assets/148752498/6c37120b-8017-4fe4-9209-ec665c4b4c4d">
 </p>
+
+---
 
 #### 📌 부서목록 - 신규계정생성
 <p align="center">
   <img src="https://github.com/beyond-sw-camp/be03-fin-5TEAM-KIP/assets/148752498/578c8a9b-24ca-44e9-9601-ad49b23b72b6">
 </p>
 
+---
+
 #### 📌 부서목록 - 그룹에 유저 추가
 <p align="center">
   <img src="https://github.com/beyond-sw-camp/be03-fin-5TEAM-KIP/assets/148752498/8141176f-e103-44e1-8224-dc035e551a76">
 </p>
+
+---
 
 #### 📌 부서목록 - 그룹에 유저 제거
 <p align="center">
   <img src="https://github.com/beyond-sw-camp/be03-fin-5TEAM-KIP/assets/148752498/49c05135-ff7c-49ee-af09-69a11ab2def6">
 </p>
 
+---
+
 #### 📌 부서목록 - 회원 삭제
 <p align="center">
   <img src="https://github.com/beyond-sw-camp/be03-fin-5TEAM-KIP/assets/148752498/8d684f91-5b67-46ae-a17b-4074eb698695">
 </p>
+
+---
 
 #### 📌 부서목록 - 그룹 수정
 <p align="center">
   <img src="https://github.com/beyond-sw-camp/be03-fin-5TEAM-KIP/assets/148752498/bbbfd3c5-2501-4d28-a2ce-32d4cd9df086">
 </p>
 
+---
+
 #### 📌 부서목록 - 그룹 삭제
 <p align="center">
   <img src="https://github.com/beyond-sw-camp/be03-fin-5TEAM-KIP/assets/148752498/3590e6e6-1091-4cb7-906e-1f5b42ab0e4b">
 </p>
+
+---
 
 #### 📌 부서목록 - 그룹 슈퍼유저 지정
 <p align="center">
   <img src="https://github.com/beyond-sw-camp/be03-fin-5TEAM-KIP/assets/148752498/39cffc5b-319c-450e-88eb-4e03def6443b">
 </p>
 
+---
+
 #### 📌 부서목록 - 문서 섹션 변경
 <p align="center">
   <img src="https://github.com/beyond-sw-camp/be03-fin-5TEAM-KIP/assets/148752498/7b36c5b4-a2fd-4334-885c-945967e35063">
 </p>
+
+---
 
 #### 📌 부서목록 - 문서 전체 그룹 이동
 <p align="center">
   <img src="https://github.com/beyond-sw-camp/be03-fin-5TEAM-KIP/assets/148752498/44ef1e32-9f9a-4510-81a9-3579c337f065">
 </p>
 
+---
+
 #### 📌 부서목록 - 문서 영구 삭제
 <p align="center">
   <img src="https://github.com/beyond-sw-camp/be03-fin-5TEAM-KIP/assets/148752498/8dfc24c6-67c5-436d-87f3-8a99c686d952">
 </p>
+
+---
 
 #### 📌 부서목록 - 부서 하이라키 정보
 <p align="center">
   <img src="https://github.com/beyond-sw-camp/be03-fin-5TEAM-KIP/assets/148752498/01431245-c6ac-4adc-a095-2f0be08b030d">
 </p>
 
+---
+
 #### 📌 북마크 - 그룹문서
 <p align="center">
   <img src="https://github.com/beyond-sw-camp/be03-fin-5TEAM-KIP/assets/148752498/452d84f8-65f5-4179-8834-5602afa96139">
 </p>
+
+---
 
 #### 📌 북마크 - 첨부파일 기능
 <p align="center">
   <img src="https://github.com/beyond-sw-camp/be03-fin-5TEAM-KIP/assets/148752498/8784726d-8c86-4620-bdad-d02ea85ecfcf">
 </p>
 
+---
+
 #### 📌 마이페이지 - 내 정보 변경
 <p align="center">
   <img src="https://github.com/beyond-sw-camp/be03-fin-5TEAM-KIP/assets/148752498/0a5d4af9-0ac1-47b7-b0eb-db6c54a61546">
 </p>
+
+---
 
 #### 📌 마이페이지 - 비밀번호 변경
 <p align="center">
   <img src="https://github.com/beyond-sw-camp/be03-fin-5TEAM-KIP/assets/148752498/41bed38a-da35-4357-b2b4-c46823157113">
 </p>
 
+---
+
 <!-- #### 📌 마이페이지 - 프로필 이미지 변경
 <p align="center">
   <img src="">
 </p>
--->
 
+---
+-->
 #### 📌 로그아웃
 <p align="center">
   <img src="https://github.com/beyond-sw-camp/be03-fin-5TEAM-KIP/assets/148752498/cbacc674-5584-4a6a-bc36-42b4e6a9563f">
 </p>
 
----
-
 </div>
 </details>
+
+---
+
+### ⭐ CI/CD 계획서
+<div markdown="1">
+  
+### Terraform으로 코드형인프라(Infrastructure as Code, IaC) 구축(AWS CI/CD)
+
+<p align="center">
+  <img src="https://github.com/beyond-sw-camp/be03-fin-5TEAM-KIP/assets/148752498/3bdcbff8-c0a2-4a58-b7d3-f2030d04937c">
+</p>
+
+#### 📌 IaC & Terraform 선택이유
+- <b>자동화</b> : 자동화된 프로세스로 인프라를 구축해 작업의 일관성을 유지하고 휴먼 에러를 방지해 안정성을 높인다.
+- <b>속도 향상</b> : 리소스를 배포 또는 연결해야 할 때 자동화 프로세스는 GUI를 통해 수동적으로 인프라를 구축하는 것보다 빠르다.
+- <b>안정성 향상</b> : IaC를 사용하면 리소스가 항상 지정한 대로 정확하게 프로비저닝된다. / 인프라를 코드로 관리해 형상 관리가 가능해져 인프라에 문제가 생길 경우 특정 시점으로 롤백이 가능하다.
+- <b>테스트 및 최적화 지원</b> : 코드형 인프라를 사용하면 새 인프라를 훨씬 빠르고 쉽게 프로비저닝할 수 있으므로 많은 시간과 리소스를 투자하지 않고도 실험적으로 변경하고 테스트할 수 있으며, 결과가 마음에 들면 프로덕션을 위해 새 인프라를 빠르게 확장할 수 있다.
+
+---
+
+#### 📌 CI/CD 1차 목표
+<p align="center">
+  <img src="https://github.com/beyond-sw-camp/be03-fin-5TEAM-KIP/assets/148752498/2008171b-f393-47f2-a874-f44f54ad844f">
+</p>
+- <b>Terraform으로 EKS Cluster 생성</b>
+
+---
+
+#### 📌 CI/CD 최종 목표
+<p align="center">
+  <img src="https://github.com/beyond-sw-camp/be03-fin-5TEAM-KIP/assets/148752498/d7780c6c-2dda-44a1-8457-2531f15e614a">
+</p>
+- <b>Terraform으로 백엔드 AWS CI/CD 구축완료(OpenSearch, ElastiCache 제외)</b> </br>
+- <b>Terraform으로 프론트엔드 AWS CI/CD 구축완료</b>
+
+---
+
+#### 📌 백엔드 배포과정
+- git push -> git action -> AWS ECR 백엔드 빌드 이미지 업로드 -> POD 최신이미지 업로드
+
+#### 📌 프론트엔드 배포과정
+- git push -> git action -> AWS S3 프론트엔드 빌드 리소스 업로드
+</div>
