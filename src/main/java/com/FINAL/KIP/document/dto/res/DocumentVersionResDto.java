@@ -8,8 +8,10 @@ import lombok.Data;
 @AllArgsConstructor
 public class DocumentVersionResDto {
 
+	Long versionId;
 	String writer;
-	LocalDateTime createdTime;
+	String createdTime;
+	String message;
 	String isShow;
 
 }
