@@ -1,0 +1,63 @@
+# ECR 버전관리 포함 yml
+
+name: deploy kip-backend
+
+on:
+  push:
+    branches:
+      - k8s
+#  pull_request:
+#    branches:
+#      - main
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: checkout github
+        uses: actions/checkout@v2
+
+      - name: install kubectl
+        uses: azure/setup-kubectl@v3
+        with:
+          version: "v1.25.9"
+        id: install
+
+      # aws 권한 세팅 (aws configure 팀 키값)
+      - name: configure aws
+        uses: aws-actions/configure-aws-credentials@v1
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ap-northeast-2
+
+      - name: update cluster information
+        run: aws eks update-kubeconfig --name kip_cluster --region ap-northeast-2
+
+      - name: Login to ECR
+        uses: aws-actions/amazon-ecr-login@v1
+
+      - name: Determine the new image tag
+        id: newtag
+        run: |
+          REPOSITORY=kip
+          REGISTRY=471112897563.dkr.ecr.ap-northeast-2.amazonaws.com
+          LATEST_TAG=$(aws ecr describe-images --repository-name $REPOSITORY --query 'sort_by(imageDetails,& imagePushedAt)[-1].imageTags[0]' --output text)
+          NEW_TAG=$((LATEST_TAG + 1))
+          echo "New Image Tag: $NEW_TAG"
+          echo "::set-output name=tag::$NEW_TAG"
+
+      - name: Build and push docker image to ecr
+        env:
+          REGISTRY: 471112897563.dkr.ecr.ap-northeast-2.amazonaws.com
+          REPOSITORY: kip
+        run: |
+          IMAGE_TAG=${{ steps.newtag.outputs.tag }}
+          docker build -t $REGISTRY/$REPOSITORY:$IMAGE_TAG -f Dockerfile .
+          docker push $REGISTRY/$REPOSITORY:$IMAGE_TAG
+
+      # kubectl rollout restart deployment kip-backend
+      - name: eks kubectl apply
+        run: |
+          kubectl apply -f ./k8s/kip-backend-depl-serv.yml
+          kubectl rollout restart deployment kip-backend
