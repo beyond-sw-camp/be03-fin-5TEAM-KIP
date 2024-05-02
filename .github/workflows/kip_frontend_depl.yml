@@ -1,4 +1,4 @@
-name: deploy SOM-Frontend
+name: deploy KIP-Frontend
 on:
   push:
     branches:
@@ -17,11 +17,11 @@ jobs:
           node-version: '20'
 
       - name: npm install
-        working-directory: ./kip-front
+        working-directory: ./kip-fe
         run: npm install
 
       - name: npm build
-        working-directory: ./kip-front
+        working-directory: ./kip-fe
         run: npm run build
 
       - name: setup aws cli # aws user 세팅
@@ -33,4 +33,4 @@ jobs:
 
       - name: deploy to s3 # dist내용 s3 버킷에 복사 // recursive 파일체계
         run: |
-          aws s3 cp ./kip-front/dist s3://kip-front/ --recursive
+          aws s3 cp ./kip-fe/dist s3://kip-front/ --recursive
