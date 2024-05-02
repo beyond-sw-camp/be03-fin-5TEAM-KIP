@@ -25,6 +25,7 @@
   "devDependencies": {
     "@vueuse/core": "^10.9.0",
     "@vueuse/nuxt": "^10.9.0",
+    "babel-plugin-lodash": "^3.3.4",
     "vite-plugin-vuetify": "^2.0.3",
     "vuetify": "^3.5.14"
   }
