@@ -18,8 +18,8 @@ RUN ./gradlew bootJar
 FROM openjdk:17-jdk-slim
 
 # 설정 파일 복사
-COPY --from=builder /app/src/main/resources/kip-fcm-firebase-adminsdk-gm80d-6a9b5bbd58.json /app/src/main/resources/
-COPY --from=builder /app/src/main/resources/jwt.yml /app/src/main/resources/
+#COPY --from=builder /app/src/main/resources/kip-fcm-firebase-adminsdk-gm80d-6a9b5bbd58.json /app/src/main/resources/
+#COPY --from=builder /app/src/main/resources/jwt.yml /app/src/main/resources/
 
 COPY --from=builder /app/build/libs/*.jar app.jar
 
