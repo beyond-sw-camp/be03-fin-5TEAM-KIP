@@ -29,21 +29,29 @@ spec:
           # 런타임이라 db주입, github에 sercrets key에서 넣어주는게 아니라
           # 비밀번호를 내장 저장해서 사용한다.
           env:
-            - name: DB_HOST
-              valueFrom:
-                secretKeyRef:
-                  name: db-infos
-                  key: DB_HOST
-            - name: DB_USERNAME
-              valueFrom:
-                secretKeyRef:
-                  name: db-infos
-                  key: DB_USERNAME
-            - name: DB_PASSWORD
-              valueFrom:
-                secretKeyRef:
-                  name: db-infos
-                  key: DB_PASSWORD
+          - name: DB_HOST
+            valueFrom:
+              secretKeyRef:
+                name: db-infos
+                key: DB_HOST
+          - name: DB_USERNAME
+            valueFrom:
+              secretKeyRef:
+                name: db-infos
+                key: DB_USERNAME
+          - name: DB_PASSWORD
+            valueFrom:
+              secretKeyRef:
+                name: db-infos
+                key: DB_PASSWORD
+          volumeMounts:
+            - name: fcm-secret-volume
+              mountPath: "/etc/secrets"
+              readOnly: true
+      volumes:
+      - name: fcm-secret-volume
+        secret:
+          secretName: fcm-secret
 
 ---
 apiVersion: v1

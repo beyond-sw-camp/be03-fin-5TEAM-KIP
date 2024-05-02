@@ -54,8 +54,6 @@ jobs:
           mkdir -p src/main/resources
           echo "${{ secrets.JWT_YML }}" | base64 --decode > src/main/resources/jwt.yml
           find src
-          echo "${{ secrets.FCM_CREDENTIALS }}" | base64 --decode > src/main/resources/kip-fcm-firebase-adminsdk-gm80d-6a9b5bbd58.json
-          find src
       - name: Build and push docker image to ecr
         env:
           REGISTRY: 471112897563.dkr.ecr.ap-northeast-2.amazonaws.com
