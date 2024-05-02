@@ -16,6 +16,7 @@
     "@pinia/nuxt": "^0.5.1",
     "@toast-ui/editor": "^3.2.2",
     "firebase": "^10.11.0",
+    "lodash-es": "^4.17.21",
     "nuxt": "^3.11.1",
     "pinia": "^2.1.7",
     "vue": "^3.4.21",
