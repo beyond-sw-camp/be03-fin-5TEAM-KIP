@@ -27,7 +27,7 @@ jwt:
   secretKey: ${JWT_SECRET}
 
 fcm:
-  certification : /etc/secrets/kip-fcm-firebase-adminsdk-gm80d-6a9b5bbd58.json
+  certification : kip-fcm-firebase-adminsdk-gm80d-6a9b5bbd58.json
 
 cloud:
   aws:

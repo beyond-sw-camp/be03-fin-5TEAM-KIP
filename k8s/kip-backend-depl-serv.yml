@@ -44,14 +44,6 @@ spec:
               secretKeyRef:
                 name: db-infos
                 key: DB_PASSWORD
-          volumeMounts:
-            - name: fcm-secret-volume
-              mountPath: "/etc/secrets"
-              readOnly: true
-      volumes:
-      - name: fcm-secret-volume
-        secret:
-          secretName: fcm-secret
 
 ---
 apiVersion: v1
