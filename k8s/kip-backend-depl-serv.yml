@@ -59,6 +59,16 @@ spec:
               secretKeyRef:
                 name: db-infos
                 key: JWT_SECRET
+          - name: ACCESS-KEY
+            valueFrom:
+              secretKeyRef:
+                name: db-infos
+                key: ACCESS-KEY
+          - name: SECRET-KEY
+            valueFrom:
+              secretKeyRef:
+                name: db-infos
+                key: SECRET-KEY
           - name: S3_USERNAME
             valueFrom:
               secretKeyRef:
