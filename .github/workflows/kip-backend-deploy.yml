@@ -43,7 +43,7 @@ jobs:
           REPOSITORY=kip
           REGISTRY=471112897563.dkr.ecr.ap-northeast-2.amazonaws.com
           LATEST_TAG=$(aws ecr describe-images --repository-name $REPOSITORY --query 'sort_by(imageDetails,& imagePushedAt)[-1].imageTags[0]' --output text)
-          NEW_TAG=v$((LATEST_TAG + 1))
+          NEW_TAG=$((LATEST_TAG + 1))
           echo "New Image Tag: $NEW_TAG"
           echo "::set-output name=tag::$NEW_TAG"
 
