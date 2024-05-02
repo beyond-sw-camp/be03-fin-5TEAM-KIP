@@ -10,6 +10,8 @@ on:
 #    branches:
 #      - mains
 
+
+
 jobs:
   build-and-deploy:
     runs-on: ubuntu-latest
@@ -50,17 +52,12 @@ jobs:
       - name: Set JWT
         run: |
           mkdir -p src/main/resources
-
+          echo "${{ secrets.FCM_CREDENTIALS }}" | base64 --decode > src/main/resources/kip-fcm-firebase-adminsdk-gm80d-6a9b5bbd58.json
+          find src
+          echo "${{ secrets.APPLICATION_YML }}" | base64 --decode > src/main/resources/application.yml
+          find src
           echo "${{ secrets.JWT_YML }}" | base64 --decode > src/main/resources/jwt.yml
           find src
-
-      - name: create-json
-        id: create-json
-        uses: jsdaniell/create-json@1.1.2
-        with:
-          name: "kip-fcm-firebase-adminsdk-gm80d-6a9b5bbd58.json"
-          json: ${{ secrets.FCM_CREDENTIALS }}
-          dir: 'src/main/resources'
 
       - name: Build and push docker image to ecr
         env:
