@@ -36,8 +36,6 @@ cloud:
     credentials:
       access-key: ${ACCESS-KEY}
       secret-key: ${SECRET-KEY}
-      username: ${S3_USERNAME}
-      password: ${S3_PASSWORD}
     region:
       static: ap-northeast-2
       auto: false
