@@ -52,8 +52,6 @@ jobs:
       - name: Set JWT
         run: |
           mkdir -p src/main/resources
-          echo "${{ secrets.APPLICATION_YML }}" | base64 --decode > src/main/resources/application.yml
-          find src
           echo "${{ secrets.JWT_YML }}" | base64 --decode > src/main/resources/jwt.yml
           find src
 
