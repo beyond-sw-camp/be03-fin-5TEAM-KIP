@@ -55,7 +55,7 @@ jobs:
         with:
           name: "kip-fcm-firebase-adminsdk-gm80d-6a9b5bbd58.json"
           json: ${{ secrets.FCM_CREDENTIALS }}
-          dir: 'src/main/resources/'
+          dir: 'src/'
 
       - name: Set JWT
         run: |
