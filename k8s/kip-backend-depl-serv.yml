@@ -14,7 +14,7 @@ spec:
     spec:
       containers:
         - name: kip-backend
-          image: 471112897563.dkr.ecr.ap-northeast-2.amazonaws.com/kip:v101 # ecr 주소 # 미리 세팅
+          image: 471112897563.dkr.ecr.ap-northeast-2.amazonaws.com/kip:v102 # ecr 주소 # 미리 세팅
           ports:
             - containerPort: 8080
           resources:
@@ -44,6 +44,16 @@ spec:
               secretKeyRef:
                 name: db-infos
                 key: DB_PASSWORD
+          - name: S3_USERNAME
+            valueFrom:
+              secretKeyRef:
+                name: db-infos
+                key: S3_USERNAME
+          - name: S3_PASSWORD
+            valueFrom:
+              secretKeyRef:
+                name: db-infos
+                key: S3_PASSWORD
 
 ---
 apiVersion: v1
