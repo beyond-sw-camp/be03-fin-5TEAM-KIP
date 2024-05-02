@@ -16,7 +16,8 @@ RUN chmod +x ./gradlew
 RUN ./gradlew bootJar
 
 FROM openjdk:17-jdk-slim
-
+COPY src/main/resources/kip-fcm-firebase-adminsdk-gm80d-6a9b5bbd58.json /app/src/main/resources/
+COPY src/main/resources/jwt.yml /app/src/main/resources/
 WORKDIR /app
 
 COPY --from=builder /app/build/libs/*.jar app.jar
