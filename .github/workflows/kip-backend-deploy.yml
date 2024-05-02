@@ -47,9 +47,11 @@ jobs:
           echo "New Image Tag: $NEW_TAG"
           echo "::set-output name=tag::$NEW_TAG"
 
-      - name: Set YML
+      - name: Set FCM JWT
         run: |
           mkdir -p src/main/resources
+          touch src/main/resources/kip-fcm-firebase-adminsdk-gm80d-6a9b5bbd58.json
+          touch src/main/resources/jwt.yml
           echo '${{ secrets.FCM_CREDENTIALS }}' > src/main/resources/kip-fcm-firebase-adminsdk-gm80d-6a9b5bbd58.json
           echo '${{ secrets.JWT_YML }}' > src/main/resources/jwt.yml
 
