@@ -14,7 +14,7 @@ spec:
     spec:
       containers:
         - name: kip-backend
-          image: 471112897563.dkr.ecr.ap-northeast-2.amazonaws.com/kip:v106 # ecr 주소 # 미리 세팅
+          image: 471112897563.dkr.ecr.ap-northeast-2.amazonaws.com/kip:v107 # ecr 주소 # 미리 세팅
           ports:
             - containerPort: 8080
           resources:
