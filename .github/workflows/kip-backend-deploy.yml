@@ -39,16 +39,6 @@ jobs:
       - name: Login to ECR
         uses: aws-actions/amazon-ecr-login@v1
 
-      - name: Determine the new image tag
-        id: newtag
-        run: |
-          REPOSITORY=kip
-          REGISTRY=471112897563.dkr.ecr.ap-northeast-2.amazonaws.com
-          LATEST_TAG=$(aws ecr describe-images --repository-name $REPOSITORY --query 'sort_by(imageDetails,& imagePushedAt)[-1].imageTags[0]' --output text)
-          NEW_TAG=$((LATEST_TAG + 1))
-          echo "New Image Tag: $NEW_TAG"
-          echo "::set-output name=tag::$NEW_TAG"
-
       - name: create-json
         uses: jsdaniell/create-json@v1.2.3
         with:
@@ -66,8 +56,8 @@ jobs:
         env:
           REGISTRY: 471112897563.dkr.ecr.ap-northeast-2.amazonaws.com
           REPOSITORY: kip
+          IMAGE_TAG: v100
         run: |
-          IMAGE_TAG=${{ steps.newtag.outputs.tag }}
           docker build -t $REGISTRY/$REPOSITORY:$IMAGE_TAG -f Dockerfile .
           docker push $REGISTRY/$REPOSITORY:$IMAGE_TAG
 
