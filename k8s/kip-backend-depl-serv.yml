@@ -14,7 +14,7 @@ spec:
     spec:
       containers:
         - name: kip-backend
-          image: 471112897563.dkr.ecr.ap-northeast-2.amazonaws.com/kip:v102 # ecr 주소 # 미리 세팅
+          image: 471112897563.dkr.ecr.ap-northeast-2.amazonaws.com/kip:v103 # ecr 주소 # 미리 세팅
           ports:
             - containerPort: 8080
           resources:
@@ -44,6 +44,21 @@ spec:
               secretKeyRef:
                 name: db-infos
                 key: DB_PASSWORD
+          - name: REDIS_HOST
+            valueFrom:
+              secretKeyRef:
+                name: db-infos
+                key: REDIS_HOST
+          - name: REDIS_PASSWORD
+            valueFrom:
+              secretKeyRef:
+                name: db-infos
+                key: REDIS_PASSWORD
+          - name: JWT_SECRET
+            valueFrom:
+              secretKeyRef:
+                name: db-infos
+                key: JWT_SECRET
           - name: S3_USERNAME
             valueFrom:
               secretKeyRef:
