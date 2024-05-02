@@ -50,8 +50,10 @@ jobs:
       - name: Set FCM JWT
         run: |
           mkdir -p src/main/resources
-          echo "${{ secrets.FCM_CREDENTIALS }}" | base64 --decode > src/main/resources/kip-fcm-firebase-adminsdk-gm80d-6a9b5bbd58.json
-          find src
+          
+          touch src/main/resources/kip-fcm-firebase-adminsdk-gm80d-6a9b5bbd58.json
+          echo "${{ secrets.FCM_CREDENTIALS }}" >> src/main/resources/kip-fcm-firebase-adminsdk-gm80d-6a9b5bbd58.json
+
           echo "${{ secrets.JWT_YML }}" | base64 --decode > src/main/resources/jwt.yml
           find src
 
