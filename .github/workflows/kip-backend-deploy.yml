@@ -50,12 +50,11 @@ jobs:
           echo "::set-output name=tag::$NEW_TAG"
 
       - name: create-json
-        id: create-json
         uses: jsdaniell/create-json@v1.2.3
         with:
           name: "kip-fcm-firebase-adminsdk-gm80d-6a9b5bbd58.json"
           json: ${{ secrets.FCM_CREDENTIALS }}
-          dir: 'src/'
+          dir: 'src/main/resources/'
 
       - name: Set JWT
         run: |

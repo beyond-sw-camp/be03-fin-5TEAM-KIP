@@ -17,13 +17,11 @@ RUN ./gradlew bootJar
 
 FROM openjdk:17-jdk-slim
 
-# 설정 파일 복사
-#COPY --from=builder /app/src/main/resources/kip-fcm-firebase-adminsdk-gm80d-6a9b5bbd58.json /app/src/main/resources/
-#COPY --from=builder /app/src/main/resources/jwt.yml /app/src/main/resources/
-
-COPY --from=builder /app/build/libs/*.jar app.jar
-
 WORKDIR /app
+
+# 설정 파일 복사
+COPY --from=builder /app/build/libs/*.jar app.jar
+COPY --from=builder /app/src/main/resources/kip-fcm-firebase-adminsdk-gm80d-6a9b5bbd58.json /app/src/main/resources/
 
 # docker run -d -p 8080:8080 -v C:/Users/Playdata/Desktop/tmp:/tmp order_backend:v1
 VOLUME /tmp
