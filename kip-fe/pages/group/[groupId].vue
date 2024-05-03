@@ -226,7 +226,7 @@ const closeVersionHistory = async () => {
                             class="ellipsis"
                             style="width:17vw; text-align: start"
                         >
-                          {{ '&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;' }} {{ doc.title }} {{ doc.documentId }}
+                          {{ '&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;' }} {{ doc.title }}
                         </div>
                       </v-tab>
                     </v-col>

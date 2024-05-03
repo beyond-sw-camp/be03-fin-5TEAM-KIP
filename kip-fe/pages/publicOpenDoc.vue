@@ -244,7 +244,7 @@ onKeyStroke(['M', 'm'], () => {
                 :key="doc.documentId"
                 @click="selectDocument(doc.documentId)">
 
-              <div>{{ doc.title }} / {{ doc.documentId }}</div>
+              <div>{{ doc.title }}</div>
               <v-spacer></v-spacer>
               <v-hover v-slot="{ isHovering, props }">
 
