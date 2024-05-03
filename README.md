@@ -657,11 +657,22 @@
 
 ---
 
-#### ⭐ AWS EKS를 통한 백엔드 배포
+#### ⭐ Amazon EKS를 통한 백엔드 배포
 <p align="center">
   <img src="https://github.com/beyond-sw-camp/be03-fin-5TEAM-KIP/assets/148752498/c9c6b593-7e91-4e7a-afdb-1edb0473016a">
 </p>
 
+#### Amazon Elastic Kubernetes Service(Amazon EKS)는 Amazon Web Services(AWS)에 Kubernetes 컨트롤 플레인을 설치, 운영 및 유지 관리할 필요가 없는 관리형 서비스. Kubernetes는 컨테이너화된 애플리케이션의 관리, 규모 조정 및 배포를 자동화하는 오픈 소스 시스템.
+
+---
+
+#### 📌 Amazon EKS 장점
+- <b>쉬운 관리성</b> : AWS EKS는 Kubernetes 클러스터의 설치, 운영 및 확장을 간소화. 사용자는 클러스터 관리와 오케스트레이션에 필요한 복잡성을 걱정할 필요 없이, 애플리케이션 개발에 더 집중할 수 있다. AWS가 클러스터의 배포, 패치, 백업 등을 자동으로 처리.
+- <b>확장성</b> : AWS EKS는 Amazon EC2 인스턴스와 함께 자동으로 확장되므로, 사용자는 트래픽 증가에 따라 애플리케이션을 쉽게 확장할 수 있다. 또한, AWS Auto Scaling을 사용하여 애플리케이션 요구에 맞춰 자원을 자동으로 조정할 수 있다.
+- <b>보안</b> : AWS EKS는 AWS의 보안, ID 관리 및 컴플라이언스 서비스를 활용하여 보안을 강화. EKS는 다중 계층 보안 모델을 사용하며, 네트워크 격리, 데이터 암호화 및 사용자 인증을 포함하여 클러스터 보안을 향상.
+- <b>가용성 및 신뢰성</b> : AWS EKS는 여러 AZ(Availability Zone)에 걸쳐 고가용성을 지원. 이는 클러스터와 애플리케이션의 중단 시간을 최소화하며, 재해 복구를 간소화.
+
+#### 📌
 
 
 </div>
