@@ -14,7 +14,7 @@ jobs:
       - name: setup node.js
         uses: actions/setup-node@v2
         with:
-          node-version: '16'  # LTS 버전 사용
+          node-version: '20'  # LTS 버전 사용
 
       - name: npm install
         working-directory: ./kip-fe
