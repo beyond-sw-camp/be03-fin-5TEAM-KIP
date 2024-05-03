@@ -16,15 +16,13 @@ spring:
     generate-ddl: true
     hibernate:
       ddl-auto: update
+      
     show-sql: true
   data:
     redis:
       host: ${REDIS_HOST}
       port: 6379
       password: ${REDIS_PASSWORD}
-jwt:
-  expiration: 3000 #30분 x 100 (50시간 임시로 설정) - 세종
-  secretKey: ${JWT_SECRET}
 
 fcm:
   certification : kip-fcm-firebase-adminsdk-gm80d-6a9b5bbd58.json
