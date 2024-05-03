@@ -1,8 +1,6 @@
 # <div align="center">집단 지성 활용을 위한 지식 관리 시스템</div>
 
-
 ## <div align="center">Knowledge Management System</div>
-
 
 ### <div align="center">5조 Team_KIP(knowledge Is Power)</div>
 <div align="center">🐰장준혁 팀장 🐂김영광 팀원 🐲박세종 팀원 🐴윤지용 팀원</div>
@@ -643,8 +641,6 @@
 - <b>실시간 기능</b> : Amplify는 AWS AppSync 통합을 통해 실시간 데이터 동기화와 오프라인 데이터 접근을 손쉽게 구현할 수 있다.
 - <b>간편한 사용자 지정 도메인</b> : 간단한 확인으로 사용자 지정 도메인을 연결한다. 기능 브랜치에는 자동으로 사용자 지정 도메인이 할당된다. 배포된 사용자 지정 및 비사용자 지정 도메인에 대한 무료 SSL 인증서를 받을 수 있다.
 
----
-
 #### 📌 AWS amplify 프론트엔드 배포 과정
 <p align="center">
   <img src="https://github.com/beyond-sw-camp/be03-fin-5TEAM-KIP/assets/148752498/e48e41c7-daf1-4640-b04a-97f45752c310">
@@ -654,6 +650,21 @@
 <b>2. 프론트엔드 환경설정정보(.env) 입력</b></br>
 <b>3. 지정 도메인 입력 및 연동(www.teamkip.info)</b></br>
 <b>4. 연결된 Repository Branch에 변동사항이 생길 때 마다 실시간으로 git commit 기록을 확인해서 프론트엔드 배포진행</b></br>
+
+#### 📌 Repository 설정
+<p align="center">
+  <img src="https://github.com/beyond-sw-camp/be03-fin-5TEAM-KIP/assets/148752498/d18b4fde-d36f-4f2f-87d2-bdb202e10190">
+</p>
+
+#### 📌 도메인 관리
+<p align="center">
+  <img src="https://github.com/beyond-sw-camp/be03-fin-5TEAM-KIP/assets/148752498/2c958c13-fb33-4913-8c35-562016b997c5">
+</p>
+
+#### 📌 프론트 배포 진행 후 로그인
+<p align="center">
+  <img src="https://github.com/beyond-sw-camp/be03-fin-5TEAM-KIP/assets/148752498/140cf7a3-ed06-416d-abb8-fff700738b70">
+</p>
 
 ---
 
@@ -672,7 +683,24 @@
 - <b>보안</b> : AWS EKS는 AWS의 보안, ID 관리 및 컴플라이언스 서비스를 활용하여 보안을 강화. EKS는 다중 계층 보안 모델을 사용하며, 네트워크 격리, 데이터 암호화 및 사용자 인증을 포함하여 클러스터 보안을 향상.
 - <b>가용성 및 신뢰성</b> : AWS EKS는 여러 AZ(Availability Zone)에 걸쳐 고가용성을 지원. 이는 클러스터와 애플리케이션의 중단 시간을 최소화하며, 재해 복구를 간소화.
 
-#### 📌
+#### 📌Amazon EKS 설정
+<p align="center">
+  <img src="https://github.com/beyond-sw-camp/be03-fin-5TEAM-KIP/assets/148752498/81687fa8-4014-4009-b809-8f3eaba6dfa9">
+</p>
 
+#### 📌백엔드 Git action 실행이력
+<p align="center">
+  <img src="https://github.com/beyond-sw-camp/be03-fin-5TEAM-KIP/assets/148752498/92ebec21-1c4e-47db-a5b9-2541dc0b700b">
+</p>
+
+#### 📌ECR 백엔드 빌드 이미지
+<p align="center">
+  <img src="https://github.com/beyond-sw-camp/be03-fin-5TEAM-KIP/assets/148752498/9d433654-b6ff-4e61-b774-631c4aa64f61">
+</p>
+
+#### 📌AWS Route53 설정
+<p align="center">
+  <img src="https://github.com/beyond-sw-camp/be03-fin-5TEAM-KIP/assets/148752498/6c69aae9-c4b8-4a47-abfc-9704fb4a1afe">
+</p>
 
 </div>
