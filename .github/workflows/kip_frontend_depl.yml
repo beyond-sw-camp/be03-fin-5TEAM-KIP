@@ -35,7 +35,7 @@ jobs:
         run: |
           sudo mkdir -p /public
           sudo sh -c 'echo "${{ secrets.FIREBASE_JS }}" | base64 --decode > /public/firebase-messaging-sw.js && chmod 644 /public/firebase-messaging-sw.js'
-          find public
+          find /public
 
       - name: cat firebase
         run: cat /public/firebase-messaging-sw.js
