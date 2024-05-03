@@ -36,7 +36,7 @@ public class SecurityConfig implements WebMvcConfigurer {
         httpSecurity.csrf(csrf -> csrf.disable())
                 .cors(cors -> cors.configurationSource(request -> {
                     CorsConfiguration corsConfiguration = new CorsConfiguration();
-                    corsConfiguration.setAllowedOrigins(List.of("http://localhost:8080","http://localhost:3000")); // NUxt CORS
+                    corsConfiguration.setAllowedOrigins(List.of("http://localhost:8080","http://localhost:3000", "https://www.teamkip.info", "https://server.teamkip.info","http://server.teamkip.info")); // NUxt CORS
                     corsConfiguration.setAllowedMethods(List.of("GET","POST", "PUT","PATCH", "DELETE", "OPTIONS"));
                     corsConfiguration.setAllowedHeaders(List.of("*"));
                     corsConfiguration.addExposedHeader("New-Access-Token");
