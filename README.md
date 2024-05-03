@@ -578,7 +578,8 @@
 
 ---
 
-### ⭐ CI/CD 계획서
+<details>
+<summary><b>⭐ CI/CD 계획서</b></summary>
 <div markdown="1">
   
 ### Terraform으로 코드형인프라(Infrastructure as Code, IaC) 구축(AWS CI/CD)
@@ -617,4 +618,50 @@
 
 #### 📌 프론트엔드 배포과정
 - git push -> git action -> AWS S3 프론트엔드 빌드 리소스 업로드
+
+</div>
+</details>
+
+---
+
+### ⭐ 배포 후 통합 테스트 결과서
+<div markdown="1">
+
+#### ⭐ AWS amplify를 통한 프론트엔드 배포
+<p align="center">
+  <img src="https://github.com/beyond-sw-camp/be03-fin-5TEAM-KIP/assets/148752498/08db9538-c8e8-41b0-b590-993435af17b0">
+</p>
+
+#### AWS Amplify Hosting은 비즈니스의 따라 크기를 조정할 수 있는 빠르고, 안전하며, 신뢰할 수 있는 정적 및 서버 측 렌더링 앱을 위한 완전관리형 CI/CD 및 호스팅 서비스
+
+---
+
+#### 📌 AWS amplify 장점
+- <b>서버 렌더링 애플리케이션을 배포</b> : 성능 및 SEO를 개선하기 위해 Next.js 및 Nuxt를 사용하여 서버 측 렌더링 애플리케이션을 배포하고 호스팅한다.
+- <b>쉬운 설정 및 관리</b> : Amplify는 몇 번의 클릭으로 웹사이트와 모바일 앱을 배포할 수 있는 간단한 인터페이스를 제공한다. AWS의 다양한 서비스와 통합이 용이하여, 인증, 데이터베이스, 스토리지, API 등의 서비스를 쉽게 추가하고 관리할 수 있다.
+- <b>서버리스 아키텍처</b> : 백엔드 로직을 위한 서버 관리 없이 클라우드 기반의 서버리스 백엔드(AWS Lambda, API Gateway 등)를 쉽게 구성하고 활용할 수 있습니다. 이로 인해 인프라에 대한 걱정 없이 애플리케이션 개발에 집중할 수 있다.
+- <b>실시간 기능</b> : Amplify는 AWS AppSync 통합을 통해 실시간 데이터 동기화와 오프라인 데이터 접근을 손쉽게 구현할 수 있다.
+- <b>간편한 사용자 지정 도메인</b> : 간단한 확인으로 사용자 지정 도메인을 연결한다. 기능 브랜치에는 자동으로 사용자 지정 도메인이 할당된다. 배포된 사용자 지정 및 비사용자 지정 도메인에 대한 무료 SSL 인증서를 받을 수 있다.
+
+---
+
+#### 📌 AWS amplify 프론트엔드 배포 과정
+<p align="center">
+  <img src="https://github.com/beyond-sw-camp/be03-fin-5TEAM-KIP/assets/148752498/e48e41c7-daf1-4640-b04a-97f45752c310">
+</p>
+
+<b>1. AWS amplify에 프로젝트 Repository연결</b></br>
+<b>2. 프론트엔드 환경설정정보(.env) 입력</b></br>
+<b>3. 지정 도메인 입력 및 연동(www.teamkip.info)</b></br>
+<b>4. 연결된 Repository Branch에 변동사항이 생길 때 마다 실시간으로 git commit 기록을 확인해서 프론트엔드 배포진행</b></br>
+
+---
+
+#### ⭐ AWS EKS를 통한 백엔드 배포
+<p align="center">
+  <img src="https://github.com/beyond-sw-camp/be03-fin-5TEAM-KIP/assets/148752498/c9c6b593-7e91-4e7a-afdb-1edb0473016a">
+</p>
+
+
+
 </div>
