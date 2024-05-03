@@ -15,7 +15,10 @@ export const useDocumentList = defineStore("documentList", {
             publicDocumentList: [],
             selectedDocumentDetails: ref(null), // 선택된 문서의 상세 정보를 저장
             firstDocumentId: "",
-            firstPublicDocumentId: ""
+            firstPublicDocumentId: "",
+            hashTagsForTop100: [],
+            fillteredTop100HaahTag:[],
+
         };
     },
     getters: {
@@ -64,6 +67,20 @@ export const useDocumentList = defineStore("documentList", {
             } catch (error) {
                 console.error('Error fetching documentList:', error.message);
                 this.documentList = []; // 에러가 발생한 경우 북마크 목록을 초기화
+            }
+        },
+
+        async setHashTagsForTop100List() {
+            try {
+                const response = await fetch(`${BASE_URL}/hashtag`, {
+                    method: 'GET',
+                    headers: {'Authorization': 'Bearer ' + user.getAccessToken},
+                });
+                this.hashTagsForTop100 = await response.json();
+                this.fillteredTop100HaahTag = this.hashTagsForTop100.sort((a,b) => b.docsCounts - a.docsCounts);
+
+            } catch (error) {
+                console.error('해시태그 가져오기 실패 ', error.message);
             }
         },
 
