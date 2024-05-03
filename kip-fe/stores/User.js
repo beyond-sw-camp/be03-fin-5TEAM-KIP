@@ -66,7 +66,7 @@ export const useUser = defineStore("user", {
 
         async isExistEmployeeIdForCreate(employeeId) {
             try {
-                const response = await fetch(`https://server.teamkip.info/user/user/${employeeId}/id`, {
+                const response = await fetch(`${BASE_URL}/user/${employeeId}/id`, {
                     method: 'GET',
                 });
                 this.isExistIdForCreate = await response.json()
