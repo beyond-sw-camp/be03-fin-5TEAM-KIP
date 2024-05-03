@@ -4,7 +4,6 @@ import {toastEditorInstance} from "~/useToastEditor";
 import {useColor} from "#imports";
 
 const emit = defineEmits(["submit"]);
-const color = useColor();
 
 const form = ref({
   title: "",
