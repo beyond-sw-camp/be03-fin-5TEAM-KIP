@@ -61,4 +61,4 @@ jobs:
 
       - name: deploy to s3
         run: |
-          aws s3 cp ./dist s3://kip-s3 --recursive  # dist 디렉터리 업로드
+          aws s3 cp ./kip-fe/dist s3://kip-s3 --recursive  # dist 디렉터리 업로드
