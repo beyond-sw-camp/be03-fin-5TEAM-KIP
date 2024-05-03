@@ -48,10 +48,11 @@ const hashTagsUpdateReqDto = ref({
   documentId: "",
   hashTags: []
 });
-const hashTagUpdateModalOpen = () => {
+const hashTagUpdateModalOpen = async () => {
   hashTagUpdateModal.value = true
   hashTagsUpdateReqDto.value.documentId = documentList.getSelectedDocId
   hashTagsUpdateReqDto.value.hashTags = documentList.getHashTagsInSelectedDoc
+  await documentList.setHashTagsForTop100List();
 }
 const hashTagUpdateReq = () => {
   documentList.updateHashTags(hashTagsUpdateReqDto.value)
@@ -627,7 +628,7 @@ onKeyStroke(['M', 'm'], () => {
       <!--           ❤️ 해시태그 수정을 위한 모달-->
       <v-dialog
           class="d-flex justify-center"
-          width="40vw"
+          width="50vw"
           opacity="40%"
           v-model="hashTagUpdateModal">
         <v-sheet
@@ -637,18 +638,44 @@ onKeyStroke(['M', 'm'], () => {
               variant="underlined"
               v-model="hashTagsUpdateReqDto.hashTags"
               multiple
-              chips
               placeholder="태그를 입력하세요."
               persistent-placeholder
-              hint="여러 태그를 엔터로 구분하여 입력하세요."/>
+              hint="여러 태그를 엔터로 구분하여 입력하세요.">
+            <template v-slot:selection="data">
+              <v-chip
+                  class="pa-4 mr-1"
+                  :key="JSON.stringify(data.item)"
+                  v-bind="data.attrs"
+                  :disabled="data.disabled"
+                  :model-value="data.selected"
+                  size="x-large"
+                  @click="console.log(data.item.title)">
+                {{ data.item.title }}
+              </v-chip>
+            </template>
+          </v-combobox>
           <v-btn
               class="mt-4"
               :color="color.kipMainColor"
-              text="해시태그 수정하기"
+              text="수정 하기"
               @click="hashTagUpdateReq"
               block
           />
 
+          <h2 class="mt-5 mb-3"> 🗼 Top 100 해시태그 🗼</h2>
+          <v-chip-group column class="px-4">
+            <v-chip
+                prepend-icon="mdi-refresh"
+                @click=documentList.setHashTagsForTop100List
+                text="초기화"/>
+            <v-chip
+                v-for="(hashTag, index) in documentList.fillteredTop100HaahTag"
+                :key="index"
+                prepend-icon="mdi-pound"
+                @click="documentList.filterPublicDocByHashTag(hashTag['hashTagId'])">
+              {{ hashTag.tagName }} ({{ hashTag['docsCounts'] }})
+            </v-chip>
+          </v-chip-group>
         </v-sheet>
       </v-dialog>
     </v-row>
