@@ -5,7 +5,7 @@ name: deploy kip-backend
 on:
   push:
     branches:
-      - k8s
+      - main
 #  pull_request:
 #    branches:
 #      - main
