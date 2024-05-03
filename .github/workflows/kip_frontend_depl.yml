@@ -3,7 +3,7 @@ name: deploy KIP-Frontend
 on:
   push:
     branches:
-      - kip-frontend
+    - kip-frontend
 
 jobs:
   build-and-deploy:
@@ -16,9 +16,37 @@ jobs:
         with:
           node-version: '20'  # LTS 버전 사용
 
+      - name: set env
+        run: |
+          echo "VITE_BASE_URL=${{secrets.BASE_URL}}" >> .env
+          echo "VUE_APP_FIREBASE_API_KEY=${{secrets.API_KEY}}" >> .env
+          echo "VUE_APP_FIREBASE_AUTH_DOMAIN=${{secrets.DOMAIN}}" >> .env
+          echo "VUE_APP_FIREBASE_PROJECT_ID=${{secrets.PROJECT_ID}}" >> .env
+          echo "VUE_APP_FIREBASE_STORAGE_BUCKET=${{secrets.BUCKET}}" >> .env
+          echo "VUE_APP_FIREBASE_MESSAGING_SENDER_ID=${{secrets.SENDER_ID}}" >> .env
+          echo "VUE_APP_FIREBASE_APP_ID=${{secrets.APP_ID}}" >> .env
+          echo "VUE_APP_FIREBASE_MEASUREMENTID=${{secrets.MEASUREMENT_ID}}" >> .env
+          echo "VUE_APP_FIREBASE_VAP_ID=${{secrets.VAP_ID}}" >> .env
+
+      - name: cat .env
+        run: cat .env
+
+      - name: Set JS
+        run: |
+          sudo mkdir -p /public
+          sudo sh -c 'echo "${{ secrets.FIREBASE_JS }}" | base64 --decode > /public/firebase-messaging-sw.js && chmod 644 /public/firebase-messaging-sw.js'
+          find public
+
+      - name: cat firebase
+        run: cat /public/firebase-messaging-sw.js
+
       - name: npm install
         working-directory: ./kip-fe
         run: npm install
+
+      - name: npm firebase install
+        working-directory: ./kip-fe
+        run: npm install firebase
 
       - name: npm generate
         working-directory: ./kip-fe
@@ -33,4 +61,4 @@ jobs:
 
       - name: deploy to s3
         run: |
-          aws s3 cp ./kip-fe/dist s3://kip-s3 --recursive  # dist 디렉터리 업로드
+          aws s3 cp ./dist s3://kip-s3 --recursive  # dist 디렉터리 업로드
