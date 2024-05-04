@@ -22,6 +22,12 @@ const viewer = ref();
 const upLinkId = ref();
 
 
+// 첨부파일 관련
+const files = ref([]);
+const fileDialog = ref(false);
+const fileLoading = ref(false);
+const attachedFileModal = ref(false);
+
 // 북마크 관련
 const selection = ref([]);
 const bookmarks = useBookMarks();
@@ -44,13 +50,25 @@ const hashTagsUpdateReqDto = ref({
 const hashTagUpdateModalOpen = async () => {
   hashTagUpdateModal.value = true
   hashTagsUpdateReqDto.value.documentId = documentList.getSelectedDocId
-  hashTagsUpdateReqDto.value.hashTags = documentList.getHashTagsInSelectedDoc
+  hashTagsUpdateReqDto.value.hashTags = documentList.returnHashTagsForTop100List()
   await documentList.setHashTagsForTop100List();
 }
 const hashTagUpdateReq = () => {
   documentList.updateHashTags(hashTagsUpdateReqDto.value)
   hashTagUpdateModal.value = false;
 }
+
+const Top100HashTagAddAndFiltering = (hashTagId, hashTageName) => {
+  documentList.filterPublicDocByHashTag(hashTagId)
+  if (!hashTagsUpdateReqDto.value.hashTags.includes(hashTageName))
+    hashTagsUpdateReqDto.value.hashTags.push(hashTageName)
+}
+
+const ResetHasTagAddAndFiltering = async () => {
+  await documentList.setHashTagsForTop100List()
+  await documentList.setPublicDocumentList()
+}
+
 
 await documentList.setPublicDocumentList();
 await documentList.setFirstPublicDocumentDetails();
@@ -148,15 +166,7 @@ const RealMoveDocToTargetGroup = async () => {
 }
 
 
-
-
-// 첨부파일 관련
-const files = ref([]);
-const fileDialog = ref(false);
-const fileLoading = ref(false);
-const attachedFileModal = ref(false);
-
-const fileDialogOpen = () =>{
+const fileDialogOpen = () => {
   files.value = []; // 파일 목록 초기화
   fileLoading.value = false;
   fileDialog.value = true;
@@ -176,7 +186,6 @@ const handleFileUpload = async () => {
 };
 
 
-
 // 파일 클릭 핸들러
 const handleFileClick = (url) => {
   window.open(url, '_blank');
@@ -188,6 +197,7 @@ const AttachedFileDelete = async (fileId) => {
   await wait(2000); // 1.2초 대기
   // 첨부파일 삭제 후 첨부파일 목록 다시 불러오기
   await attachedFile.setAttachedFileList(documentList.selectedDocumentDetails.documentId);
+  attachedFileModal.value = false
 };
 
 // 선택한 문서 ID가 북마크 목록에 있는지 확인
@@ -633,7 +643,7 @@ onKeyStroke(['M', 'm'], () => {
       <v-dialog
           class="d-flex justify-center"
           width="50vw"
-          opacity="40%"
+          opacity="10%"
           v-model="hashTagUpdateModal">
         <v-sheet
             rounded="xl"
@@ -652,34 +662,33 @@ onKeyStroke(['M', 'm'], () => {
                   v-bind="data.attrs"
                   :disabled="data.disabled"
                   :model-value="data.selected"
-                  size="x-large"
-                  @click="console.log(data.item.title)">
+                  size="large"
+                  @click="documentList.filterTop100HashTagsByClick(data.item.title)">
                 {{ data.item.title }}
               </v-chip>
             </template>
           </v-combobox>
+
+          <h2 class="mt-5 mb-3" style="width:100%; display: flex; justify-content: center"> 🗼 Top 100 해시태그 🗼</h2>
+          <v-chip-group column class="px-4 d-flex flex-wrap">
+            <v-chip
+                prepend-icon="mdi-refresh"
+                @click="ResetHasTagAddAndFiltering"
+                text="초기화"/>
+            <v-chip
+                v-for="(hashTag, index) in documentList.fillteredTop100HaahTag"
+                :key="index"
+                @click="Top100HashTagAddAndFiltering(hashTag['hashTagId'], hashTag.tagName)">
+             {{ index+1 }}. {{ hashTag.tagName }}
+            </v-chip>
+          </v-chip-group>
           <v-btn
-              class="mt-4"
+              class="mt-6"
               :color="color.kipMainColor"
               text="수정 하기"
               @click="hashTagUpdateReq"
               block
           />
-
-          <h2 class="mt-5 mb-3"> 🗼 Top 100 해시태그 🗼</h2>
-          <v-chip-group column class="px-4">
-            <v-chip
-                prepend-icon="mdi-refresh"
-                @click=documentList.setHashTagsForTop100List
-                text="초기화"/>
-            <v-chip
-                v-for="(hashTag, index) in documentList.fillteredTop100HaahTag"
-                :key="index"
-                prepend-icon="mdi-pound"
-                @click="documentList.filterPublicDocByHashTag(hashTag['hashTagId'])">
-              {{ hashTag.tagName }} ({{ hashTag['docsCounts'] }})
-            </v-chip>
-          </v-chip-group>
         </v-sheet>
       </v-dialog>
     </v-row>

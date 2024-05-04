@@ -32,7 +32,6 @@ export const useDocumentList = defineStore("documentList", {
         },
         getHashTagsInSelectedDoc(state) {
             return state.selectedDocumentDetails.hashTags.map(tag => tag.tagName);
-
         },
         getSelectedDocId(state) {
             return state.selectedDocumentDetails.documentId;
@@ -77,14 +76,22 @@ export const useDocumentList = defineStore("documentList", {
                     headers: {'Authorization': 'Bearer ' + user.getAccessToken},
                 });
                 this.hashTagsForTop100 = await response.json();
-                this.fillteredTop100HaahTag = this.hashTagsForTop100.sort((a,b) => b.docsCounts - a.docsCounts);
+                this.fillteredTop100HaahTag = this.hashTagsForTop100.sort((a,b) => b.docsCounts - a.docsCounts).slice(0,100);
 
             } catch (error) {
                 console.error('해시태그 가져오기 실패 ', error.message);
             }
         },
 
-        async filterGroupDocByHashTag(hashTagId) {
+        returnHashTagsForTop100List() {
+            return this.selectedDocumentDetails.hashTags.map(tag => tag.tagName);
+        },
+
+        filterTop100HashTagsByClick(HashTagName){
+            this.fillteredTop100HaahTag = this.hashTagsForTop100.filter(tag => tag.tagName.includes(HashTagName)).slice(0,100)
+        },
+
+        filterGroupDocByHashTag(hashTagId) {
             this.fillteredDocList = this.documentList.filter(doc => doc.hashTagIds.includes(hashTagId))
         },
 
