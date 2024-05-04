@@ -97,7 +97,7 @@ function handleEmptyInput() {
               class="login__title mt-1 mr-4"
               width="8vw"
               src="/images/logos/kipTitle.svg"/>
-1
+2
           <FormKit
               type="form"
               submit-behavior="live"
