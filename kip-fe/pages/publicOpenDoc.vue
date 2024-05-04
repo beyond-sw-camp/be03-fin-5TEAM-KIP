@@ -3,7 +3,6 @@ import {toastViewerInstance} from "~/useToastViewer";
 import postForm from "~/components/PostForm.vue";
 import {VTreeview} from 'vuetify/labs/VTreeview'
 
-
 // 상단 네비 제목 설정
 const group = useGroup();
 group.TopNaviGroupList = ["Knowledge is Power", "전체공개문서", "해시태그로 검색해 주세요.🏷️"];
@@ -14,13 +13,13 @@ const documentList = useDocumentList();
 const color = useColor();
 const attachedFile = useAttachedFile();
 
+// 기본 변수들
 const loading = ref(false);
 const titleLoding = ref(false)
 const snackbar = ref(false);
 const dialog = ref(false);
 const viewer = ref();
 const upLinkId = ref();
-
 
 // 첨부파일 관련
 const files = ref([]);
@@ -29,9 +28,7 @@ const fileLoading = ref(false);
 const attachedFileModal = ref(false);
 
 // 북마크 관련
-const selection = ref([]);
 const bookmarks = useBookMarks();
-
 await bookmarks.setMyBookMarks();
 
 // 초기 문서 세팅
@@ -48,7 +45,7 @@ const hashTagsUpdateReqDto = ref({
   hashTags: []
 });
 const hashTagUpdateModalOpen = async () => {
-  hashTagUpdateModal.value = true
+  hashTagUpdateModal.value = !hashTagUpdateModal.value
   hashTagsUpdateReqDto.value.documentId = documentList.getSelectedDocId
   hashTagsUpdateReqDto.value.hashTags = documentList.returnHashTagsForTop100List()
   await documentList.setHashTagsForTop100List();
@@ -57,21 +54,15 @@ const hashTagUpdateReq = () => {
   documentList.updateHashTags(hashTagsUpdateReqDto.value)
   hashTagUpdateModal.value = false;
 }
-
 const Top100HashTagAddAndFiltering = (hashTagId, hashTageName) => {
   documentList.filterPublicDocByHashTag(hashTagId)
   if (!hashTagsUpdateReqDto.value.hashTags.includes(hashTageName))
     hashTagsUpdateReqDto.value.hashTags.push(hashTageName)
 }
-
 const ResetHasTagAddAndFiltering = async () => {
   await documentList.setHashTagsForTop100List()
   await documentList.setPublicDocumentList()
 }
-
-
-await documentList.setPublicDocumentList();
-await documentList.setFirstPublicDocumentDetails();
 
 // 문서 삭제 관련 코드.
 const deleteDocModalOpen = ref();
@@ -98,7 +89,6 @@ const realDeleteSelectedDoc = async () => {
 // 문서 제목 업데이트 관련
 const titleEditing = ref(false);
 const newTitle = ref();
-
 const updateDocumentTitle = async () => {
   titleEditing.value = false
   documentList.selectedDocumentDetails.title = newTitle.value
@@ -165,13 +155,12 @@ const RealMoveDocToTargetGroup = async () => {
   }
 }
 
-
+// 첨부파일
 const fileDialogOpen = () => {
   files.value = []; // 파일 목록 초기화
   fileLoading.value = false;
   fileDialog.value = !fileDialog.value;
 }
-
 const handleFileUpload = async () => {
   fileLoading.value = true; // 빙글이 시작
   await wait(1200); // 1.2초 대기
@@ -184,14 +173,9 @@ const handleFileUpload = async () => {
   fileLoading.value = false; // 빙글이 끝내기
   fileDialog.value = false; // 다이얼로그 닫기
 };
-
-
-// 파일 클릭 핸들러
 const handleFileClick = (url) => {
   window.open(url, '_blank');
 };
-
-// 첨부파일 삭제 로직
 const AttachedFileDelete = async (fileId) => {
   await attachedFile.setAttachedFileDelete(fileId);
   await wait(2000); // 1.2초 대기
@@ -221,35 +205,30 @@ const handleBookmarkClick = async () => {
 // 단축키
 import {onKeyStroke} from '@vueuse/core'
 import {useKeyModifier} from '@vueuse/core'
-import {orange} from "vuetify/util/colors";
 
 const KipButton = ref(false)
 const alt = useKeyModifier('Alt')
 
 onKeyStroke(['Q', 'q'], () => {
-  if (alt.value)
-    KipButton.value = !KipButton.value;
-
+  if (alt.value) KipButton.value = !KipButton.value;
 })
 onKeyStroke(['M', 'm'], () => {
-  if (alt.value)
-    handleBookmarkClick()
+  if (alt.value) handleBookmarkClick()
 })
 onKeyStroke(['N', 'n'], () => {
-  if (alt.value)
-    openCreateNewDocument()
+  if (alt.value) openCreateNewDocument()
 })
 onKeyStroke(['T', 't'], () => {
-  if (alt.value)
-    titleEditing.value = !titleEditing.value
+  if (alt.value) titleEditing.value = !titleEditing.value
 })
 onKeyStroke(['H', 'h'], () => {
-  if (alt.value)
-    hashTagUpdateModal.value = !hashTagUpdateModal.value
+  if (alt.value) hashTagUpdateModalOpen()
 })
 onKeyStroke(['A', 'a'], () => {
-  if (alt.value)
-    fileDialogOpen()
+  if (alt.value) fileDialogOpen()
+})
+onKeyStroke(['R', 'r'], () => {
+  if (alt.value) ResetHasTagAddAndFiltering();
 })
 </script>
 
@@ -473,11 +452,24 @@ onKeyStroke(['A', 'a'], () => {
                       src="/images/logos/kiplogo.svg"/>
                 </v-btn>
               </template>
-
+              <v-btn
+                  color="deep-orange-lighten-1"
+                  class="mb-3"
+                  key="4"
+                  size="large"
+                  rounded="xl"
+                  prepend-icon="mdi-plus"
+                  @click="openCreateNewDocument"> 새글쓰기
+                <v-tooltip
+                    activator="parent"
+                    location="start"
+                >ALT + N
+                </v-tooltip>
+              </v-btn>
               <v-btn
                   :color="color.kipMainColor"
-                  style="width:12vw !important;"
-                  class="mb-2"
+                  style="width:200px !important;"
+                  class="mb-3"
                   text="제목수정"
                   key="1"
                   size="large"
@@ -490,11 +482,9 @@ onKeyStroke(['A', 'a'], () => {
                 >ALT + T
                 </v-tooltip>
               </v-btn>
-
-
               <v-btn
                   :color="color.kipMainColor"
-                  class="mb-2"
+                  class="mb-3"
                   key="2"
                   size="large"
                   rounded="xl"
@@ -507,10 +497,9 @@ onKeyStroke(['A', 'a'], () => {
                 </v-tooltip>
 
               </v-btn>
-
               <v-btn
-                  :color="color.kipMainColor"
-                  class="mb-2"
+                  color="light-green-darken-2"
+                  class="mb-3"
                   key="3"
                   size="large"
                   rounded="xl"
@@ -522,24 +511,9 @@ onKeyStroke(['A', 'a'], () => {
                 >ALT + Y
                 </v-tooltip>
               </v-btn>
-              <v-btn
-                  :color="color.kipMainColor"
-                  class="mb-2"
-                  key="4"
-                  size="large"
-                  rounded="xl"
-                  prepend-icon="mdi-plus"
-                  @click="openCreateNewDocument"> 새글쓰기
-                <v-tooltip
-                    activator="parent"
-                    location="start"
-                >ALT + N
-                </v-tooltip>
-              </v-btn>
             </v-speed-dial>
           </v-container>
         </div>
-
 
       </v-col>
 
@@ -604,14 +578,13 @@ onKeyStroke(['A', 'a'], () => {
               <v-card
                   v-for="file in attachedFile.getAttachedFileList"
                   :key="file.fileName"
-                  class="my-2"
+                  class="my-3"
                   color="blue-lighten-1"
-                  variant="tonal"
-                  elevation="1"
+                  variant="outlined"
                   rounded="xl">
 
                 <v-row>
-                  <v-col cols="3" class="d-flex justify-center align-center">
+                  <v-col cols="3" class="d-flex justify-center align-center py-2">
                     <v-btn
                         class="ml-4"
                         @click="handleFileClick(file.fileUrl)"
@@ -622,27 +595,31 @@ onKeyStroke(['A', 'a'], () => {
                     />
 
                   </v-col>
-                  <v-col cols="6" class="d-flex justify-start align-center" style="width: 70%">
-
+                  <v-col cols="6" class="d-flex justify-start align-center py-2" style="width: 70%">
                     <div
                         @click="handleFileClick(file.fileUrl)"
                         class="cursor-pointer ellipsis" style="width:100%">
                       {{ file.fileName }}
+                      <v-tooltip
+                          activator="parent"
+                          location="start"
+                      >{{ file.fileName }}
+                      </v-tooltip>
                     </div>
                   </v-col>
 
-                  <v-col cols="3">
-
+                  <v-col cols="3" class="d-flex justify-start align-center py-2">
                     <v-btn
                         class="mr-4"
                         @click="attachedFileModal=true"
                         icon="mdi-close"
                         variant="text"
                         rounded="xl"
+                        size="sm"
                     />
                   </v-col>
                 </v-row>
-                <!--                  첨부파일 삭제를 위한 모달-->
+                <!--  첨부파일 삭제를 위한 모달-->
                 <v-dialog
                     v-model="attachedFileModal"
                     max-width="500">
@@ -676,8 +653,10 @@ onKeyStroke(['A', 'a'], () => {
               </v-card>
               <v-btn
                   block
+                  rounded="xl"
+                  color="blue-lighten-1"
                   @click="fileDialogOpen"
-                  variant="text">
+                  variant="tonal">
                 <v-icon
                     icon="mdi-plus"
                     size="x-large"
@@ -703,30 +682,36 @@ onKeyStroke(['A', 'a'], () => {
           > ALT + H
           </v-tooltip>
         </v-chip>
-
-
-        <v-chip-group column class="px-4"
-                      v-if="documentList.selectedDocumentDetails
-                      && documentList.selectedDocumentDetails.hashTags.length > 0">
+        <v-chip-group column class="px-4">
           <v-chip prepend-icon="mdi-refresh"
+                  style="color: #4CAF50"
                   @click=documentList.setPublicDocumentList> 초기화
+            <v-tooltip
+                activator="parent"
+                location="start"
+            > ALT + R
+            </v-tooltip>
           </v-chip>
           <v-chip
               v-for="(hashTag, index) in documentList.selectedDocumentDetails.hashTags"
+              style="color: #546E7A"
               :key="index"
-              prepend-icon="mdi-pound"
               @click="documentList.filterPublicDocByHashTag(hashTag['hashTagId'])">
             {{ hashTag.tagName }} ({{ hashTag['docsCounts'] }})
+            <v-tooltip
+                activator="parent"
+                location="top"
+            > 클릭하면 해당 문서 필터링
+            </v-tooltip>
           </v-chip>
         </v-chip-group>
-        <div v-else class="pa-4">해시태그가 없습니다.</div>
 
       </v-col>
 
       <!--           ❤️ 해시태그 수정을 위한 모달-->
       <v-dialog
           class="d-flex justify-center"
-          width="50vw"
+          width="60vw"
           opacity="10%"
           v-model="hashTagUpdateModal">
         <v-sheet
@@ -742,6 +727,7 @@ onKeyStroke(['A', 'a'], () => {
             <template v-slot:selection="data">
               <v-chip
                   class="pa-4 mr-1"
+                  style="color: #FF5722"
                   :key="JSON.stringify(data.item)"
                   v-bind="data.attrs"
                   :disabled="data.disabled"
@@ -749,6 +735,11 @@ onKeyStroke(['A', 'a'], () => {
                   size="large"
                   @click="documentList.filterTop100HashTagsByClick(data.item.title)">
                 {{ data.item.title }}
+                <v-tooltip
+                    activator="parent"
+                    location="top"
+                > 태그 검색
+                </v-tooltip>
               </v-chip>
             </template>
           </v-combobox>
@@ -757,13 +748,27 @@ onKeyStroke(['A', 'a'], () => {
           <v-chip-group column class="px-4 d-flex flex-wrap">
             <v-chip
                 prepend-icon="mdi-refresh"
+                style="color: #4CAF50"
                 @click="ResetHasTagAddAndFiltering"
-                text="초기화"/>
+                >
+              초기화
+              <v-tooltip
+                  activator="parent"
+                  location="start"
+              > ALT + R
+              </v-tooltip>
+            </v-chip>
             <v-chip
                 v-for="(hashTag, index) in documentList.fillteredTop100HaahTag"
+                style="color: #546E7A"
                 :key="index"
                 @click="Top100HashTagAddAndFiltering(hashTag['hashTagId'], hashTag.tagName)">
-              {{ index + 1 }}. {{ hashTag.tagName }}
+              {{ hashTag.tagName }}
+              <v-tooltip
+                  activator="parent"
+                  location="top"
+              > 태그 추가
+              </v-tooltip>
             </v-chip>
           </v-chip-group>
           <v-btn
@@ -800,12 +805,12 @@ onKeyStroke(['A', 'a'], () => {
   justify-content: flex-end;
   display: flex;
   align-items: flex-end;
-  bottom: 1vh;
+  bottom: 3vh;
   z-index: 1004;
   transform: translateY(0%);
   position: fixed;
   height: 80px;
-  left: -3.5vw;
+  left: -4.3vw;
   width: calc(100% + 0px);
 }
 </style>
