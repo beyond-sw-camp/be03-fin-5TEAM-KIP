@@ -2,7 +2,7 @@ import { getMessaging, getToken, onMessage } from 'firebase/messaging';
 import type { FirebaseApp } from 'firebase/app';
 
 export const useFirebaseMessaging = (firebaseApp: FirebaseApp) => {
-  let messaging; // `messaging` 변수를 조건문 밖에서 선언
+  let messaging: any; // `messaging` 변수를 조건문 밖에서 선언
   if (process.client) {
     messaging = getMessaging(firebaseApp); // 클라이언트 측에서만 `messaging` 초기화
   }
@@ -27,12 +27,11 @@ export const useFirebaseMessaging = (firebaseApp: FirebaseApp) => {
 
   const onForegroundMessage = () => {
     if (!messaging) return; // `messaging`이 초기화되지 않았다면 함수를 종료
-    onMessage(messaging, (payload) => {
+    onMessage(messaging, (payload : any) => {
       console.log('Message received. ', payload);
       new Notification(payload.data.title, {
         body: payload.data.content,
         icon: '/favicon.png',
-        image: payload.data.image
       });
     });
   };
