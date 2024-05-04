@@ -28,6 +28,11 @@ export default defineNuxtConfig({
             template: {
                 transformAssetUrls,
             },
+        },
+        css: { // CSS파일을 빌드할때 추가하는 설정 (로그인에서 CSS가 빌드가 안됨)
+            preprocessorOptions: {
+                includePaths: ['node_modules']
+            }
         }
     },
     nitro: {
