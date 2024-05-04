@@ -291,17 +291,6 @@ a {
     --fk-margin-button-b: var(--fk-margin-button-y, 0);
     --fk-margin-button-l: var(--fk-margin-button-x, 0);
     --fk-margin-button: var(--fk-margin-button-t) var(--fk-margin-button-r) var(--fk-margin-button-b) var(--fk-margin-button-l);
-    --fk-icon-close: PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAxMiAxNiI+PHBhdGggZD0iTTEwLDEyLjVjLS4xMywwLS4yNi0uMDUtLjM1LS4xNUwxLjY1LDQuMzVjLS4yLS4yLS4yLS41MSwwLS43MSwuMi0uMiwuNTEtLjIsLjcxLDBMMTAuMzUsMTEuNjVjLjIsLjIsLjIsLjUxLDAsLjcxLS4xLC4xLS4yMywuMTUtLjM1LC4xNVoiIGZpbGw9ImN1cnJlbnRDb2xvciIvPjxwYXRoIGQ9Ik0yLDEyLjVjLS4xMywwLS4yNi0uMDUtLjM1LS4xNS0uMi0uMi0uMi0uNTEsMC0uNzFMOS42NSwzLjY1Yy4yLS4yLC41MS0uMiwuNzEsMCwuMiwuMiwuMiwuNTEsMCwuNzFMMi4zNSwxMi4zNWMtLjEsLjEtLjIzLC4xNS0uMzUsLjE1WiIgZmlsbD0iY3VycmVudENvbG9yIi8+PC9zdmc+;
-    --fk-icon-down: PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAxNiA3Ij48cGF0aCBkPSJNOCw2LjVjLS4xMywwLS4yNi0uMDUtLjM1LS4xNUwzLjE1LDEuODVjLS4yLS4yLS4yLS41MSwwLS43MSwuMi0uMiwuNTEtLjIsLjcxLDBsNC4xNSw0LjE1TDEyLjE1LDEuMTVjLjItLjIsLjUxLS4yLC43MSwwLC4yLC4yLC4yLC41MSwwLC43MWwtNC41LDQuNWMtLjEsLjEtLjIzLC4xNS0uMzUsLjE1WiIgZmlsbD0iY3VycmVudENvbG9yIi8+PC9zdmc+;
-    --fk-icon-fileDoc: PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAxNSAxNiI+PHBhdGggZD0iTTEyLjUsMTZIMi41Yy0uODMsMC0xLjUtLjY3LTEuNS0xLjVWMS41YzAtLjgzLC42Ny0xLjUsMS41LTEuNWg3LjA5Yy40LDAsLjc4LC4xNiwxLjA2LC40NGwyLjkxLDIuOTFjLjI4LC4yOCwuNDQsLjY2LC40NCwxLjA2VjE0LjVjMCwuODMtLjY3LDEuNS0xLjUsMS41Wk0yLjUsMWMtLjI4LDAtLjUsLjIyLS41LC41VjE0LjVjMCwuMjgsLjIyLC41LC41LC41SDEyLjVjLjI4LDAsLjUtLjIyLC41LS41VjQuNDFjMC0uMTMtLjA1LS4yNi0uMTUtLjM1bC0yLjkxLTIuOTFjLS4wOS0uMDktLjIyLS4xNS0uMzUtLjE1SDIuNVoiIGZpbGw9ImN1cnJlbnRDb2xvciIvPjxwYXRoIGQ9Ik0xMy4zOCw1aC0yLjkxYy0uODEsMC0xLjQ3LS42Ni0xLjQ3LTEuNDdWLjYyYzAtLjI4LC4yMi0uNSwuNS0uNXMuNSwuMjIsLjUsLjVWMy41M2MwLC4yNiwuMjEsLjQ3LC40NywuNDdoMi45MWMuMjgsMCwuNSwuMjIsLjUsLjVzLS4yMiwuNS0uNSwuNVoiIGZpbGw9ImN1cnJlbnRDb2xvciIvPjxwYXRoIGQ9Ik0xMCwxM0g1Yy0uMjgsMC0uNS0uMjItLjUtLjVzLjIyLS41LC41LS41aDVjLjI4LDAsLjUsLjIyLC41LC41cy0uMjIsLjUtLjUsLjVaIiBmaWxsPSJjdXJyZW50Q29sb3IiLz48cGF0aCBkPSJNMTAsMTBINWMtLjI4LDAtLjUtLjIyLS41LS41cy4yMi0uNSwuNS0uNWg1Yy4yOCwwLC41LC4yMiwuNSwuNXMtLjIyLC41LS41LC41WiIgZmlsbD0iY3VycmVudENvbG9yIi8+PHBhdGggZD0iTTcsN2gtMmMtLjI4LDAtLjUtLjIyLS41LS41cy4yMi0uNSwuNS0uNWgyYy4yOCwwLC41LC4yMiwuNSwuNXMtLjIyLC41LS41LC41WiIgZmlsbD0iY3VycmVudENvbG9yIi8+PC9zdmc+Cg==;
-    --fk-icon-check: PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAzMiAyNyI+PHBvbHlnb24gZmlsbD0iY3VycmVudENvbG9yIiBwb2ludHM9IjI2Ljk5IDAgMTAuMTMgMTcuMTcgNC42OSAxMS42MyAwIDE2LjQxIDEwLjQgMjcgMTUuMDUgMjIuMjcgMTUuMDkgMjIuMzEgMzIgNS4xIDI2Ljk5IDAiLz48L3N2Zz4=;
-    --fk-icon-circle: PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAzMiAzMiI+PGNpcmNsZSBmaWxsPSJjdXJyZW50Q29sb3IiIGN4PSIxNiIgY3k9IjE2IiByPSIxNiIvPjwvc3ZnPg==;
-    --fk-icon-fileItem: var(--fk-icon-fileDoc);
-    --fk-icon-fileRemove: var(--fk-icon-close);
-    --fk-icon-noFiles: var(--fk-icon-fileDoc);
-    --fk-icon-select: var(--fk-icon-down);
-    --fk-icon-checkboxDecorator: var(--fk-icon-check);
-    --fk-icon-radioDecorator: var(--fk-icon-circle);
 }
 
 /* packages/themes/src/css/genesis/formkit-reset.css */
@@ -495,10 +484,7 @@ input.formkit-input[type=date]::-webkit-calendar-picker-indicator {
     padding-bottom: 0;
     font-size: 0.875em;
 }
-input.formkit-input[type=date]::-webkit-datetime-edit {
-    line-height: 1;
-    overflow: visible;
-}
+
 select.formkit-input {
     padding-right: calc(var(--fk-padding-base) * 7);
 }
@@ -535,7 +521,6 @@ input.formkit-input[type=radio] ~ .formkit-decorator::before {
 }
 .formkit-messages {
     padding: var(--fk-padding-messages);
-    margin: var(--fk-margin-messages);
 }
 .formkit-help + .formkit-messages {
     padding-top: 0;
@@ -714,10 +699,6 @@ input.formkit-input[type=radio] ~ .formkit-decorator::before {
     box-shadow: var(--fk-border-box-shadow-decorator-focus-visible);
 }
 [data-type=checkbox] .formkit-options,
-[data-type=radio] .formkit-options {
-    margin: var(--fk-checkbox-options-margin);
-    padding: 0;
-}
 [data-type=checkbox] .formkit-option,
 [data-type=radio] .formkit-option {
     list-style-type: none;
@@ -748,10 +729,7 @@ input.formkit-input[type=radio] ~ .formkit-decorator::before {
     padding: 0;
     border: none;
 }
-[data-type=color] input[type=color]::-moz-color-swatch-wrapper {
-    padding: 0;
-    border: none;
-}
+
 [data-type=color] input[type=color]::-webkit-color-swatch {
     border-radius: var(--fk-border-radius);
     border: none;
@@ -818,10 +796,6 @@ input.formkit-input[type=radio] ~ .formkit-decorator::before {
 [data-type=range] input[disabled]::-webkit-slider-thumb {
     background-color: var(--fk-color-border);
 }
-[data-type=range] input[disabled]::-moz-slider-thumb {
-    background-color: var(--fk-color-border);
-}
-
 /* packages/themes/src/css/genesis/inputs/select.css */
 [data-type=select]:not([data-multiple]) .formkit-inner .formkit-select-icon {
     margin-left: -2.5em;

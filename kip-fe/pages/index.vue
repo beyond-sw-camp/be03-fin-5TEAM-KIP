@@ -21,7 +21,6 @@ onMounted(async () => {
 })
 
 
-
 async function handleSubmit(data) {
   user.login(data.empolymentId, data.password, FCMToken.value)
   await wait(1200); // 1.2초 대기
@@ -97,7 +96,6 @@ function handleEmptyInput() {
               class="login__title mt-1 mr-4"
               width="8vw"
               src="/images/logos/kipTitle.svg"/>
-2
           <FormKit
               type="form"
               submit-behavior="live"
