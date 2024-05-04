@@ -176,6 +176,7 @@ function handleEmptyInput() {
   width: 320px;
   height: 160px;
 }
+
 .login__image {
   margin-bottom: 0.1vw;
 }
