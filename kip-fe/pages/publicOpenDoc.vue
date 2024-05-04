@@ -221,6 +221,7 @@ const handleBookmarkClick = async () => {
 // 단축키
 import {onKeyStroke} from '@vueuse/core'
 import {useKeyModifier} from '@vueuse/core'
+import {orange} from "vuetify/util/colors";
 
 const KipButton = ref(false)
 const alt = useKeyModifier('Alt')
@@ -230,10 +231,13 @@ onKeyStroke(['Q', 'q'], () => {
     KipButton.value = !KipButton.value;
 
 })
-
 onKeyStroke(['M', 'm'], () => {
   if (alt.value)
     handleBookmarkClick()
+})
+onKeyStroke(['N', 'n'], () => {
+  if (alt.value)
+    openCreateNewDocument()
 })
 
 </script>
@@ -432,10 +436,11 @@ onKeyStroke(['M', 'm'], () => {
 
         <div class="fab_div">
           <v-container class="d-flex justify-end" style="margin: 30px;">
-            <v-speed-dial v-model="KipButton" location="top center" transition="fade-transition">
+            <v-speed-dial v-model="KipButton" location="top center" transition="scale-transition">
               <template v-slot:activator="{ props: activatorProps }">
                 <v-btn
                     rounded="circle"
+                    elevation="4"
                     v-bind="activatorProps"
                     size="large"
                     stacked>
@@ -445,21 +450,42 @@ onKeyStroke(['M', 'm'], () => {
                 </v-btn>
               </template>
               <v-btn
-                  key="6"
-                  :icon="`mdi-plus`"
-                  variant="elevated"
-                  rounded="lg"
-                  class="mb-2 ml-2"
-                  @click.stop="openCreateNewDocument"
-              />
-              <v-btn key="1" size="large" prepend-icon="mdi-format-title" @click="titleEditing = true">제목 수정</v-btn>
-              <v-btn key="2" size="large" prepend-icon="mdi-pencil" @click="">내용 수정</v-btn>
-              <v-btn key="3" size="large" prepend-icon="mdi-history" @click="">수정 이력</v-btn>
-              <v-btn key="4" size="large" v-if="isBookmarked" prepend-icon="mdi-star" @click="handleBookmarkClick">북마크
-                                                                                                                   해제
-              </v-btn>
-              <v-btn key="5" size="large" v-else prepend-icon="mdi-star-outline" @click="handleBookmarkClick">북마크 추가
-              </v-btn>
+                  :color="color.kipMainColor"
+                  style="width:12vw !important;"
+                  class="mb-2"
+                  text="제목수정"
+                  key="1"
+                  size="large"
+                  rounded="xl"
+                  prepend-icon="mdi-format-title"
+                  @click="titleEditing = true"/>
+              <v-btn
+                  text="내용수정"
+                  :color="color.kipMainColor"
+                  class="mb-2"
+                  key="2"
+                  size="large"
+                  rounded="xl"
+                  prepend-icon="mdi-pencil"
+                  @click=""/>
+              <v-btn
+                  text="수정이력"
+                  :color="color.kipMainColor"
+                  class="mb-2"
+                  key="3"
+                  size="large"
+                  rounded="xl"
+                  prepend-icon="mdi-history"
+                  @click=""/>
+              <v-btn
+                  text="새글쓰기"
+                  :color="color.kipMainColor"
+                  class="mb-2"
+                  key="4"
+                  size="large"
+                  rounded="xl"
+                  prepend-icon="mdi-plus"
+                  @click="openCreateNewDocument"/>
             </v-speed-dial>
           </v-container>
         </div>
@@ -716,12 +742,12 @@ onKeyStroke(['M', 'm'], () => {
   justify-content: flex-end;
   display: flex;
   align-items: flex-end;
-  bottom: 0px;
+  bottom: 1vh;
   z-index: 1004;
   transform: translateY(0%);
   position: fixed;
   height: 80px;
-  left: 0px;
+  left: -3.5vw;
   width: calc(100% + 0px);
 }
 </style>
