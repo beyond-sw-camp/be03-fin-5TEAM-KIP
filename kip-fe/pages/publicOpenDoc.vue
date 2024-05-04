@@ -22,13 +22,6 @@ const viewer = ref();
 const upLinkId = ref();
 
 
-// 첨부파일 관련
-const files = ref([]);
-const fileHover = ref(null);
-const fileDialog = ref(false);
-const fileLoading = ref(false);
-const attachedFileModal = ref(false);
-
 // 북마크 관련
 const selection = ref([]);
 const bookmarks = useBookMarks();
@@ -154,24 +147,35 @@ const RealMoveDocToTargetGroup = async () => {
   }
 }
 
-// 파일 업로드 핸들러
+
+
+
+// 첨부파일 관련
+const files = ref([]);
+const fileDialog = ref(false);
+const fileLoading = ref(false);
+const attachedFileModal = ref(false);
+
+const fileDialogOpen = () =>{
+  files.value = []; // 파일 목록 초기화
+  fileLoading.value = false;
+  fileDialog.value = true;
+}
+
 const handleFileUpload = async () => {
   fileLoading.value = true; // 빙글이 시작
   await wait(1200); // 1.2초 대기
-
   // 각 파일에 대해 업로드 로직 실행
   for (let file of files.value) {
-    console.log(file)
     await attachedFile.setAttachedFileUpload(documentList.selectedDocumentDetails.documentId, file);
   }
-  files.value = []; // 파일 목록 초기화
-
   // 파일 업로드 후 첨부파일 목록 다시 불러오기
   await attachedFile.setAttachedFileList(documentList.selectedDocumentDetails.documentId);
-
   fileLoading.value = false; // 빙글이 끝내기
   fileDialog.value = false; // 다이얼로그 닫기
 };
+
+
 
 // 파일 클릭 핸들러
 const handleFileClick = (url) => {
@@ -461,22 +465,20 @@ onKeyStroke(['M', 'm'], () => {
         <div class="attached-files">
           <v-card flat>
             <v-card-title class="headline text-center">첨부 파일
-
                                                        <!-- 첨부파일 업로드 로직 부분 -->
+              <v-btn
+                  class="mb-2"
+                  @click="fileDialogOpen"
+                  density="compact"
+                  variant="flat"
+                  icon="mdi-plus"
+              />
+
               <v-dialog
                   class="d-flex justify-center"
                   width="45vw"
                   opacity="50%"
                   v-model="fileDialog">
-                <template v-slot:activator="{ props: activatorProps }">
-                  <v-btn
-                      class="mb-2"
-                      v-bind="activatorProps"
-                      density="compact"
-                      variant="flat"
-                      icon="mdi-plus"
-                  />
-                </template>
 
                 <v-sheet
                     rounded="xl"
@@ -525,9 +527,10 @@ onKeyStroke(['M', 'm'], () => {
                 <v-card
                     v-for="file in attachedFile.getAttachedFileList"
                     :key="file.fileName"
-                    class="my-3"
-                    variant="elevated"
-                    elevation="2"
+                    class="my-2"
+                    color="blue-lighten-1"
+                    variant="tonal"
+                    elevation="1"
                     rounded="xl">
 
                   <v-row>
@@ -535,7 +538,9 @@ onKeyStroke(['M', 'm'], () => {
                       <v-btn
                           class="ml-4"
                           @click="handleFileClick(file.fileUrl)"
-                          icon="mdi-image-outline"
+                          :icon="file.fileType.includes('image') ? 'mdi-image-outline'
+                          :`${file.fileType.includes('compressed') ? 'mdi-folder-zip'
+                          :`${file.fileType.includes('application/pdf') ? 'mdi-file-pdf-box':'mdi-file-document-outline' }`}`"
                           variant="text"
                       />
 
@@ -555,7 +560,6 @@ onKeyStroke(['M', 'm'], () => {
                           class="mr-4"
                           @click="attachedFileModal=true"
                           icon="mdi-close"
-                          color="grey"
                           variant="text"
                           rounded="xl"
                       />

@@ -26,9 +26,14 @@ const fileLoading = ref(false);
 const selection = ref([]);
 const bookmarks = useBookMarks();
 
-await bookmarks.setMyBookMarks();
-await documentList.setFirstBookDetails()
-await attachedFile.setAttachedFileList(bookmarks.myBookMarks[0].documentId);
+onMounted(async () => {
+  await bookmarks.setMyBookMarks();
+  await documentList.setFirstBookDetails()
+  if (bookmarks.myBookMarks.length > 0)
+    await attachedFile.setAttachedFileList(bookmarks.myBookMarks[0].documentId);
+  groupName.setTopNaviGroupList(groupId);
+
+})
 
 groupName.setTopNaviGroupList(groupId);
 
