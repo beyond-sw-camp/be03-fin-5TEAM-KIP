@@ -84,7 +84,10 @@ onKeyStroke(['L', 'l'], () => {
                           <!-- 햄버거 버튼 -->
         <v-app-bar-nav-icon
             @click.stop="$event => drawer = !drawer"
-        />
+        />            <v-tooltip
+            activator="parent"
+            location="bottom"
+            text="Alt + 1"/>
       </template>
       <!--부서 계층 목록 -->
       <v-breadcrumbs :items="group.getTopNaviGroupList">
@@ -98,12 +101,17 @@ onKeyStroke(['L', 'l'], () => {
 
       {{ user.getUserInfo.name }}님 환영합니다.
 
+
       <v-dialog v-model="dialog" max-width="600">
         <template #activator="{ props: activatorProps }">
           <v-btn
               v-bind="activatorProps"
               class="text-none"
               stacked>
+            <v-tooltip
+                activator="parent"
+                location="bottom"
+                text="Alt + K"/>
             <v-icon
                 icon="mdi-magnify"
                 size="x-large"
@@ -117,6 +125,7 @@ onKeyStroke(['L', 'l'], () => {
         </template>
       </v-dialog>
 
+
       <!-- 알림 버튼 -->
       <v-dialog v-model="alert" max-width="600 ">
         <template #activator="{ props: activatorProps }">
@@ -124,10 +133,15 @@ onKeyStroke(['L', 'l'], () => {
               v-bind="activatorProps"
               class="text-none mr-3"
               stacked>
+            <v-tooltip
+                activator="parent"
+                location="bottom"
+                text="Alt + L"/>
             <v-badge
                 v-if="unreadNotificationsCount > 0"
                 color="error"
                 :content="unreadNotificationsCount">
+
               <v-icon
                   icon="mdi-bell-outline"
                   size="x-large"

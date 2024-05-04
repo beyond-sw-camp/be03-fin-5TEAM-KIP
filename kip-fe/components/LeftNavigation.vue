@@ -32,17 +32,24 @@ onKeyStroke('2', () => {
 })
 
 
-
 </script>
 
 <template>
   <v-sheet class="left__nav__sheet">
     <v-btn
-        :icon="rail ? 'mdi-chevron-right' : 'mdi-chevron-left'"
         variant="text"
         @click="handleRailClick"
-        class="group__list"
-    />
+        class="mt-4 pr-5">
+      <v-icon
+          variant="text"
+          size="x-large"
+          :icon="rail ? 'mdi-chevron-right' : 'mdi-chevron-left'"
+      />
+      <v-tooltip
+          activator="parent"
+          location="end"
+          text="Alt + 2"/>
+    </v-btn>
     <v-list density="comfortable">
       <v-list-item
           title="전체공개문서"
@@ -54,15 +61,15 @@ onKeyStroke('2', () => {
           variant="text"
           class="group__list"/>
 
-<!--      <v-list-item-->
-<!--          title="문서목록테스트"-->
-<!--          value="publicDoc"-->
-<!--          to="/publicDoc"-->
-<!--          prepend-icon="mdi-web"-->
-<!--          :color="color.kipMainColor"-->
-<!--          rounded="xl"-->
-<!--          variant="text"-->
-<!--          class="group__list"/>-->
+      <!--      <v-list-item-->
+      <!--          title="문서목록테스트"-->
+      <!--          value="publicDoc"-->
+      <!--          to="/publicDoc"-->
+      <!--          prepend-icon="mdi-web"-->
+      <!--          :color="color.kipMainColor"-->
+      <!--          rounded="xl"-->
+      <!--          variant="text"-->
+      <!--          class="group__list"/>-->
 
       <v-list-item
           title="부서목록"
@@ -74,25 +81,25 @@ onKeyStroke('2', () => {
           variant="text"
           class="group__list"/>
 
-<!--      <v-list-item-->
-<!--          to="/kip"-->
-<!--          title="KIP"-->
-<!--          value="KIP"-->
-<!--          prepend-icon="mdi-store-cog"-->
-<!--          :color="color.kipMainColor"-->
-<!--          rounded="xl"-->
-<!--          variant="text"-->
-<!--          class="group__list"/>-->
+      <!--      <v-list-item-->
+      <!--          to="/kip"-->
+      <!--          title="KIP"-->
+      <!--          value="KIP"-->
+      <!--          prepend-icon="mdi-store-cog"-->
+      <!--          :color="color.kipMainColor"-->
+      <!--          rounded="xl"-->
+      <!--          variant="text"-->
+      <!--          class="group__list"/>-->
 
-<!--      <v-list-item-->
-<!--          title="main-test"-->
-<!--          value="main-test"-->
-<!--          to="/main-test"-->
-<!--          prepend-icon="mdi-arm-flex"-->
-<!--          :color="color.kipMainColor"-->
-<!--          rounded="xl"-->
-<!--          variant="text"-->
-<!--          class="group__list"/>-->
+      <!--      <v-list-item-->
+      <!--          title="main-test"-->
+      <!--          value="main-test"-->
+      <!--          to="/main-test"-->
+      <!--          prepend-icon="mdi-arm-flex"-->
+      <!--          :color="color.kipMainColor"-->
+      <!--          rounded="xl"-->
+      <!--          variant="text"-->
+      <!--          class="group__list"/>-->
 
       <v-list-item
           title="즐겨찾기"
@@ -147,9 +154,11 @@ onKeyStroke('2', () => {
 .left__nav__sheet {
   color: var(--primary-color);
 }
-.group__list{
+
+.group__list {
   margin-top: 5px;
 }
+
 .v-list-item__spacer {
   width: 13px !important;
 }
