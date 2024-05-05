@@ -37,17 +37,11 @@ const handleChange = async (event) => {
   }
 }
 
-// 문서 타입을 드래그로 변경
-const changeDocumentTypeByScroll = async (documentId) => {
+// 문서 타입변경
+const changeDocumentTypeByRightClick = async (documentId) => {
   await documentList.ChangeDocumentType(documentId)
   await documentList.setDocumentList(groupId);
 }
-
-// 첨부파일 관련
-const files = ref([]);
-const fileHover = ref(null);
-const fileDialog = ref(false);
-const fileLoading = ref(false);
 
 // 북마크 관련
 const selection = ref([]);
@@ -56,7 +50,6 @@ const bookmarks = useBookMarks();
 await documentList.setDocumentList(groupId);
 await groupName.setSelectedGroupInfo(groupId)
 await documentList.setFirstDocumentDetails()
-
 await attachedFile.setAttachedFileList(documentList.getFirstDocId);
 
 groupName.setTopNaviGroupList(groupId);
@@ -66,7 +59,6 @@ const openCreateNewDocument = (docId) => {
   dialog.value = true;
   console.log(upLinkId.value)
 };
-
 const handleData = async (form) => {
   form.groupId = groupId;
   form.upLinkId = upLinkId.value
@@ -96,7 +88,13 @@ const selectDocument = async (documentId) => {
   );
 };
 
-// 파일 업로드 핸들러
+
+// 첨부파일
+const files = ref([]);
+const fileHover = ref(null);
+const fileDialog = ref(false);
+const fileLoading = ref(false);
+
 const handleFileUpload = async () => {
   fileLoading.value = true; // 빙글이 시작
   await wait(1200); // 1.2초 대기
@@ -113,13 +111,9 @@ const handleFileUpload = async () => {
   fileLoading.value = false; // 빙글이 끝내기
   fileDialog.value = false; // 다이얼로그 닫기
 };
-
-// 파일 클릭 핸들러
 const handleFileClick = (url) => {
   window.open(url, '_blank');
 };
-
-// 첨부파일 삭제 로직
 const AttachedFileDelete = async (fileId) => {
   await attachedFile.setAttachedFileDelete(fileId);
   await wait(2000); // 1.2초 대기
@@ -179,7 +173,6 @@ const closeVersionHistory = async () => {
 
 
 </script>
-
 <template>
   <v-container fluid>
     <v-row no-gutters>
@@ -215,7 +208,7 @@ const closeVersionHistory = async () => {
                           width="100%"
                           @click="selectDocument(doc.documentId)"
                           :value="doc.documentId"
-                          @contextmenu.prevent="changeDocumentTypeByScroll(doc.documentId)">
+                          @contextmenu.prevent="changeDocumentTypeByRightClick(doc.documentId)">
                         <h3
                             v-if="doc.docType === 'SECTION'"
                             class="ellipsis"
@@ -533,7 +526,6 @@ const closeVersionHistory = async () => {
     </v-row>
   </v-container>
 </template>
-
 <style scoped>
 .font-weight-bold {
   font-weight: bold;

@@ -43,10 +43,10 @@ const hashTagsUpdateReqDto = ref({
   hashTags: []
 });
 const hashTagUpdateModalOpen = async () => {
-  hashTagUpdateModal.value = !hashTagUpdateModal.value
+  await documentList.setHashTagsForTop100List();
   hashTagsUpdateReqDto.value.documentId = documentList.getSelectedDocId
   hashTagsUpdateReqDto.value.hashTags = documentList.returnHashTagsForTop100List()
-  await documentList.setHashTagsForTop100List();
+  hashTagUpdateModal.value = !hashTagUpdateModal.value
 }
 const hashTagUpdateReq = () => {
   documentList.updateHashTags(hashTagsUpdateReqDto.value)
@@ -110,6 +110,7 @@ const selectDocument = async (documentId) => {
 };
 
 // 에디터 관련 코드.
+const postForm = ref();
 const openCreateNewDocument = () => {
   upLinkId.value = null;
   dialog.value = !dialog.value;
@@ -204,6 +205,7 @@ const handleBookmarkClick = async () => {
 // 단축키
 import {onKeyStroke} from '@vueuse/core'
 import {useKeyModifier} from '@vueuse/core'
+import {ref} from "vue";
 
 const KipButton = ref(false)
 const alt = useKeyModifier('Alt')
@@ -231,11 +233,9 @@ onKeyStroke(['R', 'r'], () => {
 })
 
 </script>
-
 <template>
   <v-container fluid>
     <v-row no-gutters>
-
       <!-- 👈👈👈👈👈👈👈👈 왼쪽 사이드바 -->
       <v-col cols="3">
         <v-list class="pa-4">
@@ -429,6 +429,7 @@ onKeyStroke(['R', 'r'], () => {
           <div ref="viewer">{{ documentList.selectedDocumentDetails.content }}</div>
         </v-card>
 
+        <!--        스피드 모달 아이콘-->
         <div class="fab_div">
           <v-container class="d-flex justify-end" style="margin: 30px;">
             <v-speed-dial v-model="KipButton" location="top center" transition="scale-transition">
@@ -441,8 +442,7 @@ onKeyStroke(['R', 'r'], () => {
                     stacked>
                   <v-tooltip
                       activator="parent"
-                      location="start"
-                  >ALT + Q
+                      location="start">ALT + Q
                   </v-tooltip>
 
                   <v-img
@@ -460,8 +460,7 @@ onKeyStroke(['R', 'r'], () => {
                   @click="openCreateNewDocument"> 새글쓰기
                 <v-tooltip
                     activator="parent"
-                    location="start"
-                >ALT + N
+                    location="start">ALT + N
                 </v-tooltip>
               </v-btn>
               <v-btn
@@ -476,8 +475,7 @@ onKeyStroke(['R', 'r'], () => {
                   @click="titleEditing = true">제목수정
                 <v-tooltip
                     activator="parent"
-                    location="start"
-                >ALT + T
+                    location="start">ALT + T
                 </v-tooltip>
               </v-btn>
               <v-btn
@@ -490,8 +488,7 @@ onKeyStroke(['R', 'r'], () => {
                   @click=""> 내용수정
                 <v-tooltip
                     activator="parent"
-                    location="start"
-                >ALT + R
+                    location="start">ALT + R
                 </v-tooltip>
 
               </v-btn>
@@ -505,8 +502,7 @@ onKeyStroke(['R', 'r'], () => {
                   @click="">수정이력
                 <v-tooltip
                     activator="parent"
-                    location="start"
-                >ALT + Y
+                    location="start">ALT + Y
                 </v-tooltip>
               </v-btn>
             </v-speed-dial>
@@ -698,85 +694,83 @@ onKeyStroke(['R', 'r'], () => {
             <v-tooltip
                 activator="parent"
                 location="top"
-            > 클릭하면 해당 문서 필터링
+            > 태그필터링
             </v-tooltip>
           </v-chip>
         </v-chip-group>
 
-      </v-col>
-
-      <!--           ❤️ 해시태그 수정을 위한 모달-->
-      <v-dialog
-          class="d-flex justify-center"
-          width="60vw"
-          opacity="10%"
-          v-model="hashTagUpdateModal">
-        <v-sheet
-            rounded="xl"
-            class="d-flex justify-center flex-wrap pa-10">
-          <v-combobox
-              variant="underlined"
-              v-model="hashTagsUpdateReqDto.hashTags"
-              multiple
-              placeholder="태그를 입력하세요."
-              persistent-placeholder
-              hint="여러 태그를 엔터로 구분하여 입력하세요.">
-            <template v-slot:selection="data">
+        <!--           ❤️ 해시태그 수정을 위한 모달-->
+        <v-dialog
+            class="d-flex justify-center"
+            width="60vw"
+            opacity="10%"
+            v-model="hashTagUpdateModal">
+          <v-sheet
+              rounded="xl"
+              class="d-flex justify-center flex-wrap pa-10">
+            <v-combobox
+                variant="underlined"
+                v-model="hashTagsUpdateReqDto.hashTags"
+                multiple
+                placeholder="태그를 입력하세요."
+                persistent-placeholder
+                hint="여러 태그를 엔터로 구분하여 입력하세요.">
+              <template v-slot:selection="data">
+                <v-chip
+                    class="pa-4 mr-1"
+                    style="color: #FF5722"
+                    :key="JSON.stringify(data.item)"
+                    v-bind="data.attrs"
+                    :disabled="data.disabled"
+                    :model-value="data.selected"
+                    size="large"
+                    @click="documentList.filterTop100HashTagsByClick(data.item.title)">
+                  {{ data.item.title }}
+                  <v-tooltip
+                      activator="parent"
+                      location="top"
+                  > 태그 검색
+                  </v-tooltip>
+                </v-chip>
+              </template>
+            </v-combobox>
+            <h2 class="mt-5 mb-3" style="width:100%; display: flex; justify-content: center"> 🗼 Top 100 해시태그 🗼</h2>
+            <v-chip-group column class="px-4 d-flex flex-wrap">
               <v-chip
-                  class="pa-4 mr-1"
-                  style="color: #FF5722"
-                  :key="JSON.stringify(data.item)"
-                  v-bind="data.attrs"
-                  :disabled="data.disabled"
-                  :model-value="data.selected"
-                  size="large"
-                  @click="documentList.filterTop100HashTagsByClick(data.item.title)">
-                {{ data.item.title }}
+                  prepend-icon="mdi-refresh"
+                  style="color: #4CAF50"
+                  @click="ResetHasTagAddAndFiltering"
+              >
+                초기화
+                <v-tooltip
+                    activator="parent"
+                    location="start"
+                > ALT + R
+                </v-tooltip>
+              </v-chip>
+              <v-chip
+                  v-for="(hashTag, index) in documentList.fillteredTop100HaahTag"
+                  style="color: #546E7A"
+                  :key="index"
+                  @click="Top100HashTagAddAndFiltering(hashTag['hashTagId'], hashTag.tagName)">
+                {{ hashTag.tagName }}
                 <v-tooltip
                     activator="parent"
                     location="top"
-                > 태그 검색
+                > 태그 추가
                 </v-tooltip>
               </v-chip>
-            </template>
-          </v-combobox>
-
-          <h2 class="mt-5 mb-3" style="width:100%; display: flex; justify-content: center"> 🗼 Top 100 해시태그 🗼</h2>
-          <v-chip-group column class="px-4 d-flex flex-wrap">
-            <v-chip
-                prepend-icon="mdi-refresh"
-                style="color: #4CAF50"
-                @click="ResetHasTagAddAndFiltering"
-            >
-              초기화
-              <v-tooltip
-                  activator="parent"
-                  location="start"
-              > ALT + R
-              </v-tooltip>
-            </v-chip>
-            <v-chip
-                v-for="(hashTag, index) in documentList.fillteredTop100HaahTag"
-                style="color: #546E7A"
-                :key="index"
-                @click="Top100HashTagAddAndFiltering(hashTag['hashTagId'], hashTag.tagName)">
-              {{ hashTag.tagName }}
-              <v-tooltip
-                  activator="parent"
-                  location="top"
-              > 태그 추가
-              </v-tooltip>
-            </v-chip>
-          </v-chip-group>
-          <v-btn
-              class="mt-6"
-              :color="color.kipMainColor"
-              text="수정 하기"
-              @click="hashTagUpdateReq"
-              block
-          />
-        </v-sheet>
-      </v-dialog>
+            </v-chip-group>
+            <v-btn
+                class="mt-6"
+                :color="color.kipMainColor"
+                text="수정 하기"
+                @click="hashTagUpdateReq"
+                block
+            />
+          </v-sheet>
+        </v-dialog>
+      </v-col>
     </v-row>
   </v-container>
 </template>
