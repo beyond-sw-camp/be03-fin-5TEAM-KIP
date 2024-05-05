@@ -1,4 +1,5 @@
 <script setup>
+import {ref} from "vue";
 import {toastViewerInstance} from "~/useToastViewer";
 import {VTreeview} from 'vuetify/labs/VTreeview'
 
@@ -133,15 +134,15 @@ const createNewVersion = async (form) => {
   await documentList.updateVersion(documentList.getSelectedDocId, form.value.content, form.value.message);
   viewer.value = toastViewerInstance(
       viewer.value,
-      documentList.getSelectedDocId
+      documentList.selectedDocumentDetails.content
   );
   updateContentModal.value = false;
 }
 const closeVersionHistory = async () => {
-  await documentList.setDocumentDetails(documentList.getSelectedDocId());
+  await documentList.setDocumentDetails(documentList.getSelectedDocId);
   viewer.value = toastViewerInstance(
       viewer.value,
-      documentList.getSelectedDocId
+      documentList.selectedDocumentDetails.content
   );
   versionHistoryModal.value = false
 }
@@ -227,7 +228,6 @@ const handleBookmarkClick = async () => {
 // 단축키
 import {onKeyStroke} from '@vueuse/core'
 import {useKeyModifier} from '@vueuse/core'
-import {ref} from "vue";
 
 const KipButton = ref(false)
 const alt = useKeyModifier('Alt')
