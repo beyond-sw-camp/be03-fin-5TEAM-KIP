@@ -15,6 +15,15 @@ const documentList = useDocumentList();
 
 await group.setMyGroupsInfo();  // (awit) 그룹정보를 모두 가지고 온뒤 넘어감
 await documentList.setFirstDocumentDetails();
+const notification = useNotification();
+
+// 새로고침
+const refresh = async () => {
+  await group.setMyGroupsInfo()
+  await group.setHierarchyInfo();
+  await notification.setMyNotification();
+  notification.notifications = notification.getNotification;
+}
 
 const firebaseApp = useFirebaseApp();
 const {onForegroundMessage} = useFirebaseMessaging(firebaseApp);
@@ -24,9 +33,7 @@ onForegroundMessage()
 // 단축키
 import {onKeyStroke} from '@vueuse/core'
 import {useKeyModifier} from '@vueuse/core'
-
 const alt = useKeyModifier('Alt')
-
 onKeyStroke('2', () => {
   if (alt.value) handleRailClick()
 })
@@ -36,9 +43,11 @@ onKeyStroke('2', () => {
 
 <template>
   <v-sheet class="left__nav__sheet">
+    <div class="d-flex justify-lg-space-between">
     <v-btn
         variant="text"
         @click="handleRailClick"
+        rounded="xl"
         class="mt-4 pr-5">
       <v-icon
           variant="text"
@@ -50,6 +59,22 @@ onKeyStroke('2', () => {
           location="end"
           text="Alt + 2"/>
     </v-btn>
+    <v-btn
+        rounded="xl"
+        variant="text"
+        @click="refresh"
+        class="mt-4 pr-5">
+      <v-icon
+          variant="text"
+          size="large"
+          icon="mdi-refresh"
+      />
+      <v-tooltip
+          activator="parent"
+          location="start"
+          text="새로고침"/>
+    </v-btn>
+    </div>
     <v-list density="comfortable">
       <v-list-item
           title="전체공개문서"
@@ -61,16 +86,6 @@ onKeyStroke('2', () => {
           variant="text"
           class="group__list"/>
 
-      <!--      <v-list-item-->
-      <!--          title="문서목록테스트"-->
-      <!--          value="publicDoc"-->
-      <!--          to="/publicDoc"-->
-      <!--          prepend-icon="mdi-web"-->
-      <!--          :color="color.kipMainColor"-->
-      <!--          rounded="xl"-->
-      <!--          variant="text"-->
-      <!--          class="group__list"/>-->
-
       <v-list-item
           title="부서목록"
           value="groupList"
@@ -80,26 +95,6 @@ onKeyStroke('2', () => {
           rounded="xl"
           variant="text"
           class="group__list"/>
-
-      <!--      <v-list-item-->
-      <!--          to="/kip"-->
-      <!--          title="KIP"-->
-      <!--          value="KIP"-->
-      <!--          prepend-icon="mdi-store-cog"-->
-      <!--          :color="color.kipMainColor"-->
-      <!--          rounded="xl"-->
-      <!--          variant="text"-->
-      <!--          class="group__list"/>-->
-
-      <!--      <v-list-item-->
-      <!--          title="main-test"-->
-      <!--          value="main-test"-->
-      <!--          to="/main-test"-->
-      <!--          prepend-icon="mdi-arm-flex"-->
-      <!--          :color="color.kipMainColor"-->
-      <!--          rounded="xl"-->
-      <!--          variant="text"-->
-      <!--          class="group__list"/>-->
 
       <v-list-item
           title="즐겨찾기"

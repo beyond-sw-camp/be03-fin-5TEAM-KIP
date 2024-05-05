@@ -1,7 +1,7 @@
 <script setup>
-import {useNotification} from "~/stores/Notification.js";
 
 const notifications = useNotification();
+
 const notificationAllow = () => {
   let notificationPermission = Notification.permission;
   if (notificationPermission === "granted") {
@@ -20,13 +20,11 @@ const notificationAllow = () => {
 const readNotification = async (noteId) => {
   await notifications.readNotification(noteId)
   await notifications.setMyNotification()
-  notifications.value =  notifications.getNotification
   await navigateTo('/requests')
 }
 const deleteNotification = async (noteId) => {
   await notifications.removeNotification(noteId);
   await notifications.setMyNotification()
-  notifications.value = notifications.getNotification
 }
 </script>
 <template>
@@ -45,7 +43,7 @@ const deleteNotification = async (noteId) => {
     </v-toolbar>
 
     <v-list two-line>
-      <template v-for="(notification, index) in notifications.value" :key="notification.noteId">
+      <template v-for="(notification, index) in notification.getNotification" :key="notification.noteId">
         <v-list-item>
           <div
               class="cursor-pointer"

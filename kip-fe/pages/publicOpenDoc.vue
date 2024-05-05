@@ -5,7 +5,7 @@ import {VTreeview} from 'vuetify/labs/VTreeview'
 
 // 상단 네비 제목 설정
 const group = useGroup();
-group.TopNaviGroupList = ["Knowledge is Power", "전체공개문서", "해시태그로 검색해 주세요.🏷️"];
+group.TopNaviGroupList = ["Knowledge is Power", "전체공개문서", "태그 검색  (ALT + H) 🏷️"];
 
 // 피니아.
 const createDocument = useCreateDocument();
@@ -805,12 +805,12 @@ onKeyStroke(['R', 'r'], () => {
   justify-content: flex-end;
   display: flex;
   align-items: flex-end;
-  bottom: 3vh;
+  bottom: 4vh;
   z-index: 1004;
   transform: translateY(0%);
   position: fixed;
   height: 80px;
-  left: -4.3vw;
+  left: -4vw;
   width: calc(100% + 0px);
 }
 </style>
