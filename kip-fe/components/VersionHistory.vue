@@ -1,8 +1,8 @@
-<script lang="ts" setup>
+<script setup>
 
 const versions = useVersion()
 const props = defineProps({
-  selectDocumentId: Number
+      selectDocumentId: Number
     }
 )
 const versionViewModal = ref(false);
@@ -15,11 +15,11 @@ onMounted(async () => {
 });
 
 const myHeaders = ref([
-  { title: '작성자', value: 'writer', align: 'center'},
-  { title: '수정 일자', value: 'createdTime', align: 'center'},
-  { title: '수정 메시지', value: 'message', align: 'center'},
-  { title: '현재 버젼', value: 'isShow', align: 'center'},
-  { title: ' ', value : 'actions', align:'end'}
+  {title: '작성자', value: 'writer', align: 'center'},
+  {title: '수정 일자', value: 'createdTime', align: 'center'},
+  {title: '수정 메시지', value: 'message', align: 'center'},
+  {title: '현재 버젼', value: 'isShow', align: 'center'},
+  {title: ' ', value: 'actions', align: 'end'}
 ]);
 const selectedVersion = ref();
 const openVersionView = (item) => {
@@ -51,12 +51,12 @@ const changeVersion = async () => {
               :items="versionList"
           >
             <template v-slot:item.isShow="{ item }">
-                <v-icon v-if="item.isShow === 'N'">mdi-minus</v-icon>
-                <v-icon v-else color="green" icon="mdi-check"></v-icon>
+              <v-icon v-if="item.isShow === 'N'">mdi-minus</v-icon>
+              <v-icon v-else color="green" icon="mdi-check"></v-icon>
             </template>
             <template v-slot:item.actions="{ item }">
               <v-icon v-if="item.isShow==='N'"
-              @click="openVersionChange(item)">
+                      @click="openVersionChange(item)">
                 mdi-file-arrow-left-right-outline
               </v-icon>
               <v-icon
@@ -85,7 +85,7 @@ const changeVersion = async () => {
   <v-dialog v-model="dialog" persistent max-width="290">
     <v-card>
       <v-card-title class="text-h5">버전 변경</v-card-title>
-      <v-card-text >해당 버전으로 변경하시겠습니까?</v-card-text>
+      <v-card-text>해당 버전으로 변경하시겠습니까?</v-card-text>
       <v-card-actions>
         <v-spacer></v-spacer>
         <v-btn color="blue darken-1" text @click="dialog = false">취소</v-btn>
@@ -95,7 +95,7 @@ const changeVersion = async () => {
   </v-dialog>
 </template>
 <style>
-.viewDetail{
+.viewDetail {
   max-width: 800px;
 }
 </style>

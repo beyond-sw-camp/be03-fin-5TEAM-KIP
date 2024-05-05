@@ -108,7 +108,7 @@ const selectDocument = async (documentId) => {
   );
 };
 
-// 에디터 관련 코드.
+// 문서작성 관련코드
 const postForm = ref();
 const openCreateNewDocument = () => {
   upLinkId.value = null;
@@ -121,6 +121,29 @@ const handleData = async (form) => {
   await documentList.setPublicDocumentList();
   await selectDocument(temp.documentId);
   dialog.value = false;
+}
+
+
+//  문서 수정
+const updateContentModal = ref(false);
+const versionHistoryModal = ref(false);
+const updateContent = ref();
+
+const createNewVersion = async (form) => {
+  await documentList.updateVersion(documentList.getSelectedDocId, form.value.content, form.value.message);
+  viewer.value = toastViewerInstance(
+      viewer.value,
+      documentList.getSelectedDocId
+  );
+  updateContentModal.value = false;
+}
+const closeVersionHistory = async () => {
+  await documentList.setDocumentDetails(documentList.getSelectedDocId());
+  viewer.value = toastViewerInstance(
+      viewer.value,
+      documentList.getSelectedDocId
+  );
+  versionHistoryModal.value = false
 }
 
 // 전체공개문서 기존그룹으로 이동
@@ -208,7 +231,6 @@ import {ref} from "vue";
 
 const KipButton = ref(false)
 const alt = useKeyModifier('Alt')
-
 onKeyStroke(['Q', 'q'], () => {
   if (alt.value) KipButton.value = !KipButton.value;
 })
@@ -229,6 +251,12 @@ onKeyStroke(['A', 'a'], () => {
 })
 onKeyStroke(['R', 'r'], () => {
   if (alt.value) ResetHasTagAddAndFiltering();
+})
+onKeyStroke(['U', 'u'], () => {
+  if (alt.value) versionHistoryModal.value = ! versionHistoryModal.value
+})
+onKeyStroke(['Y', 'y'], () => {
+  if (alt.value) updateContentModal.value = !updateContentModal.value;
 })
 onKeyStroke(['Enter'], () => {
   if (alt.value) postForm.value.submit();
@@ -397,6 +425,30 @@ onKeyStroke(['Enter'], () => {
             <PostForm ref="postForm" @submit="handleData"></PostForm>
           </v-card>
         </v-dialog>
+
+
+        <!--      문서 수정을 위한 모달 -->
+        <v-dialog v-model="updateContentModal" fullscreen>
+          <v-card>
+            <UpdateContent ref="updateContent" @submit="createNewVersion" :dataToPass="documentList.selectedDocumentDetails.content"></UpdateContent>
+            <v-card-actions>
+              <v-spacer></v-spacer>
+              <v-btn  @click=updateContent.submit()>작성 완료</v-btn>
+              <v-btn  @click="updateContentModal = false">닫기</v-btn>
+            </v-card-actions>
+          </v-card>
+        </v-dialog>
+        <v-dialog v-model="versionHistoryModal">
+          <v-card>
+            {{ documentList.getSelectedDocId }}
+            <VersionHistory :selectDocumentId="documentList.getSelectedDocId"></VersionHistory>
+            <v-card-actions>
+              <v-spacer></v-spacer>
+              <v-btn  @click="closeVersionHistory">닫기</v-btn>
+            </v-card-actions>
+          </v-card>
+        </v-dialog>
+
       </v-col>
       <v-divider class="divider-container" vertical/>
 
@@ -508,10 +560,10 @@ onKeyStroke(['Enter'], () => {
                   size="large"
                   rounded="xl"
                   prepend-icon="mdi-pencil"
-                  @click=""> 내용수정
+                  @click="updateContentModal=true"> 내용수정
                 <v-tooltip
                     activator="parent"
-                    location="start">ALT + R
+                    location="start">ALT + U
                 </v-tooltip>
 
               </v-btn>
@@ -522,7 +574,7 @@ onKeyStroke(['Enter'], () => {
                   size="large"
                   rounded="xl"
                   prepend-icon="mdi-history"
-                  @click="">수정이력
+                  @click="versionHistoryModal=true">수정이력
                 <v-tooltip
                     activator="parent"
                     location="start">ALT + Y

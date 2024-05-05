@@ -54,6 +54,7 @@ await attachedFile.setAttachedFileList(documentList.getFirstDocId);
 
 groupName.setTopNaviGroupList(groupId);
 
+// 문서 생성 관련
 const openCreateNewDocument = (docId) => {
   upLinkId.value = docId;
   dialog.value = true;
@@ -68,6 +69,8 @@ const handleData = async (form) => {
   await selectDocument(temp.documentId);
   dialog.value = false;
 };
+
+// 문서 수정 관련
 const createNewVersion = async (form) => {
   await documentList.updateVersion(documentList.selectedDocumentDetails.documentId, form.value.content, form.value.message);
   viewer.value = toastViewerInstance(
@@ -76,6 +79,27 @@ const createNewVersion = async (form) => {
   );
   updateContentModal.value = false;
 }
+
+
+const closeVersionHistory = async () => {
+  await documentList.setDocumentDetails(documentList.selectedDocumentDetails.documentId);
+  viewer.value = toastViewerInstance(
+      viewer.value,
+      documentList.selectedDocumentDetails.content
+  );
+  versionHistoryModal.value = false
+}
+
+// 문서 제목 수정
+const updateDocumentTitle = async () => {
+  titleEditing.value = false
+  documentList.selectedDocumentDetails.title = newTitle.value
+  await documentList.updateDocumentTitle(documentList.selectedDocumentDetails.documentId, documentList.selectedDocumentDetails.title)
+  await documentList.setDocumentList(groupName.getSelectedGroupInfo[0].groupId);
+  newTitle.value =  ""
+}
+
+
 
 // 문서 선택 시 상세 정보를 가져오는 함수
 const selectDocument = async (documentId) => {
@@ -94,7 +118,6 @@ const files = ref([]);
 const fileHover = ref(null);
 const fileDialog = ref(false);
 const fileLoading = ref(false);
-
 const handleFileUpload = async () => {
   fileLoading.value = true; // 빙글이 시작
   await wait(1200); // 1.2초 대기
@@ -154,23 +177,6 @@ const hashTagUpdateReq = () => {
   documentList.updateHashTags(hashTagsUpdateReqDto.value)
   hashTagUpdateModal.value = false;
 }
-
-const updateDocumentTitle = async () => {
-  titleEditing.value = false
-  documentList.selectedDocumentDetails.title = newTitle.value
-  await documentList.updateDocumentTitle(documentList.selectedDocumentDetails.documentId, documentList.selectedDocumentDetails.title)
-  await documentList.setDocumentList(groupName.getSelectedGroupInfo[0].groupId);
-  newTitle.value =  ""
-}
-const closeVersionHistory = async () => {
-  await documentList.setDocumentDetails(documentList.selectedDocumentDetails.documentId);
-  viewer.value = toastViewerInstance(
-      viewer.value,
-      documentList.selectedDocumentDetails.content
-  );
-  versionHistoryModal.value = false
-}
-
 
 </script>
 <template>
