@@ -12,7 +12,8 @@ import NotificationCopo from "~/components/NotificationCompo.vue";
 const drawer = ref(true);
 const rail = ref(true);
 const dialog = ref(false);
-const alert = ref(false)
+const alert = ref(false);
+const mypage = ref(false);
 
 // 피니아
 const user = useUser();
@@ -157,10 +158,16 @@ onKeyStroke(['L', 'l'], () => {
 
       <!--     아바타 버튼 -->
       <template #append>
-        <v-menu transition="slide-y-transition">
+        <v-menu
+            @mouseenter="mypage=true"
+            @mouseleave="mypage=false"
+
+            v-model=mypage transition="slide-y-transition">
           <template v-slot:activator="{ props }">
             <!-- 아바타 버튼 -->
             <v-avatar
+                @mouseenter="mypage=true"
+                @mouseleave="mypage=false"
                 :image="user.getProfileImageUrl"
                 size="54"
                 v-bind="props"
