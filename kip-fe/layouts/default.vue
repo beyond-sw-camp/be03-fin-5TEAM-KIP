@@ -1,5 +1,4 @@
 <script setup>
-import SearchModal from "~/components/SearchModal.vue";
 import {onKeyStroke} from '@vueuse/core'
 import {useKeyModifier} from '@vueuse/core'
 
@@ -108,12 +107,12 @@ onKeyStroke(['L', 'l'], () => {
                 location="bottom"
                 text="Alt + K"/>
             <div class="d-flex">
-            <v-icon
-                class="mx-2"
-                icon="mdi-magnify"
-                size="x-large"
-            />
-            <span class="py-1 px-2 ms-2 mr-3 border rounded text-disabled ">
+              <v-icon
+                  class="mx-2"
+                  icon="mdi-magnify"
+                  size="x-large"
+              />
+              <span class="py-1 px-2 ms-2 mr-3 border rounded text-disabled ">
               ALT + K </span>
             </div>
           </v-btn>
@@ -143,7 +142,6 @@ onKeyStroke(['L', 'l'], () => {
               icon="mdi-bell-outline"
               size="x-large"
           />
-
         </v-badge>
         <v-icon
             v-else
@@ -153,11 +151,12 @@ onKeyStroke(['L', 'l'], () => {
       </v-btn>
 
       <v-dialog v-model="alert" max-width="600 ">
-        <NotificationCopo></NotificationCopo>
+        <NotificationCopo/>
       </v-dialog>
 
 
-      <template #append> <!-- 상단 메뉴의 제일 오른쪽-->
+      <!--     아바타 버튼 -->
+      <template #append>
         <v-menu transition="slide-y-transition">
           <template v-slot:activator="{ props }">
             <!-- 아바타 버튼 -->
@@ -167,19 +166,27 @@ onKeyStroke(['L', 'l'], () => {
                 v-bind="props"
                 class="cursor-pointer ml-1 mr-4"/>
           </template>
-          <v-list>
-            <v-list-item @click="useRouter().push('/mypage');">
+          <v-list style="width: 250px; display: flex; flex-direction:column; align-items: center; border-radius: 25px" class="pa-8">
+            <v-list-item @click="useRouter().push('/mypage');"
+                         style="background-color:#4CAF50;
+                         color:white; border-radius: 25px; width:200px ;
+                         display: flex; justify-content: center">
               <template v-slot:prepend>
-                <v-icon icon="mdi-information-box-outline"/>
+                <v-icon
+                    icon="mdi-information-box-outline"
+                />
               </template>
-              <v-list-item-title>MyPage</v-list-item-title>
+              <v-list-item-title>정보수정</v-list-item-title>
             </v-list-item>
-
-            <v-list-item @click="user.logout">
+            <v-list-item @click="user.logout"
+                         class="mt-5"
+                         style="background-color:#FF5722;
+                         color:white; border-radius: 25px; width:200px ;
+                         display: flex; justify-content: center">
               <template v-slot:prepend>
                 <v-icon icon="mdi-logout"/>
               </template>
-              <v-list-item-title>LogOut</v-list-item-title>
+              <v-list-item-title>로그아웃</v-list-item-title>
             </v-list-item>
           </v-list>
         </v-menu>
