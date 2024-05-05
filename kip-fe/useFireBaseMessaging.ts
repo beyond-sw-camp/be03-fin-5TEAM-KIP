@@ -27,14 +27,13 @@ export const useFirebaseMessaging = (firebaseApp: FirebaseApp) => {
 
   const onForegroundMessage = () => {
     if (!messaging) return; // `messaging`이 초기화되지 않았다면 함수를 종료
-    onMessage(messaging, (payload : any) => {
-      console.log('Message received. ', payload);
+    onMessage(messaging,  (payload : any) => {
+      console.log('메시지 수락. ', payload);
       new Notification(payload.data.title, {
         body: payload.data.content,
         icon: '/favicon.png',
       });
     });
   };
-
   return { fetchFCMToken, onForegroundMessage };
 };

@@ -294,7 +294,6 @@ export const useUser = defineStore("user", {
                     const errorData = await response.json();
                     throw new Error(errorData.message || 'Failed to change password');
                 }
-
                 // 비밀번호 변경 성공 시
                 return true;
             } catch (error) {
@@ -302,18 +301,5 @@ export const useUser = defineStore("user", {
                 throw error; // 컴포넌트에서 에러 처리를 할 수 있도록 에러를 다시 던집니다.
             }
         },
-
-
-
     },
-
-    setup() {
-        const accessToken = ref('');
-        const userInfo = ref({});
-
-        return {
-            accessToken,
-            userInfo
-        };
-    }
 });

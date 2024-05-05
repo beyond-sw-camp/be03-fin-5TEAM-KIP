@@ -1,11 +1,10 @@
-
 <script setup>
-import { ref, reactive, watch, computed } from 'vue';
-import { useUser } from "@/stores/User";
+import {ref, reactive, watch, computed} from 'vue';
+import {useUser} from "@/stores/User";
 
 const currentTab = ref('profile'); // 현재 탭 상태를 저장
 const userStore = useUser();
-const userInfo = ref({ ...userStore.userInfo });
+const userInfo = ref({...userStore.userInfo});
 const profilePhotoUrl = ref(userStore.getProfileImageUrl);
 const password = reactive({
   current: '',
@@ -110,7 +109,7 @@ const updateUserDetails = async () => {
 };
 
 const cancelEdit = () => {
-  userInfo.value = { ...userStore.userInfo };
+  userInfo.value = {...userStore.userInfo};
   password.current = '';
   password.new = '';
   password.confirm = '';
@@ -127,7 +126,7 @@ watch(password, () => {
   } else {
     passwordErrors.confirm = [];
   }
-}, { deep: true });
+}, {deep: true});
 </script>
 
 <template>
@@ -153,7 +152,7 @@ watch(password, () => {
               <v-card-title class="text-h5">프로필 변경</v-card-title>
               <v-card-text class="text-center flex-grow-1">
                 <v-avatar size="120" class="mx-auto my-4">
-                  <img :src="profilePhotoUrl || '/default-profile.png'" alt="profile" />
+                  <img :src="profilePhotoUrl || '/default-profile.png'" alt="profile"/>
                 </v-avatar>
                 <v-file-input
                     v-model="file"

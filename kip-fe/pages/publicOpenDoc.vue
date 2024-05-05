@@ -3,15 +3,16 @@ import {toastViewerInstance} from "~/useToastViewer";
 import postForm from "~/components/PostForm.vue";
 import {VTreeview} from 'vuetify/labs/VTreeview'
 
-// 상단 네비 제목 설정
-const group = useGroup();
-group.TopNaviGroupList = ["Knowledge is Power", "전체공개문서", "태그 검색  (ALT + H) 🏷️"];
-
 // 피니아.
-const createDocument = useCreateDocument();
 const documentList = useDocumentList();
-const color = useColor();
+const createDocument = useCreateDocument();
+const bookmarks = useBookMarks();
 const attachedFile = useAttachedFile();
+const color = useColor();
+const group = useGroup();
+
+// 상단 네비 제목 설정
+group.TopNaviGroupList = ["Knowledge is Power", "전체공개문서", "태그 검색  (ALT + H) 🏷️"];
 
 // 기본 변수들
 const loading = ref(false);
@@ -27,16 +28,13 @@ const fileDialog = ref(false);
 const fileLoading = ref(false);
 const attachedFileModal = ref(false);
 
-// 북마크 관련
-const bookmarks = useBookMarks();
-await bookmarks.setMyBookMarks();
 
 // 초기 문서 세팅
-await documentList.setPublicDocumentList();
-await documentList.setFirstPublicDocumentDetails();
-
-// 첨부 파일
+await bookmarks.setMyBookMarks();
+await documentList.setPublicDocumentList();          // 문서리스트 세팅
+await documentList.setFirstPublicDocumentDetails();  // 최상단 문서 정보 세팅
 await attachedFile.setAttachedFileList(documentList.getFirstPublicDocId);
+
 
 // 해시태그 업데이트 관련
 const hashTagUpdateModal = ref(false);
@@ -63,6 +61,7 @@ const ResetHasTagAddAndFiltering = async () => {
   await documentList.setHashTagsForTop100List()
   await documentList.setPublicDocumentList()
 }
+
 
 // 문서 삭제 관련 코드.
 const deleteDocModalOpen = ref();
@@ -230,6 +229,7 @@ onKeyStroke(['A', 'a'], () => {
 onKeyStroke(['R', 'r'], () => {
   if (alt.value) ResetHasTagAddAndFiltering();
 })
+
 </script>
 
 <template>
@@ -253,7 +253,7 @@ onKeyStroke(['R', 'r'], () => {
                 :key="doc.documentId"
                 @click="selectDocument(doc.documentId)">
 
-              <div>{{ doc.title }}</div>
+              <div class="ellipsis" style="width:11vw; text-align: start">{{ doc.title }}</div>
               <v-spacer></v-spacer>
               <v-hover v-slot="{ isHovering, props }">
 
@@ -328,7 +328,6 @@ onKeyStroke(['R', 'r'], () => {
           </v-sheet>
         </v-dialog>
 
-
         <!--        ❌삭제 확인 모달 --->
         <v-dialog
             v-model="deleteDocModalOpen"
@@ -376,7 +375,6 @@ onKeyStroke(['R', 'r'], () => {
           </v-card>
         </v-dialog>
       </v-col>
-
       <v-divider class="divider-container" vertical/>
 
       <!-- ☝️☝️☝️☝️☝️☝️☝️ 가운데 문서제목 부분 -->
@@ -516,7 +514,6 @@ onKeyStroke(['R', 'r'], () => {
         </div>
 
       </v-col>
-
       <v-divider class="divider-container" vertical/>
 
       <!-- 👉👉👉👉👉👉👉👉👉 오른쪽 영역 -->
@@ -750,7 +747,7 @@ onKeyStroke(['R', 'r'], () => {
                 prepend-icon="mdi-refresh"
                 style="color: #4CAF50"
                 @click="ResetHasTagAddAndFiltering"
-                >
+            >
               초기화
               <v-tooltip
                   activator="parent"

@@ -175,7 +175,7 @@ onKeyStroke(['L', 'l'], () => {
           </template>
           <v-list style="width: 250px; display: flex; flex-direction:column; align-items: center; border-radius: 25px" class="pa-8">
             <v-list-item @click="useRouter().push('/mypage');"
-                         style="background-color:#4CAF50;
+                         style="background-color:var(--primary-color);
                          color:white; border-radius: 25px; width:200px ;
                          display: flex; justify-content: center">
               <template v-slot:prepend>
@@ -187,7 +187,7 @@ onKeyStroke(['L', 'l'], () => {
             </v-list-item>
             <v-list-item @click="user.logout"
                          class="mt-5"
-                         style="background-color:#FF5722;
+                         style="background-color:darkred;
                          color:white; border-radius: 25px; width:200px ;
                          display: flex; justify-content: center">
               <template v-slot:prepend>

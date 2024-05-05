@@ -12,17 +12,19 @@ const handleRailClick = () => {
 // 피니아
 const group = useGroup();
 const documentList = useDocumentList();
-
-await group.setMyGroupsInfo();  // (awit) 그룹정보를 모두 가지고 온뒤 넘어감
-await documentList.setFirstDocumentDetails();
 const notification = useNotification();
+
+onMounted(async () => {
+  await group.setMyGroupsInfo();  // (awit) 그룹정보를 모두 가지고 온뒤 넘어감
+  await documentList.setFirstDocumentDetails();
+  await notification.setMyNotification();
+})
 
 // 새로고침
 const refresh = async () => {
   await group.setMyGroupsInfo()
   await group.setHierarchyInfo();
   await notification.setMyNotification();
-  notification.notifications = notification.getNotification;
 }
 
 const firebaseApp = useFirebaseApp();

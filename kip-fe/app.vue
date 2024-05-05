@@ -1,6 +1,7 @@
 <script setup>
-await useUser().setUserInfoAndTokenToPiniaFromLocalStorage();
-
+onMounted(async () => {
+  await useUser().setUserInfoAndTokenToPiniaFromLocalStorage();
+})
 // 파비콘
 useHead({
   titleTemplate: (titleChunk) => {
