@@ -1,6 +1,5 @@
 <script setup>
 import {toastViewerInstance} from "~/useToastViewer";
-import postForm from "~/components/PostForm.vue";
 import {VTreeview} from 'vuetify/labs/VTreeview'
 
 // 피니아.
