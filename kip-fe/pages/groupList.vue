@@ -270,11 +270,6 @@ const RealMoveDocumnet = async (targetDocId) => {
   handlerTargetButtonForMove.value = false
 }
 
-// 문서 타입 변경
-const ChangeDocumentType = async (documentId) => {
-  await document.ChangeDocumentType(documentId)
-  await document.setAdminDocumentList(clickedGroupId.value)
-}
 
 // 문서 삭제
 const deleteDocument = async (title, documentId) => {
@@ -540,7 +535,7 @@ const confirmRequest = async () => {
                     cover
                 >
                 </v-img>
-                <v-card-title v-text="`❤️ ${groupUser.getGroupName} [ ${ clickedGroupId } ]`"/>
+                <v-card-title v-text="`❤️ ${groupUser.getGroupName}`"/>
                 <v-card-subtitle v-text="groupUser.getGroupType === 'DEPARTMENT' ? '🏢 부서조직': '🚀 NewBiz팀' "/>
 
                 <v-card-actions class="d-flex justify-center">
@@ -792,30 +787,15 @@ const confirmRequest = async () => {
                 <div class="d-flex justify-space-between">
                   <v-card-title
                       class="ellipsis"
-                      style="width:30vw"
+                      style="width:25vw"
                       v-text="`${doc.docType === 'SECTION' ? '⏩' :
                         '&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp' +
                          '&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp'}
-                         ${doc.title} [ ${doc.documentId} ]`"/>
+                         ${doc.title}`"/>
                   <v-card-actions class="d-flex justify-space-evenly">
 
                     <!--           ☝️ 전체 공개 버튼 -->
                     <v-hover v-slot="{ isHovering, props }">
-
-                      <v-btn
-                          v-if="!handlerTargetButtonForMove"
-                          text="타입변경"
-                          @click="ChangeDocumentType(doc.documentId)"
-                          v-bind="props"
-                          :class="{
-                            'on-hover': isHovering,
-                            'type-btns': isHovering
-                          }"
-                          class="px-3 mr-2 mt-1"
-                          color="rgba(255, 255, 255, 0)"
-                          variant="outlined"
-                          rounded="xl"
-                      />
                       <v-btn
                           v-if="!handlerTargetButtonForMove"
                           text="전체공개"
@@ -925,10 +905,7 @@ const confirmRequest = async () => {
 }
 
 .public-btns {
-  color: #ff7500 !important;
-}
-
-.type-btns {
   color: #57af3d !important;
 }
+
 </style>

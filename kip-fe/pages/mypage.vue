@@ -1,7 +1,7 @@
 
 <script setup>
 import { ref, reactive, watch, computed } from 'vue';
-import { useUser } from "@/stores/user";
+import { useUser } from "@/stores/User";
 
 const currentTab = ref('profile'); // 현재 탭 상태를 저장
 const userStore = useUser();

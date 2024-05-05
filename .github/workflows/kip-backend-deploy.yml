@@ -1,0 +1,68 @@
+# ECR 버전관리 포함 yml
+
+name: deploy kip-backend
+
+on:
+  push:
+    branches:
+      - 1
+#  pull_request:
+#    branches:
+#      - main1
+
+
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: checkout github
+        uses: actions/checkout@v2
+
+      - name: install kubectl
+        uses: azure/setup-kubectl@v3
+        with:
+          version: "v1.25.9"
+        id: install
+
+      # aws 권한 세팅 (aws configure 팀 키값)
+      - name: configure aws
+        uses: aws-actions/configure-aws-credentials@v1
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ap-northeast-2
+
+      - name: update cluster information
+        run: aws eks update-kubeconfig --name kip_cluster --region ap-northeast-2
+
+      - name: Login to ECR
+        uses: aws-actions/amazon-ecr-login@v1
+
+      - name: create-json
+        uses: jsdaniell/create-json@v1.2.3
+        with:
+          name: "kip-fcm-firebase-adminsdk-gm80d-6a9b5bbd58.json"
+          json: ${{ secrets.FCM_CREDENTIALS }}
+          dir: './src/main/resources/'
+
+      - name: Set JWT
+        run: |
+          mkdir -p src/main/resources
+          echo "${{ secrets.JWT_YML }}" | base64 --decode > src/main/resources/jwt.yml
+          find src
+
+      - name: Build and push docker image to ecr
+        env:
+          REGISTRY: 471112897563.dkr.ecr.ap-northeast-2.amazonaws.com
+          REPOSITORY: kip
+          IMAGE_TAG: v115
+        run: |
+          docker build -t $REGISTRY/$REPOSITORY:$IMAGE_TAG -f Dockerfile .
+          docker push $REGISTRY/$REPOSITORY:$IMAGE_TAG
+
+      # kubectl rollout restart deployment kip-backend
+      - name: eks kubectl apply
+        run: |
+          kubectl apply -f ./k8s/kip-backend-depl-serv.yml
+          kubectl rollout restart deployment kip-backend
