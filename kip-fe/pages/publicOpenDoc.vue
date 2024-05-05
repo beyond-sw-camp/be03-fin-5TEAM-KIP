@@ -230,6 +230,9 @@ onKeyStroke(['A', 'a'], () => {
 onKeyStroke(['R', 'r'], () => {
   if (alt.value) ResetHasTagAddAndFiltering();
 })
+onKeyStroke(['Enter'], () => {
+  if (alt.value) postForm.value.submit();
+})
 
 </script>
 <template>
@@ -363,14 +366,35 @@ onKeyStroke(['R', 'r'], () => {
           <div class="text-center">{{ selectedDeleteDocTitle }} 문서가 삭제되었습니다.</div>
         </v-snackbar>
 
+        <!--        문서 작성을 위한 모달 -->
         <v-dialog v-model="dialog" fullscreen>
-          <v-card>
-            <PostForm ref="postForm" @submit="handleData"></PostForm>
-            <v-card-actions>
-              <v-spacer></v-spacer>
-              <v-btn @click=postForm.submit()>작성 완료</v-btn>
-              <v-btn @click="dialog = false">닫기</v-btn>
+          <v-card class="pa-3">
+            <v-card-actions
+                style="
+                display: flex;
+                justify-content: end;
+                position: fixed;
+                top: 0; right: 0;
+                width: 12vw;
+                z-index: 9999;">
+              <v-btn
+                  style="background-color: darkred; color: white"
+                  @click=postForm.submit()>저장
+                <v-tooltip
+                    activator="parent"
+                    location="start">ALT + Enter
+                </v-tooltip>
+              </v-btn>
+              <v-btn
+                  style="background-color: var(--secondary-color); color: white"
+                  @click="dialog = false">닫기
+                <v-tooltip
+                    activator="parent"
+                    location="bottom">ALT + N
+                </v-tooltip>
+              </v-btn>
             </v-card-actions>
+            <PostForm ref="postForm" @submit="handleData"></PostForm>
           </v-card>
         </v-dialog>
       </v-col>
