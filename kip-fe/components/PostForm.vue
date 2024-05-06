@@ -20,7 +20,7 @@ onMounted(() => {
       "markdown",
       false,
       false,
-      "88vh",
+      "80vh",
       "문서의 내용을 여기에 작성해주세요.",
       "vertical",
       "![이미지](https://uicdn.toast.com/toastui/img/tui-editor-bi.png)\n" +
@@ -71,7 +71,7 @@ defineExpose({submit});
 </script>
 <template>
   <v-row >
-    <v-col cols="6" style="height: 40px">
+    <v-col cols="6" style="height: 120px">
       <v-text-field
           class="input_title"
           variant="solo-inverted"
@@ -79,7 +79,7 @@ defineExpose({submit});
           placeholder="제목"
       />
     </v-col>
-    <v-col cols="6" style="height: 40px">
+    <v-col cols="6" style="height: 120px">
       <v-combobox
           cless="hash_title"
           variant="plain"

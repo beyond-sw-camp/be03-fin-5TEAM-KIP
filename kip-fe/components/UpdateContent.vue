@@ -18,7 +18,7 @@ onMounted(() => {
       "markdown",
       false,
       false,
-      "88vh",
+      "80vh",
       "문서의 내용을 여기에 작성해주세요.",
       "vertical",
       <string>props.dataToPass
@@ -37,7 +37,7 @@ defineExpose({submit});
 </script>
 <template>
   <v-row>
-    <v-col cols="12" style="height: 40px">
+    <v-col cols="12" style="height: 120px">
       <v-text-field
           class="input_commit"
           variant="solo-inverted"

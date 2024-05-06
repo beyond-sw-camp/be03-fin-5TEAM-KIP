@@ -395,14 +395,18 @@ onKeyStroke(['Enter'], () => {
         </v-snackbar>
 
         <!--        문서 작성을 위한 모달 -->
-        <v-dialog v-model="dialog" fullscreen>
-          <v-card class="pa-3">
+        <v-dialog v-model="dialog"
+                  width="95vw"
+                  opacity="90%"
+        >
+          <v-card  rounded="xl"
+                   class="pa-8">
             <v-card-actions
                 style="
                 display: flex;
                 justify-content: end;
                 position: fixed;
-                top: 0; right: 0;
+                top: 60px; right: 30px;
                 width: 12vw;
                 z-index: 9999;">
               <v-btn
@@ -428,14 +432,18 @@ onKeyStroke(['Enter'], () => {
 
 
         <!--      문서 수정을 위한 모달 -->
-        <v-dialog v-model="createNewVersionModal" fullscreen>
-          <v-card>
+        <v-dialog v-model="createNewVersionModal"
+                  width="95vw"
+                  opacity="90%"
+        >
+          <v-card  rounded="xl"
+                   class="pa-8">
             <v-card-actions
                 style="
                 display: flex;
                 justify-content: end;
                 position: fixed;
-                top: 0; right: 0;
+                top: 50px; right: 35px;
                 width: 12vw;
                 z-index: 9999;">
               <v-btn
