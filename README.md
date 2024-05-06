@@ -1,8 +1,6 @@
 # <div align="center">집단 지성 활용을 위한 지식 관리 시스템</div>
 
-
 ## <div align="center">Knowledge Management System</div>
-
 
 ### <div align="center">5조 Team_KIP(knowledge Is Power)</div>
 <div align="center">🐰장준혁 팀장 🐂김영광 팀원 🐲박세종 팀원 🐴윤지용 팀원</div>
@@ -578,7 +576,8 @@
 
 ---
 
-### ⭐ CI/CD 계획서
+<details>
+<summary><b>⭐ CI/CD 계획서</b></summary>
 <div markdown="1">
   
 ### Terraform으로 코드형인프라(Infrastructure as Code, IaC) 구축(AWS CI/CD)
@@ -617,4 +616,90 @@
 
 #### 📌 프론트엔드 배포과정
 - git push -> git action -> AWS S3 프론트엔드 빌드 리소스 업로드
+
+</div>
+</details>
+
+---
+
+### ⭐ 배포 후 통합 테스트 결과서
+<div markdown="1">
+
+#### ⭐ AWS amplify를 통한 프론트엔드 배포
+<p align="center">
+  <img src="https://github.com/beyond-sw-camp/be03-fin-5TEAM-KIP/assets/148752498/08db9538-c8e8-41b0-b590-993435af17b0">
+</p>
+
+#### AWS Amplify Hosting은 비즈니스의 따라 크기를 조정할 수 있는 빠르고, 안전하며, 신뢰할 수 있는 정적 및 서버 측 렌더링 앱을 위한 완전관리형 CI/CD 및 호스팅 서비스
+
+---
+
+#### 📌 AWS amplify 장점
+- <b>서버 렌더링 애플리케이션을 배포</b> : 성능 및 SEO를 개선하기 위해 Next.js 및 Nuxt를 사용하여 서버 측 렌더링 애플리케이션을 배포하고 호스팅한다.
+- <b>쉬운 설정 및 관리</b> : Amplify는 몇 번의 클릭으로 웹사이트와 모바일 앱을 배포할 수 있는 간단한 인터페이스를 제공한다. AWS의 다양한 서비스와 통합이 용이하여, 인증, 데이터베이스, 스토리지, API 등의 서비스를 쉽게 추가하고 관리할 수 있다.
+- <b>실시간 기능</b> : Amplify는 AWS AppSync 통합을 통해 실시간 데이터 동기화와 오프라인 데이터 접근을 손쉽게 구현할 수 있다.
+- <b>간편한 사용자 지정 도메인</b> : 간단한 확인으로 사용자 지정 도메인을 연결한다. 기능 브랜치에는 자동으로 사용자 지정 도메인이 할당된다. 배포된 사용자 지정 및 비사용자 지정 도메인에 대한 무료 SSL 인증서를 받을 수 있다.
+
+#### 📌 AWS amplify 프론트엔드 배포 과정
+<p align="center">
+  <img src="https://github.com/beyond-sw-camp/be03-fin-5TEAM-KIP/assets/148752498/e48e41c7-daf1-4640-b04a-97f45752c310">
+</p>
+
+<b>1. AWS amplify에 프로젝트 Repository연결</b></br>
+<b>2. 프론트엔드 환경설정정보(.env) 입력</b></br>
+<b>3. 지정 도메인 입력 및 연동(www.teamkip.info)</b></br>
+<b>4. 연결된 Repository Branch에 변동사항이 생길 때 마다 실시간으로 git commit 기록을 확인해서 프론트엔드 배포진행</b></br>
+
+#### 📌 Repository 설정
+<p align="center">
+  <img src="https://github.com/beyond-sw-camp/be03-fin-5TEAM-KIP/assets/148752498/d18b4fde-d36f-4f2f-87d2-bdb202e10190">
+</p>
+
+#### 📌 도메인 관리
+<p align="center">
+  <img src="https://github.com/beyond-sw-camp/be03-fin-5TEAM-KIP/assets/148752498/2c958c13-fb33-4913-8c35-562016b997c5">
+</p>
+
+#### 📌 프론트 배포 진행 후 로그인
+<p align="center">
+  <img src="https://github.com/beyond-sw-camp/be03-fin-5TEAM-KIP/assets/148752498/140cf7a3-ed06-416d-abb8-fff700738b70">
+</p>
+
+---
+
+#### ⭐ Amazon EKS를 통한 백엔드 배포
+<p align="center">
+  <img src="https://github.com/beyond-sw-camp/be03-fin-5TEAM-KIP/assets/148752498/c9c6b593-7e91-4e7a-afdb-1edb0473016a">
+</p>
+
+#### Amazon Elastic Kubernetes Service(Amazon EKS)는 Amazon Web Services(AWS)에 Kubernetes 컨트롤 플레인을 설치, 운영 및 유지 관리할 필요가 없는 관리형 서비스. Kubernetes는 컨테이너화된 애플리케이션의 관리, 규모 조정 및 배포를 자동화하는 오픈 소스 시스템.
+
+---
+
+#### 📌 Amazon EKS 장점
+- <b>쉬운 관리성</b> : AWS EKS는 Kubernetes 클러스터의 설치, 운영 및 확장을 간소화. 사용자는 클러스터 관리와 오케스트레이션에 필요한 복잡성을 걱정할 필요 없이, 애플리케이션 개발에 더 집중할 수 있다. AWS가 클러스터의 배포, 패치, 백업 등을 자동으로 처리.
+- <b>확장성</b> : AWS EKS는 Amazon EC2 인스턴스와 함께 자동으로 확장되므로, 사용자는 트래픽 증가에 따라 애플리케이션을 쉽게 확장할 수 있다. 또한, AWS Auto Scaling을 사용하여 애플리케이션 요구에 맞춰 자원을 자동으로 조정할 수 있다.
+- <b>보안</b> : AWS EKS는 AWS의 보안, ID 관리 및 컴플라이언스 서비스를 활용하여 보안을 강화. EKS는 다중 계층 보안 모델을 사용하며, 네트워크 격리, 데이터 암호화 및 사용자 인증을 포함하여 클러스터 보안을 향상.
+- <b>가용성 및 신뢰성</b> : AWS EKS는 여러 AZ(Availability Zone)에 걸쳐 고가용성을 지원. 이는 클러스터와 애플리케이션의 중단 시간을 최소화하며, 재해 복구를 간소화.
+
+#### 📌Amazon EKS 설정
+<p align="center">
+  <img src="https://github.com/beyond-sw-camp/be03-fin-5TEAM-KIP/assets/148752498/81687fa8-4014-4009-b809-8f3eaba6dfa9">
+</p>
+
+#### 📌백엔드 Git action 실행이력
+<p align="center">
+  <img src="https://github.com/beyond-sw-camp/be03-fin-5TEAM-KIP/assets/148752498/92ebec21-1c4e-47db-a5b9-2541dc0b700b">
+</p>
+
+#### 📌ECR 백엔드 빌드 이미지
+<p align="center">
+  <img src="https://github.com/beyond-sw-camp/be03-fin-5TEAM-KIP/assets/148752498/9d433654-b6ff-4e61-b774-631c4aa64f61">
+</p>
+
+#### 📌AWS Route53 설정
+<p align="center">
+  <img src="https://github.com/beyond-sw-camp/be03-fin-5TEAM-KIP/assets/148752498/6c69aae9-c4b8-4a47-abfc-9704fb4a1afe">
+</p>
+
 </div>
