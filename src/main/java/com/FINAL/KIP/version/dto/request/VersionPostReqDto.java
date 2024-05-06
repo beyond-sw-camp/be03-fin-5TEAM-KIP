@@ -7,5 +7,6 @@ public class VersionPostReqDto {
 
 	private Long documentId;
 	private String content;
+	private String message;
 
 }

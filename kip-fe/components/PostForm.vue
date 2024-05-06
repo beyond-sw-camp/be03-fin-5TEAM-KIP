@@ -20,7 +20,7 @@ onMounted(() => {
       "markdown",
       false,
       false,
-      "75vh",
+      "88vh",
       "문서의 내용을 여기에 작성해주세요.",
       "vertical",
       "![이미지](https://uicdn.toast.com/toastui/img/tui-editor-bi.png)\n" +
@@ -105,14 +105,9 @@ defineExpose({submit});
     </v-col>
   </v-row>
   <div ref="editor" class="editor__CSS"></div>
-
   <!-- 내용 -->
 </template>
 <style>
-.editor__CSS {
-  width:100%;
-  height: 88vh !important;
-}
 .input_title input {
   font-size: 25px;
   background-color: #fffac1;

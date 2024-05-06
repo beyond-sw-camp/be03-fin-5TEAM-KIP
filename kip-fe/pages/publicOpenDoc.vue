@@ -139,7 +139,6 @@ const createNewVersionModal = ref(false);
 const versionHistoryModal = ref(false);
 const updateContent = ref();
 const createNewVersion = async (form) => {
-
   await documentList.updateVersion(documentList.getSelectedDocId, form.value.content, form.value.message);
   await UpdateToastViewer()
   createNewVersionModal.value = false;
