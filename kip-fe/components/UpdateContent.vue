@@ -25,14 +25,18 @@ onMounted(() => {
   );
 });
 const submit = () => {
-  form.value.content = editor.value.getMarkdown();
-  emit('submit', form)
+  if (props.dataToPass === editor.value.getMarkdown())
+    alert("수정사항이 없습니다.")
+  else {
+    form.value.content = editor.value.getMarkdown();
+    emit('submit', form)
+  }
 }
 
 defineExpose({submit});
 </script>
 <template>
-  <v-row >
+  <v-row>
     <v-col cols="12" style="height: 40px">
       <v-text-field
           class="input_commit"
