@@ -2,17 +2,21 @@
 import {ref} from "vue";
 import {toastViewerInstance} from "~/useToastViewer";
 import draggable from "vuedraggable";
-
-const color = useColor();
 const route = useRoute();
 const groupId = route.params.groupId;
+
+
+// 피니아
+const color = useColor();
 const groupName = useGroup();
 const documentList = useDocumentList();
 const attachedFile = useAttachedFile();
 const createDocument = useCreateDocument();
+const bookmarks = useBookMarks();
+
+// 필요한 변수들
 const postForm = ref();
 const updateContent = ref();
-
 const dialog = ref(false);
 const upLinkId = ref();
 const viewer = ref();
@@ -20,6 +24,51 @@ const titleEditing = ref(false);
 const newTitle = ref();
 const updateContentModal = ref(false);
 const versionHistoryModal = ref(false);
+
+///  초기 문서 세팅
+const selection = ref([]);
+await documentList.setDocumentList(groupId);
+await groupName.setSelectedGroupInfo(groupId)
+await documentList.setFirstDocumentDetails()
+await attachedFile.setAttachedFileList(documentList.getFirstDocId);
+groupName.setTopNaviGroupList(groupId);
+const UpdateToastViewer = async () => {
+  viewer.value = await toastViewerInstance(
+      viewer.value,
+      documentList.getSelectedDocContent
+  );
+}
+onMounted(async () => {
+  await UpdateToastViewer()
+})
+
+// 해시태그 업데이트 관련
+const hashTagUpdateModal = ref(false);
+const hashTagsUpdateReqDto = ref({
+  documentId: "",
+  hashTags: []
+});
+const hashTagUpdateModalOpen = async () => {
+  await documentList.setHashTagsForTop100List();
+  hashTagsUpdateReqDto.value.documentId = documentList.getSelectedDocId
+  hashTagsUpdateReqDto.value.hashTags = documentList.returnHashTagsForTop100List()
+  hashTagUpdateModal.value = !hashTagUpdateModal.value
+}
+const hashTagUpdateReq = async () => {
+  await documentList.updateHashTags(hashTagsUpdateReqDto.value)
+  await documentList.setDocumentList(groupName.getSelectedGroupInfo[0].groupId)
+  hashTagUpdateModal.value = false;
+}
+const Top100HashTagAddAndFiltering = (hashTagId, hashTageName) => {
+  documentList.filterGroupDocByHashTag(hashTagId)
+  if (!hashTagsUpdateReqDto.value.hashTags.includes(hashTageName))
+    hashTagsUpdateReqDto.value.hashTags.push(hashTageName)
+  else alert(`${hashTageName}은 이미 추가된 해새태그 입니다.`)
+}
+const ResetHasTagAddAndFiltering = async () => {
+  await documentList.setHashTagsForTop100List()
+  await documentList.setDocumentList(groupName.getSelectedGroupInfo[0].groupId)
+}
 
 // 드레그 관련 함수
 const moveDocumentReq = ref({
@@ -43,16 +92,7 @@ const changeDocumentTypeByRightClick = async (documentId) => {
   await documentList.setDocumentList(groupId);
 }
 
-// 북마크 관련
-const selection = ref([]);
-const bookmarks = useBookMarks();
 
-await documentList.setDocumentList(groupId);
-await groupName.setSelectedGroupInfo(groupId)
-await documentList.setFirstDocumentDetails()
-await attachedFile.setAttachedFileList(documentList.getFirstDocId);
-
-groupName.setTopNaviGroupList(groupId);
 
 // 문서 생성 관련
 const openCreateNewDocument = (docId) => {
@@ -115,22 +155,25 @@ const selectDocument = async (documentId) => {
 
 // 첨부파일
 const files = ref([]);
-const fileHover = ref(null);
 const fileDialog = ref(false);
 const fileLoading = ref(false);
+const attachedFileModal = ref(false);
+
+
+const fileDialogOpen = () => {
+  files.value = []; // 파일 목록 초기화
+  fileLoading.value = false;
+  fileDialog.value = !fileDialog.value;
+}
 const handleFileUpload = async () => {
   fileLoading.value = true; // 빙글이 시작
-  await wait(1200); // 1.2초 대기
+  await wait(1000); // 1초 대기
   // 각 파일에 대해 업로드 로직 실행
   for (let file of files.value) {
-    console.log(file)
-    await attachedFile.setAttachedFileUpload(documentList.selectedDocumentDetails.documentId, file);
+    await attachedFile.setAttachedFileUpload(documentList.getSelectedDocId, file);
   }
-  files.value = []; // 파일 목록 초기화
-
   // 파일 업로드 후 첨부파일 목록 다시 불러오기
-  await attachedFile.setAttachedFileList(documentList.selectedDocumentDetails.documentId);
-
+  await attachedFile.setAttachedFileList(documentList.getSelectedDocId);
   fileLoading.value = false; // 빙글이 끝내기
   fileDialog.value = false; // 다이얼로그 닫기
 };
@@ -141,7 +184,8 @@ const AttachedFileDelete = async (fileId) => {
   await attachedFile.setAttachedFileDelete(fileId);
   await wait(2000); // 1.2초 대기
   // 첨부파일 삭제 후 첨부파일 목록 다시 불러오기
-  await attachedFile.setAttachedFileList(documentList.selectedDocumentDetails.documentId);
+  await attachedFile.setAttachedFileList(documentList.getSelectedDocId);
+  attachedFileModal.value = false
 };
 
 // 선택한 문서 ID가 북마크 목록에 있는지 확인
@@ -162,21 +206,7 @@ const handleBookmarkClick = async () => {
   await bookmarks.setMyBookMarks();
 };
 
-// 해시태그 업데이트 관련
-const hashTagUpdateModal = ref(false);
-const hashTagsUpdateReqDto = ref({
-  documentId: "",
-  hashTags: []
-});
-const hashTagUpdateModalOpen = () => {
-  hashTagUpdateModal.value = true
-  hashTagsUpdateReqDto.value.documentId = documentList.getSelectedDocId
-  hashTagsUpdateReqDto.value.hashTags = documentList.getHashTagsInSelectedDoc
-}
-const hashTagUpdateReq = () => {
-  documentList.updateHashTags(hashTagsUpdateReqDto.value)
-  hashTagUpdateModal.value = false;
-}
+
 
 </script>
 <template>
@@ -364,117 +394,148 @@ const hashTagUpdateReq = () => {
         <div class="attached-files">
           <v-card flat>
             <v-card-title class="headline text-center">첨부 파일
-
-                                                       <!-- 첨부파일 업로드 로직 부분 -->
-              <v-dialog
-                  class="d-flex justify-center"
-                  width="40vw"
-                  opacity="50%"
-                  v-model="fileDialog">
-                <template v-slot:activator="{ props: activatorProps }">
-                  <v-btn
-                      class="mb-2 ml-2"
-                      v-bind="activatorProps"
-                      density="compact"
-                      variant="flat"
-                      icon="mdi-plus"
-                  >
-                  </v-btn>
-                </template>
-
-                <v-sheet
-                    rounded="xl"
-                    class="d-flex justify-center flex-wrap pa-10">
-
-                  <v-form ref="form" style="width: 50vw">
-                    <v-file-input
-                        v-model="files"
-                        label="Select files"
-                        placeholder="Upload your documents"
-                        prepend-icon="mdi-paperclip"
-                        multiple
-                    >
-                      <template v-slot:selection="{ fileNames }">
-                        <template v-for="fileName in fileNames" :key="fileName">
-                          <v-chip class="me-2" color="primary" size="small" label>
-                            {{ fileName }}
-                          </v-chip>
-                        </template>
-                      </template>
-                    </v-file-input>
-
-                    <v-btn
-                        class="mt-7"
-                        :color="color.kipMainColor"
-                        :loading="fileLoading"
-                        text="업로드 완료"
-                        @click="handleFileUpload"
-                        block
-                    />
-                  </v-form>
-                </v-sheet>
-              </v-dialog>
             </v-card-title>
+            <!-- 첨부파일 업로드 로직 부분 -->
+            <v-dialog
+                class="d-flex justify-center"
+                width="45vw"
+                opacity="50%"
+                v-model="fileDialog">
+
+              <v-sheet
+                  rounded="xl"
+                  class="d-flex justify-center flex-wrap pa-10">
+
+                <v-form ref="form" style="width: 50vw">
+                  <v-file-input
+                      v-model="files"
+                      :color="color.kipMainColor"
+                      label="업로드할 파일을 선택해 주세요"
+                      placeholder="업로드할 파일을 선택해 주세요"
+                      prepend-icon="mdi-paperclip"
+                      counter
+                      :show-size="1000"
+                      multiple
+                  >
+                    <template v-slot:selection="{ fileNames }">
+                      <template v-for="fileName in fileNames" :key="fileName">
+                        <v-chip
+                            class="ma-1 pa-5"
+                            :color="color.kipMainColor"
+                        >
+                          {{ fileName }}
+                        </v-chip>
+                      </template>
+                    </template>
+                  </v-file-input>
+
+                  <v-btn
+                      class="mt-7"
+                      :color="color.kipMainColor"
+                      :loading="fileLoading"
+                      text="업로드 완료"
+                      @click="handleFileUpload"
+                      block
+                  />
+                </v-form>
+              </v-sheet>
+            </v-dialog>
 
 
             <!-- 첨부파일 목록 -->
             <v-card-text>
-              <div v-if="attachedFile.getAttachedFileList.length > 0">
-                <v-btn text color="primary"
-                       v-for="file in attachedFile.getAttachedFileList"
-                       :key="file.fileName"
-                       @click="handleFileClick(file.fileUrl)"
-                       @mouseenter="fileHover = file.fileName"
-                       @mouseleave="fileHover = null">
+              <v-card
+                  v-for="file in attachedFile.getAttachedFileList"
+                  :key="file.fileName"
+                  class="my-3"
+                  color="blue-lighten-1"
+                  variant="outlined"
+                  rounded="xl">
 
-                  {{ file.fileName }}
+                <v-row>
+                  <v-col cols="3" class="d-flex justify-center align-center py-2">
+                    <v-btn
+                        class="ml-4"
+                        @click="handleFileClick(file.fileUrl)"
+                        :icon="file.fileType.includes('image') ? 'mdi-image-outline'
+                          :`${file.fileType.includes('compressed') ? 'mdi-folder-zip'
+                          :`${file.fileType.includes('application/pdf') ? 'mdi-file-pdf-box':'mdi-file-document-outline' }`}`"
+                        variant="text"
+                    />
 
-                  <v-dialog max-width="500">
-                    <template v-slot:activator="{ props: activatorProps }" v-if="fileHover === file.fileName">
-                      <v-btn
-                          v-bind="activatorProps"
-                          :icon="`mdi-minus`"
-                          variant="text"
-                          density="compact"
-                          rounded="lg"
-                      />
-                    </template>
+                  </v-col>
+                  <v-col cols="6" class="d-flex justify-start align-center py-2" style="width: 70%">
+                    <div
+                        @click="handleFileClick(file.fileUrl)"
+                        class="cursor-pointer ellipsis" style="width:100%">
+                      {{ file.fileName }}
+                      <v-tooltip
+                          activator="parent"
+                          location="start"
+                      >{{ file.fileName }}
+                      </v-tooltip>
+                    </div>
+                  </v-col>
 
-                    <template v-slot:default="{ isActive }">
-                      <v-card title="첨부파일 삭제">
-                        <v-card-text>
-                          첨부파일을 삭제하시겠습니까?
-                        </v-card-text>
+                  <v-col cols="3" class="d-flex justify-start align-center py-2">
+                    <v-btn
+                        class="mr-4"
+                        @click="attachedFileModal=true"
+                        icon="mdi-close"
+                        variant="text"
+                        rounded="xl"
+                        size="sm"
+                    />
+                  </v-col>
+                </v-row>
+                <!--  첨부파일 삭제를 위한 모달-->
+                <v-dialog
+                    v-model="attachedFileModal"
+                    max-width="500">
 
-                        <v-card-actions>
-                          <v-spacer></v-spacer>
+                  <v-card title="첨부파일 삭제">
+                    <v-card-text>
+                      첨부파일을 삭제하시겠습니까?
+                    </v-card-text>
+                    <v-card-actions>
+                      <v-spacer></v-spacer>
 
-                          <v-snackbar
-                              :timeout="2000"
-                          >
-                            <template v-slot:activator="{ props }">
-                              <v-btn
-                                  v-bind="props"
-                                  @click="AttachedFileDelete(file.id)"
-
-                              >Yes
-                              </v-btn>
-                            </template>
-                            첨부파일이 삭제되었습니다.
-                          </v-snackbar>
-
+                      <v-snackbar
+                          :timeout="2000"
+                      >
+                        <template v-slot:activator="{ props }">
                           <v-btn
-                              text="No"
-                              @click="isActive.value = false"
-                          ></v-btn>
-                        </v-card-actions>
-                      </v-card>
-                    </template>
-
-                  </v-dialog>
-                </v-btn>
-              </div>
-              <div v-else>첨부파일이 없습니다.</div>
+                              v-bind="props"
+                              @click="AttachedFileDelete(file.id)"
+                          >Yes
+                          </v-btn>
+                        </template>
+                        첨부파일이 삭제되었습니다.
+                      </v-snackbar>
+                      <v-btn
+                          text="No"
+                          @click="attachedFileModal = false"
+                      ></v-btn>
+                    </v-card-actions>
+                  </v-card>
+                </v-dialog>
+              </v-card>
+              <v-btn
+                  block
+                  rounded="xl"
+                  color="blue-lighten-1"
+                  @click="fileDialogOpen"
+                  variant="tonal">
+                <v-icon
+                    icon="mdi-plus"
+                    size="x-large"
+                ></v-icon>
+                <v-tooltip
+                    activator="parent"
+                    location="start"
+                >ALT + A
+                </v-tooltip>
+              </v-btn>
             </v-card-text>
           </v-card>
         </div>
@@ -484,55 +545,112 @@ const hashTagUpdateReq = () => {
                 color="blue"
                 class="mx-4 mb-0 mt-5"
                 @click="hashTagUpdateModalOpen"> 해시 태그 수정
+          <v-tooltip
+              activator="parent"
+              location="start"
+          > ALT + H
+          </v-tooltip>
         </v-chip>
-
-        <v-chip-group column class="px-4"
-                      v-if="documentList.selectedDocumentDetails
-                      && documentList.selectedDocumentDetails.hashTags.length > 0">
+        <v-chip-group column class="px-4">
           <v-chip prepend-icon="mdi-refresh"
+                  style="color: #4CAF50"
                   @click=documentList.setDocumentList(groupName.getSelectedGroupInfo[0].groupId)> 초기화
+            <v-tooltip
+                activator="parent"
+                location="start"
+            > ALT + R
+            </v-tooltip>
           </v-chip>
           <v-chip
               v-for="(hashTag, index) in documentList.selectedDocumentDetails.hashTags"
+              style="color: #546E7A"
               :key="index"
-              prepend-icon="mdi-pound"
               @click="documentList.filterGroupDocByHashTag(hashTag['hashTagId'])">
             {{ hashTag.tagName }} ({{ hashTag['docsCounts'] }})
+            <v-tooltip
+                activator="parent"
+                location="top"
+            > 태그필터링
+            </v-tooltip>
           </v-chip>
         </v-chip-group>
-        <div v-else class="pa-4">해시태그가 없습니다.</div>
-      </v-col>
 
-      <!--           ❤️ 해시태그 수정을 위한 모달-->
-      <v-dialog
-          class="d-flex justify-center"
-          width="40vw"
-          opacity="40%"
-          v-model="hashTagUpdateModal">
-        <v-sheet
-            rounded="xl"
-            class="d-flex justify-center flex-wrap pa-10">
-          <v-combobox
-              variant="underlined"
-              v-model="hashTagsUpdateReqDto.hashTags"
-              multiple
-              chips
-              placeholder="태그를 입력하세요."
-              persistent-placeholder
-              hint="여러 태그를 엔터로 구분하여 입력하세요."/>
-          <v-btn
-              class="mt-4"
-              :color="color.kipMainColor"
-              text="해시태그 수정하기"
-              @click="hashTagUpdateReq"
-              block
-          />
-        </v-sheet>
-      </v-dialog>
+        <!--           ❤️ 해시태그 수정을 위한 모달-->
+        <v-dialog
+            class="d-flex justify-center"
+            width="60vw"
+            opacity="10%"
+            v-model="hashTagUpdateModal">
+          <v-sheet
+              rounded="xl"
+              class="d-flex justify-center flex-wrap pa-10">
+            <v-combobox
+                variant="underlined"
+                v-model="hashTagsUpdateReqDto.hashTags"
+                multiple
+                placeholder="태그를 입력하세요."
+                persistent-placeholder
+                hint="여러 태그를 엔터로 구분하여 입력하세요.">
+              <template v-slot:selection="data">
+                <v-chip
+                    class="pa-4 mr-1"
+                    style="color: #FF5722"
+                    :key="JSON.stringify(data.item)"
+                    v-bind="data.attrs"
+                    :disabled="data.disabled"
+                    :model-value="data.selected"
+                    size="large"
+                    @click="documentList.filterTop100HashTagsByClick(data.item.title)">
+                  {{ data.item.title }}
+                  <v-tooltip
+                      activator="parent"
+                      location="top"
+                  > 태그 검색
+                  </v-tooltip>
+                </v-chip>
+              </template>
+            </v-combobox>
+            <h2 class="mt-5 mb-3" style="width:100%; display: flex; justify-content: center"> 🗼 Top 100 해시태그 🗼</h2>
+            <v-chip-group column class="px-4 d-flex flex-wrap">
+              <v-chip
+                  prepend-icon="mdi-refresh"
+                  style="color: #4CAF50"
+                  @click="ResetHasTagAddAndFiltering"
+              >
+                초기화
+                <v-tooltip
+                    activator="parent"
+                    location="start"
+                > ALT + R
+                </v-tooltip>
+              </v-chip>
+              <v-chip
+                  v-for="(hashTag, index) in documentList.fillteredTop100HaahTag"
+                  style="color: #546E7A"
+                  :key="index"
+                  @click="Top100HashTagAddAndFiltering(hashTag['hashTagId'], hashTag.tagName)">
+                {{ hashTag.tagName }}
+                <v-tooltip
+                    activator="parent"
+                    location="top"
+                > 태그 추가
+                </v-tooltip>
+              </v-chip>
+            </v-chip-group>
+            <v-btn
+                class="mt-6"
+                :color="color.kipMainColor"
+                text="수정 하기"
+                @click="hashTagUpdateReq"
+                block
+            />
+          </v-sheet>
+        </v-dialog>
+      </v-col>
     </v-row>
   </v-container>
 </template>
-<style scoped>
+<style>
 .font-weight-bold {
   font-weight: bold;
 }
@@ -546,21 +664,32 @@ const hashTagUpdateReq = () => {
   min-height: calc(97vh - 1.6vw - 90px);
 }
 
+.show-btns {
+  color: var(--primary-color) !important;
+}
+
 .fab_div {
   justify-content: flex-end;
   display: flex;
   align-items: flex-end;
-  bottom: 0px;
+  bottom: 4vh;
   z-index: 1004;
   transform: translateY(0%);
   position: fixed;
   height: 80px;
-  left: 0px;
+  left: -4vw;
   width: calc(100% + 0px);
 }
 
-.show-btns {
-  color: var(--primary-color) !important;
+.title__update input:focus {
+  font-size: 30px;
+  font-weight: bold;
+  text-align: center;
+  padding: 20px 20px 20px 30px;
+  margin-bottom: 2px;
+  color: white;
+  background-color: var(--primary-color);
+  border-radius: 25px;
 }
 
 .sortable-ghost {

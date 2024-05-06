@@ -57,8 +57,9 @@ const hashTagUpdateModalOpen = async () => {
   hashTagsUpdateReqDto.value.hashTags = documentList.returnHashTagsForTop100List()
   hashTagUpdateModal.value = !hashTagUpdateModal.value
 }
-const hashTagUpdateReq = () => {
-  documentList.updateHashTags(hashTagsUpdateReqDto.value)
+const hashTagUpdateReq = async () => {
+  await documentList.updateHashTags(hashTagsUpdateReqDto.value)
+  await documentList.setPublicDocumentList()
   hashTagUpdateModal.value = false;
 }
 const Top100HashTagAddAndFiltering = (hashTagId, hashTageName) => {
@@ -71,6 +72,8 @@ const ResetHasTagAddAndFiltering = async () => {
   await documentList.setHashTagsForTop100List()
   await documentList.setPublicDocumentList()
 }
+
+
 
 // 문서 삭제 관련 코드.
 const deleteDocModalOpen = ref();
@@ -184,13 +187,13 @@ const fileDialogOpen = () => {
 }
 const handleFileUpload = async () => {
   fileLoading.value = true; // 빙글이 시작
-  await wait(1200); // 1.2초 대기
+  await wait(1000); // 1초 대기
   // 각 파일에 대해 업로드 로직 실행
   for (let file of files.value) {
-    await attachedFile.setAttachedFileUpload(documentList.selectedDocumentDetails.documentId, file);
+    await attachedFile.setAttachedFileUpload(documentList.getSelectedDocId, file);
   }
   // 파일 업로드 후 첨부파일 목록 다시 불러오기
-  await attachedFile.setAttachedFileList(documentList.selectedDocumentDetails.documentId);
+  await attachedFile.setAttachedFileList(documentList.getSelectedDocId);
   fileLoading.value = false; // 빙글이 끝내기
   fileDialog.value = false; // 다이얼로그 닫기
 };
@@ -201,7 +204,7 @@ const AttachedFileDelete = async (fileId) => {
   await attachedFile.setAttachedFileDelete(fileId);
   await wait(2000); // 1.2초 대기
   // 첨부파일 삭제 후 첨부파일 목록 다시 불러오기
-  await attachedFile.setAttachedFileList(documentList.selectedDocumentDetails.documentId);
+  await attachedFile.setAttachedFileList(documentList.getSelectedDocId);
   attachedFileModal.value = false
 };
 
@@ -226,6 +229,7 @@ const handleBookmarkClick = async () => {
 // 단축키
 import {onKeyStroke} from '@vueuse/core'
 import {useKeyModifier} from '@vueuse/core'
+import {delay} from "lodash";
 
 const KipButton = ref(false)
 const alt = useKeyModifier('Alt')
@@ -512,7 +516,7 @@ onKeyStroke(['Enter'], () => {
               <v-card-title
                   @click="showTitleEditor"
                   v-else class="headline text-center mb-4 pa-2">
-                {{ documentList.selectedDocumentDetails.title }}
+               {{ documentList.selectedDocumentDetails.title }}
               </v-card-title>
               <v-btn
                   class=" pt-0 pb-12 px-0"
