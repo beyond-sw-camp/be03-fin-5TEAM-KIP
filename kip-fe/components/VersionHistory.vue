@@ -1,5 +1,6 @@
 <script setup>
 
+const documentList = useDocumentList();
 const versions = useVersion()
 const props = defineProps({
       selectDocumentId: Number
@@ -31,10 +32,14 @@ const openVersionChange = (item) => {
   targetVersion.value = item.versionId;
   dialog.value = true
 }
+
+const emit = defineEmits(["versionChanged"]);
 const changeVersion = async () => {
   await versions.changeVersion(targetVersion.value)
   await versions.setVersions(props.selectDocumentId);
   versionList.value = versions.getVersions;
+  await documentList.setDocumentDetails(documentList.getSelectedDocId);
+  emit('versionChanged')
   dialog.value = false;
 }
 
@@ -88,7 +93,7 @@ const changeVersion = async () => {
       <v-card-text>해당 버전으로 변경하시겠습니까?</v-card-text>
       <v-card-actions>
         <v-spacer></v-spacer>
-        <v-btn color="blue darken-1" text @click="dialog = false">취소</v-btn>
+        <v-btn color="blue darken-1" @click="dialog = false">취소</v-btn>
         <v-btn color="blue darken-1" @click="changeVersion">변경</v-btn>
       </v-card-actions>
     </v-card>

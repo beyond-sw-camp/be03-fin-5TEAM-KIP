@@ -3,6 +3,8 @@ import {ref} from "vue";
 import {toastViewerInstance} from "~/useToastViewer";
 import {VTreeview} from 'vuetify/labs/VTreeview'
 
+
+
 // 피니아.
 const documentList = useDocumentList();
 const createDocument = useCreateDocument();
@@ -34,13 +36,15 @@ await bookmarks.setMyBookMarks();
 await documentList.setPublicDocumentList();          // 문서리스트 세팅
 await documentList.setFirstPublicDocumentDetails();  // 최상단 문서 정보 세팅
 await attachedFile.setAttachedFileList(documentList.getFirstPublicDocId);
-onMounted(()=>{
-  viewer.value = toastViewerInstance(
+const UpdateToastViewer = async () => {
+  viewer.value = await toastViewerInstance(
       viewer.value,
       documentList.getSelectedDocContent
   );
+}
+onMounted(async () => {
+  await UpdateToastViewer()
 })
-
 
 // 해시태그 업데이트 관련
 const hashTagUpdateModal = ref(false);
@@ -69,7 +73,6 @@ const ResetHasTagAddAndFiltering = async () => {
   await documentList.setPublicDocumentList()
 }
 
-
 // 문서 삭제 관련 코드.
 const deleteDocModalOpen = ref();
 const selectedDeleteDocTitle = ref();
@@ -95,13 +98,17 @@ const realDeleteSelectedDoc = async () => {
 // 문서 제목 업데이트 관련
 const titleEditing = ref(false);
 const newTitle = ref();
+const showTitleEditor = () => {
+  titleEditing.value = !titleEditing.value
+  newTitle.value = documentList.getSelectedDocTitle;
+
+}
 const updateDocumentTitle = async () => {
   titleEditing.value = false
-  documentList.selectedDocumentDetails.title = newTitle.value
   await documentList.updateDocumentTitle(
-      documentList.selectedDocumentDetails.documentId,
-      documentList.selectedDocumentDetails.title)
-  await documentList.setPublicDocumentList();
+      documentList.getSelectedDocId,
+      newTitle.value)
+  await documentList.setPublicDocumentList()
   newTitle.value = ""
 }
 
@@ -110,10 +117,7 @@ const selectDocument = async (documentId) => {
   // 문서의 상세 정보를 가져옴
   await documentList.setDocumentDetails(documentId);
   await attachedFile.setAttachedFileList(documentId);
-  viewer.value = await toastViewerInstance(
-      viewer.value,
-      documentList.getSelectedDocContent
-  );
+  await UpdateToastViewer();
 };
 
 // 문서작성 관련코드
@@ -131,7 +135,6 @@ const handleData = async (form) => {
   dialog.value = false;
 }
 
-
 //  문서 수정
 const updateContentModal = ref(false);
 const versionHistoryModal = ref(false);
@@ -139,20 +142,8 @@ const updateContent = ref();
 
 const createNewVersion = async (form) => {
   await documentList.updateVersion(documentList.getSelectedDocId, form.value.content, form.value.message);
-  viewer.value = toastViewerInstance(
-      viewer.value,
-      documentList.getSelectedDocContent
-  );
-  console.log(viewer.value);
+  await UpdateToastViewer()
   updateContentModal.value = false;
-}
-const closeVersionHistory = async () => {
-  await documentList.setDocumentDetails(documentList.getSelectedDocId);
-  viewer.value = toastViewerInstance(
-      viewer.value,
-      documentList.getSelectedDocContent
-  );
-  versionHistoryModal.value = false
 }
 
 // 전체공개문서 기존그룹으로 이동
@@ -249,7 +240,7 @@ onKeyStroke(['N', 'n'], () => {
   if (alt.value) openCreateNewDocument()
 })
 onKeyStroke(['T', 't'], () => {
-  if (alt.value) titleEditing.value = !titleEditing.value
+  if (alt.value) showTitleEditor()
 })
 onKeyStroke(['H', 'h'], () => {
   if (alt.value) hashTagUpdateModalOpen()
@@ -450,10 +441,12 @@ onKeyStroke(['Enter'], () => {
         <v-dialog v-model="versionHistoryModal">
           <v-card>
             {{ documentList.getSelectedDocId }}
-            <VersionHistory :selectDocumentId="documentList.getSelectedDocId"></VersionHistory>
+            <VersionHistory
+                @version-changed="UpdateToastViewer"
+                :selectDocumentId="documentList.getSelectedDocId"></VersionHistory>
             <v-card-actions>
               <v-spacer></v-spacer>
-              <v-btn @click="closeVersionHistory">닫기</v-btn>
+              <v-btn @click="versionHistoryModal = false">닫기</v-btn>
             </v-card-actions>
           </v-card>
         </v-dialog>
@@ -469,6 +462,7 @@ onKeyStroke(['Enter'], () => {
             <div class="d-flex justify-center">
               <v-card-title v-if="titleEditing" class="headline text-center">
                 <v-text-field
+                    class="title__update"
                     v-model="newTitle"
                     @blur="titleEditing = false"
                     @keyup.enter="updateDocumentTitle"
@@ -478,7 +472,7 @@ onKeyStroke(['Enter'], () => {
                     append-inner-icon="mdi-keyboard-return"
                     hint="변경할 제목을 입력하시고 엔터를 입력하세요."
                     placeholder="변경할 제목을 입력하세요."
-                    style="min-width: 300px;"
+                    style="min-width: 40vw;"
                     variant="underlined"
                 ></v-text-field>
               </v-card-title>
@@ -556,7 +550,7 @@ onKeyStroke(['Enter'], () => {
                   size="large"
                   rounded="xl"
                   prepend-icon="mdi-format-title"
-                  @click="titleEditing = true">제목수정
+                  @click="showTitleEditor">제목수정
                 <v-tooltip
                     activator="parent"
                     location="start">ALT + T
@@ -858,7 +852,7 @@ onKeyStroke(['Enter'], () => {
     </v-row>
   </v-container>
 </template>
-<style scoped>
+<style>
 .font-weight-bold {
   font-weight: bold;
 }
@@ -887,5 +881,14 @@ onKeyStroke(['Enter'], () => {
   height: 80px;
   left: -4vw;
   width: calc(100% + 0px);
+}
+
+.title__update input:focus {
+  text-align: center;
+  padding: 20px 20px 20px 30px;
+  margin-bottom: 2px;
+  color: white;
+  background-color: var(--primary-color);
+  border-radius: 25px;
 }
 </style>

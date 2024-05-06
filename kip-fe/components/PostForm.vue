@@ -1,7 +1,6 @@
 <script setup lang="ts">
 import {ref} from "vue";
 import {toastEditorInstance} from "~/useToastEditor";
-import {useColor} from "#imports";
 
 const emit = defineEmits(["submit"]);
 
