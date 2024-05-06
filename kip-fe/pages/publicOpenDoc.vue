@@ -488,7 +488,6 @@ onKeyStroke(['Enter'], () => {
 
       <!-- ☝️☝️☝️☝️☝️☝️☝️ 가운데 문서제목 부분 -->
       <v-col cols="7" class="position-relative">
-
         <v-list class="pa-4">
           <v-card flat>
             <div class="d-flex justify-center">
@@ -510,7 +509,9 @@ onKeyStroke(['Enter'], () => {
               </v-card-title>
 
               <!-- 제목 표시 -->
-              <v-card-title v-else class="headline text-center mb-4 pa-2">
+              <v-card-title
+                  @click="showTitleEditor"
+                  v-else class="headline text-center mb-4 pa-2">
                 {{ documentList.selectedDocumentDetails.title }}
               </v-card-title>
               <v-btn
