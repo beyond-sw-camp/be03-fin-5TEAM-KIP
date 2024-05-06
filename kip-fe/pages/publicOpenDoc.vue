@@ -461,16 +461,17 @@ onKeyStroke(['Enter'], () => {
         </v-dialog>
 
         <!--        버전 변경을 위한 모달-->
-        <v-dialog v-model="versionHistoryModal">
-          <v-card>
-            {{ documentList.getSelectedDocId }}
+        <v-dialog
+            class="d-flex justify-start ml-12"
+            width="60vw"
+            opacity="10%"
+            v-model="versionHistoryModal">
+          <v-card
+              rounded="xl"
+              class="pa-4">
             <VersionHistory
                 @version-changed="UpdateToastViewer"
                 :selectDocumentId="documentList.getSelectedDocId"></VersionHistory>
-            <v-card-actions>
-              <v-spacer></v-spacer>
-              <v-btn @click="versionHistoryModal = false">닫기</v-btn>
-            </v-card-actions>
           </v-card>
         </v-dialog>
 
