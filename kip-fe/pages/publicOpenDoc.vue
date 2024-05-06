@@ -4,7 +4,6 @@ import {toastViewerInstance} from "~/useToastViewer";
 import {VTreeview} from 'vuetify/labs/VTreeview'
 
 
-
 // 피니아.
 const documentList = useDocumentList();
 const createDocument = useCreateDocument();
@@ -136,15 +135,16 @@ const handleData = async (form) => {
 }
 
 //  문서 수정
-const updateContentModal = ref(false);
+const createNewVersionModal = ref(false);
 const versionHistoryModal = ref(false);
 const updateContent = ref();
-
 const createNewVersion = async (form) => {
+
   await documentList.updateVersion(documentList.getSelectedDocId, form.value.content, form.value.message);
   await UpdateToastViewer()
-  updateContentModal.value = false;
+  createNewVersionModal.value = false;
 }
+
 
 // 전체공개문서 기존그룹으로 이동
 const handlerMoveDocToGroup = ref(false)
@@ -252,13 +252,15 @@ onKeyStroke(['R', 'r'], () => {
   if (alt.value) ResetHasTagAddAndFiltering();
 })
 onKeyStroke(['U', 'u'], () => {
-  if (alt.value) versionHistoryModal.value = !versionHistoryModal.value
+  if (alt.value) createNewVersionModal.value = !createNewVersionModal.value;
 })
 onKeyStroke(['Y', 'y'], () => {
-  if (alt.value) updateContentModal.value = !updateContentModal.value;
+  if (alt.value) versionHistoryModal.value = !versionHistoryModal.value
 })
 onKeyStroke(['Enter'], () => {
-  if (alt.value) postForm.value.submit();
+  if (alt.value)
+    if (dialog.value) postForm.value.submit();
+    else if (createNewVersionModal.value) updateContent.value.submit();
 })
 
 </script>
@@ -427,17 +429,39 @@ onKeyStroke(['Enter'], () => {
 
 
         <!--      문서 수정을 위한 모달 -->
-        <v-dialog v-model="updateContentModal" fullscreen>
+        <v-dialog v-model="createNewVersionModal" fullscreen>
           <v-card>
-            <UpdateContent ref="updateContent" @submit="createNewVersion"
-                           :dataToPass="documentList.selectedDocumentDetails.content"></UpdateContent>
-            <v-card-actions>
-              <v-spacer></v-spacer>
-              <v-btn @click=updateContent.submit()>작성 완료</v-btn>
-              <v-btn @click="updateContentModal = false">닫기</v-btn>
+            <v-card-actions
+                style="
+                display: flex;
+                justify-content: end;
+                position: fixed;
+                top: 0; right: 0;
+                width: 12vw;
+                z-index: 9999;">
+              <v-btn
+                  style="background-color: darkred; color: white"
+                  @click=updateContent.submit()>저장
+                <v-tooltip
+                    activator="parent"
+                    location="start">ALT + Enter
+                </v-tooltip>
+              </v-btn>
+              <v-btn
+                  style="background-color: var(--secondary-color); color: white"
+                  @click="createNewVersionModal = false">닫기
+                <v-tooltip
+                    activator="parent"
+                    location="bottom">ALT + U
+                </v-tooltip>
+              </v-btn>
             </v-card-actions>
+            <UpdateContent ref="updateContent" @submit="createNewVersion"
+                           :dataToPass="documentList.getSelectedDocContent"></UpdateContent>
           </v-card>
         </v-dialog>
+
+        <!--        버전 변경을 위한 모달-->
         <v-dialog v-model="versionHistoryModal">
           <v-card>
             {{ documentList.getSelectedDocId }}
@@ -563,7 +587,7 @@ onKeyStroke(['Enter'], () => {
                   size="large"
                   rounded="xl"
                   prepend-icon="mdi-pencil"
-                  @click="updateContentModal=true"> 내용수정
+                  @click="createNewVersionModal=true"> 내용수정
                 <v-tooltip
                     activator="parent"
                     location="start">ALT + U
@@ -884,6 +908,8 @@ onKeyStroke(['Enter'], () => {
 }
 
 .title__update input:focus {
+  font-size: 30px;
+  font-weight: bold;
   text-align: center;
   padding: 20px 20px 20px 30px;
   margin-bottom: 2px;
