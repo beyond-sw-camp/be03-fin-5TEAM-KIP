@@ -34,6 +34,12 @@ await bookmarks.setMyBookMarks();
 await documentList.setPublicDocumentList();          // 문서리스트 세팅
 await documentList.setFirstPublicDocumentDetails();  // 최상단 문서 정보 세팅
 await attachedFile.setAttachedFileList(documentList.getFirstPublicDocId);
+onMounted(()=>{
+  viewer.value = toastViewerInstance(
+      viewer.value,
+      documentList.getSelectedDocContent
+  );
+})
 
 
 // 해시태그 업데이트 관련
@@ -56,6 +62,7 @@ const Top100HashTagAddAndFiltering = (hashTagId, hashTageName) => {
   documentList.filterPublicDocByHashTag(hashTagId)
   if (!hashTagsUpdateReqDto.value.hashTags.includes(hashTageName))
     hashTagsUpdateReqDto.value.hashTags.push(hashTageName)
+  else alert(`${hashTageName}은 이미 추가된 해새태그 입니다.`)
 }
 const ResetHasTagAddAndFiltering = async () => {
   await documentList.setHashTagsForTop100List()
@@ -103,9 +110,9 @@ const selectDocument = async (documentId) => {
   // 문서의 상세 정보를 가져옴
   await documentList.setDocumentDetails(documentId);
   await attachedFile.setAttachedFileList(documentId);
-  viewer.value = toastViewerInstance(
+  viewer.value = await toastViewerInstance(
       viewer.value,
-      documentList.selectedDocumentDetails.content
+      documentList.getSelectedDocContent
   );
 };
 
@@ -254,7 +261,7 @@ onKeyStroke(['R', 'r'], () => {
   if (alt.value) ResetHasTagAddAndFiltering();
 })
 onKeyStroke(['U', 'u'], () => {
-  if (alt.value) versionHistoryModal.value = ! versionHistoryModal.value
+  if (alt.value) versionHistoryModal.value = !versionHistoryModal.value
 })
 onKeyStroke(['Y', 'y'], () => {
   if (alt.value) updateContentModal.value = !updateContentModal.value;
@@ -431,11 +438,12 @@ onKeyStroke(['Enter'], () => {
         <!--      문서 수정을 위한 모달 -->
         <v-dialog v-model="updateContentModal" fullscreen>
           <v-card>
-            <UpdateContent ref="updateContent" @submit="createNewVersion" :dataToPass="documentList.selectedDocumentDetails.content"></UpdateContent>
+            <UpdateContent ref="updateContent" @submit="createNewVersion"
+                           :dataToPass="documentList.selectedDocumentDetails.content"></UpdateContent>
             <v-card-actions>
               <v-spacer></v-spacer>
-              <v-btn  @click=updateContent.submit()>작성 완료</v-btn>
-              <v-btn  @click="updateContentModal = false">닫기</v-btn>
+              <v-btn @click=updateContent.submit()>작성 완료</v-btn>
+              <v-btn @click="updateContentModal = false">닫기</v-btn>
             </v-card-actions>
           </v-card>
         </v-dialog>
@@ -445,7 +453,7 @@ onKeyStroke(['Enter'], () => {
             <VersionHistory :selectDocumentId="documentList.getSelectedDocId"></VersionHistory>
             <v-card-actions>
               <v-spacer></v-spacer>
-              <v-btn  @click="closeVersionHistory">닫기</v-btn>
+              <v-btn @click="closeVersionHistory">닫기</v-btn>
             </v-card-actions>
           </v-card>
         </v-dialog>
@@ -502,7 +510,7 @@ onKeyStroke(['Enter'], () => {
           <v-divider></v-divider>
         </v-list>
         <v-card flat class="px-6 mt-4 mx-auto">
-          <div ref="viewer">{{ documentList.selectedDocumentDetails.content }}</div>
+          <div ref="viewer">{{ documentList.getSelectedDocContent }}</div>
         </v-card>
 
         <!--        스피드 모달 아이콘-->
