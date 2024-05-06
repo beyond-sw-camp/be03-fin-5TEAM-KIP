@@ -74,7 +74,6 @@ const ResetHasTagAddAndFiltering = async () => {
 }
 
 
-
 // 문서 삭제 관련 코드.
 const deleteDocModalOpen = ref();
 const selectedDeleteDocTitle = ref();
@@ -121,6 +120,7 @@ const selectDocument = async (documentId) => {
   await attachedFile.setAttachedFileList(documentId);
   await UpdateToastViewer();
 };
+
 
 // 문서작성 관련코드
 const postForm = ref();
@@ -202,8 +202,7 @@ const handleFileClick = (url) => {
 };
 const AttachedFileDelete = async (fileId) => {
   await attachedFile.setAttachedFileDelete(fileId);
-  await wait(2000); // 1.2초 대기
-  // 첨부파일 삭제 후 첨부파일 목록 다시 불러오기
+  await wait(1000); // 1초 대기
   await attachedFile.setAttachedFileList(documentList.getSelectedDocId);
   attachedFileModal.value = false
 };
@@ -215,21 +214,14 @@ const isBookmarked = computed(() =>
 
 // 북마크 버튼 클릭 핸들러
 const handleBookmarkClick = async () => {
-  // 만약 현재 문서가 북마크되어 있다면, 북마크를 제거하는 액션을 실행합니다.
-  if (isBookmarked.value) {
-    await bookmarks.removeMyBookmark(documentList.getSelectedDocId);
-  } else {
-    await bookmarks.removeMyBookmark(documentList.getSelectedDocId);
-  }
-
-  // 북마크 상태를 갱신합니다.
+  if (isBookmarked.value) await bookmarks.removeMyBookmark(documentList.getSelectedDocId);
+  else await bookmarks.removeMyBookmark(documentList.getSelectedDocId);
   await bookmarks.setMyBookMarks();
 };
 
 // 단축키
 import {onKeyStroke} from '@vueuse/core'
 import {useKeyModifier} from '@vueuse/core'
-import {delay} from "lodash";
 
 const KipButton = ref(false)
 const alt = useKeyModifier('Alt')
@@ -403,8 +395,8 @@ onKeyStroke(['Enter'], () => {
                   width="95vw"
                   opacity="90%"
         >
-          <v-card  rounded="xl"
-                   class="pa-8">
+          <v-card rounded="xl"
+                  class="pa-8">
             <v-card-actions
                 style="
                 display: flex;
@@ -440,8 +432,8 @@ onKeyStroke(['Enter'], () => {
                   width="95vw"
                   opacity="90%"
         >
-          <v-card  rounded="xl"
-                   class="pa-8">
+          <v-card rounded="xl"
+                  class="pa-8">
             <v-card-actions
                 style="
                 display: flex;
@@ -516,7 +508,7 @@ onKeyStroke(['Enter'], () => {
               <v-card-title
                   @click="showTitleEditor"
                   v-else class="headline text-center mb-4 pa-2">
-               {{ documentList.selectedDocumentDetails.title }}
+                {{ documentList.selectedDocumentDetails.title }}
               </v-card-title>
               <v-btn
                   class=" pt-0 pb-12 px-0"
