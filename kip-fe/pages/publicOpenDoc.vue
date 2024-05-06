@@ -134,15 +134,16 @@ const createNewVersion = async (form) => {
   await documentList.updateVersion(documentList.getSelectedDocId, form.value.content, form.value.message);
   viewer.value = toastViewerInstance(
       viewer.value,
-      documentList.selectedDocumentDetails.content
+      documentList.getSelectedDocContent
   );
+  console.log(viewer.value);
   updateContentModal.value = false;
 }
 const closeVersionHistory = async () => {
   await documentList.setDocumentDetails(documentList.getSelectedDocId);
   viewer.value = toastViewerInstance(
       viewer.value,
-      documentList.selectedDocumentDetails.content
+      documentList.getSelectedDocContent
   );
   versionHistoryModal.value = false
 }
@@ -539,7 +540,7 @@ onKeyStroke(['Enter'], () => {
                 </v-tooltip>
               </v-btn>
               <v-btn
-                  :color="color.kipMainColor"
+                  color="light-green-darken-2"
                   style="width:200px !important;"
                   class="mb-3"
                   text="제목수정"
@@ -568,7 +569,7 @@ onKeyStroke(['Enter'], () => {
 
               </v-btn>
               <v-btn
-                  color="light-green-darken-2"
+                  :color="color.kipMainColor"
                   class="mb-3"
                   key="3"
                   size="large"
