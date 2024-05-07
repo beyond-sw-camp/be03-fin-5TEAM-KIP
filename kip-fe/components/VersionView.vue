@@ -1,4 +1,4 @@
-<script setup lang="ts">
+<script setup>
 import {ref} from "vue";
 import {toastViewerInstance} from "~/useToastViewer";
 
@@ -19,18 +19,27 @@ const viewer = ref();
 </script>
 
 <template>
-  <div class="mb-4">
-    <div class="font-weight-normal">
-      <strong>{{ props.form.writer }}</strong> {{ props.form.createdTime }}
+  <div class="mb-4 pt-4 pr-4 pl-4">
+    <div class="headline">📬 수정내역 : {{ props.form.message }}</div>
+    <div class="d-flex justify-lg-space-between mt-5">
+      <div class="pl-4"> ✏️ 작성자 : {{ props.form.writer }}</div>
+      <span>⌚ 수정일시 : {{ props.form.createdTime }}</span>
     </div>
-
-    <div>{{ props.form.message }}</div>
   </div>
-  <v-divider></v-divider>
-  <v-card>
-    <div ref="viewer"></div>
+  <v-card
+      class="viewer__scroll pa-4 rounded-xl"
+  elevation="5">
+    <div ref="viewer" class="viewer__scroll pa-4"></div>
   </v-card>
 </template>
 
 <style scoped>
+.viewer__scroll {
+  overflow-y: auto;
+}
+
+.headline {
+  font-size: 1.5rem;
+  font-weight: bold;
+}
 </style>

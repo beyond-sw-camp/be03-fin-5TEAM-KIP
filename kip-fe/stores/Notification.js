@@ -10,12 +10,10 @@ export const useNotification = defineStore("notifications", {
   getters: {
     // getter를 업데이트하여 모든 정보를 반환
     getNotification(state){
-      return state.notifications.map(notification => ({
-        message: notification.message,
-        noteId: notification.noteId,
-        isRead: notification.isRead,
-        createdTime: notification.createdTime
-      }))
+      return state.notifications
+    },
+    getUnreadNotificationCount(state) {
+      return state.notifications.filter(notification => notification.isRead === 'N').length;
     },
   },
 

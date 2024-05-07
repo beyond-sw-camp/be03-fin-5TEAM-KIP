@@ -1,7 +1,6 @@
 <script setup lang="ts">
 import {ref} from "vue";
 import {toastEditorInstance} from "~/useToastEditor";
-import {useColor} from "#imports";
 
 const emit = defineEmits(["submit"]);
 
@@ -21,7 +20,7 @@ onMounted(() => {
       "markdown",
       false,
       false,
-      "75vh",
+      "80vh",
       "문서의 내용을 여기에 작성해주세요.",
       "vertical",
       "![이미지](https://uicdn.toast.com/toastui/img/tui-editor-bi.png)\n" +
@@ -68,42 +67,57 @@ const submit = () => {
   form.value.content = editor.value.getMarkdown();
   emit('submit', form.value)
 }
-
 defineExpose({submit});
 </script>
 <template>
-    <v-row>
-      <v-col cols="7" >
+  <v-row >
+    <v-col cols="6" style="height: 120px">
       <v-text-field
-          style="margin-left: 10px;"
           class="input_title"
-          variant="underlined"
+          variant="solo-inverted"
           v-model="form.title"
-          placeholder="제목을 입력하세요."
-          persistent-placeholder
-          clearable
+          placeholder="제목"
       />
-      </v-col>
-      <v-col cols="7">
-        <v-combobox
-            style="margin-left: 10px"
-            variant="underlined"
-            v-model="form.hashTags"
-            multiple
-            chips
-            placeholder="태그를 입력하세요."
-            persistent-placeholder
-            hint="여러 태그를 엔터로 구분하여 입력하세요."
-        />
-      </v-col>
-    </v-row>
-    <v-spacer></v-spacer>
-
-    <!-- 내용 -->
-    <div ref="editor"></div>
+    </v-col>
+    <v-col cols="6" style="height: 120px">
+      <v-combobox
+          cless="hash_title"
+          variant="plain"
+          v-model="form.hashTags"
+          multiple
+          placeholder="해시 태그"
+          hint="여러 태그를 엔터로 구분하여 입력하세요.">
+        <template v-slot:selection="data">
+          <v-chip
+              class="pa-4 mr-1"
+              style="color: #FF5722"
+              :key="JSON.stringify(data.item)"
+              size="x-large">
+            {{ data.item.title }}
+            <v-tooltip
+                activator="parent"
+                location="top"
+            > 태그 검색
+            </v-tooltip>
+          </v-chip>
+        </template>
+      </v-combobox>
+    </v-col>
+  </v-row>
+  <div ref="editor" class="editor__CSS"></div>
+  <!-- 내용 -->
 </template>
 <style>
 .input_title input {
-  font-size: 50px;
+  font-size: 25px;
+  background-color: #fffac1;
+  font-weight: bold;
+  color: #00a9ff;
 }
+
+.input_title input:focus {
+  color: white;
+  background-color: var(--primary-color);
+}
+
 </style>

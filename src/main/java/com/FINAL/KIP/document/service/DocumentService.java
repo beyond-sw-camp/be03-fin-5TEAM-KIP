@@ -18,22 +18,21 @@ import com.FINAL.KIP.request.repository.RequestRepository;
 import com.FINAL.KIP.user.domain.User;
 import com.FINAL.KIP.user.service.UserService;
 import com.FINAL.KIP.version.domain.Version;
-import com.FINAL.KIP.version.dto.response.VersionDetailResDto;
 import com.FINAL.KIP.version.dto.response.VersionReplaceResDto;
 import com.FINAL.KIP.version.repository.VersionRepository;
 import com.amazonaws.services.s3.model.ObjectMetadata;
-import java.io.IOException;
-import java.time.format.DateTimeFormatter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
+import java.time.format.DateTimeFormatter;
 import java.util.*;
 import java.util.stream.Collectors;
-import org.springframework.web.multipart.MultipartFile;
 
 @Service
 public class DocumentService {
@@ -111,12 +110,13 @@ public class DocumentService {
 
 	// 최초 공개문서 하나 만드는 함수
 	@Transactional
-	public void createInitialPublicDoc(CreateDocumentReqDto dto) {
+	public void createInitialPublicDoc(CreateDocumentReqDto dto , User amdinUser) {
 		Document newDocument = dto.makeDocDtoToDocument();
 		Document savedDocument = documentRepo.save(newDocument);
 		Version newVersion = Version.builder()
 				.content(dto.getContent())
 				.document(savedDocument)
+				.writer(amdinUser)
 				.build();
 		versionRepository.save(newVersion);
 		documentRepo.save(savedDocument);

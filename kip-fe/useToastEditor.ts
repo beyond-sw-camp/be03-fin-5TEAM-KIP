@@ -23,7 +23,7 @@ export const toastEditorInstance = (
     previewStyle: previewStyle,
     initialValue : initialValue,
     hooks: {
-      addImageBlobHook: async (blob, callback) => {
+      addImageBlobHook: async ({blob, callback}: { blob: any, callback: any }) => {
 
         const formData = new FormData();
         formData.append('image', blob);

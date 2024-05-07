@@ -1,5 +1,4 @@
 <script setup>
-import SearchModal from "~/components/SearchModal.vue";
 import {onKeyStroke} from '@vueuse/core'
 import {useKeyModifier} from '@vueuse/core'
 
@@ -13,7 +12,8 @@ import NotificationCopo from "~/components/NotificationCompo.vue";
 const drawer = ref(true);
 const rail = ref(true);
 const dialog = ref(false);
-const alert = ref(false)
+const alert = ref(false);
+const mypage = ref(false);
 
 // 피니아
 const user = useUser();
@@ -24,10 +24,7 @@ const document = useDocumentList()
 
 const notification = useNotification();
 await notification.setMyNotification();
-notification.value = notification.getNotification;
-const unreadNotificationsCount = computed(() => {
-  return notification.value.filter(notif => notif.isRead === 'N').length;
-});
+
 // function
 const handleRailClick = () => {
   rail.value = !rail.value;
@@ -82,9 +79,11 @@ onKeyStroke(['L', 'l'], () => {
         height="68">
       <template #prepend> <!-- 상단 메뉴의 제일 왼쪽-->
                           <!-- 햄버거 버튼 -->
-        <v-app-bar-nav-icon
-            @click.stop="$event => drawer = !drawer"
-        />
+        <v-app-bar-nav-icon @click.stop="$event => drawer = !drawer"/>
+        <v-tooltip
+            activator="parent"
+            location="bottom"
+            text="Alt + 1"/>
       </template>
       <!--부서 계층 목록 -->
       <v-breadcrumbs :items="group.getTopNaviGroupList">
@@ -96,7 +95,7 @@ onKeyStroke(['L', 'l'], () => {
       <!--가운데 공간 만듬 -->
       <v-spacer/>
 
-      {{ user.getUserInfo.name }}님 환영합니다.
+      <span class="mr-4">{{ user.getUserInfo.name }}님 환영합니다.</span>
 
       <v-dialog v-model="dialog" max-width="600">
         <template #activator="{ props: activatorProps }">
@@ -104,10 +103,19 @@ onKeyStroke(['L', 'l'], () => {
               v-bind="activatorProps"
               class="text-none"
               stacked>
-            <v-icon
-                icon="mdi-magnify"
-                size="x-large"
-            />
+            <v-tooltip
+                activator="parent"
+                location="bottom"
+                text="Alt + K"/>
+            <div class="d-flex">
+              <v-icon
+                  class="mx-2"
+                  icon="mdi-magnify"
+                  size="x-large"
+              />
+              <span class="py-1 px-2 ms-2 mr-3 border rounded text-disabled ">
+              ALT + K </span>
+            </div>
           </v-btn>
         </template>
         <template #default>
@@ -117,62 +125,75 @@ onKeyStroke(['L', 'l'], () => {
         </template>
       </v-dialog>
 
+
       <!-- 알림 버튼 -->
-      <v-dialog v-model="alert" max-width="600 ">
-        <template #activator="{ props: activatorProps }">
-          <v-btn
-              v-bind="activatorProps"
-              class="text-none mr-3"
-              stacked>
-            <v-badge
-                v-if="unreadNotificationsCount > 0"
-                color="error"
-                :content="unreadNotificationsCount">
-              <v-icon
-                  icon="mdi-bell-outline"
-                  size="x-large"
-              />
-
-            </v-badge>
-            <v-icon
-                v-else
-                icon="mdi-bell-outline"
-                size="x-large"
-            />
-          </v-btn>
-        </template>
-
-        <template #default="{ isActive }">
-          <NotificationCopo
-              @isActive="isActive.value = false"
+      <v-btn
+          @click="alert=true"
+          class="text-none mr-6"
+          stacked>
+        <v-tooltip
+            activator="parent"
+            location="bottom"
+            text="Alt + L"/>
+        <v-badge
+            v-if="notification.getUnreadNotificationCount > 0"
+            color="error"
+            :content="notification.getUnreadNotificationCount">
+          <v-icon
+              icon="mdi-bell-outline"
+              size="x-large"
           />
-        </template>
+        </v-badge>
+        <v-icon
+            v-else
+            icon="mdi-bell-outline"
+            size="x-large"
+        />
+      </v-btn>
+
+      <v-dialog v-model="alert" max-width="600 ">
+        <NotificationCopo/>
       </v-dialog>
 
 
-      <template #append> <!-- 상단 메뉴의 제일 오른쪽-->
-        <v-menu transition="slide-y-transition">
+      <!--     아바타 버튼 -->
+      <template #append>
+        <v-menu
+            @mouseenter="mypage=true"
+            @mouseleave="mypage=false"
+
+            v-model=mypage transition="slide-y-transition">
           <template v-slot:activator="{ props }">
             <!-- 아바타 버튼 -->
             <v-avatar
+                @mouseenter="mypage=true"
+                @mouseleave="mypage=false"
                 :image="user.getProfileImageUrl"
                 size="54"
                 v-bind="props"
-                class="cursor-pointer ml-1 mr-2"/>
+                class="cursor-pointer ml-1 mr-4"/>
           </template>
-          <v-list>
-            <v-list-item @click="useRouter().push('/mypage');">
+          <v-list style="width: 250px; display: flex; flex-direction:column; align-items: center; border-radius: 25px" class="pa-8">
+            <v-list-item @click="useRouter().push('/mypage');"
+                         style="background-color:var(--primary-color);
+                         color:white; border-radius: 25px; width:200px ;
+                         display: flex; justify-content: center">
               <template v-slot:prepend>
-                <v-icon icon="mdi-information-box-outline"/>
+                <v-icon
+                    icon="mdi-information-box-outline"
+                />
               </template>
-              <v-list-item-title>MyPage</v-list-item-title>
+              <v-list-item-title>정보수정</v-list-item-title>
             </v-list-item>
-
-            <v-list-item @click="user.logout">
+            <v-list-item @click="user.logout"
+                         class="mt-5"
+                         style="background-color:darkred;
+                         color:white; border-radius: 25px; width:200px ;
+                         display: flex; justify-content: center">
               <template v-slot:prepend>
                 <v-icon icon="mdi-logout"/>
               </template>
-              <v-list-item-title>LogOut</v-list-item-title>
+              <v-list-item-title>로그아웃</v-list-item-title>
             </v-list-item>
           </v-list>
         </v-menu>
@@ -210,7 +231,7 @@ onKeyStroke(['L', 'l'], () => {
 .v-toolbar__content {
   margin: 0.8vw;
   border-radius: 20px !important;
-  width: 98.4% !important;
+  width: 98.35% !important;
   color: var(--primary-color);
   background-color: white;
 }

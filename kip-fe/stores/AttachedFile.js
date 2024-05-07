@@ -10,22 +10,26 @@ export const useAttachedFile = defineStore("attachedFile", {
     getters: {
         // getter를 업데이트하여 모든 정보를 반환
         // 문서 첨부파일 조회
-        getAttachedFileList(state){
+        getAttachedFileList(state) {
             return state.attachedFileList
         },
     },
 
     actions: {
-        async setAttachedFileList(documentId){
+        async setAttachedFileList(documentId) {
             try {
                 const response = await fetch(`${BASE_URL}/doc/${documentId}/fileList`, {
                     method: 'GET',
                     headers: {'Authorization': 'Bearer ' + user.getAccessToken},
                 });
-                if (!response.ok) {throw new Error('Failed to fetch attachedFile');}
-                this.attachedFileList = await response.json();
+                if (response.status === 500) // 첨부파일이 없는 경우.
+                    this.attachedFileList = []
+                else if (response.ok)
+                    this.attachedFileList = await response.json();
+                else
+                    this.attachedFileList = []
             } catch (error) {
-                console.error('Error fetching attachedFile:', error.message);
+                console.error('첨부 파일을 가져오는데 실패했습니다.:', error.message);
                 this.attachedFileList = []; // 에러가 발생한 경우 첨부파일 목록을 초기화
             }
         },
@@ -60,7 +64,9 @@ export const useAttachedFile = defineStore("attachedFile", {
                     method: 'DELETE',
                     headers: {'Authorization': 'Bearer ' + user.getAccessToken},
                 });
-                if (!response.ok) {throw new Error('Failed to DELETE attachedFile');}
+                if (!response.ok) {
+                    throw new Error('Failed to DELETE attachedFile');
+                }
                 console.log('File deleted successfully:', fileId);
             } catch (error) {
                 console.error('Error DELETE attachedFile:', error.message);

@@ -64,7 +64,7 @@ const deletUserFromDataBaese = async (employeeId, name) => {
     alert("관리자의 아이디는 삭제할 수 없습니다.")
   else {
     await user.deleteUser(employeeId, name);
-    await groupUser.deletUserFromAllUserInfoInKip(employeeId);
+    groupUser.deletUserFromAllUserInfoInKip(employeeId);
   }
 }
 

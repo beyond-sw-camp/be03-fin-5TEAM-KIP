@@ -27,6 +27,5 @@ export const useCreateDocument = defineStore("createDocument", {
         console.error('Error fetching bookmarks:', error.message);
       }
     },
-
   }
 });

@@ -12,9 +12,20 @@ const handleRailClick = () => {
 // 피니아
 const group = useGroup();
 const documentList = useDocumentList();
+const notification = useNotification();
 
-await group.setMyGroupsInfo();  // (awit) 그룹정보를 모두 가지고 온뒤 넘어감
-await documentList.setFirstDocumentDetails();
+onMounted(async () => {
+  await group.setMyGroupsInfo();  // (awit) 그룹정보를 모두 가지고 온뒤 넘어감
+  await documentList.setFirstDocumentDetails();
+  await notification.setMyNotification();
+})
+
+// 새로고침
+const refresh = async () => {
+  await group.setMyGroupsInfo()
+  await group.setHierarchyInfo();
+  await notification.setMyNotification();
+}
 
 const firebaseApp = useFirebaseApp();
 const {onForegroundMessage} = useFirebaseMessaging(firebaseApp);
@@ -26,23 +37,47 @@ import {onKeyStroke} from '@vueuse/core'
 import {useKeyModifier} from '@vueuse/core'
 
 const alt = useKeyModifier('Alt')
-
 onKeyStroke('2', () => {
   if (alt.value) handleRailClick()
 })
-
 
 
 </script>
 
 <template>
   <v-sheet class="left__nav__sheet">
-    <v-btn
-        :icon="rail ? 'mdi-chevron-right' : 'mdi-chevron-left'"
-        variant="text"
-        @click="handleRailClick"
-        class="group__list"
-    />
+    <div class="d-flex justify-lg-space-between">
+      <v-btn
+          variant="text"
+          @click="handleRailClick"
+          rounded="xl"
+          class="mt-4 pr-5">
+        <v-icon
+            variant="text"
+            size="x-large"
+            :icon="rail ? 'mdi-chevron-right' : 'mdi-chevron-left'"
+        />
+        <v-tooltip
+            activator="parent"
+            location="end"
+            text="Alt + 2"/>
+      </v-btn>
+      <v-btn
+          rounded="xl"
+          variant="text"
+          @click="refresh"
+          class="mt-4 pr-5">
+        <v-icon
+            variant="text"
+            size="large"
+            icon="mdi-refresh"
+        />
+        <v-tooltip
+            activator="parent"
+            location="start"
+            text="새로고침"/>
+      </v-btn>
+    </div>
     <v-list density="comfortable">
       <v-list-item
           title="전체공개문서"
@@ -52,17 +87,13 @@ onKeyStroke('2', () => {
           color="blue"
           rounded="xl"
           variant="text"
-          class="group__list"/>
-
-<!--      <v-list-item-->
-<!--          title="문서목록테스트"-->
-<!--          value="publicDoc"-->
-<!--          to="/publicDoc"-->
-<!--          prepend-icon="mdi-web"-->
-<!--          :color="color.kipMainColor"-->
-<!--          rounded="xl"-->
-<!--          variant="text"-->
-<!--          class="group__list"/>-->
+          class="group__list">
+        <v-tooltip
+            v-if="rail"
+            activator="parent"
+            location="end"
+            text="전체공개문서"/>
+      </v-list-item>
 
       <v-list-item
           title="부서목록"
@@ -72,27 +103,13 @@ onKeyStroke('2', () => {
           color="green"
           rounded="xl"
           variant="text"
-          class="group__list"/>
-
-<!--      <v-list-item-->
-<!--          to="/kip"-->
-<!--          title="KIP"-->
-<!--          value="KIP"-->
-<!--          prepend-icon="mdi-store-cog"-->
-<!--          :color="color.kipMainColor"-->
-<!--          rounded="xl"-->
-<!--          variant="text"-->
-<!--          class="group__list"/>-->
-
-<!--      <v-list-item-->
-<!--          title="main-test"-->
-<!--          value="main-test"-->
-<!--          to="/main-test"-->
-<!--          prepend-icon="mdi-arm-flex"-->
-<!--          :color="color.kipMainColor"-->
-<!--          rounded="xl"-->
-<!--          variant="text"-->
-<!--          class="group__list"/>-->
+          class="group__list">
+        <v-tooltip
+            v-if="rail"
+            activator="parent"
+            location="end"
+            text="부서목록"/>
+      </v-list-item>
 
       <v-list-item
           title="즐겨찾기"
@@ -102,27 +119,45 @@ onKeyStroke('2', () => {
           color="yellow-darken-2"
           rounded="xl"
           variant="text"
-          class="group__list"/>
+          class="group__list">
+        <v-tooltip
+            v-if="rail"
+            activator="parent"
+            location="end"
+            text="즐겨찾기"/>
+      </v-list-item>
 
       <v-list-item
-          title="권한문서"
+          title="승인문서"
           value="agree"
           to="/agree"
           prepend-icon="mdi-file-document-check-outline"
           color="deep-purple"
           rounded="xl"
           variant="text"
-          class="group__list"/>
+          class="group__list">
+        <v-tooltip
+            v-if="rail"
+            activator="parent"
+            location="end"
+            text="승인문서"/>
+      </v-list-item>
 
       <v-list-item
-          title="요청"
+          title="요청내역"
           value="requests"
           to="/requests"
           prepend-icon="mdi-message-outline"
           color="orange"
           rounded="xl"
           variant="text"
-          class="group__list"/>
+          class="group__list">
+        <v-tooltip
+            v-if="rail"
+            activator="parent"
+            location="end"
+            text="요청내역"/>
+      </v-list-item>
 
       <v-divider class="group__list"/>
 
@@ -137,7 +172,13 @@ onKeyStroke('2', () => {
           color="red"
           rounded="xl"
           variant="text"
-          class="group__list"/>
+          class="group__list">
+        <v-tooltip
+            v-if="rail"
+            activator="parent"
+            location="end"
+            :text="item.groupName"/>
+      </v-list-item>
 
     </v-list>
   </v-sheet>
@@ -147,9 +188,11 @@ onKeyStroke('2', () => {
 .left__nav__sheet {
   color: var(--primary-color);
 }
-.group__list{
+
+.group__list {
   margin-top: 5px;
 }
+
 .v-list-item__spacer {
   width: 13px !important;
 }
