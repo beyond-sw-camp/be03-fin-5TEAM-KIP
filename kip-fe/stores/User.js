@@ -16,6 +16,12 @@ export const useUser = defineStore("user", {
         };
     },
     getters: {
+        getLoginUserRole(state) {
+            return state.userInfo.userRole;
+        },
+        getLoginUserId(state) {
+            return state.userInfo.userId;
+        },
         getIsExistId(state) {
             return state.isExistId;
         },
@@ -207,14 +213,9 @@ export const useUser = defineStore("user", {
                         method: 'DELETE',
                         headers: {'Authorization': 'Bearer ' + this.accessToken}
                     })
-                const deleteRes = response.json();
-
                 this.$reset(); // 유져 정보 리셋
-                useCart().$reset() // 장바구니 리셋
-
                 if (typeof window !== "undefined") { // 로컬스토리지 리셋
                     window.localStorage.removeItem('accessToken');
-                    window.localStorage.removeItem('CartStore:items');
                 }
                 await useRouter().push('/');
 

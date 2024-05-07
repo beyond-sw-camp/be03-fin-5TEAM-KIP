@@ -26,7 +26,8 @@ const snackbar = ref(false);
 ///  초기 문서 세팅
 const selection = ref([]);
 await documentList.setDocumentList(groupId);
-await groupName.setSelectedGroupInfo(groupId)
+await groupName.setSelectedGroupInfo(groupId);
+await useGroupuser().setUsersInfoInGroup(groupId);
 await documentList.setFirstDocumentDetails()
 await attachedFile.setAttachedFileList(documentList.getFirstDocId);
 groupName.setTopNaviGroupList(groupId);
@@ -38,6 +39,7 @@ const UpdateToastViewer = async () => {
 }
 onMounted(async () => {
   await UpdateToastViewer()
+
 })
 
 // 해시태그 업데이트 관련
