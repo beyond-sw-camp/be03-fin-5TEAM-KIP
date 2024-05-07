@@ -56,7 +56,7 @@ jobs:
         env:
           REGISTRY: 471112897563.dkr.ecr.ap-northeast-2.amazonaws.com
           REPOSITORY: kip
-          IMAGE_TAG: v118
+          IMAGE_TAG: v119
         run: |
           docker build -t $REGISTRY/$REPOSITORY:$IMAGE_TAG -f Dockerfile .
           docker push $REGISTRY/$REPOSITORY:$IMAGE_TAG
