@@ -5,10 +5,10 @@ name: deploy kip-backend
 on:
   push:
     branches:
-      - 1
-#  pull_request:
-#    branches:
-#      - main1
+      - main
+  pull_request:
+    branches:
+      - main
 
 
 

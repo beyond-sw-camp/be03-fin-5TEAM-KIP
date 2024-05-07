@@ -33,8 +33,7 @@ export const useVersion = defineStore("version", {
             'Content-Type': 'application/json',
             'Authorization': 'Bearer ' + user.getAccessToken},
         });
-        const data = await response.json()
-        this.versions = data;
+        this.versions = await response.json();
       } catch (error) {
         console.error('Error fetching search:', error.message);
       }

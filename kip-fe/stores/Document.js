@@ -10,14 +10,14 @@ export const useDocumentList = defineStore("documentList", {
     state() {
         return {
             documentList: [],
-            fillteredDocList:[],
-            adminDocumentList:[],
+            fillteredDocList: [],
+            adminDocumentList: [],
             publicDocumentList: [],
             selectedDocumentDetails: ref(null), // 선택된 문서의 상세 정보를 저장
             firstDocumentId: "",
             firstPublicDocumentId: "",
             hashTagsForTop100: [],
-            fillteredTop100HaahTag:[],
+            fillteredTop100HaahTag: [],
 
         };
     },
@@ -32,13 +32,15 @@ export const useDocumentList = defineStore("documentList", {
         },
         getHashTagsInSelectedDoc(state) {
             return state.selectedDocumentDetails.hashTags.map(tag => tag.tagName);
-
         },
         getSelectedDocId(state) {
             return state.selectedDocumentDetails.documentId;
         },
-        getSelectedDocTitle(state){
+        getSelectedDocTitle(state) {
             return state.selectedDocumentDetails.title;
+        },
+        getSelectedDocContent(state) {
+            return state.selectedDocumentDetails.content;
         },
         getPublicDocumentList(state) {
             return state.publicDocumentList
@@ -46,7 +48,7 @@ export const useDocumentList = defineStore("documentList", {
         getFirstDocId(state) {
             return state.firstDocumentId
         },
-        getFirstPublicDocId(state){
+        getFirstPublicDocId(state) {
             return state.firstPublicDocumentId
         }
 
@@ -77,14 +79,22 @@ export const useDocumentList = defineStore("documentList", {
                     headers: {'Authorization': 'Bearer ' + user.getAccessToken},
                 });
                 this.hashTagsForTop100 = await response.json();
-                this.fillteredTop100HaahTag = this.hashTagsForTop100.sort((a,b) => b.docsCounts - a.docsCounts);
+                this.fillteredTop100HaahTag = this.hashTagsForTop100.sort((a, b) => b.docsCounts - a.docsCounts).slice(0, 100);
 
             } catch (error) {
                 console.error('해시태그 가져오기 실패 ', error.message);
             }
         },
 
-        async filterGroupDocByHashTag(hashTagId) {
+        returnHashTagsForTop100List() {
+            return this.selectedDocumentDetails.hashTags.map(tag => tag.tagName);
+        },
+
+        filterTop100HashTagsByClick(HashTagName) {
+            this.fillteredTop100HaahTag = this.hashTagsForTop100.filter(tag => tag.tagName.includes(HashTagName)).slice(0, 100)
+        },
+
+        filterGroupDocByHashTag(hashTagId) {
             this.fillteredDocList = this.documentList.filter(doc => doc.hashTagIds.includes(hashTagId))
         },
 
@@ -178,7 +188,7 @@ export const useDocumentList = defineStore("documentList", {
                     },
                     body: JSON.stringify({targetDocumentId, newTitle})
                 });
-                if(response.ok)
+                if (response.ok)
                     this.selectedDocumentDetails.title = newTitle;
             } catch (e) {
                 console.log(e.message, "문서 제목 수정 실패")
@@ -195,7 +205,7 @@ export const useDocumentList = defineStore("documentList", {
                     },
                     body: JSON.stringify(moveDocumentReq)
                 });
-            }catch{
+            } catch {
                 console.log(e.message, "문서 이동 실패")
             }
 
@@ -210,7 +220,7 @@ export const useDocumentList = defineStore("documentList", {
                     },
                     body: JSON.stringify(moveDocToGroupReq)
                 });
-            }catch{
+            } catch {
                 console.log(e.message, "문서를 그룹으로 이동 실패")
             }
         },
@@ -276,8 +286,10 @@ export const useDocumentList = defineStore("documentList", {
             try {
                 const response = await fetch(`${BASE_URL}/version`, {
                     method: 'POST',
-                    headers: {'Content-Type': 'application/json',
-                        'Authorization': 'Bearer ' + user.getAccessToken},
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': 'Bearer ' + user.getAccessToken
+                    },
                     body: JSON.stringify({documentId, content, message})
                 });
                 this.selectedDocumentDetails.content = content;

@@ -1,8 +1,6 @@
 import type {DefaultConfigOptions} from "@formkit/vue";
 import {createAutoAnimatePlugin} from "@formkit/addons"
 
-const BASE_URL = import.meta.env.VITE_BASE_URL;
-
 const config: DefaultConfigOptions = {
     theme: "genesis",
     plugins: [createAutoAnimatePlugin()], // 입력 폼 애니메이션 플러그인.

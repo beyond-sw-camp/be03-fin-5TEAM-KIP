@@ -1,6 +1,4 @@
 <script setup>
-import {useNotification} from "~/stores/Notification.js";
-
 const notifications = useNotification();
 const notificationAllow = () => {
   let notificationPermission = Notification.permission;
@@ -20,13 +18,11 @@ const notificationAllow = () => {
 const readNotification = async (noteId) => {
   await notifications.readNotification(noteId)
   await notifications.setMyNotification()
-  notifications.value =  notifications.getNotification
   await navigateTo('/requests')
 }
 const deleteNotification = async (noteId) => {
   await notifications.removeNotification(noteId);
   await notifications.setMyNotification()
-  notifications.value = notifications.getNotification
 }
 </script>
 <template>
@@ -45,21 +41,21 @@ const deleteNotification = async (noteId) => {
     </v-toolbar>
 
     <v-list two-line>
-      <template v-for="(notification, index) in notifications.value" :key="notification.noteId">
+      <template v-for="(notice, index) in notifications.getNotification" :key="notice.noteId">
         <v-list-item>
           <div
               class="cursor-pointer"
-              @click="readNotification(notification.noteId)"
+              @click="readNotification(notice.noteId)"
           >
-            <v-list-item-title v-text="notification.message"></v-list-item-title>
-            <v-list-item-subtitle v-text="notification.createdTime"></v-list-item-subtitle>
+            <v-list-item-title v-text="notice.message"></v-list-item-title>
+            <v-list-item-subtitle v-text="notice.createdTime"></v-list-item-subtitle>
           </div>
           <template v-slot:append>
             <v-btn
                 density="compact"
                 size="small"
                 variant="text"
-                @click="deleteNotification(notification.noteId)"
+                @click="deleteNotification(notice.noteId)"
                 stacked
             >
               <v-icon
@@ -69,7 +65,7 @@ const deleteNotification = async (noteId) => {
           </template>
         </v-list-item>
         <v-divider
-            v-if="index < notifications.value.length - 1"
+            v-if="index < notifications.getUnreadNotificationCount - 1"
             :key="index"
         ></v-divider>
       </template>

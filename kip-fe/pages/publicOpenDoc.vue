@@ -1,19 +1,21 @@
 <script setup>
+import {ref} from "vue";
 import {toastViewerInstance} from "~/useToastViewer";
-import postForm from "~/components/PostForm.vue";
 import {VTreeview} from 'vuetify/labs/VTreeview'
 
 
-// 상단 네비 제목 설정
-const group = useGroup();
-group.TopNaviGroupList = ["Knowledge is Power", "전체공개문서", "해시태그로 검색해 주세요.🏷️"];
-
 // 피니아.
-const createDocument = useCreateDocument();
 const documentList = useDocumentList();
-const color = useColor();
+const createDocument = useCreateDocument();
+const bookmarks = useBookMarks();
 const attachedFile = useAttachedFile();
+const color = useColor();
+const group = useGroup();
 
+// 상단 네비 제목 설정
+group.TopNaviGroupList = ["Knowledge is Power", "전체공개문서", "태그 검색  (ALT + H) 🏷️"];
+
+// 기본 변수들
 const loading = ref(false);
 const titleLoding = ref(false)
 const snackbar = ref(false);
@@ -21,26 +23,27 @@ const dialog = ref(false);
 const viewer = ref();
 const upLinkId = ref();
 
-
 // 첨부파일 관련
 const files = ref([]);
-const fileHover = ref(null);
 const fileDialog = ref(false);
 const fileLoading = ref(false);
 const attachedFileModal = ref(false);
 
-// 북마크 관련
-const selection = ref([]);
-const bookmarks = useBookMarks();
-
-await bookmarks.setMyBookMarks();
 
 // 초기 문서 세팅
-await documentList.setPublicDocumentList();
-await documentList.setFirstPublicDocumentDetails();
-
-// 첨부 파일
+await bookmarks.setMyBookMarks();
+await documentList.setPublicDocumentList();          // 문서리스트 세팅
+await documentList.setFirstPublicDocumentDetails();  // 최상단 문서 정보 세팅
 await attachedFile.setAttachedFileList(documentList.getFirstPublicDocId);
+const UpdateToastViewer = async () => {
+  viewer.value = await toastViewerInstance(
+      viewer.value,
+      documentList.getSelectedDocContent
+  );
+}
+onMounted(async () => {
+  await UpdateToastViewer()
+})
 
 // 해시태그 업데이트 관련
 const hashTagUpdateModal = ref(false);
@@ -49,18 +52,27 @@ const hashTagsUpdateReqDto = ref({
   hashTags: []
 });
 const hashTagUpdateModalOpen = async () => {
-  hashTagUpdateModal.value = true
-  hashTagsUpdateReqDto.value.documentId = documentList.getSelectedDocId
-  hashTagsUpdateReqDto.value.hashTags = documentList.getHashTagsInSelectedDoc
   await documentList.setHashTagsForTop100List();
+  hashTagsUpdateReqDto.value.documentId = documentList.getSelectedDocId
+  hashTagsUpdateReqDto.value.hashTags = documentList.returnHashTagsForTop100List()
+  hashTagUpdateModal.value = !hashTagUpdateModal.value
 }
-const hashTagUpdateReq = () => {
-  documentList.updateHashTags(hashTagsUpdateReqDto.value)
+const hashTagUpdateReq = async () => {
+  await documentList.updateHashTags(hashTagsUpdateReqDto.value)
+  await documentList.setPublicDocumentList()
   hashTagUpdateModal.value = false;
 }
+const Top100HashTagAddAndFiltering = (hashTagId, hashTageName) => {
+  documentList.filterPublicDocByHashTag(hashTagId)
+  if (!hashTagsUpdateReqDto.value.hashTags.includes(hashTageName))
+    hashTagsUpdateReqDto.value.hashTags.push(hashTageName)
+  else alert(`${hashTageName}은 이미 추가된 해새태그 입니다.`)
+}
+const ResetHasTagAddAndFiltering = async () => {
+  await documentList.setHashTagsForTop100List()
+  await documentList.setPublicDocumentList()
+}
 
-await documentList.setPublicDocumentList();
-await documentList.setFirstPublicDocumentDetails();
 
 // 문서 삭제 관련 코드.
 const deleteDocModalOpen = ref();
@@ -87,14 +99,17 @@ const realDeleteSelectedDoc = async () => {
 // 문서 제목 업데이트 관련
 const titleEditing = ref(false);
 const newTitle = ref();
+const showTitleEditor = () => {
+  titleEditing.value = !titleEditing.value
+  newTitle.value = documentList.getSelectedDocTitle;
 
+}
 const updateDocumentTitle = async () => {
   titleEditing.value = false
-  documentList.selectedDocumentDetails.title = newTitle.value
   await documentList.updateDocumentTitle(
-      documentList.selectedDocumentDetails.documentId,
-      documentList.selectedDocumentDetails.title)
-  await documentList.setPublicDocumentList();
+      documentList.getSelectedDocId,
+      newTitle.value)
+  await documentList.setPublicDocumentList()
   newTitle.value = ""
 }
 
@@ -103,16 +118,15 @@ const selectDocument = async (documentId) => {
   // 문서의 상세 정보를 가져옴
   await documentList.setDocumentDetails(documentId);
   await attachedFile.setAttachedFileList(documentId);
-  viewer.value = toastViewerInstance(
-      viewer.value,
-      documentList.selectedDocumentDetails.content
-  );
+  await UpdateToastViewer();
 };
 
-// 에디터 관련 코드.
+
+// 문서작성 관련코드
+const postForm = ref();
 const openCreateNewDocument = () => {
   upLinkId.value = null;
-  dialog.value = true;
+  dialog.value = !dialog.value;
 }
 const handleData = async (form) => {
   form.groupId = null;
@@ -122,6 +136,17 @@ const handleData = async (form) => {
   await selectDocument(temp.documentId);
   dialog.value = false;
 }
+
+//  문서 수정
+const createNewVersionModal = ref(false);
+const versionHistoryModal = ref(false);
+const updateContent = ref();
+const createNewVersion = async (form) => {
+  await documentList.updateVersion(documentList.getSelectedDocId, form.value.content, form.value.message);
+  await UpdateToastViewer()
+  createNewVersionModal.value = false;
+}
+
 
 // 전체공개문서 기존그룹으로 이동
 const handlerMoveDocToGroup = ref(false)
@@ -154,36 +179,32 @@ const RealMoveDocToTargetGroup = async () => {
   }
 }
 
-// 파일 업로드 핸들러
+// 첨부파일
+const fileDialogOpen = () => {
+  files.value = []; // 파일 목록 초기화
+  fileLoading.value = false;
+  fileDialog.value = !fileDialog.value;
+}
 const handleFileUpload = async () => {
   fileLoading.value = true; // 빙글이 시작
-  await wait(1200); // 1.2초 대기
-
+  await wait(1000); // 1초 대기
   // 각 파일에 대해 업로드 로직 실행
   for (let file of files.value) {
-    console.log(file)
-    await attachedFile.setAttachedFileUpload(documentList.selectedDocumentDetails.documentId, file);
+    await attachedFile.setAttachedFileUpload(documentList.getSelectedDocId, file);
   }
-  files.value = []; // 파일 목록 초기화
-
   // 파일 업로드 후 첨부파일 목록 다시 불러오기
-  await attachedFile.setAttachedFileList(documentList.selectedDocumentDetails.documentId);
-
+  await attachedFile.setAttachedFileList(documentList.getSelectedDocId);
   fileLoading.value = false; // 빙글이 끝내기
   fileDialog.value = false; // 다이얼로그 닫기
 };
-
-// 파일 클릭 핸들러
 const handleFileClick = (url) => {
   window.open(url, '_blank');
 };
-
-// 첨부파일 삭제 로직
 const AttachedFileDelete = async (fileId) => {
   await attachedFile.setAttachedFileDelete(fileId);
-  await wait(2000); // 1.2초 대기
-  // 첨부파일 삭제 후 첨부파일 목록 다시 불러오기
-  await attachedFile.setAttachedFileList(documentList.selectedDocumentDetails.documentId);
+  await wait(1000); // 1초 대기
+  await attachedFile.setAttachedFileList(documentList.getSelectedDocId);
+  attachedFileModal.value = false
 };
 
 // 선택한 문서 ID가 북마크 목록에 있는지 확인
@@ -193,14 +214,8 @@ const isBookmarked = computed(() =>
 
 // 북마크 버튼 클릭 핸들러
 const handleBookmarkClick = async () => {
-  // 만약 현재 문서가 북마크되어 있다면, 북마크를 제거하는 액션을 실행합니다.
-  if (isBookmarked.value) {
-    await bookmarks.removeMyBookmark(documentList.getSelectedDocId);
-  } else {
-    await bookmarks.removeMyBookmark(documentList.getSelectedDocId);
-  }
-
-  // 북마크 상태를 갱신합니다.
+  if (isBookmarked.value) await bookmarks.removeMyBookmark(documentList.getSelectedDocId);
+  else await bookmarks.removeMyBookmark(documentList.getSelectedDocId);
   await bookmarks.setMyBookMarks();
 };
 
@@ -210,24 +225,43 @@ import {useKeyModifier} from '@vueuse/core'
 
 const KipButton = ref(false)
 const alt = useKeyModifier('Alt')
-
 onKeyStroke(['Q', 'q'], () => {
-  if (alt.value)
-    KipButton.value = !KipButton.value;
-
+  if (alt.value) KipButton.value = !KipButton.value;
 })
-
 onKeyStroke(['M', 'm'], () => {
+  if (alt.value) handleBookmarkClick()
+})
+onKeyStroke(['N', 'n'], () => {
+  if (alt.value) openCreateNewDocument()
+})
+onKeyStroke(['T', 't'], () => {
+  if (alt.value) showTitleEditor()
+})
+onKeyStroke(['H', 'h'], () => {
+  if (alt.value) hashTagUpdateModalOpen()
+})
+onKeyStroke(['A', 'a'], () => {
+  if (alt.value) fileDialogOpen()
+})
+onKeyStroke(['R', 'r'], () => {
+  if (alt.value) ResetHasTagAddAndFiltering();
+})
+onKeyStroke(['U', 'u'], () => {
+  if (alt.value) createNewVersionModal.value = !createNewVersionModal.value;
+})
+onKeyStroke(['Y', 'y'], () => {
+  if (alt.value) versionHistoryModal.value = !versionHistoryModal.value
+})
+onKeyStroke(['Enter'], () => {
   if (alt.value)
-    handleBookmarkClick()
+    if (dialog.value) postForm.value.submit();
+    else if (createNewVersionModal.value) updateContent.value.submit();
 })
 
 </script>
-
 <template>
   <v-container fluid>
     <v-row no-gutters>
-
       <!-- 👈👈👈👈👈👈👈👈 왼쪽 사이드바 -->
       <v-col cols="3">
         <v-list class="pa-4">
@@ -245,7 +279,7 @@ onKeyStroke(['M', 'm'], () => {
                 :key="doc.documentId"
                 @click="selectDocument(doc.documentId)">
 
-              <div>{{ doc.title }}</div>
+              <div class="ellipsis" style="width:11vw; text-align: start">{{ doc.title }}</div>
               <v-spacer></v-spacer>
               <v-hover v-slot="{ isHovering, props }">
 
@@ -320,7 +354,6 @@ onKeyStroke(['M', 'm'], () => {
           </v-sheet>
         </v-dialog>
 
-
         <!--        ❌삭제 확인 모달 --->
         <v-dialog
             v-model="deleteDocModalOpen"
@@ -357,18 +390,96 @@ onKeyStroke(['M', 'm'], () => {
           <div class="text-center">{{ selectedDeleteDocTitle }} 문서가 삭제되었습니다.</div>
         </v-snackbar>
 
-        <v-dialog v-model="dialog" fullscreen>
-          <v-card>
-            <PostForm ref="postForm" @submit="handleData"></PostForm>
-            <v-card-actions>
-              <v-spacer></v-spacer>
-              <v-btn @click=postForm.submit()>작성 완료</v-btn>
-              <v-btn @click="dialog = false">닫기</v-btn>
+        <!--        문서 작성을 위한 모달 -->
+        <v-dialog v-model="dialog"
+                  width="95vw"
+                  opacity="90%"
+        >
+          <v-card rounded="xl"
+                  class="pa-8">
+            <v-card-actions
+                style="
+                display: flex;
+                justify-content: end;
+                position: fixed;
+                top: 60px; right: 30px;
+                width: 12vw;
+                z-index: 9999;">
+              <v-btn
+                  style="background-color: darkred; color: white"
+                  @click=postForm.submit()>저장
+                <v-tooltip
+                    activator="parent"
+                    location="start">ALT + Enter
+                </v-tooltip>
+              </v-btn>
+              <v-btn
+                  style="background-color: var(--secondary-color); color: white"
+                  @click="dialog = false">닫기
+                <v-tooltip
+                    activator="parent"
+                    location="bottom">ALT + N
+                </v-tooltip>
+              </v-btn>
             </v-card-actions>
+            <PostForm ref="postForm" @submit="handleData"></PostForm>
           </v-card>
         </v-dialog>
-      </v-col>
 
+
+        <!--      문서 수정을 위한 모달 -->
+        <v-dialog v-model="createNewVersionModal"
+                  width="95vw"
+                  opacity="90%"
+        >
+          <v-card rounded="xl"
+                  class="pa-8">
+            <v-card-actions
+                style="
+                display: flex;
+                justify-content: end;
+                position: fixed;
+                top: 50px; right: 35px;
+                width: 12vw;
+                z-index: 9999;">
+              <v-btn
+                  style="background-color: darkred; color: white"
+                  @click=updateContent.submit()>저장
+                <v-tooltip
+                    activator="parent"
+                    location="start">ALT + Enter
+                </v-tooltip>
+              </v-btn>
+              <v-btn
+                  style="background-color: var(--secondary-color); color: white"
+                  @click="createNewVersionModal = false">닫기
+                <v-tooltip
+                    activator="parent"
+                    location="bottom">ALT + U
+                </v-tooltip>
+              </v-btn>
+            </v-card-actions>
+            <UpdateContent ref="updateContent" @submit="createNewVersion"
+                           :dataToPass="documentList.getSelectedDocContent"></UpdateContent>
+          </v-card>
+        </v-dialog>
+
+        <!--        버전 변경을 위한 모달-->
+        <v-dialog
+            class="d-flex justify-start ml-12"
+            width="60vw"
+            opacity="10%"
+            v-model="versionHistoryModal">
+          <v-card
+              rounded="xl"
+              class="pa-4">
+            <VersionHistory
+                @version-changed="UpdateToastViewer"
+                :selectDocumentId="documentList.getSelectedDocId"></VersionHistory>
+          </v-card>
+        </v-dialog>
+
+      </v-col>
       <v-divider class="divider-container" vertical/>
 
       <!-- ☝️☝️☝️☝️☝️☝️☝️ 가운데 문서제목 부분 -->
@@ -378,6 +489,7 @@ onKeyStroke(['M', 'm'], () => {
             <div class="d-flex justify-center">
               <v-card-title v-if="titleEditing" class="headline text-center">
                 <v-text-field
+                    class="title__update"
                     v-model="newTitle"
                     @blur="titleEditing = false"
                     @keyup.enter="updateDocumentTitle"
@@ -387,25 +499,33 @@ onKeyStroke(['M', 'm'], () => {
                     append-inner-icon="mdi-keyboard-return"
                     hint="변경할 제목을 입력하시고 엔터를 입력하세요."
                     placeholder="변경할 제목을 입력하세요."
-                    style="min-width: 300px;"
+                    style="min-width: 40vw;"
                     variant="underlined"
                 ></v-text-field>
               </v-card-title>
 
               <!-- 제목 표시 -->
-              <v-card-title v-else class="headline text-center mb-4 pa-2">
+              <v-card-title
+                  @click="showTitleEditor"
+                  v-else class="headline text-center mb-4 pa-2">
                 {{ documentList.selectedDocumentDetails.title }}
               </v-card-title>
-
-              <v-item-group v-model="selection">
-                <v-item>
-                  <v-btn
-                      density="comfortable"
-                      @click="handleBookmarkClick"
-                      :icon="isBookmarked ? 'mdi-star' : 'mdi-star-outline'"
-                  ></v-btn>
-                </v-item>
-              </v-item-group>
+              <v-btn
+                  class=" pt-0 pb-12 px-0"
+                  variant="text"
+                  rounded="xl"
+                  @click="handleBookmarkClick">
+                <v-icon
+                    color="yellow-darken-2"
+                    size="xxx-large"
+                    :icon="isBookmarked ? 'mdi-star' : 'mdi-star-outline'"
+                />
+                <v-tooltip
+                    activator="parent"
+                    location="end"
+                >ALT + M
+                </v-tooltip>
+              </v-btn>
             </div>
           </v-card>
 
@@ -413,46 +533,90 @@ onKeyStroke(['M', 'm'], () => {
           <v-divider></v-divider>
         </v-list>
         <v-card flat class="px-6 mt-4 mx-auto">
-          <div ref="viewer">{{ documentList.selectedDocumentDetails.content }}</div>
+          <div ref="viewer">{{ documentList.getSelectedDocContent }}</div>
         </v-card>
 
+        <!--        스피드 모달 아이콘-->
         <div class="fab_div">
           <v-container class="d-flex justify-end" style="margin: 30px;">
-            <v-speed-dial v-model="KipButton" location="top center" transition="fade-transition">
+            <v-speed-dial v-model="KipButton" location="top center" transition="scale-transition">
               <template v-slot:activator="{ props: activatorProps }">
                 <v-btn
                     rounded="circle"
+                    elevation="4"
                     v-bind="activatorProps"
                     size="large"
                     stacked>
+                  <v-tooltip
+                      activator="parent"
+                      location="start">ALT + Q
+                  </v-tooltip>
+
                   <v-img
                       width="36px"
                       src="/images/logos/kiplogo.svg"/>
                 </v-btn>
               </template>
               <v-btn
-                  key="6"
-                  :icon="`mdi-plus`"
-                  variant="elevated"
-                  rounded="lg"
-                  class="mb-2 ml-2"
-                  @click.stop="openCreateNewDocument"
-              />
-              <v-btn key="1" size="large" prepend-icon="mdi-format-title" @click="titleEditing = true">제목 수정</v-btn>
-              <v-btn key="2" size="large" prepend-icon="mdi-pencil" @click="">내용 수정</v-btn>
-              <v-btn key="3" size="large" prepend-icon="mdi-history" @click="">수정 이력</v-btn>
-              <v-btn key="4" size="large" v-if="isBookmarked" prepend-icon="mdi-star" @click="handleBookmarkClick">북마크
-                                                                                                                   해제
+                  color="deep-orange-lighten-1"
+                  class="mb-3"
+                  key="4"
+                  size="large"
+                  rounded="xl"
+                  prepend-icon="mdi-plus"
+                  @click="openCreateNewDocument"> 새글쓰기
+                <v-tooltip
+                    activator="parent"
+                    location="start">ALT + N
+                </v-tooltip>
               </v-btn>
-              <v-btn key="5" size="large" v-else prepend-icon="mdi-star-outline" @click="handleBookmarkClick">북마크 추가
+              <v-btn
+                  color="light-green-darken-2"
+                  style="width:200px !important;"
+                  class="mb-3"
+                  text="제목수정"
+                  key="1"
+                  size="large"
+                  rounded="xl"
+                  prepend-icon="mdi-format-title"
+                  @click="showTitleEditor">제목수정
+                <v-tooltip
+                    activator="parent"
+                    location="start">ALT + T
+                </v-tooltip>
+              </v-btn>
+              <v-btn
+                  :color="color.kipMainColor"
+                  class="mb-3"
+                  key="2"
+                  size="large"
+                  rounded="xl"
+                  prepend-icon="mdi-pencil"
+                  @click="createNewVersionModal=true"> 내용수정
+                <v-tooltip
+                    activator="parent"
+                    location="start">ALT + U
+                </v-tooltip>
+
+              </v-btn>
+              <v-btn
+                  :color="color.kipMainColor"
+                  class="mb-3"
+                  key="3"
+                  size="large"
+                  rounded="xl"
+                  prepend-icon="mdi-history"
+                  @click="versionHistoryModal=true">수정이력
+                <v-tooltip
+                    activator="parent"
+                    location="start">ALT + Y
+                </v-tooltip>
               </v-btn>
             </v-speed-dial>
           </v-container>
         </div>
 
-
       </v-col>
-
       <v-divider class="divider-container" vertical/>
 
       <!-- 👉👉👉👉👉👉👉👉👉 오른쪽 영역 -->
@@ -461,141 +625,148 @@ onKeyStroke(['M', 'm'], () => {
         <div class="attached-files">
           <v-card flat>
             <v-card-title class="headline text-center">첨부 파일
-
-                                                       <!-- 첨부파일 업로드 로직 부분 -->
-              <v-dialog
-                  class="d-flex justify-center"
-                  width="45vw"
-                  opacity="50%"
-                  v-model="fileDialog">
-                <template v-slot:activator="{ props: activatorProps }">
-                  <v-btn
-                      class="mb-2"
-                      v-bind="activatorProps"
-                      density="compact"
-                      variant="flat"
-                      icon="mdi-plus"
-                  />
-                </template>
-
-                <v-sheet
-                    rounded="xl"
-                    class="d-flex justify-center flex-wrap pa-10">
-
-                  <v-form ref="form" style="width: 50vw">
-                    <v-file-input
-                        v-model="files"
-                        :color="color.kipMainColor"
-                        label="업로드할 파일을 선택해 주세요"
-                        placeholder="업로드할 파일을 선택해 주세요"
-                        prepend-icon="mdi-paperclip"
-                        counter
-                        :show-size="1000"
-                        multiple
-                    >
-                      <template v-slot:selection="{ fileNames }">
-                        <template v-for="fileName in fileNames" :key="fileName">
-                          <v-chip
-                              class="ma-1 pa-5"
-                              :color="color.kipMainColor"
-                          >
-                            {{ fileName }}
-                          </v-chip>
-                        </template>
-                      </template>
-                    </v-file-input>
-
-                    <v-btn
-                        class="mt-7"
-                        :color="color.kipMainColor"
-                        :loading="fileLoading"
-                        text="업로드 완료"
-                        @click="handleFileUpload"
-                        block
-                    />
-                  </v-form>
-                </v-sheet>
-              </v-dialog>
             </v-card-title>
+            <!-- 첨부파일 업로드 로직 부분 -->
+            <v-dialog
+                class="d-flex justify-center"
+                width="45vw"
+                opacity="50%"
+                v-model="fileDialog">
+
+              <v-sheet
+                  rounded="xl"
+                  class="d-flex justify-center flex-wrap pa-10">
+
+                <v-form ref="form" style="width: 50vw">
+                  <v-file-input
+                      v-model="files"
+                      :color="color.kipMainColor"
+                      label="업로드할 파일을 선택해 주세요"
+                      placeholder="업로드할 파일을 선택해 주세요"
+                      prepend-icon="mdi-paperclip"
+                      counter
+                      :show-size="1000"
+                      multiple
+                  >
+                    <template v-slot:selection="{ fileNames }">
+                      <template v-for="fileName in fileNames" :key="fileName">
+                        <v-chip
+                            class="ma-1 pa-5"
+                            :color="color.kipMainColor"
+                        >
+                          {{ fileName }}
+                        </v-chip>
+                      </template>
+                    </template>
+                  </v-file-input>
+
+                  <v-btn
+                      class="mt-7"
+                      :color="color.kipMainColor"
+                      :loading="fileLoading"
+                      text="업로드 완료"
+                      @click="handleFileUpload"
+                      block
+                  />
+                </v-form>
+              </v-sheet>
+            </v-dialog>
 
 
             <!-- 첨부파일 목록 -->
             <v-card-text>
-              <div v-if="attachedFile.getAttachedFileList.length > 0">
-                <v-card
-                    v-for="file in attachedFile.getAttachedFileList"
-                    :key="file.fileName"
-                    class="my-3"
-                    variant="elevated"
-                    elevation="2"
-                    rounded="xl">
+              <v-card
+                  v-for="file in attachedFile.getAttachedFileList"
+                  :key="file.fileName"
+                  class="my-3"
+                  color="blue-lighten-1"
+                  variant="outlined"
+                  rounded="xl">
 
-                  <v-row>
-                    <v-col cols="3" class="d-flex justify-center align-center">
+                <v-row>
+                  <v-col cols="3" class="d-flex justify-center align-center py-2">
+                    <v-btn
+                        class="ml-4"
+                        @click="handleFileClick(file.fileUrl)"
+                        :icon="file.fileType.includes('image') ? 'mdi-image-outline'
+                          :`${file.fileType.includes('compressed') ? 'mdi-folder-zip'
+                          :`${file.fileType.includes('application/pdf') ? 'mdi-file-pdf-box':'mdi-file-document-outline' }`}`"
+                        variant="text"
+                    />
+
+                  </v-col>
+                  <v-col cols="6" class="d-flex justify-start align-center py-2" style="width: 70%">
+                    <div
+                        @click="handleFileClick(file.fileUrl)"
+                        class="cursor-pointer ellipsis" style="width:100%">
+                      {{ file.fileName }}
+                      <v-tooltip
+                          activator="parent"
+                          location="start"
+                      >{{ file.fileName }}
+                      </v-tooltip>
+                    </div>
+                  </v-col>
+
+                  <v-col cols="3" class="d-flex justify-start align-center py-2">
+                    <v-btn
+                        class="mr-4"
+                        @click="attachedFileModal=true"
+                        icon="mdi-close"
+                        variant="text"
+                        rounded="xl"
+                        size="sm"
+                    />
+                  </v-col>
+                </v-row>
+                <!--  첨부파일 삭제를 위한 모달-->
+                <v-dialog
+                    v-model="attachedFileModal"
+                    max-width="500">
+
+                  <v-card title="첨부파일 삭제">
+                    <v-card-text>
+                      첨부파일을 삭제하시겠습니까?
+                    </v-card-text>
+                    <v-card-actions>
+                      <v-spacer></v-spacer>
+
+                      <v-snackbar
+                          :timeout="2000"
+                      >
+                        <template v-slot:activator="{ props }">
+                          <v-btn
+                              v-bind="props"
+                              @click="AttachedFileDelete(file.id)"
+                          >Yes
+                          </v-btn>
+                        </template>
+                        첨부파일이 삭제되었습니다.
+                      </v-snackbar>
                       <v-btn
-                          class="ml-4"
-                          @click="handleFileClick(file.fileUrl)"
-                          icon="mdi-image-outline"
-                          variant="text"
-                      />
-
-                    </v-col>
-                    <v-col cols="6" class="d-flex justify-start align-center" style="width: 70%">
-
-                      <div
-                          @click="handleFileClick(file.fileUrl)"
-                          class="cursor-pointer ellipsis" style="width:100%">
-                        {{ file.fileName }}
-                      </div>
-                    </v-col>
-
-                    <v-col cols="3">
-
-                      <v-btn
-                          class="mr-4"
-                          @click="attachedFileModal=true"
-                          icon="mdi-close"
-                          color="grey"
-                          variant="text"
-                          rounded="xl"
-                      />
-                    </v-col>
-                  </v-row>
-                  <!--                  첨부파일 삭제를 위한 모달-->
-                  <v-dialog
-                      v-model="attachedFileModal"
-                      max-width="500">
-
-                    <v-card title="첨부파일 삭제">
-                      <v-card-text>
-                        첨부파일을 삭제하시겠습니까?
-                      </v-card-text>
-                      <v-card-actions>
-                        <v-spacer></v-spacer>
-
-                        <v-snackbar
-                            :timeout="2000"
-                        >
-                          <template v-slot:activator="{ props }">
-                            <v-btn
-                                v-bind="props"
-                                @click="AttachedFileDelete(file.id)"
-
-                            >Yes
-                            </v-btn>
-                          </template>
-                          첨부파일이 삭제되었습니다.
-                        </v-snackbar>
-                        <v-btn
-                            text="No"
-                            @click="attachedFileModal = false"
-                        ></v-btn>
-                      </v-card-actions>
-                    </v-card>
-                  </v-dialog>
-                </v-card>
-              </div>
-              <div v-else> 첨부파일이 없습니다.</div>
+                          text="No"
+                          @click="attachedFileModal = false"
+                      ></v-btn>
+                    </v-card-actions>
+                  </v-card>
+                </v-dialog>
+              </v-card>
+              <v-btn
+                  block
+                  rounded="xl"
+                  color="blue-lighten-1"
+                  @click="fileDialogOpen"
+                  variant="tonal">
+                <v-icon
+                    icon="mdi-plus"
+                    size="x-large"
+                ></v-icon>
+                <v-tooltip
+                    activator="parent"
+                    location="start"
+                >ALT + A
+                </v-tooltip>
+              </v-btn>
             </v-card-text>
           </v-card>
         </div>
@@ -605,83 +776,112 @@ onKeyStroke(['M', 'm'], () => {
                 color="blue"
                 class="mx-4 mb-0 mt-5"
                 @click="hashTagUpdateModalOpen"> 해시 태그 수정
+          <v-tooltip
+              activator="parent"
+              location="start"
+          > ALT + H
+          </v-tooltip>
         </v-chip>
-
-        <v-chip-group column class="px-4"
-                      v-if="documentList.selectedDocumentDetails
-                      && documentList.selectedDocumentDetails.hashTags.length > 0">
+        <v-chip-group column class="px-4">
           <v-chip prepend-icon="mdi-refresh"
+                  style="color: #4CAF50"
                   @click=documentList.setPublicDocumentList> 초기화
+            <v-tooltip
+                activator="parent"
+                location="start"
+            > ALT + R
+            </v-tooltip>
           </v-chip>
           <v-chip
               v-for="(hashTag, index) in documentList.selectedDocumentDetails.hashTags"
+              style="color: #546E7A"
               :key="index"
-              prepend-icon="mdi-pound"
               @click="documentList.filterPublicDocByHashTag(hashTag['hashTagId'])">
             {{ hashTag.tagName }} ({{ hashTag['docsCounts'] }})
+            <v-tooltip
+                activator="parent"
+                location="top"
+            > 태그필터링
+            </v-tooltip>
           </v-chip>
         </v-chip-group>
-        <div v-else class="pa-4">해시태그가 없습니다.</div>
 
-      </v-col>
-
-      <!--           ❤️ 해시태그 수정을 위한 모달-->
-      <v-dialog
-          class="d-flex justify-center"
-          width="50vw"
-          opacity="40%"
-          v-model="hashTagUpdateModal">
-        <v-sheet
-            rounded="xl"
-            class="d-flex justify-center flex-wrap pa-10">
-          <v-combobox
-              variant="underlined"
-              v-model="hashTagsUpdateReqDto.hashTags"
-              multiple
-              placeholder="태그를 입력하세요."
-              persistent-placeholder
-              hint="여러 태그를 엔터로 구분하여 입력하세요.">
-            <template v-slot:selection="data">
+        <!--           ❤️ 해시태그 수정을 위한 모달-->
+        <v-dialog
+            class="d-flex justify-center"
+            width="60vw"
+            opacity="10%"
+            v-model="hashTagUpdateModal">
+          <v-sheet
+              rounded="xl"
+              class="d-flex justify-center flex-wrap pa-10">
+            <v-combobox
+                variant="underlined"
+                v-model="hashTagsUpdateReqDto.hashTags"
+                multiple
+                placeholder="태그를 입력하세요."
+                persistent-placeholder
+                hint="여러 태그를 엔터로 구분하여 입력하세요.">
+              <template v-slot:selection="data">
+                <v-chip
+                    class="pa-4 mr-1"
+                    style="color: #FF5722"
+                    :key="JSON.stringify(data.item)"
+                    v-bind="data.attrs"
+                    :disabled="data.disabled"
+                    :model-value="data.selected"
+                    size="large"
+                    @click="documentList.filterTop100HashTagsByClick(data.item.title)">
+                  {{ data.item.title }}
+                  <v-tooltip
+                      activator="parent"
+                      location="top"
+                  > 태그 검색
+                  </v-tooltip>
+                </v-chip>
+              </template>
+            </v-combobox>
+            <h2 class="mt-5 mb-3" style="width:100%; display: flex; justify-content: center"> 🗼 Top 100 해시태그 🗼</h2>
+            <v-chip-group column class="px-4 d-flex flex-wrap">
               <v-chip
-                  class="pa-4 mr-1"
-                  :key="JSON.stringify(data.item)"
-                  v-bind="data.attrs"
-                  :disabled="data.disabled"
-                  :model-value="data.selected"
-                  size="x-large"
-                  @click="console.log(data.item.title)">
-                {{ data.item.title }}
+                  prepend-icon="mdi-refresh"
+                  style="color: #4CAF50"
+                  @click="ResetHasTagAddAndFiltering"
+              >
+                초기화
+                <v-tooltip
+                    activator="parent"
+                    location="start"
+                > ALT + R
+                </v-tooltip>
               </v-chip>
-            </template>
-          </v-combobox>
-          <v-btn
-              class="mt-4"
-              :color="color.kipMainColor"
-              text="수정 하기"
-              @click="hashTagUpdateReq"
-              block
-          />
-
-          <h2 class="mt-5 mb-3"> 🗼 Top 100 해시태그 🗼</h2>
-          <v-chip-group column class="px-4">
-            <v-chip
-                prepend-icon="mdi-refresh"
-                @click=documentList.setHashTagsForTop100List
-                text="초기화"/>
-            <v-chip
-                v-for="(hashTag, index) in documentList.fillteredTop100HaahTag"
-                :key="index"
-                prepend-icon="mdi-pound"
-                @click="documentList.filterPublicDocByHashTag(hashTag['hashTagId'])">
-              {{ hashTag.tagName }} ({{ hashTag['docsCounts'] }})
-            </v-chip>
-          </v-chip-group>
-        </v-sheet>
-      </v-dialog>
+              <v-chip
+                  v-for="(hashTag, index) in documentList.fillteredTop100HaahTag"
+                  style="color: #546E7A"
+                  :key="index"
+                  @click="Top100HashTagAddAndFiltering(hashTag['hashTagId'], hashTag.tagName)">
+                {{ hashTag.tagName }}
+                <v-tooltip
+                    activator="parent"
+                    location="top"
+                > 태그 추가
+                </v-tooltip>
+              </v-chip>
+            </v-chip-group>
+            <v-btn
+                class="mt-6"
+                :color="color.kipMainColor"
+                text="수정 하기"
+                @click="hashTagUpdateReq"
+                block
+            />
+          </v-sheet>
+        </v-dialog>
+      </v-col>
     </v-row>
   </v-container>
 </template>
-<style scoped>
+<style>
 .font-weight-bold {
   font-weight: bold;
 }
@@ -703,12 +903,23 @@ onKeyStroke(['M', 'm'], () => {
   justify-content: flex-end;
   display: flex;
   align-items: flex-end;
-  bottom: 0px;
+  bottom: 4vh;
   z-index: 1004;
   transform: translateY(0%);
   position: fixed;
   height: 80px;
-  left: 0px;
+  left: -4vw;
   width: calc(100% + 0px);
+}
+
+.title__update input:focus {
+  font-size: 30px;
+  font-weight: bold;
+  text-align: center;
+  padding: 20px 20px 20px 30px;
+  margin-bottom: 2px;
+  color: white;
+  background-color: var(--primary-color);
+  border-radius: 25px;
 }
 </style>
