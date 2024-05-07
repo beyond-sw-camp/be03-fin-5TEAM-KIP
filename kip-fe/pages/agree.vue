@@ -20,15 +20,9 @@ const agreeDocuments = useAgreeDocument();
 
 
 onMounted(async () => {
-  await agreeDocuments.$reset();
   await agreeDocuments.setMyDocument();
-
-
-  await documentList.$reset();
   await documentList.setAgreeDocumentDetails()
-
   if (agreeDocuments.document.length > 0) {
-    await attachedFile.$reset();
     await attachedFile.setAttachedFileList(agreeDocuments.document[0].documentId);
   }
 })
