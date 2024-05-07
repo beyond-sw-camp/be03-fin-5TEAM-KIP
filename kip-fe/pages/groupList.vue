@@ -235,6 +235,10 @@ const UpdateGroupInfoReq = async (event) => {
   loading.value = false
 }
 const DeleteGruopFromDataBase = async () => {
+  if (user.getLoginUserRole !== 'ADMIN') {
+    alert("관리자에게 문의하세요.");
+    return;
+  }
   if (String(createGroupReq.value.groupId) === "1")
     alert("기본 최상단 그룹은 삭제할 수 없습니다.")
   else if (GroupChildrenIdList.value.length !== 0)
