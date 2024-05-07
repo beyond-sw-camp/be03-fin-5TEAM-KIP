@@ -14,6 +14,7 @@ const documentList = useDocumentList();
 const attachedFile = useAttachedFile();
 const createDocument = useCreateDocument();
 const bookmarks = useBookMarks();
+const groupUser = useGroupuser()
 
 // 필요한 변수들
 const dialog = ref(false);
@@ -24,7 +25,6 @@ const snackbar = ref(false);
 
 
 ///  초기 문서 세팅
-const selection = ref([]);
 await documentList.setDocumentList(groupId);
 await groupName.setSelectedGroupInfo(groupId);
 await useGroupuser().setUsersInfoInGroup(groupId);
@@ -98,6 +98,10 @@ const deleteDocModalOpen = ref();
 const selectedDeleteDocTitle = ref();
 const selectedDeleteDocId = ref();
 const OpenDeleteDocumentModal = async (documenetTitle, documentId) => {
+if(groupUser.getUserRoleInGroup === "NORMAL"){
+  alert("팀장님에게 문의하세요.")
+  return;
+}
   loading.value = false;
   if (documentList.getDocumentList.length > 1 && documentId !== documentList.getFirstDocId) {
     deleteDocModalOpen.value = true;
@@ -220,6 +224,7 @@ const handleBookmarkClick = async () => {
 // 단축키
 import {onKeyStroke} from '@vueuse/core'
 import {useKeyModifier} from '@vueuse/core'
+import {useGroupuser} from "~/stores/GroupUser.js";
 
 const KipButton = ref(false)
 const alt = useKeyModifier('Alt')
