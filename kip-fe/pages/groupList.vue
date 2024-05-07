@@ -60,6 +60,10 @@ const addUserToGroup = async (userId) => {
   await group.setMyGroupsInfo();
 }
 const deletUserFromDataBaese = async (employeeId, name) => {
+  if (user.getLoginUserRole !== 'ADMIN') {
+    alert("관리자에게 문의하세요.");
+    return;
+  }
   if (employeeId === "k-1234567890")
     alert("관리자의 아이디는 삭제할 수 없습니다.")
   else {
@@ -246,6 +250,10 @@ const DeleteGruopFromDataBase = async () => {
 
 // 전체 공개문서로 변경
 const makePublicDocument = async (title, documentId) => {
+  if (user.getLoginUserRole !== 'ADMIN') {
+    alert("관리자에게 문의하세요.");
+    return;
+  }
   if (confirm(`${title} 문서가 전체공개 그룹으로 이동됩니다`)) {
     await document.makePublicDocumentFromGroup(documentId)
     await document.setAdminDocumentList(clickedGroupId.value)
@@ -260,10 +268,18 @@ const moveDocumentReq = ref({
   endDocId: "",
 })
 const realShowTargetButton = (startDoctId) => {
+  if (user.getLoginUserRole !== 'ADMIN') {
+    alert("관리자에게 문의하세요.");
+    return;
+  }
   handlerTargetButtonForMove.value = true
   moveDocumentReq.value.startDocId = startDoctId
 }
 const RealMoveDocumnet = async (targetDocId) => {
+  if (user.getLoginUserRole !== 'ADMIN') {
+    alert("관리자에게 문의하세요.");
+    return;
+  }
   moveDocumentReq.value.endDocId = targetDocId
   await document.moveDocumentToTargetDoc(moveDocumentReq.value);
   await document.setAdminDocumentList(clickedGroupId.value)
@@ -273,6 +289,10 @@ const RealMoveDocumnet = async (targetDocId) => {
 
 // 문서 삭제
 const deleteDocument = async (title, documentId) => {
+  if (user.getLoginUserRole !== 'ADMIN') {
+    alert("관리자에게 문의하세요.");
+    return;
+  }
   // 최상단 문서 검사
   if (document.getAdminDocumentList[0].documentId === documentId)
     alert("최상단 문서는 삭제할 수 없습니다.")
@@ -282,15 +302,21 @@ const deleteDocument = async (title, documentId) => {
     alert(`${title} 문서가 삭제 되었습니다.`)
   }
 }
-const requestDays = ref();
+const requestDays = ref(30);
 const docUUID = ref();
 const sendRequest = async (documentUUID) => {
+
+
+  requestDays.value = 30;
   sendRequestModal.value = true;
   docUUID.value = documentUUID;
 }
 
 const confirmRequest = async () => {
-  await request.sendRequest(docUUID.value, requestDays.value);
+  if (requestDays.value < 1)
+    alert("최소 요청일은 하루 입니다.")
+  else
+    await request.sendRequest(docUUID.value, requestDays.value);
   sendRequestModal.value = false;
 }
 

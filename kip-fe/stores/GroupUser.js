@@ -6,11 +6,15 @@ export const useGroupuser = defineStore("groupuser", {
         return {
             groupName: "",
             groupType: "",
+            groupId:"",
             usersInfoInGroup: [],
             allUserInfo: [],
         };
     },
     getters: {
+        getUserRoleInGroup(state){
+            return state.usersInfoInGroup.filter(userIn => userIn.userId === user.getLoginUserId)[0].groupRole
+        },
         getGroupName(state) {
             return state.groupName;
         },
@@ -37,6 +41,7 @@ export const useGroupuser = defineStore("groupuser", {
                 const temp = await response.json();
                 this.groupName = temp.groupName;
                 this.groupType = temp.groupType;
+                this.groupId = temp.groupId;
 
                 // 역할순으로 정렬하고 역할이 같으면 이름순으로 정렬
                 this.usersInfoInGroup = temp.userList
@@ -51,6 +56,10 @@ export const useGroupuser = defineStore("groupuser", {
             }
         },
         async updateUserRoleInGroup(gruopId, userId) {
+            if (user.getLoginUserRole !== 'ADMIN') {
+                alert("관리자에게 문의하세요.");
+                return;
+            }
             try {
                 const response =
                     await fetch(`${BASE_URL}/group/${gruopId}/${userId}/role`, {
@@ -70,6 +79,10 @@ export const useGroupuser = defineStore("groupuser", {
             }
         },
         async deleteUserFromGroup(gruopId, userId) {
+            if (user.getLoginUserRole !== 'ADMIN') {
+                alert("관리자에게 문의하세요.");
+                return;
+            }
             try {
                 const response = await fetch(`${BASE_URL}/group/${gruopId}/${userId}/delete`, {
                     method: 'DELETE',
@@ -107,6 +120,10 @@ export const useGroupuser = defineStore("groupuser", {
         },
 
         async addUserToGroup(gruopId, userId) {
+            if (user.getLoginUserRole !== 'ADMIN') {
+                alert("관리자에게 문의하세요.");
+                return;
+            }
 
             // 객체 조림
             let group = {};

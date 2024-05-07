@@ -5,6 +5,7 @@ const BASE_URL = import.meta.env.VITE_BASE_URL;
 const user = useUser();
 const bookmarks = useBookMarks();
 const agreeDocuments = useAgreeDocument()
+const groupUser = useGroupuser();
 
 export const useDocumentList = defineStore("documentList", {
     state() {
@@ -51,8 +52,6 @@ export const useDocumentList = defineStore("documentList", {
         getFirstPublicDocId(state) {
             return state.firstPublicDocumentId
         }
-
-
     },
 
     actions: {
@@ -110,6 +109,10 @@ export const useDocumentList = defineStore("documentList", {
             }
         },
         async makePublicDocumentFromGroup(documentId) {
+            if (user.getLoginUserRole !== 'ADMIN') {
+                alert("관리자에게 문의하세요.");
+                return;
+            }
             try {
                 await fetch(`${BASE_URL}/doc/${documentId}/public`, {
                     method: 'PATCH',
@@ -136,6 +139,10 @@ export const useDocumentList = defineStore("documentList", {
             }
         },
         async deleteDocument(documentId) {
+            if (user.getLoginUserRole !== 'ADMIN') {
+                alert("관리자에게 문의하세요.");
+                return;
+            }
             try {
                 await fetch(`${BASE_URL}/doc/${documentId}`, {
                     method: 'DELETE',
@@ -211,6 +218,10 @@ export const useDocumentList = defineStore("documentList", {
 
         },
         async moveDocumentToTargetGroup(moveDocToGroupReq) {
+            if (user.getLoginUserRole !== 'ADMIN') {
+                alert("관리자에게 문의하세요.");
+                return;
+            }
             try {
                 await fetch(`${BASE_URL}/doc/group`, {
                     method: 'PATCH',

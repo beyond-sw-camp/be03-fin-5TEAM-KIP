@@ -11,6 +11,7 @@ const bookmarks = useBookMarks();
 const attachedFile = useAttachedFile();
 const color = useColor();
 const group = useGroup();
+const user = useUser();
 
 // 상단 네비 제목 설정
 group.TopNaviGroupList = ["Knowledge is Power", "전체공개문서", "태그 검색  (ALT + H) 🏷️"];
@@ -79,6 +80,10 @@ const deleteDocModalOpen = ref();
 const selectedDeleteDocTitle = ref();
 const selectedDeleteDocId = ref();
 const OpenDeleteDocumentModal = async (documenetTitle, documentId) => {
+  if (user.getLoginUserRole !== 'ADMIN') {
+    alert("관리자에게 문의하세요.");
+    return;
+  }
   loading.value = false;
   if (documentList.getPublicDocumentList.length > 1 && documentId !== 2) {
     deleteDocModalOpen.value = true;
@@ -88,6 +93,10 @@ const OpenDeleteDocumentModal = async (documenetTitle, documentId) => {
   else alert("전체공개문서는 1개이상 있어야 합니다.");
 }
 const realDeleteSelectedDoc = async () => {
+  if (user.getLoginUserRole !== 'ADMIN') {
+    alert("관리자에게 문의하세요.");
+    return;
+  }
   loading.value = true;
   await documentList.deleteDocument(selectedDeleteDocId.value)
   await documentList.setPublicDocumentList();
@@ -102,7 +111,6 @@ const newTitle = ref();
 const showTitleEditor = () => {
   titleEditing.value = !titleEditing.value
   newTitle.value = documentList.getSelectedDocTitle;
-
 }
 const updateDocumentTitle = async () => {
   titleEditing.value = false
@@ -171,6 +179,10 @@ const SetTargetGroupIdAndName = (selectedGroupInfo) => {
   selectedTargetGroupName.value = selectedGroupInfo.title
 }
 const RealMoveDocToTargetGroup = async () => {
+  if (user.getLoginUserRole !== 'ADMIN') {
+    alert("관리자에게 문의하세요.");
+    return;
+  }
   if (confirm(`${selectedTargetDocumentTitle.value} 문서를 이동하시겠습니까?`)) {
     handlerMoveDocToGroup.value = false
     await documentList.moveDocumentToTargetGroup(moveDocToGroupReq.value)
