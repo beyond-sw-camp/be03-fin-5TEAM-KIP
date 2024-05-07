@@ -14,17 +14,17 @@ spec:
     spec:
       containers:
         - name: kip-backend
-          image: 471112897563.dkr.ecr.ap-northeast-2.amazonaws.com/kip:v117 # ecr 주소 # 미리 세팅
+          image: 471112897563.dkr.ecr.ap-northeast-2.amazonaws.com/kip:v118 # ecr 주소 # 미리 세팅
           ports:
             - containerPort: 8080
           resources:
             # container가 사용할 수 있는 리소스의 최대치
             limits:
-              cpu: "0.5"
+              cpu: "1"
               memory: "1000Mi"
             # container가 시작될때 보장받아야 하는 최소 자원
             requests:
-              cpu: "0.25"
+              cpu: "0.5"
               memory: "500Mi"
           # 런타임이라 db주입, github에 sercrets key에서 넣어주는게 아니라
           # 비밀번호를 내장 저장해서 사용한다.
@@ -95,23 +95,3 @@ spec:
       targetPort: 8080
   # ClusterIP는 클러스터 내부에서만 접근가능한 Service를 생성
   type: ClusterIP
-
----
-apiVersion: autoscaling/v2
-kind: HorizontalPodAutoscaler
-metadata:
-  name: hpa-resource-cpu
-spec:
-  maxReplicas: 4 # 최대 레플리카 수
-  minReplicas: 1 # 최소 레플리카 수
-  scaleTargetRef:
-    apiVersion: apps/v1
-    kind: Deployment
-    name: stateless-cpu1
-  metrics:
-    - type: Resource
-      resource:
-        name: cpu
-        target:
-          type: Utilization
-          averageUtilization: 50 # 평균 CPU 사용량이 50% 이상인 경우 Scale Out, 이하인 경우 Scale In
