@@ -12,6 +12,9 @@ export const useGroup = defineStore("group", {
         };
     },
     getters: {
+        getSelectedGrouId(state) {
+            return state.selectedGroupInfo[0].groupId;
+        },
         getMyGroupNamesAndId(state) {
             return state.myGroupsInfo.map(group => ({
                 groupId: group.groupId,
@@ -32,6 +35,10 @@ export const useGroup = defineStore("group", {
     actions: {
 
         async createNewGroup(createGroupReq) {
+            if (user.getLoginUserRole !== 'ADMIN') {
+                alert("관리자에게 문의하세요.");
+                return;
+            }
             try {
                 const response = await fetch(`${BASE_URL}/group`, {
                     method: 'POST',
@@ -59,6 +66,10 @@ export const useGroup = defineStore("group", {
         },
 
         async updateGroupInfo(upadeteGroupReq) {
+            if (user.getLoginUserRole !== 'ADMIN') {
+                alert("관리자에게 문의하세요.");
+                return;
+            }
             try {
                 const response = await fetch(`${BASE_URL}/group`, {
                     method: 'PATCH',
@@ -81,6 +92,10 @@ export const useGroup = defineStore("group", {
         },
 
         async DeleteGruopFromDataBase (groupId) {
+            if (user.getLoginUserRole !== 'ADMIN') {
+                alert("관리자에게 문의하세요.");
+                return;
+            }
             try {
                 const response = await fetch(`${BASE_URL}/group/${groupId}`, {
                     method: 'DELETE',

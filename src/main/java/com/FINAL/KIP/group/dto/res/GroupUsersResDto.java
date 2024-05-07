@@ -16,11 +16,13 @@ public class GroupUsersResDto {
 
     private final String groupName;
     private final GroupType groupType;
+    private final Long groupId;
     private final List<UserAndGroupRoleResDto> userList;
 
     public GroupUsersResDto(Group group) {
         this.groupName = group.getGroupName();
         this.groupType = group.getGroupType();
+        this.groupId = group.getId();
         List<GroupUser> groupUsers = group.getGroupUsers();
         this.userList = !groupUsers.isEmpty()
                 ? groupUsers.stream()

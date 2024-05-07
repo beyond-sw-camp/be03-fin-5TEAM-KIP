@@ -2,10 +2,9 @@ package com.FINAL.KIP.user.service;
 
 import com.FINAL.KIP.bookmark.repository.BookRepository;
 import com.FINAL.KIP.common.CommonResponse;
-import com.FINAL.KIP.common.aspect.JustAdmin;
 import com.FINAL.KIP.common.aspect.UserAdmin;
-import com.FINAL.KIP.common.s3.S3Config;
 import com.FINAL.KIP.common.firebase.FCMTokenDao;
+import com.FINAL.KIP.common.s3.S3Config;
 import com.FINAL.KIP.document.dto.res.AgreeDocResDto;
 import com.FINAL.KIP.request.domain.Request;
 import com.FINAL.KIP.request.repository.RequestRepository;
@@ -32,7 +31,10 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
-import java.util.*;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
@@ -69,7 +71,7 @@ public class UserService {
 	}
 
 //    Create
-    @JustAdmin
+    @UserAdmin
     public UserResDto createUser(CreateUserReqDto dto) {
         dto.setPassword(passwordEncoder.encode(dto.makeUserReqDtoToUser().getPassword())); // 비밀번호 암호화
         User user = dto.makeUserReqDtoToUser();
@@ -77,7 +79,7 @@ public class UserService {
         return new UserResDto(savedUser);
     }
 
-    @JustAdmin
+    @UserAdmin
     public List<UserResDto> createUsers(List<CreateUserReqDto> dtos) {
         for (CreateUserReqDto createUserReqDto : dtos) {
             createUserReqDto.setPassword(
