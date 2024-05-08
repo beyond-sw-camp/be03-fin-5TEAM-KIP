@@ -127,7 +127,8 @@ const handleFileClick = (url) => {
         <!--    ⏩⏩⏩⏩⏩  해시태그 -->
         <v-chip-group column class="px-4"
                       v-if="documentList.selectedDocumentDetails
-                      && documentList.selectedDocumentDetails.hashTags.length > 0">
+                      && documentList.selectedDocumentDetails.hashTags.length > 0
+                      && agreeDocuments.document.length > 0">
           <v-chip prepend-icon="mdi-refresh"
                   @click=documentList.setPublicDocumentList> 초기화
           </v-chip>
