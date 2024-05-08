@@ -19,7 +19,6 @@ const viewer = ref();
 </script>
 
 <template>
-<<<<<<< Updated upstream
   <div class="mb-4 pt-4 pr-4 pl-4">
     <div class="headline">📬 수정내역 : {{ props.form.message }}</div>
     <div class="d-flex justify-lg-space-between mt-5">

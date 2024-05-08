@@ -478,8 +478,8 @@ onKeyStroke(['Enter'], () => {
 
         <!--        버전 변경을 위한 모달-->
         <v-dialog
-            class="d-flex justify-start ml-12"
-            width="60vw"
+            class="d-flex justify-center"
+            width="80vw"
             opacity="10%"
             v-model="versionHistoryModal">
           <v-card
@@ -508,7 +508,6 @@ onKeyStroke(['Enter'], () => {
                     autofocus
                     persistent-placeholder
                     persistent-hint
-                    append-inner-icon="mdi-keyboard-return"
                     hint="변경할 제목을 입력하시고 엔터를 입력하세요."
                     placeholder="변경할 제목을 입력하세요."
                     style="min-width: 40vw;"
@@ -523,13 +522,13 @@ onKeyStroke(['Enter'], () => {
                 {{ documentList.selectedDocumentDetails.title }}
               </v-card-title>
               <v-btn
-                  class=" pt-0 pb-12 px-0"
+                  class=" pt-1 pb-6 px-0"
                   variant="text"
                   rounded="xl"
                   @click="handleBookmarkClick">
                 <v-icon
                     color="yellow-darken-2"
-                    size="xxx-large"
+                    size="xx-large"
                     :icon="isBookmarked ? 'mdi-star' : 'mdi-star-outline'"
                 />
                 <v-tooltip
@@ -618,7 +617,7 @@ onKeyStroke(['Enter'], () => {
                   size="large"
                   rounded="xl"
                   prepend-icon="mdi-history"
-                  @click="versionHistoryModal=true">수정이력
+                  @click="versionHistoryModal=true"> 수정이력
                 <v-tooltip
                     activator="parent"
                     location="start">ALT + Y
@@ -925,11 +924,11 @@ onKeyStroke(['Enter'], () => {
 }
 
 .title__update input:focus {
-  font-size: 30px;
+  font-size: 23px;
   font-weight: bold;
   text-align: center;
-  padding: 20px 20px 20px 30px;
-  margin-bottom: 2px;
+  padding: 1px 10px 1px 5px;
+  margin-bottom: 5px;
   color: white;
   background-color: var(--primary-color);
   border-radius: 25px;

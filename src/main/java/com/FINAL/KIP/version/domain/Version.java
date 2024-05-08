@@ -26,7 +26,7 @@ public class Version extends BaseEntity {
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long id;
 
-	@Column(length = 5000)
+	@Column(length = 10000)
 	private String content;
 
 	@Builder.Default
