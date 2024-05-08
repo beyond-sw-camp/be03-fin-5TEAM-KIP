@@ -97,9 +97,9 @@ const changeVersion = async () => {
     </v-row>
     <!-- 버전 미리보기 창 -->
     <v-dialog
-        class="d-flex justify-end mr-12"
-        width="62vw"
-        opacity="10%"
+        class="d-flex justify-cneter"
+        width="60vw"
+        opacity="80%"
         v-model="versionViewModal">
       <v-card
           rounded="xl"
