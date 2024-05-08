@@ -97,7 +97,10 @@ onKeyStroke(['L', 'l'], () => {
 
       <span class="mr-4">{{ user.getUserInfo.name }}님 환영합니다.</span>
 
-      <v-dialog v-model="dialog" max-width="600">
+      <v-dialog
+          v-model="dialog"
+          width="65vw"
+      >
         <template #activator="{ props: activatorProps }">
           <v-btn
               v-bind="activatorProps"
@@ -161,7 +164,6 @@ onKeyStroke(['L', 'l'], () => {
         <v-menu
             @mouseenter="mypage=true"
             @mouseleave="mypage=false"
-
             v-model=mypage transition="slide-y-transition">
           <template v-slot:activator="{ props }">
             <!-- 아바타 버튼 -->
