@@ -90,7 +90,7 @@ const handleFileClick = (url) => {
                 {{ documentList.getSelectedDocTitle }}
               </v-card-title>
               <v-card-title v-else class="headline text-center">
-                허용된 문서가 존재 하지 않습니다.
+                허용된 문서가 없습니다.
               </v-card-title>
             </div>
           </v-card>
