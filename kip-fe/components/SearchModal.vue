@@ -11,7 +11,9 @@ const sendRequestModal = ref(false);
 const requestDays = ref();
 const request = useRequest();
 const docUUID = ref();
+const color = useColor();
 import _ from 'lodash';
+import {useColor} from "#imports";
 const emit = defineEmits(['closeModal']);
 
 const confirmRequest = async () => {
@@ -119,10 +121,16 @@ const viewDocument = async (documentUUID) => {
       </div>
     </v-form>
   </v-sheet>
-  <v-dialog v-model="sendRequestModal" persistent max-width="350">
-    <v-card>
-      <v-card-title class="text-h5">권한 요청</v-card-title>
-      <v-card-text> 해당 글에 권한 요청을 하시겠습니까?
+  <v-dialog
+      class="d-flex"
+      width="25vw"
+      opacity="10%"
+      v-model="sendRequestModal">
+    <v-card
+        rounded="xl"
+        class="pa-5">
+      <v-card-title class="headline">권한 요청</v-card-title>
+      <v-card-text>해당 글에 권한 요청을 하시겠습니까?
         <v-text-field
             v-model="requestDays"
             label="요청 일수"
@@ -134,8 +142,11 @@ const viewDocument = async (documentUUID) => {
       </v-card-text>
       <v-card-actions>
         <v-spacer></v-spacer>
+        <v-btn
+            variant="elevated"
+            :color="color.kipMainColor" @click="confirmRequest">요청
+        </v-btn>
         <v-btn color="blue darken-1" @click="sendRequestModal = false">취소</v-btn>
-        <v-btn color="blue darken-1" @click="confirmRequest">요청</v-btn>
       </v-card-actions>
     </v-card>
   </v-dialog>

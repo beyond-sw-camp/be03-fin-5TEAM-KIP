@@ -903,7 +903,6 @@ const confirmRequest = async () => {
         </v-row>
       </v-col>
     </v-row>
-<<<<<<< Updated upstream
     <v-dialog
         class="d-flex"
         width="25vw"
