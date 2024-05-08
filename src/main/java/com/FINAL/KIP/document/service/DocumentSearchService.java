@@ -4,6 +4,7 @@ import com.FINAL.KIP.common.aws.domain.EsDoc;
 import com.FINAL.KIP.common.aws.repository.EsDocRepository;
 import com.FINAL.KIP.document.domain.Document;
 import com.FINAL.KIP.document.repository.DocumentRepository;
+import com.FINAL.KIP.group.domain.Group;
 import com.FINAL.KIP.group.repository.GroupUserRepository;
 import com.FINAL.KIP.request.repository.RequestRepository;
 import com.FINAL.KIP.user.domain.User;
@@ -12,6 +13,7 @@ import com.FINAL.KIP.version.repository.VersionRepository;
 import java.io.IOException;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.UUID;
 import java.util.stream.Collectors;
 import org.apache.http.util.EntityUtils;
@@ -75,7 +77,9 @@ public class DocumentSearchService {
 			.title(document.getTitle())
 			.content(getCurrentVersion(document))
 			.uuid(document.getUuid().toString())
-			.groupName(document.getGroup() == null ? "전체공개" : document.getGroup().getGroupName())
+			.groupName(Optional.ofNullable(document.getGroup())
+				.map(Group::getGroupName)
+				.orElse("전체공개"))
 			.build();
 	}
 
@@ -94,8 +98,8 @@ public class DocumentSearchService {
 	public ResponseEntity<?> viewDocs(String documentUUID) {
 		Document documentByUuid = findDocumentByUuid(documentUUID);
 		User user = getUserFromAuthentication();
-		if(documentByUuid.getGroup() == null) {
-			return new ResponseEntity<>(Map.of("groupId", documentByUuid.getGroup().getId(),
+		if(Optional.ofNullable(documentByUuid.getGroup()).isEmpty()) {
+			return new ResponseEntity<>(Map.of("groupId", null,
 				"result", "Public Document"), HttpStatus.OK);
 		}
 		if (groupUserRepository.findByGroupAndUser(documentByUuid.getGroup(), user).isPresent()) {
