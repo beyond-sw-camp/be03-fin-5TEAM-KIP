@@ -110,7 +110,7 @@ const confirmRemoveReceivedRequest = async () => {
             variant="text"
             class="px-8 mt-6"
             rounded="xl">
-          <v-card-title class="text-h5 headline  mb-10"> 🔥 요청내역 🔥</v-card-title>
+          <v-card-title class="text-h5 headline  mb-10"> 🔥 요청 내역 🔥</v-card-title>
           <v-data-table
               :headers="nowTab === 1 ? receivedHeaders : myHeaders"
               :items="currentItems"
