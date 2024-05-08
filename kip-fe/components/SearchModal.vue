@@ -61,7 +61,7 @@ const viewDocument = async (documentUUID) => {
 
 <template>
   <v-sheet>
-    <v-form>
+    <v-form @submit.prevent="">
       <v-container>
         <v-text-field
             clearable

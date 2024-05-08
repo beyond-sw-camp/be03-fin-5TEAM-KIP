@@ -67,4 +67,3 @@ override.tf.json
 # Ignore CLI configuration files
 .terraformrc
 terraform.rc
-/src/main/resources/application.yml
