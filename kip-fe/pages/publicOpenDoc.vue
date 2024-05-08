@@ -641,7 +641,7 @@ onKeyStroke(['Enter'], () => {
         <!-- 첨부 파일 섹션 -->
         <div class="attached-files">
           <v-card flat>
-            <v-card-title class="headline text-center">첨부 파일
+            <v-card-title class="headline text-center">첨부 파일 🌐
             </v-card-title>
             <!-- 첨부파일 업로드 로직 부분 -->
             <v-dialog
@@ -770,6 +770,7 @@ onKeyStroke(['Enter'], () => {
               </v-card>
               <v-btn
                   block
+                  class="mt-3"
                   rounded="xl"
                   color="blue-lighten-1"
                   @click="fileDialogOpen"
@@ -817,7 +818,7 @@ onKeyStroke(['Enter'], () => {
             {{ hashTag.tagName }} ({{ hashTag['docsCounts'] }})
             <v-tooltip
                 activator="parent"
-                location="top"
+                location="start"
             > 태그필터링
             </v-tooltip>
           </v-chip>
