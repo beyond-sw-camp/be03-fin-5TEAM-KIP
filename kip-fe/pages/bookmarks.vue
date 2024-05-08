@@ -29,6 +29,10 @@ const bookmarks = useBookMarks();
 onMounted(async () => {
   await bookmarks.setMyBookMarks();
   await documentList.setFirstBookDetails()
+  toastViewerInstance(
+      viewer.value,
+      documentList.selectedDocumentDetails.content
+  );
   if (bookmarks.myBookMarks.length > 0)
     await attachedFile.setAttachedFileList(bookmarks.myBookMarks[0].documentId);
   groupName.setTopNaviGroupList(groupId);
@@ -53,7 +57,7 @@ const selectDocument = async (documentId) => {
   // 문서의 상세 정보를 가져옴
   await documentList.setDocumentDetails(documentId);
   await attachedFile.setAttachedFileList(documentId);
-  viewer.value = toastViewerInstance(
+  toastViewerInstance(
       viewer.value,
       documentList.selectedDocumentDetails.content
   );
@@ -203,10 +207,12 @@ const updateDocumentTitle = async () => {
               </v-card-title>
 
               <!-- 제목 표시 -->
-              <v-card-title v-else class="headline text-center pa-2 mb-4">
+              <v-card-title v-else-if="bookmarks.myBookMarks.length > 0" class="headline text-center pa-2 mb-4">
                 {{ documentList.selectedDocumentDetails.title }}
               </v-card-title>
-
+              <v-card-title v-else class="headline text-center pa-2 mb-4">
+                북마크를 한 문서가 없습니다.
+              </v-card-title>
               <v-item-group v-model="selection">
                 <v-item>
                   <v-btn
@@ -222,7 +228,7 @@ const updateDocumentTitle = async () => {
           <!-- 가로 선 추가 -->
           <v-divider></v-divider>
         </v-list>
-        <v-card flat class="px-6 mt-4 mx-auto">
+        <v-card v-if="bookmarks.myBookMarks.length > 0" flat class="px-6 mt-4 mx-auto">
           <div ref="viewer">{{ documentList.selectedDocumentDetails.content }}</div>
         </v-card>
 
@@ -388,7 +394,8 @@ const updateDocumentTitle = async () => {
 
         <v-chip-group column class="px-4"
                       v-if="documentList.selectedDocumentDetails
-                      && documentList.selectedDocumentDetails.hashTags.length > 0">
+                      && documentList.selectedDocumentDetails.hashTags.length > 0
+                      && bookmarks.myBookMarks.length > 0">
           <v-chip prepend-icon="mdi-refresh"
                   @click=bookmarks.setMyBookMarks> 초기화
           </v-chip>

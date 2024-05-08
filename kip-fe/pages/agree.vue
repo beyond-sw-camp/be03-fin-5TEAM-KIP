@@ -90,7 +90,7 @@ const handleFileClick = (url) => {
                 {{ documentList.getSelectedDocTitle }}
               </v-card-title>
               <v-card-title v-else class="headline text-center">
-                허용된 문서가 존재 하지 않습니다.
+                허용된 문서가 없습니다.
               </v-card-title>
             </div>
           </v-card>
@@ -127,7 +127,8 @@ const handleFileClick = (url) => {
         <!--    ⏩⏩⏩⏩⏩  해시태그 -->
         <v-chip-group column class="px-4"
                       v-if="documentList.selectedDocumentDetails
-                      && documentList.selectedDocumentDetails.hashTags.length > 0">
+                      && documentList.selectedDocumentDetails.hashTags.length > 0
+                      && agreeDocuments.document.length > 0">
           <v-chip prepend-icon="mdi-refresh"
                   @click=documentList.setPublicDocumentList> 초기화
           </v-chip>
