@@ -29,7 +29,6 @@ onMounted(async () => {
   await agreeDocuments.setMyDocument();
   await documentList.setAgreeDocumentDetails()
   await UpdateToastViewer();
-
   if (agreeDocuments.document.length > 0) {
     await attachedFile.setAttachedFileList(agreeDocuments.document[0].documentId);
   }
