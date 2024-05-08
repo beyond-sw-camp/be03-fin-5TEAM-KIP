@@ -1,5 +1,5 @@
 <script setup>
-const notifications = useNotification();
+const notifications = useNotifications();
 const notificationAllow = () => {
   let notificationPermission = Notification.permission;
   if (notificationPermission === "granted") {
@@ -19,10 +19,17 @@ const readNotification = async (noteId) => {
   await notifications.readNotification(noteId)
   await notifications.setMyNotification()
   await navigateTo('/requests')
+  close();
 }
 const deleteNotification = async (noteId) => {
   await notifications.removeNotification(noteId);
   await notifications.setMyNotification()
+  close();
+}
+
+const emit = defineEmits(['closeModal']);
+const close = () => {
+  emit('closeModal');
 }
 </script>
 <template>

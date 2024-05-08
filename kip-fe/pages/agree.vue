@@ -10,7 +10,7 @@ const documentList = useDocumentList();
 const attachedFile = useAttachedFile();
 const createDocument = useCreateDocument();
 const hover = ref(null);
-const viewer = ref();
+const toastViewer = ref();
 
 // 첨부파일 관련
 const fileHover = ref(null);
@@ -18,17 +18,19 @@ const fileHover = ref(null);
 // 북마크 관련
 const agreeDocuments = useAgreeDocument();
 
+const UpdateToastViewer = async () => {
+  toastViewerInstance(
+      toastViewer.value,
+      documentList.getSelectedDocContent
+  );
+}
 
 onMounted(async () => {
-  await agreeDocuments.$reset();
   await agreeDocuments.setMyDocument();
-
-
-  await documentList.$reset();
   await documentList.setAgreeDocumentDetails()
+  await UpdateToastViewer();
 
   if (agreeDocuments.document.length > 0) {
-    await attachedFile.$reset();
     await attachedFile.setAttachedFileList(agreeDocuments.document[0].documentId);
   }
 })
@@ -40,10 +42,7 @@ const selectDocument = async (documentId) => {
   // 문서의 상세 정보를 가져옴
   await documentList.setDocumentDetails(documentId);
   await attachedFile.setAttachedFileList(documentId);
-  viewer.value = toastViewerInstance(
-      viewer.value,
-      documentList.selectedDocumentDetails.content
-  );
+  await UpdateToastViewer();
 };
 
 // 파일 클릭 핸들러
@@ -88,16 +87,19 @@ const handleFileClick = (url) => {
         <v-list class="pa-4">
           <v-card flat>
             <div class="d-flex justify-center">
-              <v-card-title class="headline text-center">
-                {{ documentList.selectedDocumentDetails.title }}
+              <v-card-title v-if="agreeDocuments.document.length > 0" class="headline text-center">
+                {{ documentList.getSelectedDocTitle }}
+              </v-card-title>
+              <v-card-title v-else class="headline text-center">
+                허용된 문서가 존재 하지 않습니다.
               </v-card-title>
             </div>
           </v-card>
           <!-- 가로 선 추가 -->
           <v-divider></v-divider>
         </v-list>
-        <v-card flat class="mt-4 mx-auto" width="800">
-          <div ref="viewer">{{ documentList.selectedDocumentDetails.content }}</div>
+        <v-card v-if="agreeDocuments.document.length > 0" flat class="mt-4 mx-auto" width="800">
+          <div ref="toastViewer">{{ documentList.getSelectedDocContent }}</div>
         </v-card>
       </v-col>
       <v-divider class="divider-container" vertical></v-divider>

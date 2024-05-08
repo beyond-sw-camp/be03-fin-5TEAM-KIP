@@ -22,7 +22,7 @@ const group = useGroup();
 const groupUser = useGroupuser();
 const document = useDocumentList()
 
-const notification = useNotification();
+const notification = useNotifications();
 await notification.setMyNotification();
 
 // function
@@ -152,7 +152,7 @@ onKeyStroke(['L', 'l'], () => {
       </v-btn>
 
       <v-dialog v-model="alert" max-width="600 ">
-        <NotificationCopo/>
+        <NotificationCopo @closeModal="alert = false"/>
       </v-dialog>
 
 

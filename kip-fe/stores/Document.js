@@ -139,10 +139,6 @@ export const useDocumentList = defineStore("documentList", {
             }
         },
         async deleteDocument(documentId) {
-            if (user.getLoginUserRole !== 'ADMIN') {
-                alert("관리자에게 문의하세요.");
-                return;
-            }
             try {
                 await fetch(`${BASE_URL}/doc/${documentId}`, {
                     method: 'DELETE',

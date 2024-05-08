@@ -21,6 +21,9 @@ export const useGroupuser = defineStore("groupuser", {
         getGroupType(state) {
             return state.groupType;
         },
+        getGroupId(state) {
+            return state.groupId;
+        },
         getUsersInfoInGroup(state) {
             return state.usersInfoInGroup
         },

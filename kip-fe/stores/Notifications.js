@@ -1,7 +1,7 @@
 const BASE_URL = import.meta.env.VITE_BASE_URL;
 const user = useUser();
 
-export const useNotification = defineStore("notifications", {
+export const useNotifications = defineStore("notifications", {
   state() {
     return {
       notifications: [],

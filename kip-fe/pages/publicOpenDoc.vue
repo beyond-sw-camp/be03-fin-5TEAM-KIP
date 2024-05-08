@@ -37,7 +37,7 @@ await documentList.setPublicDocumentList();          // 문서리스트 세팅
 await documentList.setFirstPublicDocumentDetails();  // 최상단 문서 정보 세팅
 await attachedFile.setAttachedFileList(documentList.getFirstPublicDocId);
 const UpdateToastViewer = async () => {
-  viewer.value = await toastViewerInstance(
+  await toastViewerInstance(
       viewer.value,
       documentList.getSelectedDocContent
   );

@@ -12,7 +12,7 @@ const handleRailClick = () => {
 // 피니아
 const group = useGroup();
 const documentList = useDocumentList();
-const notification = useNotification();
+const notification = useNotifications();
 
 onMounted(async () => {
   await group.setMyGroupsInfo();  // (awit) 그룹정보를 모두 가지고 온뒤 넘어감
@@ -29,6 +29,7 @@ const refresh = async () => {
 
 const firebaseApp = useFirebaseApp();
 const {onForegroundMessage} = useFirebaseMessaging(firebaseApp);
+
 onForegroundMessage()
 
 
