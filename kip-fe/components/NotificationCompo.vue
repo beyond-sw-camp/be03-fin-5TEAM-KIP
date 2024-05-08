@@ -24,9 +24,9 @@ const readNotification = async (noteId) => {
 const deleteNotification = async (noteId) => {
   await notifications.removeNotification(noteId);
   await notifications.setMyNotification()
-  close();
 }
 
+const color = useColor()
 const emit = defineEmits(['closeModal']);
 const close = () => {
   emit('closeModal');
@@ -34,19 +34,20 @@ const close = () => {
 </script>
 <template>
   <v-card
-      class="mx-auto"
-      max-width="70vw"
-      min-width="30vw"
+      width="60vw"
+      rounded='xl'
+      class="mx-auto pa-7"
   >
     <v-toolbar
         dark
     >
-      <v-toolbar-title>알림</v-toolbar-title>
+      <v-toolbar-title class="headline"> 📨 요청 메시지  </v-toolbar-title>
       <v-spacer></v-spacer>
       <v-btn
-          @click="notificationAllow">알림 받기</v-btn>
+          variant="elevated"
+          :color="color.kipMainColor"
+          @click="notificationAllow">알림 허용</v-btn>
     </v-toolbar>
-
     <v-list two-line>
       <template v-for="(notice, index) in notifications.getNotification" :key="notice.noteId">
         <v-list-item>
@@ -54,8 +55,17 @@ const close = () => {
               class="cursor-pointer"
               @click="readNotification(notice.noteId)"
           >
-            <v-list-item-title v-text="notice.message"></v-list-item-title>
-            <v-list-item-subtitle v-text="notice.createdTime"></v-list-item-subtitle>
+            <v-list-item-title
+                class="mb-1"
+                :class="notice.isRead !== 'Y'? 'notRead__noti':'Read__noti'"
+                >
+              {{ notice.message.includes("요청을 수락하셨습니다.") ?"✅":"" }}
+              {{ notice.message.includes("요청을 거절하셨습니다.") ?"❌":"" }}
+              {{ notice.message.includes("요청했습니다.") ?"🔔":"" }}
+
+
+              {{notice.message}} </v-list-item-title>
+            <v-list-item-subtitle class="mb-1" v-text="notice.createdTime"></v-list-item-subtitle>
           </div>
           <template v-slot:append>
             <v-btn
@@ -71,10 +81,8 @@ const close = () => {
             </v-btn>
           </template>
         </v-list-item>
-        <v-divider
-            v-if="index < notifications.getUnreadNotificationCount - 1"
-            :key="index"
-        ></v-divider>
+        <v-divider></v-divider>
+
       </template>
     </v-list>
   </v-card>
@@ -85,5 +93,13 @@ const close = () => {
   width: 100% !important;
   border-radius: 0 !important;
   border-bottom: 1px solid #ddd !important;
+}
+.notRead__noti {
+  color:var(--primary-color) !important;
+  font-weight: bold;
+}
+.Read__noti{
+  color: #bcbcbc !important;
+  font-weight: 350;
 }
 </style>

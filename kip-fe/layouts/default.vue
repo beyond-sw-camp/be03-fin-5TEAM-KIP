@@ -154,7 +154,9 @@ onKeyStroke(['L', 'l'], () => {
         />
       </v-btn>
 
-      <v-dialog v-model="alert" max-width="600 ">
+      <v-dialog
+          width="60vw"
+          v-model="alert">
         <NotificationCopo @closeModal="alert = false"/>
       </v-dialog>
 
@@ -175,7 +177,8 @@ onKeyStroke(['L', 'l'], () => {
                 v-bind="props"
                 class="cursor-pointer ml-1 mr-4"/>
           </template>
-          <v-list style="width: 250px; display: flex; flex-direction:column; align-items: center; border-radius: 25px" class="pa-8">
+          <v-list style="width: 250px; display: flex; flex-direction:column; align-items: center; border-radius: 25px"
+                  class="pa-8">
             <v-list-item @click="useRouter().push('/mypage');"
                          style="background-color:var(--primary-color);
                          color:white; border-radius: 25px; width:200px ;

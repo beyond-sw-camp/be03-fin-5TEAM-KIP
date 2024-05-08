@@ -13,7 +13,6 @@ const docUUID = ref();
 const color = useColor();
 import _ from 'lodash';
 import {useColor} from "#imports";
-import mypage from "~/pages/mypage.vue";
 
 const emit = defineEmits(['closeModal']);
 
