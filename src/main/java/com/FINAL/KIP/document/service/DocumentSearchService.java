@@ -10,12 +10,6 @@ import com.FINAL.KIP.request.repository.RequestRepository;
 import com.FINAL.KIP.user.domain.User;
 import com.FINAL.KIP.user.repository.UserRepository;
 import com.FINAL.KIP.version.repository.VersionRepository;
-import java.io.IOException;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
-import java.util.UUID;
-import java.util.stream.Collectors;
 import org.apache.http.util.EntityUtils;
 import org.opensearch.client.Request;
 import org.opensearch.client.Response;
@@ -26,10 +20,16 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
+
+import java.io.IOException;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
+import java.util.UUID;
+import java.util.stream.Collectors;
 
 @Service
 public class DocumentSearchService {
@@ -64,7 +64,7 @@ public class DocumentSearchService {
 		return EntityUtils.toString(response.getEntity());
 	}
 
-	@Scheduled(cron = "0 0 0/4 * * *")
+//	@Scheduled(cron = "0 0 0/4 * * *")
 	public void addAll() {
 		List<Document> list = documentRepository.findAll();
 		List<EsDoc> collect = list.stream().map(this::convertToEsDoc).collect(Collectors.toList());
@@ -89,7 +89,7 @@ public class DocumentSearchService {
 	}
 
 	public ResponseEntity<?> searchDocs(String keyword, int pageNumber) {
-		Pageable pageable = PageRequest.of(pageNumber, 5);
+		Pageable pageable = PageRequest.of(pageNumber, 10);
 		Page<EsDoc> byTitleOrContentUsingMultiMatch = esDocRepository.findByTitleOrContentUsingMultiMatch(
 			keyword, pageable);
 		return new ResponseEntity<>(byTitleOrContentUsingMultiMatch, HttpStatus.OK);
