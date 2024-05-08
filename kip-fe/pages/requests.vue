@@ -1,7 +1,7 @@
 <script setup>
 const group = useGroup();
 // 상단 네비 제목 설정
-group.TopNaviGroupList = ["Knowledge is Power","Request"];
+group.TopNaviGroupList = ["Knowledge is Power", "Request"];
 
 const requests = useRequest();
 const nowTab = ref(1);
@@ -25,36 +25,36 @@ const currentItems = computed(() => {
 
 
 const myHeaders = ref([
-  { title: '문서 제목', value: 'documentName' },
-  { title: '그룹 이름', value: 'groupName', align: 'center'},
-  { title: '현재 상태', value: 'isOk', align: 'center'},
-  { title: '요청 일수', value: 'days', align: 'center'},
-  { title: '유효 기간', value: 'dueDate', align: 'center'},
-  { title: ' ', value : 'actions', align:'end'}
+  {title: '문서 제목', value: 'documentName'},
+  {title: '그룹 이름', value: 'groupName', align: 'center'},
+  {title: '현재 상태', value: 'isOk', align: 'center'},
+  {title: '요청 일수', value: 'days', align: 'center'},
+  {title: '유효 기간', value: 'dueDate', align: 'center'},
+  {title: ' ', value: 'actions', align: 'end'}
 ]);
 const receivedHeaders = ref([
-  { title: '문서 제목', value: 'documentName' },
-  { title: '요청자', value: 'requesterName', align: 'center' },
-  { title: '현재 상태', value: 'isOk', align: 'center' },
-  { title: '요청 일수', value: 'days', align: 'center'},
-  { title: '유효 기간', value: 'dueDate', align: 'center'},
-  { title: ' ', value : 'actions', align:'end'}
+  {title: '문서 제목', value: 'documentName'},
+  {title: '요청자', value: 'requesterName', align: 'center'},
+  {title: '현재 상태', value: 'isOk', align: 'center'},
+  {title: '요청 일수', value: 'days', align: 'center'},
+  {title: '유효 기간', value: 'dueDate', align: 'center'},
+  {title: ' ', value: 'actions', align: 'end'}
 ]);
 
 const agreeRequest = (item) => {
   dialog_temp.value = 'AGREE';
-  nowItem.value=item;
+  nowItem.value = item;
   dialog.value = true;
 }
 const rejectRequest = (item) => {
   dialog_temp.value = 'REJECT';
-  nowItem.value=item;
+  nowItem.value = item;
   dialog.value = true;
 }
 
 const removeRequest = (item) => {
   dialog_temp.value = 'REMOVE';
-  nowItem.value=item;
+  nowItem.value = item;
   dialog.value = true;
 }
 const confirmRejectRequest = async () => {
@@ -89,18 +89,23 @@ const confirmRemoveReceivedRequest = async () => {
     <v-row>
       <v-col>
         <v-tabs centered
-        v-model="nowTab">
+                v-model="nowTab">
           <v-tab
-          :value="1">받은 요청</v-tab>
+              :value="1">받은 요청
+          </v-tab>
           <v-tab
-          :value="2">보낸 요청</v-tab>
+              :value="2">보낸 요청
+          </v-tab>
         </v-tabs>
       </v-col>
     </v-row>
     <v-row>
       <v-col cols="12">
-        <v-card outlined class="pa-4">
-          <v-card-title class="text-h5">요청</v-card-title>
+        <v-card
+            variant="text"
+            class="pa-4"
+            rounded="xl">
+          <v-card-title class="text-h5 headline mt-2 mb-5"> 🔥 요청내역 🔥</v-card-title>
           <v-data-table
               :headers="nowTab === 1 ? receivedHeaders : myHeaders"
               :items="currentItems"
