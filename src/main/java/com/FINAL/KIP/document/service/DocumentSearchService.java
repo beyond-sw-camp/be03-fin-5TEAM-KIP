@@ -99,7 +99,7 @@ public class DocumentSearchService {
 		Document documentByUuid = findDocumentByUuid(documentUUID);
 		User user = getUserFromAuthentication();
 		if(Optional.ofNullable(documentByUuid.getGroup()).isEmpty()) {
-			return new ResponseEntity<>(Map.of("groupId", null,
+			return new ResponseEntity<>(Map.of("groupId", "",
 				"result", "Public Document"), HttpStatus.OK);
 		}
 		if (groupUserRepository.findByGroupAndUser(documentByUuid.getGroup(), user).isPresent()) {

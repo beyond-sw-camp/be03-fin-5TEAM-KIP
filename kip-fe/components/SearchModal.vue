@@ -36,8 +36,10 @@ const close = () => {
 }
 
 const viewDocument = async (documentUUID) => {
+  console.log(documentUUID)
   await documentSearch.viewDocument(documentUUID);
   const canView = documentSearch.getAvailable.canView;
+  console.log(canView)
   if (canView === `Public Document`) {
     await navigateTo(`/publicOpenDoc`)
     emit('closeModal')
@@ -61,7 +63,7 @@ const viewDocument = async (documentUUID) => {
 
 <template>
   <v-sheet>
-    <v-form>
+    <v-form @submit.prevent="">
       <v-container>
         <v-text-field
             clearable
