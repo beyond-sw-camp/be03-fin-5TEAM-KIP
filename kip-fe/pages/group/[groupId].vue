@@ -27,7 +27,7 @@ const snackbar = ref(false);
 ///  초기 문서 세팅
 await documentList.setDocumentList(groupId);
 await groupName.setSelectedGroupInfo(groupId);
-await useGroupuser().setUsersInfoInGroup(groupId);
+await groupUser.setUsersInfoInGroup(groupId);
 await documentList.setFirstDocumentDetails()
 await attachedFile.setAttachedFileList(documentList.getFirstDocId);
 groupName.setTopNaviGroupList(groupId);
@@ -229,7 +229,6 @@ const handleBookmarkClick = async () => {
 // 단축키
 import {onKeyStroke} from '@vueuse/core'
 import {useKeyModifier} from '@vueuse/core'
-import {useGroupuser} from "~/stores/GroupUser.js";
 
 const KipButton = ref(false)
 const alt = useKeyModifier('Alt')
@@ -634,6 +633,7 @@ onKeyStroke(['W', 'w'], () => {
         <div class="attached-files">
           <v-card flat>
             <v-card-title class="headline text-center">첨부 파일
+            {{ `${groupName.getSelectedGroupInfo[0].groupType === 'DEPARTMENT' ? '🏢' : '🚀'}` }}
             </v-card-title>
             <!-- 첨부파일 업로드 로직 부분 -->
             <v-dialog
@@ -765,6 +765,7 @@ onKeyStroke(['W', 'w'], () => {
               </v-card>
               <v-btn
                   block
+                  class="mt-3"
                   rounded="xl"
                   color="blue-lighten-1"
                   @click="fileDialogOpen"
@@ -875,7 +876,7 @@ onKeyStroke(['W', 'w'], () => {
                 {{ hashTag.tagName }}
                 <v-tooltip
                     activator="parent"
-                    location="top"
+                    location="start"
                 > 태그 추가
                 </v-tooltip>
               </v-chip>
