@@ -36,10 +36,8 @@ const close = () => {
 }
 
 const viewDocument = async (documentUUID) => {
-  console.log(documentUUID)
   await documentSearch.viewDocument(documentUUID);
   const canView = documentSearch.getAvailable.canView;
-  console.log(canView)
   if (canView === `Public Document`) {
     await navigateTo(`/publicOpenDoc`)
     emit('closeModal')

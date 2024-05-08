@@ -62,7 +62,6 @@ export const useDocumentSearch = defineStore("documentSearch", {
         const data = await response.json()
         this.groupId = data.groupId;
         this.canView = data.result;
-        console.log(this.canView)
       } catch (error) {
         console.error('Error fetching search:', error.message);
       }
