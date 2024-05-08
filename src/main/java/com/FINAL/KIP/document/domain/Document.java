@@ -50,7 +50,7 @@ public class Document extends BaseEntity {
     @OneToMany(mappedBy = "document", cascade = CascadeType.ALL)
     private final List<Version> versions = new ArrayList<>();
 
-    @OneToMany(mappedBy = "document", cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "document", cascade = CascadeType.ALL, orphanRemoval = true)
     private final List<Request> requests = new ArrayList<>();
   
     @OneToMany(mappedBy = "document", cascade = CascadeType.ALL)

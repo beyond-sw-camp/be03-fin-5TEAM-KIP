@@ -244,6 +244,7 @@ public class DocumentService {
         }
 		upDocument.setDownLink(downDocument);
 
+		targetDocumnet.getRequests().clear();
 		targetDocumnet.setGroup(null); // 전체공개
 		targetDocumnet.setUpLink(null);
 		targetDocumnet.setDownLink(null);
