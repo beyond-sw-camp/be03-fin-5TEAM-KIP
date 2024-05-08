@@ -939,4 +939,5 @@ onKeyStroke(['Enter'], () => {
   background-color: var(--primary-color);
   border-radius: 25px;
 }
+
 </style>
