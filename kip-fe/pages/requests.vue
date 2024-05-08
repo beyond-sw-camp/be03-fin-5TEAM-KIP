@@ -10,6 +10,7 @@ const receivedRequest = ref([]);
 const dialog = ref(false);
 const dialog_temp = ref();
 const nowItem = ref();
+const color = useColor();
 
 
 onMounted(async () => {
@@ -87,14 +88,18 @@ const confirmRemoveReceivedRequest = async () => {
   <v-container fluid>
     <!-- 상단 탭 네비게이션 -->
     <v-row>
-      <v-col>
+      <v-col class="pa-6">
         <v-tabs centered
                 v-model="nowTab">
           <v-tab
-              :value="1">받은 요청
+              class="px-16"
+              style="font-size: 18px"
+              :value="1"> 📫 받은 요청
           </v-tab>
           <v-tab
-              :value="2">보낸 요청
+              class="px-16"
+              style="font-size: 18px"
+              :value="2"> ✉️ 보낸 요청
           </v-tab>
         </v-tabs>
       </v-col>
@@ -103,9 +108,9 @@ const confirmRemoveReceivedRequest = async () => {
       <v-col cols="12">
         <v-card
             variant="text"
-            class="pa-4"
+            class="px-8 mt-6"
             rounded="xl">
-          <v-card-title class="text-h5 headline mt-2 mb-5"> 🔥 요청내역 🔥</v-card-title>
+          <v-card-title class="text-h5 headline  mb-10"> 🔥 요청내역 🔥</v-card-title>
           <v-data-table
               :headers="nowTab === 1 ? receivedHeaders : myHeaders"
               :items="currentItems"
@@ -165,21 +170,34 @@ const confirmRemoveReceivedRequest = async () => {
         </v-card>
       </v-col>
     </v-row>
-    <v-dialog v-model="dialog" persistent max-width="290">
-      <v-card>
-        <v-card-title v-if="dialog_temp==='AGREE'" class="text-h5">요청 수락</v-card-title>
-        <v-card-title v-else-if="dialog_temp==='REJECT'" class="text-h5">요청 거절</v-card-title>
+    <v-dialog
+        v-model="dialog"
+        width="30vw"
+        opacity="10%"
+        >
+      <v-card
+          rounded="xl"
+          class="pa-6"
+      >
+        <v-card-title v-if="dialog_temp==='AGREE'" class="headline">요청 수락</v-card-title>
+        <v-card-title v-else-if="dialog_temp==='REJECT'" class="headline">요청 거절</v-card-title>
         <v-card-title v-else class="text-h5">요청 삭제</v-card-title>
         <v-card-text v-if="dialog_temp==='AGREE'">정말 수락하시겠습니까?</v-card-text>
         <v-card-text v-else-if="dialog_temp==='REJECT'">정말 거절하시겠습니까?</v-card-text>
         <v-card-text v-else>정말 삭제하시겠습니까?</v-card-text>
         <v-card-actions>
           <v-spacer></v-spacer>
-          <v-btn color="blue darken-1" text @click="dialog = false">취소</v-btn>
-          <v-btn v-if="dialog_temp==='AGREE'" color="blue darken-1" @click="confirmAgreeRequest">수락</v-btn>
-          <v-btn v-else-if="dialog_temp==='REJECT'" color="blue darken-1" @click="confirmRejectRequest">거절</v-btn>
+          <v-btn v-if="dialog_temp==='AGREE'"
+                 variant="elevated"
+                 :color="color.kipMainColor"
+                 @click="confirmAgreeRequest">수락</v-btn>
+          <v-btn v-else-if="dialog_temp==='REJECT'"
+                 variant="elevated"
+                 :color="color.kipMainColor"
+                 @click="confirmRejectRequest">거절</v-btn>
           <v-btn v-else-if="nowTab===2" color="blue darken-1" @click="confirmRemoveMyRequest">삭제</v-btn>
           <v-btn v-else-if="nowTab===1" color="blue darken-1" @click="confirmRemoveReceivedRequest">삭제</v-btn>
+          <v-btn color="blue darken-1" text @click="dialog = false">취소</v-btn>
         </v-card-actions>
       </v-card>
     </v-dialog>
