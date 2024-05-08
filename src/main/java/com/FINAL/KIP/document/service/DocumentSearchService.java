@@ -4,9 +4,15 @@ import com.FINAL.KIP.common.aws.domain.EsDoc;
 import com.FINAL.KIP.common.aws.repository.EsDocRepository;
 import com.FINAL.KIP.document.domain.Document;
 import com.FINAL.KIP.document.repository.DocumentRepository;
+import com.FINAL.KIP.group.repository.GroupUserRepository;
+import com.FINAL.KIP.request.repository.RequestRepository;
+import com.FINAL.KIP.user.domain.User;
+import com.FINAL.KIP.user.repository.UserRepository;
 import com.FINAL.KIP.version.repository.VersionRepository;
 import java.io.IOException;
 import java.util.List;
+import java.util.Map;
+import java.util.UUID;
 import java.util.stream.Collectors;
 import org.apache.http.util.EntityUtils;
 import org.opensearch.client.Request;
@@ -18,6 +24,9 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.scheduling.annotation.Scheduled;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -28,14 +37,23 @@ public class DocumentSearchService {
 	private final RestHighLevelClient opensearchClient;
 	private final VersionRepository versionRepository;
 
+	private final UserRepository userRepository;
+	private final GroupUserRepository groupUserRepository;
+
+	private final RequestRepository requestRepository;
+
 	@Autowired
 	public DocumentSearchService(EsDocRepository esDocRepository,
 		DocumentRepository documentRepository,
-		RestHighLevelClient opensearchClient, VersionRepository versionRepository) {
+		RestHighLevelClient opensearchClient, VersionRepository versionRepository,
+		UserRepository userRepository, GroupUserRepository groupUserRepository, RequestRepository requestRepository) {
 		this.esDocRepository = esDocRepository;
 		this.documentRepository = documentRepository;
 		this.opensearchClient = opensearchClient;
 		this.versionRepository = versionRepository;
+		this.userRepository = userRepository;
+		this.groupUserRepository = groupUserRepository;
+		this.requestRepository = requestRepository;
 	}
 
 	public String test() throws IOException {
@@ -44,6 +62,7 @@ public class DocumentSearchService {
 		return EntityUtils.toString(response.getEntity());
 	}
 
+	@Scheduled(cron = "0 0 0/4 * * *")
 	public void addAll() {
 		List<Document> list = documentRepository.findAll();
 		List<EsDoc> collect = list.stream().map(this::convertToEsDoc).collect(Collectors.toList());
@@ -56,7 +75,7 @@ public class DocumentSearchService {
 			.title(document.getTitle())
 			.content(getCurrentVersion(document))
 			.uuid(document.getUuid().toString())
-			.groupName(document.getGroup().getGroupName())
+			.groupName(document.getGroup() == null ? "전체공개" : document.getGroup().getGroupName())
 			.build();
 	}
 
@@ -70,5 +89,38 @@ public class DocumentSearchService {
 		Page<EsDoc> byTitleOrContentUsingMultiMatch = esDocRepository.findByTitleOrContentUsingMultiMatch(
 			keyword, pageable);
 		return new ResponseEntity<>(byTitleOrContentUsingMultiMatch, HttpStatus.OK);
+	}
+
+	public ResponseEntity<?> viewDocs(String documentUUID) {
+		Document documentByUuid = findDocumentByUuid(documentUUID);
+		User user = getUserFromAuthentication();
+		if(documentByUuid.getGroup() == null) {
+			return new ResponseEntity<>(Map.of("groupId", documentByUuid.getGroup().getId(),
+				"result", "Public Document"), HttpStatus.OK);
+		}
+		if (groupUserRepository.findByGroupAndUser(documentByUuid.getGroup(), user).isPresent()) {
+			return new ResponseEntity<>(Map.of("groupId", documentByUuid.getGroup().getId(),
+				"result", "Group User"), HttpStatus.OK);
+		}
+		if (requestRepository.availableDocument(user, documentByUuid)) {
+			return new ResponseEntity<>(Map.of("groupId", documentByUuid.getGroup().getId(),
+				"result", "Available User"), HttpStatus.OK);
+		}
+
+		return new ResponseEntity<>(Map.of("groupId", documentByUuid.getGroup().getId(),
+			"result", "Unavailable User"), HttpStatus.OK);
+	}
+
+	public User getUserFromAuthentication() {
+		Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+		return userRepository.findByEmployeeId(authentication.getName())
+			.orElseThrow(() -> new IllegalArgumentException("예상치 못한 에러가 발생했습니다."));
+	}
+
+	public Document findDocumentByUuid(String documentUUID) {
+		UUID uuid = UUID.fromString(documentUUID);
+		return documentRepository.findByUuid(uuid).orElseThrow(
+			() -> new IllegalArgumentException("해당 문서가 존재하지 않습니다.")
+		);
 	}
 }

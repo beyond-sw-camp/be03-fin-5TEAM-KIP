@@ -95,7 +95,6 @@ const changeVersion = async () => {
         </v-card>
       </v-col>
     </v-row>
-
     <!-- 버전 미리보기 창 -->
     <v-dialog
         class="d-flex justify-end mr-12"
@@ -105,6 +104,7 @@ const changeVersion = async () => {
       <v-card
           rounded="xl"
           class="pa-8">
+
         <VersionView :form="selectedVersion"></VersionView>
       </v-card>
     </v-dialog>
@@ -136,5 +136,9 @@ const changeVersion = async () => {
 .headline {
   font-size: 1.5rem;
   font-weight: bold;
+}
+.viewDetail{
+  max-width: 800px;
+  max-height:none;
 }
 </style>

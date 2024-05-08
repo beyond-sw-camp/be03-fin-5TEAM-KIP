@@ -6,6 +6,8 @@ export const useDocumentSearch = defineStore("documentSearch", {
     return {
       document: [],
       totalPages : 0,
+      canView : String,
+      groupId : {}
     };
   },
   getters: {
@@ -20,6 +22,17 @@ export const useDocumentSearch = defineStore("documentSearch", {
         totalPages: state.totalPages  // 전체 페이지 수
       };
     },
+    getAvailable(state){
+      // 여기서는 직접적으로 필요한 객체 구조를 반환합니다.
+      return {
+        canView: state.canView
+      };
+    },
+    getGroupId(state) {
+      return {
+        groupId: state.groupId
+      };
+    }
   },
 
   actions: {
@@ -32,14 +45,26 @@ export const useDocumentSearch = defineStore("documentSearch", {
             'Authorization': 'Bearer ' + user.getAccessToken},
         });
         const data = await response.json()
-
-        console.log(data);
         this.document = data.content;
         this.totalPages = data.totalPages - 1;
       } catch (error) {
         console.error('Error fetching search:', error.message);
       }
     },
-
+    async viewDocument(documentUUID) {
+      try {
+        const response = await fetch(`${BASE_URL}/doc/search/${documentUUID}`, {
+          method: 'GET',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': 'Bearer ' + user.getAccessToken},
+        });
+        const data = await response.json()
+        this.groupId = data.groupId;
+        this.canView = data.result;
+      } catch (error) {
+        console.error('Error fetching search:', error.message);
+      }
+    },
   }
 });
