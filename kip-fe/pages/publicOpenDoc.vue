@@ -156,6 +156,12 @@ const createNewVersion = async (form) => {
 }
 
 
+// 버전 변경 후 모달 닫기
+const changeVersionAndModalClose = () => {
+  UpdateToastViewer();
+  versionHistoryModal.value = false
+}
+
 // 전체공개문서 기존그룹으로 이동
 const handlerMoveDocToGroup = ref(false)
 const selectedTargetGroupName = ref("한화시스템")
@@ -486,7 +492,7 @@ onKeyStroke(['Enter'], () => {
               rounded="xl"
               class="pa-4">
             <VersionHistory
-                @version-changed="UpdateToastViewer"
+                @version-changed="changeVersionAndModalClose"
                 :selectDocumentId="documentList.getSelectedDocId"></VersionHistory>
           </v-card>
         </v-dialog>
@@ -933,4 +939,5 @@ onKeyStroke(['Enter'], () => {
   background-color: var(--primary-color);
   border-radius: 25px;
 }
+
 </style>

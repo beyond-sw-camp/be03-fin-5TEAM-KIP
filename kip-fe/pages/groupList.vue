@@ -217,6 +217,7 @@ const SetSuperGroupIdAndName = (selectedSuperGruupInfo) => {
   else {
     createGroupReq.value.superGroupId = selectedSuperGruupInfo.id
     clickedSuperGroupName.value = `${BeforeSuperGroupName.value} 👉 ${selectedSuperGruupInfo.title}`
+    selectSuperGroupModal.value = false
   }
 }
 const UpdateGroupInfoReq = async (event) => {
@@ -399,7 +400,7 @@ const confirmRequest = async () => {
 
         <!--           ✏️ 그룹수정을 위한 모달 -->
         <v-dialog
-            class="d-flex justify-end mr-16"
+            class="d-flex justify-center"
             width="45vw"
             opacity="50%"
             v-model="updateGruopInfoModal">
@@ -444,7 +445,7 @@ const confirmRequest = async () => {
                   />
                   <v-btn
                       class="mt-7"
-                      color="info"
+                      :color="color.kipMainColor"
                       :loading="loading"
                       text="수정"
                       type="submit"
@@ -466,7 +467,7 @@ const confirmRequest = async () => {
 
         <!--           ☝️ 상위 그룹 선택을 위한 모달 -->
         <v-dialog
-            class="d-flex justify-start ml-16"
+            class="d-flex justify-center"
             width="35vw"
             opacity="75%"
             v-model="selectSuperGroupModal">

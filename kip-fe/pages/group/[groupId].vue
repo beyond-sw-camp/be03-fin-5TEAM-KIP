@@ -173,6 +173,11 @@ const createNewVersion = async (form) => {
   createNewVersionModal.value = false;
 }
 
+// 버전 변경 후 모달 닫기
+const changeVersionAndModalClose = () => {
+  UpdateToastViewer();
+  versionHistoryModal.value = false
+}
 
 // 첨부파일
 const files = ref([]);
@@ -474,7 +479,7 @@ onKeyStroke(['W', 'w'], () => {
               rounded="xl"
               class="pa-4">
             <VersionHistory
-                @version-changed="UpdateToastViewer"
+                @version-changed="changeVersionAndModalClose"
                 :selectDocumentId="documentList.getSelectedDocId"></VersionHistory>
           </v-card>
         </v-dialog>
