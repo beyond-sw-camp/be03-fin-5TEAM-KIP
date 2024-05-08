@@ -32,8 +32,6 @@ onMounted(async () => {
   }
 })
 
-
-
 // 문서 선택 시 상세 정보를 가져오는 함수
 const selectDocument = async (documentId) => {
   await documentList.setDocumentDetails(documentId);
