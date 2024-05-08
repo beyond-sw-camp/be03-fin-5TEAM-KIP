@@ -228,18 +228,33 @@ watch(password, () => {
             <v-card class="my-card" outlined>
               <v-card-title class="text-h5">개인 정보</v-card-title>
               <v-card-text>
+                <!-- 이름 필드 -->
                 <v-row>
-                  <v-col cols="12" md="6">
+                  <v-col cols="12">
                     <v-text-field label="이름" outlined dense v-model="userInfo.name"></v-text-field>
+                  </v-col>
+                </v-row>
+                <!-- 사원 번호 필드 -->
+                <v-row>
+                  <v-col cols="12">
                     <v-text-field label="사원 번호" outlined dense v-model="userInfo.employeeId" readonly></v-text-field>
                   </v-col>
-                  <v-col cols="12" md="6">
+                </v-row>
+                <!-- 이메일 필드 -->
+                <v-row>
+                  <v-col cols="12">
                     <v-text-field label="이메일" outlined dense v-model="userInfo.email"></v-text-field>
+                  </v-col>
+                </v-row>
+                <!-- 전화번호 필드 -->
+                <v-row>
+                  <v-col cols="12">
                     <v-text-field label="전화번호" outlined dense v-model="userInfo.phoneNumber"></v-text-field>
                   </v-col>
                 </v-row>
+                <!-- 고용된 날짜 필드 -->
                 <v-row>
-                  <v-col cols="12" md="6">
+                  <v-col cols="12">
                     <v-text-field
                         label="고용된 날짜"
                         outlined
@@ -256,6 +271,7 @@ watch(password, () => {
               </v-card-actions>
             </v-card>
           </div>
+
         </v-fade-transition>
       </v-col>
     </v-row>
@@ -263,30 +279,34 @@ watch(password, () => {
 </template>
 
 <style scoped>
-.my-card {
-  background-color: #FFF;
-  border-radius: 16px;
-  box-shadow: 0 2px 5px 0 rgba(0, 0, 0, 0.26);
+.v-card.my-card {
+  background-color: #FFF; /* 카드 배경색 */
+  border-radius: 16px; /* 카드의 둥근 모서리 반경 */
+  box-shadow: 0 2px 5px 0 rgba(0, 0, 0, 0.26); /* 그림자 효과 */
   margin: auto; /* 가로 중앙 정렬 */
-  margin-top: 100px; /* 페이지 상단으로부터의 거리 조정 */
-  margin-bottom: 20px; /* 하단 여백 */
-  max-width: 600px; /* 카드 박스의 최대 너비 */
+  margin-top: 30px; /* 페이지 상단으로부터의 거리 조정 */
+  margin-bottom: 20px; /* 페이지 하단으로부터의 여백 */
+  max-width: 800px; /* 모든 카드 박스의 최대 너비 */
+  width: 100%; /* 모든 카드의 너비를 부모 요소의 100%로 설정 */
+  padding: 20px; /* 카드 내부의 패딩 */
   display: flex;
   flex-direction: column;
 }
 
+/* 나머지 스타일 */
 .caption {
-  font-size: 0.875rem;
-  color: grey;
+  font-size: 0.875rem; /* 부가 설명 텍스트의 폰트 크기 */
+  color: grey; /* 폰트 색상 */
 }
 
 .error-text {
-  color: red;
+  color: red; /* 오류 메시지 텍스트 색상 */
 }
 
 .card-actions {
-  margin-top: auto; /* 버튼을 아래로 밀어내기 */
+  margin-top: auto; /* 카드 액션 버튼을 하단에 정렬 */
   display: flex;
-  justify-content: flex-end; /* 버튼을 오른쪽으로 정렬 */
+  justify-content: flex-end; /* 버튼을 우측에 정렬 */
 }
 </style>
+
