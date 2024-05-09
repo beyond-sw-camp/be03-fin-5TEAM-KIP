@@ -130,165 +130,135 @@ watch(password, () => {
 </script>
 
 <template>
-  <v-container fluid>
-    <!-- 탭 네비게이션 -->
-    <v-row>
-      <v-col>
-        <v-tabs v-model="currentTab" centered>
-          <v-tab key="profile" value="profile">프로필 변경</v-tab>
-          <v-tab key="password" value="password">비밀번호 변경</v-tab>
-          <v-tab key="info" value="info">개인 정보</v-tab>
-        </v-tabs>
-      </v-col>
-    </v-row>
+  <!-- 탭 네비게이션 -->
+  <v-row class="px-10 py-6 mt-2">
+    <v-col>
+      <v-tabs v-model="currentTab" centered>
+        <v-tab
+            class="px-16"
+            style="font-size: 18px"
+            key="info" value="info">ℹ️ 개인 정보
+          <v-tooltip
+              activator="parent"
+              location="bottom"
+          >읽기전용
+          </v-tooltip>
+        </v-tab>
+        <v-tab
+            class="px-16"
+            style="font-size: 18px"
+            key="password" value="password"> 🗝️ 비밀번호 변경
+          <v-tooltip
+              activator="parent"
+              location="bottom"
+          >읽기전용
+          </v-tooltip>
+        </v-tab>
+      </v-tabs>
+    </v-col>
+  </v-row>
 
-    <!-- 탭 컨텐츠 -->
-    <v-row justify="center" class="my-5">
-      <v-col cols="12" md="10" lg="8">
-        <v-fade-transition mode="out-in">
-          <!-- 프로필 변경 탭 내용 -->
-          <div v-if="currentTab === 'profile'" :key="'profile'">
-            <v-card class="my-card" outlined>
-              <v-card-title class="text-h5">프로필 변경</v-card-title>
-              <v-card-text class="text-center flex-grow-1">
-                <v-avatar size="120" class="mx-auto my-4">
-                  <img :src="profilePhotoUrl || '/default-profile.png'" alt="profile"/>
-                </v-avatar>
-                <v-file-input
-                    v-model="file"
-                    label="새로운 사진 업로드"
-                    prepend-icon="mdi-camera"
-                    accept="image/png, image/jpeg, image/gif"
-                    @change="uploadPhoto"
-                ></v-file-input>
-                <v-btn color="error" @click="resetPhoto">리셋</v-btn>
-                <div class="caption">JPG, GIF 또는 PNG만 허용됩니다. 최대 크기는 800K입니다.</div>
-              </v-card-text>
-              <v-card-actions class="justify-end">
-                <v-btn color="primary" @click="updateProfile">프로필 업데이트</v-btn>
-                <v-btn color="grey" @click="cancelEdit">취소</v-btn>
-              </v-card-actions>
-            </v-card>
-          </div>
+  <!-- 탭 컨텐츠 -->
+  <v-row justify="center" class="my-5">
+    <v-col cols="12" md="10" lg="8">
+      <v-fade-transition mode="out-in">
+        <!-- 개인 정보 탭 내용 -->
+        <div v-if="currentTab === 'info'" :key="'info'">
+          <v-card rounded="xl" class="my-card" outlined>
+            <v-card-title class="headline">개인 정보 ℹ️</v-card-title>
+            <v-row>
+              <v-col cols="6" class="d-flex flex-row justify-center align-center">
+                <v-img
+                    rounded="xl"
+                    class="align-end text-white mx-16"
+                    style="
+                  height: 250px !important;
+                  width: 250px !important;
+                  "
+                    :src="userStore.getProfileImageUrl"
+                    cover
+                />
+              </v-col>
+              <v-col cols="6">
+                <v-card-text class="mr-10">
+                  <!-- 이름 필드 -->
+                  <v-text-field label="이름" outlined dense v-model="userInfo.name"></v-text-field>
+                  <!-- 사원 번호 필드 -->
+                  <v-text-field label="사원 번호" outlined dense v-model="userInfo.employeeId" readonly></v-text-field>
+                  <!-- 이메일 필드 -->
+                  <v-text-field label="이메일" outlined dense v-model="userInfo.email"></v-text-field>
+                  <!-- 전화번호 필드 -->
+                  <v-text-field label="전화번호" outlined dense v-model="userInfo.phoneNumber"></v-text-field>
+                  <!-- 고용된 날짜 필드 -->
+                  <v-text-field
+                      label="고용된 날짜"
+                      outlined
+                      dense
+                      v-model="userInfo.employedDay"
+                      readonly
+                  ></v-text-field>
+                </v-card-text>
+              </v-col>
+            </v-row>
+          </v-card>
+        </div>
 
-          <!-- 비밀번호 변경 탭 내용 -->
-          <div v-if="currentTab === 'password'" :key="'password'">
-            <v-card class="my-card" outlined>
-              <v-card-title class="text-h5">비밀번호 변경</v-card-title>
-              <v-card-text>
-                <v-text-field
-                    v-model="password.current"
-                    :type="showPassword ? 'text' : 'password'"
-                    label="현재 비밀번호"
-                    outlined
-                    dense
-                    append-icon="mdi-eye"
-                    @click:append="toggleShowPassword"
-                    @input="validateCurrentPassword"
-                    :error-messages="passwordErrors.current"
-                ></v-text-field>
-                <v-text-field
-                    v-model="password.new"
-                    :type="showPassword ? 'text' : 'password'"
-                    label="새로운 비밀번호"
-                    outlined
-                    dense
-                    append-icon="mdi-eye"
-                    @input="validateNewPassword"
-                    :error-messages="passwordErrors.new"
-                    required
-                ></v-text-field>
-                <v-text-field
-                    v-model="password.confirm"
-                    :type="showPassword ? 'text' : 'password'"
-                    label="새로운 비밀번호 확인"
-                    outlined
-                    dense
-                    append-icon="mdi-eye"
-                    @input="validateConfirmPassword"
-                    :error-messages="passwordErrors.confirm"
-                    required
-                ></v-text-field>
-              </v-card-text>
-              <v-card-actions class="justify-end">
-                <v-btn
-                    :disabled="!canChangePassword"
-                    color="primary"
-                    @click="changePassword"
-                >
-                  비밀번호 변경
-                </v-btn>
-                <v-btn color="grey" @click="cancelEdit">취소</v-btn>
-              </v-card-actions>
-            </v-card>
-          </div>
+        <!-- 비밀번호 변경 탭 내용 -->
+        <div v-if="currentTab === 'password'" :key="'password'">
+          <v-card rounded="xl" class="my-card" outlined>
+            <v-card-title class="headline mb-7">비밀번호 변경 🗝️</v-card-title>
+            <v-card-text class="headline my-4 mx-10">
+              <v-text-field
+                  v-model="password.current"
+                  :type="showPassword ? 'text' : 'password'"
+                  label="현재 비밀번호"
+                  outlined
+                  dense
+                  append-icon="mdi-eye"
+                  @click:append="toggleShowPassword"
+                  @input="validateCurrentPassword"
+                  :error-messages="passwordErrors.current"
+              ></v-text-field>
+              <v-text-field
+                  v-model="password.new"
+                  :type="showPassword ? 'text' : 'password'"
+                  label="새로운 비밀번호"
+                  outlined
+                  dense
+                  append-icon="mdi-eye"
+                  @input="validateNewPassword"
+                  :error-messages="passwordErrors.new"
+                  required
+              ></v-text-field>
+              <v-text-field
+                  v-model="password.confirm"
+                  :type="showPassword ? 'text' : 'password'"
+                  label="새로운 비밀번호 확인"
+                  outlined
+                  dense
+                  append-icon="mdi-eye"
+                  @input="validateConfirmPassword"
+                  :error-messages="passwordErrors.confirm"
+                  required
+              ></v-text-field>
+            </v-card-text>
 
-          <!-- 개인 정보 탭 내용 -->
-          <div v-if="currentTab === 'info'" :key="'info'">
-            <v-card class="my-card" outlined>
-              <v-card-title class="text-h5">개인 정보</v-card-title>
-              <v-card-text>
-                <!-- 이름 필드 -->
-                <v-row>
-                  <v-col cols="12">
-                    <v-text-field label="이름" outlined dense v-model="userInfo.name"></v-text-field>
-                  </v-col>
-                </v-row>
-                <!-- 사원 번호 필드 -->
-                <v-row>
-                  <v-col cols="12">
-                    <v-text-field label="사원 번호" outlined dense v-model="userInfo.employeeId" readonly></v-text-field>
-                  </v-col>
-                </v-row>
-                <!-- 이메일 필드 -->
-                <v-row>
-                  <v-col cols="12">
-                    <v-text-field label="이메일" outlined dense v-model="userInfo.email"></v-text-field>
-                  </v-col>
-                </v-row>
-                <!-- 전화번호 필드 -->
-                <v-row>
-                  <v-col cols="12">
-                    <v-text-field label="전화번호" outlined dense v-model="userInfo.phoneNumber"></v-text-field>
-                  </v-col>
-                </v-row>
-                <!-- 고용된 날짜 필드 -->
-                <v-row>
-                  <v-col cols="12">
-                    <v-text-field
-                        label="고용된 날짜"
-                        outlined
-                        dense
-                        v-model="userInfo.employedDay"
-                        readonly
-                    ></v-text-field>
-                  </v-col>
-                </v-row>
-              </v-card-text>
-              <v-card-actions class="justify-end">
-                <v-btn color="primary" @click="updateUserDetails">저장</v-btn>
-                <v-btn color="grey" @click="cancelEdit">취소</v-btn>
-              </v-card-actions>
-            </v-card>
-          </div>
+          </v-card>
+        </div>
 
-        </v-fade-transition>
-      </v-col>
-    </v-row>
-  </v-container>
+
+      </v-fade-transition>
+    </v-col>
+  </v-row>
 </template>
 
 <style scoped>
-.v-card.my-card {
-  background-color: #FFF; /* 카드 배경색 */
-  border-radius: 16px; /* 카드의 둥근 모서리 반경 */
-  box-shadow: 0 2px 5px 0 rgba(0, 0, 0, 0.26); /* 그림자 효과 */
-  margin: auto; /* 가로 중앙 정렬 */
-  margin-top: 30px; /* 페이지 상단으로부터의 거리 조정 */
-  margin-bottom: 20px; /* 페이지 하단으로부터의 여백 */
-  max-width: 800px; /* 모든 카드 박스의 최대 너비 */
+
+
+.my-card {
+  max-width: 60vw; /* 모든 카드 박스의 최대 너비 */
   width: 100%; /* 모든 카드의 너비를 부모 요소의 100%로 설정 */
-  padding: 20px; /* 카드 내부의 패딩 */
+  padding: 30px; /* 카드 내부의 패딩 */
   display: flex;
   flex-direction: column;
 }

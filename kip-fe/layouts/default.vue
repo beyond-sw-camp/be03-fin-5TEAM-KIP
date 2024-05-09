@@ -97,7 +97,10 @@ onKeyStroke(['L', 'l'], () => {
 
       <span class="mr-4">{{ user.getUserInfo.name }}님 환영합니다.</span>
 
-      <v-dialog v-model="dialog" max-width="600">
+      <v-dialog
+          v-model="dialog"
+          width="65vw"
+      >
         <template #activator="{ props: activatorProps }">
           <v-btn
               v-bind="activatorProps"
@@ -151,7 +154,9 @@ onKeyStroke(['L', 'l'], () => {
         />
       </v-btn>
 
-      <v-dialog v-model="alert" max-width="600 ">
+      <v-dialog
+          width="60vw"
+          v-model="alert">
         <NotificationCopo @closeModal="alert = false"/>
       </v-dialog>
 
@@ -161,7 +166,6 @@ onKeyStroke(['L', 'l'], () => {
         <v-menu
             @mouseenter="mypage=true"
             @mouseleave="mypage=false"
-
             v-model=mypage transition="slide-y-transition">
           <template v-slot:activator="{ props }">
             <!-- 아바타 버튼 -->
@@ -173,7 +177,8 @@ onKeyStroke(['L', 'l'], () => {
                 v-bind="props"
                 class="cursor-pointer ml-1 mr-4"/>
           </template>
-          <v-list style="width: 250px; display: flex; flex-direction:column; align-items: center; border-radius: 25px" class="pa-8">
+          <v-list style="width: 250px; display: flex; flex-direction:column; align-items: center; border-radius: 25px"
+                  class="pa-8">
             <v-list-item @click="useRouter().push('/mypage');"
                          style="background-color:var(--primary-color);
                          color:white; border-radius: 25px; width:200px ;
