@@ -928,6 +928,10 @@ onKeyStroke(['Enter'], () => {
   height: 80px;
   left: -4vw;
   width: calc(100% + 0px);
+  pointer-events: none;
+}
+.fab_div .v-btn {
+  pointer-events: auto;
 }
 
 .title__update input:focus {
